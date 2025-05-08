@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/container"
+        android:background="@drawable/general_gradient_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context=".ui.login.LoginActivity">
+
+    <!-- Welcome Text -->
+    <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome Back"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/outfit_bold"
+            android:textColor="@android:color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="50dp"/>
+
+    <!-- Login Subtitle -->
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Log in to your account"
+            android:fontFamily="@font/kumbhsans_regular"
+            android:textColor="@color/steelBlueGrey"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/textView" />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="227dp" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/login_rounded_layout"
+            android:paddingTop="34dp"
+            app:layout_constraintTop_toBottomOf="@+id/guidelineTop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:layout_editor_absoluteX="-16dp"
+            app:layout_constraintVertical_bias="0.0">
+
+        <!-- Main Content -->
+        <LinearLayout
+                android:id="@+id/emailLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp"
+                android:paddingBottom="16dp"
+                app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Email Input -->
+            <EditText
+                    android:id="@+id/emailInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="Email Address"
+                    android:background="@drawable/rounded_edittext"
+                    android:textSize="12sp"
+                    android:paddingVertical="15dp"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#AAAAAA" />
+
+            <!-- Next Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/nextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="35dp"
+                    android:background="@drawable/ripple"
+                    android:text="Next"
+                    android:elevation="0dp"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:textColor="@color/dark_purple"
+                    android:textSize="10sp" />
+
+            <!-- Sign Up Text -->
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_horizontal">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        android:text="Don't have an account? "
+                        android:textSize="12sp"
+                        android:textColor="@color/white" />
+
+                <TextView
+                        android:id="@+id/btnSignUp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        android:text="Sign Up"
+                        android:textSize="12sp"
+                        android:textColor="@color/brightSkyBlue"
+                        android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="41dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+            <com.mukeshsolanki.OtpView
+                    android:id="@+id/otp_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:textAllCaps="true"
+                    android:itemBackground="@drawable/otp_item_background"
+                    android:textColor="@android:color/white"
+                    app:OtpHideLineWhenFilled="true"
+                    app:OtpItemCount="6"
+                    app:OtpItemSpacing="6dp"
+                    app:OtpState_filled="true"
+                    android:width="54dp"
+                    android:height="57dp"
+                    tools:layout_editor_absoluteY="48dp"
+                    tools:layout_editor_absoluteX="46dp" />
+
+            <TextView
+                    android:id="@+id/timeTextView"
+                    android:visibility="gone"
+                    android:text="4:19"
+                    android:textColor="@color/white"
+                    android:layout_width="77dp"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="41dp"
+                    android:paddingVertical="15dp"
+                    android:paddingHorizontal="25dp"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:background="@drawable/rounded_border"
+                    />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:visibility="gone"
+                    android:text="Resend"
+                    android:id="@+id/resendButton"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="41dp"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="16dp"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:background="@drawable/rounded_border"
+                    android:elevation="0dp"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:minHeight="36dp"
+                    android:minWidth="64dp"
+                    android:layout_gravity="center"/>
+
+        </LinearLayout>
+
+        <!-- Social Container at Bottom -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/socialContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/social_container_bg"
+                android:padding="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                    android:id="@+id/socialText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Or continue with"
+                    android:textColor="@color/steelBlueGrey"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            <FrameLayout
+                    android:id="@+id/googleButton"
+                    android:layout_width="71dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/social_button_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/appleButton">
+
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="8dp"
+                        android:src="@drawable/icon_google"
+                        android:contentDescription="Continue with Google"
+                        android:scaleType="centerInside" />
+            </FrameLayout>
+
+            <FrameLayout
+                    android:id="@+id/appleButton"
+                    android:layout_width="71dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/social_button_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="8dp"
+                        android:src="@drawable/icon_ios"
+                        android:contentDescription="Continue with Apple"
+                        android:scaleType="centerInside" />
+            </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

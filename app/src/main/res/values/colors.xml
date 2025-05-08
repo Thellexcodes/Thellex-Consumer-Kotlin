@@ -1,0 +1,35 @@
+<resources>
+    <color name="darkBlue">#2B2B3F</color>
+    <color name="midnight">#14132C</color>
+    <color name="dark_purple">#14132C</color>
+    <color name="deepNavy">#0E0E20</color>
+    <color name="steelBlueGrey">#7D8093</color>
+    <color name="goldenYellow">#F9B333</color>
+    <color name="brightSkyBlue">#2E9AD0</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="titleText">#23024D</color>
+    <color name="descriptionText">#000427</color>
+    <color name="paragraphText">#000636</color>
+    <color name="grayText">#6B6C83</color>
+    <color name="darkGrayText">#4B4E67</color>
+    <color name="buttonBackground">#23024D</color>
+    <color name="purple">#872AB0</color>
+    <color name="tooltip">#8620B9</color>
+    <color name="background">#5C1283</color>
+    <color name="gray">#E8E8ED</color>
+    <color name="lightGray">#FAFAFB</color>
+    <color name="placeholder">#B3B4C3</color>
+    <color name="darkPurple">#24034F</color>
+    <color name="pinkRed">#FF3461</color>
+    <color name="yellow">#F8D26C</color>
+    <color name="green">#00B796</color>
+    <color name="orange">#FF8F00</color>
+    <color name="border">#E9E6ED</color>
+    <color name="blue">#2E30F0</color>
+    <color name="classicPool">#4F345B</color>
+    <color name="constantPool">#B0632A</color>
+    <color name="stablePool">#2AA3B0</color>
+    <color name="focusColor">#24b1c7</color>
+    <color name="Intentional">#3F3D56</color>
+</resources>
