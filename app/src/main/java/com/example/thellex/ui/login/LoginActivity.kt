@@ -1,6 +1,7 @@
 package com.example.thellex.ui.login
 
 import android.app.Activity
+import android.content.Intent
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
+import com.example.thellex.QuickActions
 import com.example.thellex.databinding.ActivityLoginBinding
 
 import com.example.thellex.R
@@ -37,16 +39,24 @@ class LoginActivity : AppCompatActivity() {
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
-
-            // disable login button unless both username / password is valid
-
-
         })
 
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
-
         })
+
+
+        binding.nextButton?.setOnClickListener {
+            navigateToQuickActions()
+        }
+    }
+
+
+    private fun navigateToQuickActions() {
+        // Navigate to the OnboardingActivity
+        val intent = Intent(this, QuickActions::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {

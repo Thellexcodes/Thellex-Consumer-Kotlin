@@ -250,7 +250,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="8dp"
-                        android:src="@drawable/icon_ios"
+                        android:src="@drawable/icon_apple"
                         android:contentDescription="Continue with Apple"
                         android:scaleType="centerInside" />
             </FrameLayout>

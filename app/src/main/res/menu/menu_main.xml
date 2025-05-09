@@ -1,10 +1,7 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.thellex.MainActivity">
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Home" android:icon="@drawable/icon_home" android:id="@+id/nav_home" />
+<!--    <item android:title="Cards" android:icon="@drawable/icon_cards" android:id="@+id/nav_cards" />-->
+    <item android:title="Cash Out" android:icon="@drawable/icon_cash" android:id="@+id/nav_cash" />
+    <item android:title="POS" android:icon="@drawable/icon_iphone" android:id="@+id/nav_pos" />
 </menu>
