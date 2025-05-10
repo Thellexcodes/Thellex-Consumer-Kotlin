@@ -1,23 +1,447 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:paddingHorizontal="20dp"
+        android:background="@drawable/general_gradient_background"
         tools:context=".UserDashboard">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/user_dashboard_top_actions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+        <LinearLayout
+                android:id="@+id/user_dashboard_avatar_button"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="6dp"
+                android:background="@drawable/rounded_border"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="2dp"
+                android:clipToPadding="false"
+                android:clipChildren="false"
+                app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                    android:id="@+id/user_dashboard_avatar_icon"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/icon_default_avatar"
+                    android:scaleType="centerCrop" />
+
+            <TextView
+                    android:id="@+id/user_dashboard_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Username"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white" />
+
+            <ImageView
+                    android:id="@+id/user_dashboard_dropdown_icon"
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_marginStart="8dp"
+                    app:srcCompat="@drawable/icon_arrow_down" />
+        </LinearLayout>
+
+        <!-- Brightness Button -->
+        <FrameLayout
+                android:id="@+id/user_dashboard_brightness_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/user_dashboard_notification_button">
+            <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/icon_brightness"
+                    android:contentDescription="Brightness"
+                    android:scaleType="centerInside" />
+        </FrameLayout>
+
+        <!-- Notification Button -->
+        <FrameLayout
+                android:id="@+id/user_dashboard_notification_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginLeft="12dp"
+                android:foreground="?attr/selectableItemBackground"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/user_dashboard_brightness_button"
+                app:layout_constraintBottom_toBottomOf="@id/user_dashboard_brightness_button">
+            <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/icon_notification"
+                    android:contentDescription="Notifications"
+                    android:scaleType="centerInside" />
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Balance Section -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/user_dashboard_balance_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_marginTop="18dp"
+            app:layout_constraintTop_toBottomOf="@id/user_dashboard_top_actions"
+            app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Total Balance Section -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/user_dashboard_total_balance_section"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                    android:id="@+id/user_dashboard_total_balance_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total Balance"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            <FrameLayout
+                    android:id="@+id/user_dashboard_balance_visibility_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/icon_eye"
+                        android:contentDescription="Toggle Balance Visibility"
+                        android:scaleType="centerInside" />
+            </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Balance Amount -->
         <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/hello_blank_fragment" />
+                android:id="@+id/user_dashboard_total_balance_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="232.89 USD"
+                android:textSize="24sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/outfit_light"
+                app:layout_constraintTop_toBottomOf="@id/user_dashboard_total_balance_section"
+                app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/user_dashboard_carousel"
+            android:layout_width="match_parent"
+            android:layout_height="149dp"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            app:layout_constraintTop_toBottomOf="@id/user_dashboard_balance_container"
+            android:layout_marginTop="18dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_marginTop="19dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_border"
+                android:padding="23dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/user_dashboard_carousel"
+                android:id="@+id/user_dashboard_wallet_wrapper">
+
+            <LinearLayout
+                    android:id="@+id/user_dashboard_wallet_backup"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_percent="0.5"
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/outfit_medium"
+                            android:textSize="14sp"
+                            android:text="Wallet Backup"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    <TextView
+                            android:text="Prevent loss of access to your funds by backing up your wallet."
+                            android:layout_marginTop="19dp"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/kumbhsans_regular"
+                            android:textSize="12sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/nextButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="17dp"
+                            android:background="@drawable/ripple"
+                            android:text="Backup Now"
+                            android:elevation="0dp"
+                            android:fontFamily="@font/kumbhsans_bold"
+                            android:textColor="@color/dark_purple"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+            <ImageView
+                    android:id="@+id/imageView"
+                    app:layout_constraintTop_toTopOf="@+id/user_dashboard_wallet_backup"
+                    app:layout_constraintStart_toEndOf="@id/user_dashboard_wallet_backup"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintWidth_percent="0.5"
+                    android:src="@drawable/slide3"
+                    android:layout_width="0dp"
+                    android:layout_height="119dp"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintBottom_toBottomOf="@+id/user_dashboard_wallet_backup" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/user_dashboard_transaction_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/user_dashboard_wallet_wrapper">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/user_dashboard_txn_history_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    >
+                <TextView
+                        android:id="@+id/textView1"
+                        android:text="Transaction History"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/outfit_light"
+                        android:textSize="10sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                        android:id="@+id/textView2"
+                        android:text="See All"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/kumbhsans_bold"
+                        android:textSize="10sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/transactionsRecyclerView"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="200dp"-->
+<!--                android:layout_marginTop="19dp"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/user_dashboard_transaction_history"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent" />-->
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/user_dashboard_txn_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="19dp"
+            tools:layout_editor_absoluteX="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/user_dashboard_transaction_history">
+
+        <ImageView
+                android:id="@+id/user_dashboard_txn_img_placeholder"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/icon_usdc"
+                android:background="@drawable/round_shape"
+                android:layout_width="41dp"
+                android:layout_height="41dp" />
+
+        <LinearLayout
+                app:layout_constraintTop_toTopOf="@id/user_dashboard_txn_img_placeholder"
+                app:layout_constraintStart_toEndOf="@id/user_dashboard_txn_img_placeholder"
+                android:orientation="vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="12sp"
+                    android:text="Deducted from Balance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:layout_marginTop="2dp"
+                    android:textSize="10sp"
+                    android:text="Today, 11:28 PM"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <TextView
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textColor="@color/white"
+                android:fontFamily="@font/outfit_medium"
+                android:textSize="14sp"
+                android:text="₦20,000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/user_dashboard_txn_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="19dp"
+            app:layout_constraintTop_toBottomOf="@id/user_dashboard_txn_1">
+
+        <ImageView
+                android:id="@+id/user_dashboard_txn_img_placeholder_2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/icon_usdt"
+                android:background="@drawable/round_shape"
+                android:layout_width="41dp"
+                android:layout_height="41dp" />
+
+        <LinearLayout
+                app:layout_constraintTop_toTopOf="@id/user_dashboard_txn_img_placeholder_2"
+                app:layout_constraintStart_toEndOf="@id/user_dashboard_txn_img_placeholder_2"
+                android:orientation="vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="12sp"
+                    android:text="Transferred to Wallet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:layout_marginTop="2dp"
+                    android:textSize="10sp"
+                    android:text="Yesterday, 02:45 PM"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <TextView
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textColor="@color/white"
+                android:fontFamily="@font/outfit_medium"
+                android:textSize="14sp"
+                android:text="₦10,000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/user_dashboard_txn_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="19dp"
+            app:layout_constraintTop_toBottomOf="@id/user_dashboard_txn_2">
+
+        <ImageView
+                android:id="@+id/user_dashboard_txn_img_placeholder_3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/icon_usdc"
+                android:background="@drawable/round_shape"
+                android:layout_width="41dp"
+                android:layout_height="41dp" />
+
+        <LinearLayout
+                app:layout_constraintTop_toTopOf="@id/user_dashboard_txn_img_placeholder_3"
+                app:layout_constraintStart_toEndOf="@id/user_dashboard_txn_img_placeholder_3"
+                android:orientation="vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="12sp"
+                    android:text="Payment Received"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:layout_marginTop="2dp"
+                    android:textSize="10sp"
+                    android:text="Today, 05:12 PM"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <TextView
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textColor="@color/white"
+                android:fontFamily="@font/outfit_medium"
+                android:textSize="14sp"
+                android:text="₦100,000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

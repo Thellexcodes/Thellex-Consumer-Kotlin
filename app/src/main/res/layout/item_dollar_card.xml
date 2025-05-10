@@ -1,0 +1,106 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:elevation="8dp"
+        android:radius="15dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_dollar_wallet_card">
+
+        <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:padding="16dp"-->
+        <!--                app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                app:layout_constraintTop_toTopOf="parent"-->
+        <!--                >-->
+
+        <!--                <ImageView-->
+        <!--                        android:id="@+id/avatar1"-->
+        <!--                        android:layout_width="60dp"-->
+        <!--                        android:layout_height="60dp"-->
+        <!--                        android:layout_centerHorizontal="true"-->
+        <!--                        android:layout_marginStart="0dp"-->
+        <!--                        android:layout_marginTop="0dp"-->
+        <!--                        android:src="@drawable/pyusd"-->
+        <!--                        android:layout_marginEnd="-15dp"-->
+        <!--                        android:scaleType="centerCrop"-->
+        <!--                        android:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                        android:layout_constraintTop_toTopOf="parent"-->
+        <!--                        android:layout_constraintStart_toStartOf="parent" />-->
+
+        <!--                <ImageView-->
+        <!--                        android:id="@+id/avatar2"-->
+        <!--                        android:layout_width="60dp"-->
+        <!--                        android:layout_height="60dp"-->
+        <!--                        android:layout_marginLeft="-20dp"-->
+        <!--                        android:src="@drawable/usdt"-->
+        <!--                        android:scaleType="centerCrop"-->
+        <!--                        android:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                        android:layout_constraintTop_toTopOf="parent"-->
+        <!--                        android:layout_constraintStart_toEndOf="@id/avatar1"-->
+        <!--                        android:layout_constraintEnd_toEndOf="parent"-->
+        <!--                        app:layout_constraintStart_toEndOf="@+id/avatar1"-->
+        <!--                        app:layout_constraintTop_toTopOf="@+id/avatar1"-->
+        <!--                        app:layout_constraintBottom_toBottomOf="@+id/avatar1" />-->
+
+        <!--                <ImageView-->
+        <!--                        android:id="@+id/avatar3"-->
+        <!--                        android:layout_width="60dp"-->
+        <!--                        android:layout_height="60dp"-->
+        <!--                        android:src="@drawable/usdc"-->
+        <!--                        android:scaleType="centerCrop"-->
+        <!--                        android:layout_marginLeft="-20dp"-->
+        <!--                        android:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                        android:layout_constraintTop_toTopOf="parent"-->
+        <!--                        android:layout_constraintStart_toEndOf="@id/avatar2"-->
+        <!--                        android:layout_constraintEnd_toEndOf="parent"-->
+        <!--                        app:layout_constraintStart_toEndOf="@+id/avatar2"-->
+        <!--                        app:layout_constraintTop_toTopOf="@+id/avatar2" />-->
+
+        <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+
+        <LinearLayout
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:orientation="vertical"
+                android:paddingHorizontal="23dp"
+                android:paddingVertical="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dollar Wallet"
+                    android:fontFamily="@font/kumbhsans_light"
+                    android:textSize="10sp"
+                    android:textColor="#FFFFFF"
+                    />
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/outfit_bold"
+                    android:text="$2,230.01"
+                    android:textSize="18sp"
+                    android:textColor="#FFFFFF"
+                    />
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/kumbhsans_light"
+                    android:text="≈ 202,003,21.98 NGN"
+                    android:textSize="10sp"
+                    android:textColor="#FFFFFF" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

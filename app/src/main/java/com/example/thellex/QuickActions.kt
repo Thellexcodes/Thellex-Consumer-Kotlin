@@ -1,8 +1,10 @@
 package com.example.thellex
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
@@ -10,6 +12,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.example.thellex.databinding.ActivityQuickActionsBinding
 
 class QuickActions : AppCompatActivity() {
@@ -48,8 +51,6 @@ class QuickActions : AppCompatActivity() {
                 else -> false
             }
         }
-
         binding.bottomNav.selectedItemId = R.id.nav_home
     }
-
 }
