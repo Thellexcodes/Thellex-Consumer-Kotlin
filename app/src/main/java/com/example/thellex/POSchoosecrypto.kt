@@ -36,7 +36,7 @@ class POSchoosecrypto : Fragment() {
         recyclerView = binding.findViewById(R.id.pos_crypto_list_selection)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        // Initialize the adapter with the list of cryptocurrencies
+//        // Initialize the adapter with the list of cryptocurrencies
         cryptoAdapter = CryptoAdapter(cryptoList){ selectedCrypto ->
             findNavController().popBackStack()
             findNavController().navigate(R.id.posAddressGeneratorFragment)

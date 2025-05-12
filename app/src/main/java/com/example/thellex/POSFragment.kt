@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -41,55 +42,33 @@ class POSFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_p_o_s, container, false)
-        val businessName = view.findViewById<TextView>(R.id.pos_business_name)
-        businessName.text = businessName.text.toString().uppercase()
+        val rootView = inflater.inflate(R.layout.fragment_p_o_s, container, false)
 
-        val recycler = view.findViewById<RecyclerView>(R.id.transaction_recycler)
-        recycler.layoutManager = LinearLayoutManager(requireContext())
+        val businessNameTextView = rootView.findViewById<TextView>(R.id.pos_business_name)
+        businessNameTextView.text = businessNameTextView.text.toString().uppercase()
 
-        val transactions = listOf(
+        val transactionRecyclerView = rootView.findViewById<RecyclerView>(R.id.transaction_recycler)
+        transactionRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        val transactionList = listOf(
             PosTransaction(R.drawable.icon_usdt, "USDT", "FARIDA ABDUL", "Today, 10:09 AM", "20 USDT", "$3,890.0938", R.drawable.icon_receive_status),
             PosTransaction(R.drawable.icon_usdc, "USDC", "FARIDA ABDUL", "Today, 10:09 AM", "10 USDC", "$3,890.0938", R.drawable.icon_receive_status),
             PosTransaction(R.drawable.icon_usdt, "USDT", "ALARA Moyo", "Today, 10:09 AM", "20 USDT", "$3,890.0938", R.drawable.icon_send_status),
             PosTransaction(R.drawable.icon_usdc, "USDC", "FARIDA ABDUL", "Today, 10:09 AM", "20 USDC", "$3,890.0938", R.drawable.icon_send_status)
         )
-        recycler.adapter = POSTransactionAdapter(transactions)
+        transactionRecyclerView.adapter = POSTransactionAdapter(transactionList)
 
-        // Find the button and set a click listener for navigation
-        val navigateButton = view.findViewById<LinearLayout>(R.id.request_button)
-        navigateButton.setOnClickListener {
-            findNavController().navigate(R.id.action_posFragment_to_requestAccessFragment)
+        val itemSpacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
+        transactionRecyclerView.addItemDecoration(ItemSpacingDecoration(itemSpacing))
+
+        val requestAccessButton = rootView.findViewById<LinearLayout>(R.id.request_button)
+        requestAccessButton.setOnClickListener {
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(R.id.nav_pos, false) // Keeps POS fragment in the back stack
+                .build()
+
+            findNavController().navigate(R.id.action_posFragment_to_requestAccessFragment, null, navOptions)
         }
-
-        // Find the button for navigating to request access and set the click listener
-//        val requestAccessButton = view.findViewById<LinearLayout>(R.id.request_button)
-//        requestAccessButton.setOnClickListener {
-//            findNavController().navigate(R.id.action_pos_to_request_access)
-//        }
-
-        return view
+        return rootView
     }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment POSFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            POSFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
-
-
 }

@@ -56,24 +56,13 @@ class UserDashboard : Fragment() {
 
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.txn_margin)
 
-
-//        binding.transactionsRecyclerView.apply {
-//            layoutManager = LinearLayoutManager(requireContext())
-//            adapter = TransactionsAdapter(transactions)
-//        }
-
         binding.transactionsRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = TransactionsAdapter(transactions)
-            addItemDecoration(object : RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(
-                    outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State
-                ) {
-                    super.getItemOffsets(outRect, view, parent, state)
-                    outRect.bottom = spacingInPixels
-                }
-            })
         }
+
+        val spacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
+        binding.transactionsRecyclerView.addItemDecoration(ItemSpacingDecoration(spacing))
 
         binding.cashOutButton.setOnClickListener {
             showCashModal()
