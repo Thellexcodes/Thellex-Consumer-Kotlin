@@ -1,17 +1,19 @@
 package com.example.thellex
 
+import android.graphics.Rect
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.thellex.databinding.FragmentUserDashboardBinding
 
 class UserDashboard : Fragment() {
     private var _binding: FragmentUserDashboardBinding? = null
     private val binding get() = _binding!!
     private lateinit var carouselAdapter: DashboardCarouselAdapter
-//    private lateinit var transactionsAdapter: TransactionsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,13 +54,35 @@ class UserDashboard : Fragment() {
             )
         )
 
-//        // 3. Setup the Adapter
-//        transactionsAdapter = TransactionsAdapter(transactions)
+        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.txn_margin)
+
+
 //        binding.transactionsRecyclerView.apply {
 //            layoutManager = LinearLayoutManager(requireContext())
-//            adapter = transactionsAdapter
-//            // Optional: add spacing or margins between items if needed
+//            adapter = TransactionsAdapter(transactions)
 //        }
+
+        binding.transactionsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = TransactionsAdapter(transactions)
+            addItemDecoration(object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                    outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State
+                ) {
+                    super.getItemOffsets(outRect, view, parent, state)
+                    outRect.bottom = spacingInPixels
+                }
+            })
+        }
+
+        binding.cashOutButton.setOnClickListener {
+            showCashModal()
+        }
+    }
+
+    private fun showCashModal() {
+        val modal = CashOutBottomSheet()
+        modal.show(parentFragmentManager, "CashModal")
     }
 
     override fun onDestroyView() {

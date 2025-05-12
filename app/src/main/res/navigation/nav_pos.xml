@@ -1,0 +1,25 @@
+<!-- res/navigation/nav_dashboard.xml -->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/nav_dashboard"
+        xmlns:tools="http://schemas.android.com/tools"
+        app:startDestination="@id/pos_dashboard">
+
+    <fragment
+            android:id="@+id/pos_dashboard"
+            android:name="com.example.thellex.POSFragment"
+            android:label="POS"
+            tools:layout="@layout/fragment_p_o_s" />
+
+<!--    <fragment-->
+<!--            android:id="@+id/pos_request_assets"-->
+<!--            android:name="com.example.thellex.RequestAssets"-->
+<!--            android:label="Request"-->
+<!--            tools:layout="@layout/fragment_request_assets" />-->
+
+    <!--    <fragment-->
+    <!--            android:id="@+id/dashboardDetailsFragment"-->
+    <!--            android:name="com.example.thellex.DashboardDetailsFragment"-->
+    <!--            android:label="Dashboard Details"-->
+    <!--            tools:layout="@layout/fragment_dashboard_details" />-->
+</navigation>

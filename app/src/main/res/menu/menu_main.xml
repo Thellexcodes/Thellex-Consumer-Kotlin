@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="Home" android:icon="@drawable/icon_home" android:id="@+id/nav_home" />
-<!--    <item android:title="Cards" android:icon="@drawable/icon_cards" android:id="@+id/nav_cards" />-->
-    <item android:title="Cash Out" android:icon="@drawable/icon_cash" android:id="@+id/nav_cash" />
-    <item android:title="POS" android:icon="@drawable/icon_iphone" android:id="@+id/nav_pos" />
+    <item
+            android:id="@+id/nav_dashboard"
+            android:title="Home"
+            android:icon="@drawable/icon_home" />
+
+    <item
+            android:id="@+id/nav_pos"
+            android:title="POS"
+            android:icon="@drawable/icon_iphone" />
 </menu>

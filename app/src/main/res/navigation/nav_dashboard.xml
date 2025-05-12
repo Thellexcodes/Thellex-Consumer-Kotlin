@@ -1,0 +1,14 @@
+<!-- res/navigation/nav_dashboard.xml -->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/nav_dashboard"
+        xmlns:tools="http://schemas.android.com/tools"
+        app:startDestination="@id/dashboardHomeFragment">
+
+    <!-- Dashboard Home Fragment -->
+    <fragment
+            android:id="@+id/dashboardHomeFragment"
+            android:name="com.example.thellex.UserDashboard"
+            android:label="Dashboard Home"
+            tools:layout="@layout/fragment_user_dashboard" />
+</navigation>

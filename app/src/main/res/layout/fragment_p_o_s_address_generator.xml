@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="@drawable/general_gradient_background"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="56dp"
+        tools:context=".POSAddressGenerator">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/constraintLayout5">
+
+        <LinearLayout
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                    android:src="@drawable/icon_bitcoin"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp" />
+
+            <TextView
+                    android:layout_marginLeft="10dp"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:textColor="@color/white"
+                    android:text="BTC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingVertical="14dp"
+                android:paddingHorizontal="16dp"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="@drawable/rounded_border"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <ImageView
+                    android:src="@drawable/icon_bnb_chain"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp" />
+
+            <TextView
+                    android:textColor="@color/white"
+                    android:text="BNB CHAIN"
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="10sp"
+                    android:fontFamily="@font/kumbhsans_light"
+                    android:layout_height="wrap_content" />
+
+            <ImageView
+                    android:src="@drawable/icon_arrow_down"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout5"
+            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/constraintLayout6">
+
+        <TextView
+                android:text="Scan code to continue process"
+                android:layout_width="wrap_content"
+                android:textColor="@color/white"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout6"
+            tools:layout_editor_absoluteX="20dp"
+            android:id="@+id/linearLayout">
+
+        <ImageView
+                android:src="@drawable/icon_qr_pay_scanner"
+                android:layout_width="323dp"
+                android:layout_height="323dp" />
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/goldenYellow"
+            android:paddingVertical="15dp"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        <ImageView
+                android:src="@drawable/icon_share"
+                android:layout_width="18dp"
+                android:layout_height="18dp" />
+            <TextView
+                    android:textSize="12sp"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:text="SHARE"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

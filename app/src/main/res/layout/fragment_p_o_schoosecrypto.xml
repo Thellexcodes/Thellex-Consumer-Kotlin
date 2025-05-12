@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/general_gradient_background"
+        android:paddingTop="56dp"
+        android:paddingHorizontal="20dp"
+        tools:context=".POSchoosecrypto">
+
+    <!-- Main container for the layout -->
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/posRequestAssetsMainContainer"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+                android:id="@+id/posRequestAssetsTitle"
+                android:textColor="@color/white"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textSize="14sp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="REQUEST" />
+
+        <TextView
+                android:id="@+id/posRequestAssetsSelectCurrencyLabel"
+                android:textColor="@color/white"
+                android:layout_marginTop="26sp"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="14sp"
+                android:text="Select cryptocurrency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/pos_crypto_list_selection"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/posRequestAssetsMainContainer"
+            android:layout_marginTop="16dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

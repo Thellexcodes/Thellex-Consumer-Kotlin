@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/general_gradient_background"
+        android:paddingTop="56dp"
+        android:paddingHorizontal="20dp"
+        tools:context=".RequestAssets">
+
+    <!-- Main container for the layout -->
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/posMainLinearLayout"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+                android:id="@+id/posTextViewTitle"
+                android:textColor="@color/white"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textSize="14sp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="PURCHASE" />
+
+        <TextView
+                android:id="@+id/posTextViewSelectCurrencyLabel"
+                android:textColor="@color/white"
+                android:layout_marginTop="26sp"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="14sp"
+                android:text="Select Currency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!-- Local Currency selection -->
+    <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/posLinearLayoutLocalCurrency"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="15dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/rounded_border"
+            android:paddingVertical="36sp"
+            android:paddingHorizontal="16sp"
+            app:layout_constraintTop_toBottomOf="@+id/posMainLinearLayout">
+
+        <TextView
+                android:id="@+id/posTextViewLocalCurrency"
+                android:textSize="14sp"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textColor="@color/white"
+                android:text="Local Currency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!-- Cryptocurrency selection -->
+    <LinearLayout
+            android:id="@+id/posLinearLayoutCryptocurrency"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/rounded_border"
+            android:paddingVertical="36sp"
+            android:paddingHorizontal="16sp"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintTop_toBottomOf="@+id/posLinearLayoutLocalCurrency">
+
+        <TextView
+                android:id="@+id/posTextViewCryptocurrency"
+                android:textSize="14sp"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textColor="@color/white"
+                android:text="Cryptocurrency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

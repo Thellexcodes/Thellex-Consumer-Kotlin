@@ -1,18 +1,9 @@
 package com.example.thellex
 
 import android.os.Bundle
-import android.util.Log
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavOptions
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.viewpager2.widget.ViewPager2
 import com.example.thellex.databinding.ActivityQuickActionsBinding
 
 class QuickActions : AppCompatActivity() {
@@ -30,27 +21,23 @@ class QuickActions : AppCompatActivity() {
 
         binding.bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> {
-                    if (navController.currentDestination?.id != R.id.nav_home) {
-                        navController.navigate(R.id.nav_home)
-                    }
-                    true
-                }
-                R.id.nav_cash -> {
-                    if (navController.currentDestination?.id != R.id.nav_cash) {
-                        navController.navigate(R.id.nav_cash)
+                R.id.nav_dashboard -> {
+                    if (navController.currentDestination?.id != R.id.nav_dashboard) {
+                        navController.navigate(R.id.dashboardFragment)
                     }
                     true
                 }
                 R.id.nav_pos -> {
                     if (navController.currentDestination?.id != R.id.nav_pos) {
-                        navController.navigate(R.id.nav_pos)
+                        navController.navigate(R.id.posFragment, null, NavOptions.Builder()
+                            .setPopUpTo(R.id.posFragment, false)
+                            .build())
                     }
                     true
                 }
                 else -> false
             }
         }
-        binding.bottomNav.selectedItemId = R.id.nav_home
+        binding.bottomNav.selectedItemId = R.id.nav_dashboard
     }
 }

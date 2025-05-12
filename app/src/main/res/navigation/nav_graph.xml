@@ -1,24 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            app:startDestination="@id/nav_home">
-            <fragment
-                    android:id="@+id/nav_home"
-                    android:name="com.example.thellex.UserDashboard"
-                    android:label="userDashboard"
-                    tools:layout="@layout/fragment_user_dashboard" />
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nav_graph"
+        app:startDestination="@id/dashboardFragment">
 
-            <fragment
-                    android:id="@+id/nav_cash"
-                    android:name="com.example.thellex.CashFragment"
-                    android:label="Cards"
-                    tools:layout="@layout/fragment_cards" />
+        <fragment
+                android:id="@+id/dashboardFragment"
+                android:name="com.example.thellex.UserDashboard"
+                android:label="Dashboard"
+                tools:layout="@layout/fragment_user_dashboard" />
 
-            <fragment
-                    android:id="@+id/nav_pos"
-                    android:name="com.example.thellex.POSFragment"
-                    android:label="Cards"
-                    tools:layout="@layout/fragment_cards" />
+        <!-- POS Fragment -->
+        <fragment
+                android:id="@+id/posFragment"
+                android:name="com.example.thellex.POSFragment"
+                android:label="POS"
+                tools:layout="@layout/fragment_p_o_s">
+                <action
+                        android:id="@+id/action_posFragment_to_requestAccessFragment"
+                        app:destination="@id/requestAccessFragment" />
+        </fragment>
+
+        <!-- POS sub routes -->
+        <fragment
+                android:id="@+id/requestAccessFragment"
+                android:name="com.example.thellex.RequestAssets"
+                android:label="Request Access"
+                tools:layout="@layout/fragment_request_assets" >
+                <action
+                        android:id="@+id/action_requestAccessFragment_to_posReceiverTypeFragment"
+                        app:destination="@id/posReceiverTypeFragment" />
+        </fragment>
+
+        <!-- POS sub routes -->
+        <fragment
+                android:id="@+id/posReceiverTypeFragment"
+                android:name="com.example.thellex.POSReceiverType"
+                android:label="Request Access"
+                tools:layout="@layout/fragment_p_o_s_receiver_type">
+                <action
+                        android:id="@+id/action_posReceiverTypeFragment_to_posChooseCryptoFragment"
+                        app:destination="@id/posChooseCryptoFragment" />
+        </fragment>
+
+        <fragment
+                android:id="@+id/posChooseCryptoFragment"
+                android:name="com.example.thellex.POSchoosecrypto"
+                android:label="Request Access"
+                tools:layout="@layout/fragment_p_o_schoosecrypto">
+                <action
+                        android:id="@+id/action_posChooseCryptoFragment_to_posAddressGeneratorFragment"
+                        app:destination="@id/posAddressGeneratorFragment" />
+        </fragment>
+
+        <fragment
+                android:id="@+id/posAddressGeneratorFragment"
+                android:name="com.example.thellex.POSAddressGenerator"
+                android:label="Generate Address"
+                tools:layout="@layout/fragment_p_o_s_address_generator">
+        </fragment>
 </navigation>
-

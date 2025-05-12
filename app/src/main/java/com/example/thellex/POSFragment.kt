@@ -1,10 +1,17 @@
 package com.example.thellex
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -29,12 +36,39 @@ class POSFragment : Fragment() {
         }
     }
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_p_o_s, container, false)
+        val view = inflater.inflate(R.layout.fragment_p_o_s, container, false)
+        val businessName = view.findViewById<TextView>(R.id.pos_business_name)
+        businessName.text = businessName.text.toString().uppercase()
+
+        val recycler = view.findViewById<RecyclerView>(R.id.transaction_recycler)
+        recycler.layoutManager = LinearLayoutManager(requireContext())
+
+        val transactions = listOf(
+            PosTransaction(R.drawable.icon_usdt, "USDT", "FARIDA ABDUL", "Today, 10:09 AM", "20 USDT", "$3,890.0938", R.drawable.icon_receive_status),
+            PosTransaction(R.drawable.icon_usdc, "USDC", "FARIDA ABDUL", "Today, 10:09 AM", "10 USDC", "$3,890.0938", R.drawable.icon_receive_status),
+            PosTransaction(R.drawable.icon_usdt, "USDT", "ALARA Moyo", "Today, 10:09 AM", "20 USDT", "$3,890.0938", R.drawable.icon_send_status),
+            PosTransaction(R.drawable.icon_usdc, "USDC", "FARIDA ABDUL", "Today, 10:09 AM", "20 USDC", "$3,890.0938", R.drawable.icon_send_status)
+        )
+        recycler.adapter = POSTransactionAdapter(transactions)
+
+        // Find the button and set a click listener for navigation
+        val navigateButton = view.findViewById<LinearLayout>(R.id.request_button)
+        navigateButton.setOnClickListener {
+            findNavController().navigate(R.id.action_posFragment_to_requestAccessFragment)
+        }
+
+        // Find the button for navigating to request access and set the click listener
+//        val requestAccessButton = view.findViewById<LinearLayout>(R.id.request_button)
+//        requestAccessButton.setOnClickListener {
+//            findNavController().navigate(R.id.action_pos_to_request_access)
+//        }
+
+        return view
     }
 
     companion object {
@@ -56,4 +90,6 @@ class POSFragment : Fragment() {
                 }
             }
     }
+
+
 }

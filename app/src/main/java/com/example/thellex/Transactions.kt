@@ -17,3 +17,18 @@ enum class TransactionType {
         WITHDRAW,
 //        BANK_TRANSFER
 }
+
+data class PosTransaction(
+    val iconResId: Int,
+    val tokenSymbol: String,
+    val senderName: String,
+    val time: String,
+    val amount: String,
+    val fiatValue: String,
+    val statusIconResId: Int
+)
+
+data class Crypto(
+    val name: String,
+    val iconResId: Int
+)
