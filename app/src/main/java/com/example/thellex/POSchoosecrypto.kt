@@ -1,16 +1,18 @@
 package com.example.thellex
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class POSchoosecrypto : Fragment() {
+class POSChooseCryptoActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var cryptoAdapter: CryptoAdapter
@@ -23,30 +25,17 @@ class POSchoosecrypto : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-    }
+        setContentView(R.layout.activity_pos_choose_crypto) // Use activity layout instead of fragment layout
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val binding = inflater.inflate(R.layout.fragment_p_o_schoosecrypto, container, false)
+        recyclerView = findViewById(R.id.pos_crypto_list_selection)
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Initialize RecyclerView
-        recyclerView = binding.findViewById(R.id.pos_crypto_list_selection)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
-//        // Initialize the adapter with the list of cryptocurrencies
-        cryptoAdapter = CryptoAdapter(cryptoList){ selectedCrypto ->
-            findNavController().popBackStack()
-            findNavController().navigate(R.id.posAddressGeneratorFragment)
+        cryptoAdapter = CryptoAdapter(cryptoList) { selectedCrypto ->
+                startActivity(Intent(this, POSAddressGeneratorActivity::class.java))
         }
         recyclerView.adapter = cryptoAdapter
 
-        // Add spacing between items (e.g., 16dp)
         val spacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
         recyclerView.addItemDecoration(ItemSpacingDecoration(spacing))
-
-        return binding
     }
 }

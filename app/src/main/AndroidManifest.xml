@@ -13,6 +13,9 @@
             android:theme="@style/Theme.Thellex"
             tools:targetApi="31">
         <activity
+                android:name=".ui.login.LoginPinActivity"
+                android:exported="false" />
+        <activity
                 android:name=".QuickActions"
                 android:exported="false"
                 android:theme="@style/Theme.Thellex" />
@@ -20,6 +23,26 @@
                 android:name=".ui.login.LoginActivity"
                 android:exported="false"
                 android:label="@string/title_activity_login" />
+        <activity
+                android:name=".POSActivity"
+                android:exported="false"
+                android:label="POSActivity" />
+        <activity
+                android:name=".POSChooseCryptoActivity"
+                android:exported="false"
+                android:label="POSChooseCryptoActivity" />
+        <activity
+                android:name=".RequestAssetsActivity"
+                android:exported="false"
+                android:label="RequestAssetsActivity" />
+        <activity
+                android:name=".POSReceiverTypeActivity"
+                android:exported="false"
+                android:label="POSReceiverTypeActivity" />
+        <activity
+                android:name=".POSAddressGeneratorActivity"
+                android:exported="false"
+                android:label="POSAddressGeneratorActivity" />
         <activity
                 android:name=".Onboarding"
                 android:exported="false"

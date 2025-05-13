@@ -70,7 +70,7 @@
                     android:id="@+id/emailInput"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:hint="Email Address"
+                    android:hint="Email Address or Merchant UID"
                     android:background="@drawable/rounded_edittext"
                     android:textSize="12sp"
                     android:paddingVertical="15dp"
@@ -79,11 +79,13 @@
                     android:textColorHint="#AAAAAA" />
 
             <!-- Next Button -->
+
+            <!-- Sign Up Text -->
             <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/nextButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="35dp"
+                    android:layout_marginTop="25dp"
                     android:background="@drawable/ripple"
                     android:text="Next"
                     android:elevation="0dp"
@@ -91,7 +93,6 @@
                     android:textColor="@color/dark_purple"
                     android:textSize="10sp" />
 
-            <!-- Sign Up Text -->
             <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

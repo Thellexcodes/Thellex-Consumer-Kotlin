@@ -9,5 +9,35 @@
         <item name="android:textSize">10sp</item>
         <item name="android:fontFamily">@font/kumbhsans_regular</item>
     </style>
+
+    <style name="PinButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_rowWeight">1</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:backgroundTint">#EEEEEE</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="PinDot">
+        <item name="android:layout_width">21dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:text">●</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/steelBlueGrey</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
+    <style name="KeypadButton">
+        <item name="android:layout_width">69dp</item>
+        <item name="android:layout_height">69dp</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:fontFamily">@font/outfit_light</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@drawable/keypad_button_bg</item>
+    </style>
 </resources>
 

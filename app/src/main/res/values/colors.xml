@@ -32,4 +32,5 @@
     <color name="stablePool">#2AA3B0</color>
     <color name="focusColor">#24b1c7</color>
     <color name="Intentional">#3F3D56</color>
+    <color name="keypad_button_bg">#2B2B3F</color>
 </resources>

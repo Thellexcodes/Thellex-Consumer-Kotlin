@@ -28,7 +28,7 @@
 
                 <fragment
                         android:id="@+id/posFragment"
-                        android:name="com.example.thellex.POSFragment"
+                        android:name="com.example.thellex.POSActivity"
                         android:label="POS"
                         tools:layout="@layout/fragment_p_o_s">
                         <action
@@ -41,7 +41,7 @@
                         android:id="@+id/requestAccessFragment"
                         android:name="com.example.thellex.RequestAssets"
                         android:label="Request Access"
-                        tools:layout="@layout/fragment_request_assets">
+                        tools:layout="@layout/activity_request_assets">
                         <action
                                 android:id="@+id/action_requestAccessFragment_to_posReceiverTypeFragment"
                                 app:destination="@id/posReceiverTypeFragment" />
@@ -51,7 +51,7 @@
                         android:id="@+id/posReceiverTypeFragment"
                         android:name="com.example.thellex.POSReceiverType"
                         android:label="Request Access"
-                        tools:layout="@layout/fragment_p_o_s_receiver_type">
+                        tools:layout="@layout/activity_pos_receiver_type">
                         <action
                                 android:id="@+id/action_posReceiverTypeFragment_to_posChooseCryptoFragment"
                                 app:destination="@id/posChooseCryptoFragment" />
@@ -61,7 +61,7 @@
                         android:id="@+id/posChooseCryptoFragment"
                         android:name="com.example.thellex.POSchoosecrypto"
                         android:label="Request Access"
-                        tools:layout="@layout/fragment_p_o_schoosecrypto">
+                        tools:layout="@layout/activity_pos_choose_crypto">
                         <action
                                 android:id="@+id/action_posChooseCryptoFragment_to_posAddressGeneratorFragment"
                                 app:destination="@id/posAddressGeneratorFragment" />
@@ -71,7 +71,7 @@
                         android:id="@+id/posAddressGeneratorFragment"
                         android:name="com.example.thellex.POSAddressGenerator"
                         android:label="Generate Address"
-                        tools:layout="@layout/fragment_p_o_s_address_generator">
+                        tools:layout="@layout/activity_pos_address_generator">
                 </fragment>
         </navigation>
 </navigation>

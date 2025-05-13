@@ -1,0 +1,37 @@
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+                <GridLayout
+                android:id="@+id/pin_grid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alignmentMode="alignMargins"
+                android:columnCount="3"
+                android:rowCount="4">
+                <!-- Row 1 -->
+                        <Button android:text="1" style="@style/KeypadButton"/>
+                        <Button android:text="2" style="@style/KeypadButton"/>
+                        <Button android:text="3" style="@style/KeypadButton"/>
+
+                        <!-- Row 2 -->
+                        <Button android:text="4" style="@style/KeypadButton"/>
+                        <Button android:text="5" style="@style/KeypadButton"/>
+                        <Button android:text="6" style="@style/KeypadButton"/>
+
+                        <!-- Row 3 -->
+                        <Button android:text="7" style="@style/KeypadButton"/>
+                        <Button android:text="8" style="@style/KeypadButton"/>
+                        <Button android:text="9" style="@style/KeypadButton"/>
+
+                        <!-- Row 4 -->
+                        <Space android:layout_width="64dp" android:layout_height="64dp" />
+                        <Button android:text="0" style="@style/KeypadButton"/>
+                        <Button
+                        android:id="@+id/buttonBackspace"
+                        android:text="←"
+                        style="@style/KeypadButton"/>
+                </GridLayout>
+        </LinearLayout>

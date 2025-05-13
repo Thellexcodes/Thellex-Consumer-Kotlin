@@ -7,7 +7,7 @@
         android:background="@drawable/general_gradient_background"
         android:paddingTop="56dp"
         android:paddingHorizontal="20dp"
-        tools:context=".RequestAssets">
+        tools:context=".RequestAssetsActivity">
 
     <!-- Main container for the layout -->
     <LinearLayout
@@ -69,7 +69,7 @@
             android:id="@+id/posLinearLayoutCryptocurrency"
             android:layout_width="match_parent"
             android:orientation="horizontal"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="15dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
