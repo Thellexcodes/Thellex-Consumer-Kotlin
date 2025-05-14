@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-    namespace = "com.example.thellex"
+    namespace = "com.thellex.pos"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.thellex"
+        applicationId = "com.thellex.pos"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -19,11 +19,14 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {

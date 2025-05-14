@@ -12,7 +12,7 @@
 
                 <fragment
                         android:id="@+id/dashboardFragment"
-                        android:name="com.example.thellex.UserDashboard"
+                        android:name="com.thellex.pos.UserDashboard"
                         android:label="Dashboard"
                         tools:layout="@layout/fragment_user_dashboard">
                         <action
@@ -28,7 +28,7 @@
 
                 <fragment
                         android:id="@+id/posFragment"
-                        android:name="com.example.thellex.POSActivity"
+                        android:name="com.thellex.pos.POSActivity"
                         android:label="POS"
                         tools:layout="@layout/fragment_p_o_s">
                         <action
@@ -39,7 +39,7 @@
                 <!-- POS Sub Routes -->
                 <fragment
                         android:id="@+id/requestAccessFragment"
-                        android:name="com.example.thellex.RequestAssets"
+                        android:name="com.thellex.pos.RequestAssets"
                         android:label="Request Access"
                         tools:layout="@layout/activity_request_assets">
                         <action
@@ -49,7 +49,7 @@
 
                 <fragment
                         android:id="@+id/posReceiverTypeFragment"
-                        android:name="com.example.thellex.POSReceiverType"
+                        android:name="com.thellex.pos.POSReceiverType"
                         android:label="Request Access"
                         tools:layout="@layout/activity_pos_receiver_type">
                         <action
@@ -59,7 +59,7 @@
 
                 <fragment
                         android:id="@+id/posChooseCryptoFragment"
-                        android:name="com.example.thellex.POSchoosecrypto"
+                        android:name="com.thellex.pos.POSchoosecrypto"
                         android:label="Request Access"
                         tools:layout="@layout/activity_pos_choose_crypto">
                         <action
@@ -69,7 +69,7 @@
 
                 <fragment
                         android:id="@+id/posAddressGeneratorFragment"
-                        android:name="com.example.thellex.POSAddressGenerator"
+                        android:name="com.thellex.pos.POSAddressGenerator"
                         android:label="Generate Address"
                         tools:layout="@layout/activity_pos_address_generator">
                 </fragment>
