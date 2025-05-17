@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -25,35 +26,27 @@ class LoginPinActivity : AppCompatActivity() {
         binding = ActivityLoginPinBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val rootView = findViewById<View>(android.R.id.content)
+        val statusBarHeight = resources.getIdentifier("status_bar_height", "dimen", "android").let { resId ->
+            if (resId > 0) resources.getDimensionPixelSize(resId) else 0
+        }
+        val navBarHeight = resources.getIdentifier("navigation_bar_height", "dimen", "android").let { resId ->
+            if (resId > 0) resources.getDimensionPixelSize(resId) else 0
+        }
+
+        // Apply bottom padding equal to navigation bar height
+        rootView.setPadding(
+            rootView.paddingLeft,
+            statusBarHeight,
+            rootView.paddingRight,
+            navBarHeight
+        )
+
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, POSActivity::class.java)
             startActivity(intent)
             finish()
         }, 2000)
-
-//        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
-//
-//        dotViews = listOf(
-//            findViewById(R.id.dot1),
-//            findViewById(R.id.dot2),
-//            findViewById(R.id.dot3),
-//            findViewById(R.id.dot4)
-//        )
-
-//        val keypad = findViewById<GridLayout>(R.id.pin_grid)
-//        for (i in 0 until keypad.childCount) {
-//            val child = keypad.getChildAt(i)
-//            if (child is Button) {
-//                child.setOnClickListener {
-//                    handleKeyPress(child.text.toString())
-//                }
-//            }
-//        }
-
     }
 
     private fun handleKeyPress(input: String) {

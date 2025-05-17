@@ -86,7 +86,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
-                    android:background="@drawable/ripple"
+                    android:background="@drawable/button_ripple"
                     android:text="Next"
                     android:elevation="0dp"
                     android:fontFamily="@font/kumbhsans_bold"

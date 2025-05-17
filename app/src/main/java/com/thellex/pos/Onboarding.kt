@@ -2,11 +2,14 @@ package com.thellex.pos
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.thellex.pos.databinding.ActivityOnboardingBinding
 import com.thellex.pos.ui.login.LoginActivity
 
@@ -18,6 +21,19 @@ class Onboarding : AppCompatActivity() {
 
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
+            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            view.setPadding(
+                view.paddingLeft,
+                systemBarsInsets.top,
+                view.paddingRight,
+                systemBarsInsets.bottom
+            )
+
+            insets
+        }
 
         val slides = listOf(
             OnboardItem(R.drawable.slide1, "Accept Crypto Instantly at Checkout", "Easily accept Bitcoin, Ethereum, and stablecoins through your POS."),

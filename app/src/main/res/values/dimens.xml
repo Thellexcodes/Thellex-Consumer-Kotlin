@@ -5,4 +5,7 @@
     <dimen name="carousel_item_margin">32dp</dimen>
     <dimen name="carousel_peek_width">64dp</dimen>
     <dimen name="txn_margin">19dp</dimen>
+    <dimen name="default_horizontal_padding">20dp</dimen>
+    <dimen name="margin_7dp">7dp</dimen>
+    <dimen name="margin_2dp">2dp</dimen>
 </resources>

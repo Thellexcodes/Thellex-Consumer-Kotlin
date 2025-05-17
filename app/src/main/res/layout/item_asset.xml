@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/rounded_border"
+        android:padding="12dp">
+
+    <!-- Top Section: Icon and Asset Symbol -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/assetHeaderLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+                android:id="@+id/imageAssetIcon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/icon_usdt"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/textAssetSymbol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:text="USDT"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintTop_toTopOf="@id/imageAssetIcon"
+                app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Bottom Section: Balance Details -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/assetDetailsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="17dp"
+            app:layout_constraintTop_toBottomOf="@id/assetHeaderLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Amount with symbol -->
+        <TextView
+                android:id="@+id/textTokenAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/kumbhsans_light"
+                android:text="3.874 PYUSD"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Value in USD -->
+        <TextView
+                android:id="@+id/textTokenValueUsd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/outfit_bold"
+                android:text="$ 17,267.07"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:layout_constraintTop_toBottomOf="@id/textTokenAmount"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Value in NGN -->
+        <TextView
+                android:id="@+id/textTokenValueNgn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/kumbhsans_light"
+                android:text="= 0 NGN"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                app:layout_constraintTop_toBottomOf="@id/textTokenValueUsd"
+                app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

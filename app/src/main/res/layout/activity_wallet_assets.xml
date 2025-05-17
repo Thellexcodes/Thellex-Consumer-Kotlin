@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_wallet_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        android:background="@drawable/general_gradient_background"
+        tools:context=".WalletAssetsActivity">
+
+    <!-- Top App Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/activity_wallet_top_app_bar_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+                android:id="@+id/activity_wallet_back_button"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/icon_back"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+                android:visibility="gone"
+                android:id="@+id/activity_wallet_assets_country_spinner"
+                android:layout_width="40dp"
+                android:layout_height="45dp"
+                android:background="@drawable/rounded_border"
+                android:spinnerMode="dropdown"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/activity_wallet_back_button"
+                app:layout_constraintBottom_toBottomOf="@id/activity_wallet_back_button" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Balance Section -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_marginTop="35dp"
+            android:id="@+id/activity_wallet_balance_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/activity_wallet_top_app_bar_container"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+                android:id="@+id/activity_wallet_assets_balance_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                    android:id="@+id/activity_wallet_total_balance_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TOTAL CRYPTO BALANCE"
+                    android:textSize="10sp"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/kumbhsans_bold" />
+
+            <ImageView
+                    android:id="@+id/activity_wallet_toggle_balance_visibility"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="11dp"
+                    android:src="@drawable/icon_eye" />
+        </LinearLayout>
+
+        <TextView
+                android:id="@+id/activity_wallet_balance_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="232.89 USD"
+                android:textSize="24sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/outfit_light"
+                app:layout_constraintTop_toBottomOf="@id/activity_wallet_assets_balance_container"
+                app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Section Header -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/activity_wallet_assets_section_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            app:layout_constraintTop_toBottomOf="@id/activity_wallet_balance_section"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+                android:id="@+id/activity_wallet_your_crypto_assets_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Crypto Assets"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/outfit_light"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/activity_wallet_see_all_assets"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SEE ALL"
+                android:textSize="10sp"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Assets Recycler -->
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/activity_wallet_assets_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="7dp"
+            app:layout_constraintTop_toBottomOf="@id/activity_wallet_assets_section_header"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
