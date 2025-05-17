@@ -36,9 +36,8 @@ class Onboarding : AppCompatActivity() {
         }
 
         val slides = listOf(
-            OnboardItem(R.drawable.slide1, "Accept Crypto Instantly at Checkout", "Easily accept Bitcoin, Ethereum, and stablecoins through your POS."),
             OnboardItem(R.drawable.slide2, "Instant Crypto-to-Cash Conversion", "Auto-convert crypto to your local currency. No hassle."),
-            OnboardItem(R.drawable.slide3, "Quick Setup, Low Fees & 24/7 Help", "Start accepting payments in minutes. Real-time support.")
+            OnboardItem(R.drawable.slide4, "Crypto In. Cash Out. Easy.", "Enter an amount, scan or show a POS code, and confirm the transaction. It's quick and secure.")
         )
 
         binding.viewPager.adapter = OnboardingAdapter(slides)

@@ -31,7 +31,6 @@ class RequestAssetsActivity : AppCompatActivity() {
         // Find the button for navigating to receiver type and set the click listener
         val receiverTypeButton = findViewById<LinearLayout>(R.id.posLinearLayoutCryptocurrency)
         receiverTypeButton.setOnClickListener {
-//            startActivity(Intent(this, POSReceiverTypeActivity::class.java))
             startActivity(Intent(this, POSChooseCryptoActivity::class.java))
         }
     }

@@ -30,7 +30,7 @@
                         android:id="@+id/posFragment"
                         android:name="com.thellex.pos.POSActivity"
                         android:label="POS"
-                        tools:layout="@layout/fragment_p_o_s">
+                        tools:layout="@layout/activity_p_o_s">
                         <action
                                 android:id="@+id/action_posFragment_to_requestAccessFragment"
                                 app:destination="@id/requestAccessFragment" />

@@ -7,8 +7,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class POSTransactionAdapter(private val items: List<PosTransaction>) :
-    RecyclerView.Adapter<POSTransactionAdapter.TransactionViewHolder>() {
+class POSTransactionAdapter(
+    private val items: List<PosTransaction>,
+    private val onItemClick: (PosTransaction) -> Unit  // click callback
+) : RecyclerView.Adapter<POSTransactionAdapter.TransactionViewHolder>() {
 
     inner class TransactionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val icon = view.findViewById<ImageView>(R.id.token_icon)
@@ -17,6 +19,15 @@ class POSTransactionAdapter(private val items: List<PosTransaction>) :
         val time = view.findViewById<TextView>(R.id.time_text)
         val tokenAmount = view.findViewById<TextView>(R.id.token_amount)
         val fiatAmount = view.findViewById<TextView>(R.id.fiat_amount)
+
+        init {
+            view.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(items[position])  // call the click callback
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {

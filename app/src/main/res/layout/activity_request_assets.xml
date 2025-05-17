@@ -41,7 +41,6 @@
 
     <!-- Local Currency selection -->
     <LinearLayout
-            android:visibility="gone"
             android:id="@+id/posLinearLayoutLocalCurrency"
             android:layout_width="match_parent"
             android:orientation="horizontal"
@@ -49,9 +48,11 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:background="@drawable/rounded_border"
             android:paddingVertical="36sp"
             android:paddingHorizontal="16sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@drawable/clickable_rounded_border"
             app:layout_constraintTop_toBottomOf="@+id/posMainLinearLayout">
 
         <TextView
@@ -73,10 +74,12 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:background="@drawable/rounded_border"
             android:paddingVertical="36sp"
             android:paddingHorizontal="16sp"
             app:layout_constraintHorizontal_bias="0.0"
+            android:background="@drawable/clickable_rounded_border"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintTop_toBottomOf="@+id/posLinearLayoutLocalCurrency">
 
         <TextView

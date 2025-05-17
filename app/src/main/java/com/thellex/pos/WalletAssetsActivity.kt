@@ -1,7 +1,9 @@
 package com.thellex.pos
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -40,7 +42,10 @@ class WalletAssetsActivity : AppCompatActivity() {
 
         // Initialize RecyclerView
         val recyclerViewWalletAssets = findViewById<RecyclerView>(R.id.activity_wallet_assets_recycler)
-        val walletAssetsAdapter = AssetAdapter(sampleAssets)
+        val walletAssetsAdapter = AssetAdapter(sampleAssets){
+            startActivity(Intent(this, SingleAssetBalance::class.java))
+        }
+
         recyclerViewWalletAssets.layoutManager = LinearLayoutManager(this)
         recyclerViewWalletAssets.adapter = walletAssetsAdapter
 

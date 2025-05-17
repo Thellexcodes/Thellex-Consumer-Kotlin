@@ -42,7 +42,7 @@ class POSChooseCryptoActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         cryptoAdapter = CryptoAdapter(cryptoList) { selectedCrypto ->
-                startActivity(Intent(this, POSAddressGeneratorActivity::class.java))
+                startActivity(Intent(this, WalletAddressGeneratorDepositorActivity::class.java))
         }
         recyclerView.adapter = cryptoAdapter
 

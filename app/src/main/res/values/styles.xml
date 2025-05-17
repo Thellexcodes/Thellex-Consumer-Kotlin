@@ -39,5 +39,11 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/keypad_button_bg</item>
     </style>
+
+    <style name="RoundedImage" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
 </resources>
 

@@ -7,8 +7,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class AssetAdapter(private val assets: List<Asset>) :
-    RecyclerView.Adapter<AssetAdapter.AssetViewHolder>() {
+class AssetAdapter(
+    private val assets: List<Asset>,
+    private val onItemClick: (Asset) -> Unit
+) : RecyclerView.Adapter<AssetAdapter.AssetViewHolder>() {
 
     inner class AssetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageAssetIcon: ImageView = itemView.findViewById(R.id.imageAssetIcon)
@@ -31,11 +33,15 @@ class AssetAdapter(private val assets: List<Asset>) :
         holder.textTokenValueUsd.text = "$ ${asset.usdValue}"
         holder.textTokenValueNgn.text = "= ${asset.ngnValue} NGN"
         holder.imageAssetIcon.setImageResource(asset.iconResId)
+
+        // Add click listener
+        holder.itemView.setOnClickListener {
+            onItemClick(asset)
+        }
     }
 
     override fun getItemCount(): Int = assets.size
 }
-
 
 data class Asset(
     val symbol: String,       // e.g., "USDT"

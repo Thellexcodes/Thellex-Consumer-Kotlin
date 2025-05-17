@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sad_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/general_gradient_background"
+        android:paddingTop="20dp"
+        tools:context=".SingleAssetDeposit">
+
+    <!-- Top App Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/sad_top_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="20dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+                android:id="@+id/sad_btn_back"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/icon_back"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+                android:id="@+id/sad_spinner_country"
+                android:layout_width="40dp"
+                android:layout_height="45dp"
+                android:background="@drawable/rounded_border"
+                android:spinnerMode="dropdown"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/sad_btn_back"
+                app:layout_constraintBottom_toBottomOf="@id/sad_btn_back" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Title -->
+    <LinearLayout
+            android:id="@+id/sad_title_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="20dp"
+            android:layout_marginTop="18dp"
+            app:layout_constraintTop_toBottomOf="@id/sad_top_app_bar">
+
+        <TextView
+                android:id="@+id/sad_title"
+                android:text="Deposit"
+                android:textColor="@color/white"
+                android:fontFamily="@font/outfit_bold"
+                android:textSize="24sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <!-- Bottom Section -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/sad_bottom_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/midnight"
+            android:paddingTop="34dp"
+            android:paddingBottom="50dp"
+            android:paddingHorizontal="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+                android:id="@+id/sad_label_select_method"
+                android:text="Select Method"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/sad_crypto_methods_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@id/sad_label_select_method"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                    android:id="@+id/sad_crypto_label"
+                    android:text="Crypto"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/outfit_medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/sad_crypto_deposit_card"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_border"
+                    android:paddingVertical="17dp"
+                    android:paddingHorizontal="24dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/sad_crypto_label"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageView
+                        android:id="@+id/sad_icon_usdt"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:src="@drawable/icon_usdt"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="13dp"
+                        app:layout_constraintStart_toEndOf="@id/sad_icon_usdt"
+                        app:layout_constraintTop_toTopOf="@id/sad_icon_usdt"
+                        app:layout_constraintBottom_toBottomOf="@id/sad_icon_usdt"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                    <TextView
+                            android:id="@+id/sad_usdt_title"
+                            android:fontFamily="@font/outfit_medium"
+                            android:textColor="@color/white"
+                            android:text="USDT On-Chain Deposit"
+                            android:textSize="14sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    <TextView
+                            android:id="@+id/sad_usdt_subtitle"
+                            android:fontFamily="@font/kumbhsans_regular"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:text="Expect funds in 15s or less."
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                    android:id="@+id/sad_third_party_label"
+                    android:text="Third party payment"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/outfit_medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/sad_crypto_deposit_card"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/sad_binance_pay_card"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_border"
+                    android:paddingVertical="17dp"
+                    android:paddingHorizontal="24dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/sad_third_party_label"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageView
+                        android:id="@+id/sad_icon_bnb"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:src="@drawable/icon_bnb_chain"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+                <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="13dp"
+                        app:layout_constraintStart_toEndOf="@id/sad_icon_bnb"
+                        app:layout_constraintTop_toTopOf="@id/sad_icon_bnb"
+                        app:layout_constraintBottom_toBottomOf="@id/sad_icon_bnb"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                    <TextView
+                            android:id="@+id/sad_binance_title"
+                            android:fontFamily="@font/outfit_medium"
+                            android:textColor="@color/white"
+                            android:text="Binance Pay"
+                            android:textSize="14sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    <TextView
+                            android:id="@+id/sad_binance_subtitle"
+                            android:fontFamily="@font/kumbhsans_regular"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:text="Scan a QR code with payment details."
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,7 +15,7 @@ import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 
 
-class POSAddressGeneratorActivity : AppCompatActivity() {
+class WalletAddressGeneratorDepositorActivity : AppCompatActivity() {
     private lateinit var qrImageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {

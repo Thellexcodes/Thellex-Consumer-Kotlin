@@ -9,7 +9,7 @@
             android:id="@+id/pos_dashboard"
             android:name="com.thellex.pos.POSActivity"
             android:label="POS"
-            tools:layout="@layout/fragment_p_o_s" />
+            tools:layout="@layout/activity_p_o_s" />
 
 <!--    <fragment-->
 <!--            android:id="@+id/pos_request_assets"-->

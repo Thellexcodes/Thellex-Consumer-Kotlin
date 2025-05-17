@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:paddingTop="20dp"
         android:paddingHorizontal="20dp"
-        tools:context=".POSAddressGeneratorActivity">
+        tools:context=".WalletAddressGeneratorDepositorActivity">
 
     <!-- Top App Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
