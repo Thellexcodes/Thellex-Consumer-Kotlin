@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -43,7 +44,6 @@ class POSActivity : AppCompatActivity() {
 //            window.navigationBarColor = Color.parseColor("#ffffff") // same
         }
 
-
         val businessNameTextView = findViewById<TextView>(R.id.pos_business_name)
         businessNameTextView.text = businessNameTextView.text.toString().uppercase()
 
@@ -61,7 +61,12 @@ class POSActivity : AppCompatActivity() {
         val itemSpacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
         transactionRecyclerView.addItemDecoration(ItemSpacingDecoration(itemSpacing))
 
-        val requestAccessButton = findViewById<LinearLayout>(R.id.request_button)
+        val withdrawFundsButton = findViewById<LinearLayout>(R.id.pos_withdraw_button)
+        withdrawFundsButton.setOnClickListener {
+            startActivity(Intent(this, MerchantWithdrawalActivity::class.java))
+        }
+
+        val requestAccessButton = findViewById<LinearLayout>(R.id.pos_request_button)
         requestAccessButton.setOnClickListener {
             startActivity(Intent(this, RequestAssetsActivity::class.java))
         }
@@ -75,5 +80,7 @@ class POSActivity : AppCompatActivity() {
         viewAssetsButton.setOnClickListener {
             startActivity(Intent(this, WalletAssetsActivity::class.java))
         }
+
+
     }
 }
