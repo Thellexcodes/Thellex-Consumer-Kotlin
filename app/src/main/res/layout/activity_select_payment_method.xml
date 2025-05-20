@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/main"
+        android:background="@drawable/general_gradient_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        tools:context=".SelectPaymentMethodActivity">
+
+    <!-- Top App Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/merchant_withdraw_top_app_bar_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <ImageButton
+                    android:id="@+id/merchant_withdraw_back_button"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="6dp"
+                    android:src="@drawable/icon_back"
+                    android:contentDescription="Back"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            <Spinner
+                    android:id="@+id/merchant_withdraw_assets_country_spinner"
+                    android:layout_width="40dp"
+                    android:layout_height="45dp"
+                    android:visibility="gone"
+                    android:background="@drawable/rounded_border"
+                    android:spinnerMode="dropdown"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/merchant_withdraw_back_button"
+                    app:layout_constraintBottom_toBottomOf="@id/merchant_withdraw_back_button" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+            android:layout_marginTop="31dp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/kumbhsans_bold"
+            android:textSize="14sp"
+            android:text="Select Payment Method"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/merchant_withdraw_top_app_bar_container"
+            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/textView6" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="26dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/textView6"
+            tools:layout_editor_absoluteX="20dp"
+            android:id="@+id/constraintLayout4">
+
+        <TextView
+                android:textColor="@color/white"
+                android:text="Amount to be received in USDT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/textView7"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+                android:text="2.440 USDT"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textSize="18sp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
+
+        <TextView
+                android:textColor="@color/white"
+                android:text="Amount to be received in Naira"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+                android:text="2.440 NGN"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textSize="18sp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
