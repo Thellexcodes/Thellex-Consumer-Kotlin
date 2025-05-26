@@ -3,10 +3,10 @@
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/merchant_withdraw_main"
-        android:paddingHorizontal="20dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="20dp"
+        android:paddingHorizontal="20dp"
         android:background="@drawable/general_gradient_background"
         tools:context=".MerchantWithdrawalActivity">
 
@@ -21,8 +21,8 @@
 
         <ImageButton
                 android:id="@+id/merchant_withdraw_back_button"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="6dp"
                 android:src="@drawable/icon_back"
@@ -113,12 +113,13 @@
             <!-- MAX Button -->
             <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/merchant_withdraw_button_max"
-                    android:layout_width="41dp"
+                    android:layout_width="43dp"
                     android:layout_height="wrap_content"
                     android:text="MAX"
                     android:textSize="8sp"
                     android:textColor="#FFFFFF"
                     android:backgroundTint="@color/brightSkyBlue"
+                    android:fontFamily="@font/kumbhsans_regular"
                     app:layout_constraintEnd_toStartOf="@id/merchant_withdraw_token_selector"
                     app:layout_constraintTop_toTopOf="@id/merchant_withdraw_input_amount"
                     app:layout_constraintBottom_toBottomOf="@id/merchant_withdraw_input_amount"
@@ -142,8 +143,8 @@
 
                 <ImageView
                         android:id="@+id/merchant_withdraw_token_icon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
                         android:src="@drawable/icon_usdt" />
 
                 <TextView
@@ -154,7 +155,8 @@
                         android:layout_weight="1"
                         android:text="USDT"
                         android:textColor="#FFFFFF"
-                        android:textSize="16sp" />
+                        android:fontFamily="@font/kumbhsans_light"
+                        android:textSize="10sp" />
 
                 <ImageView
                         android:id="@+id/merchant_withdraw_dropdown_icon"
@@ -243,7 +245,7 @@
         <TextView
                 android:id="@+id/merchant_withdraw_input_amount_fiat"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:text="₦9000"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
@@ -272,8 +274,8 @@
 
             <ImageView
                     android:id="@+id/merchant_withdraw_token_icon_fiat"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:src="@drawable/icon_ngn" />
 
             <TextView
@@ -282,9 +284,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
+                    android:fontFamily="@font/kumbhsans_light"
                     android:text="NGN"
                     android:textColor="#FFFFFF"
-                    android:textSize="16sp" />
+                    android:textSize="10sp" />
 
             <ImageView
                     android:id="@+id/merchant_withdraw_dropdown_icon_fiat"
@@ -299,10 +302,10 @@
             android:id="@+id/merchant_withdraw_actions_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="62dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/merchant_withdraw_input_section_fiat">
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="16dp">
 
         <LinearLayout
                 android:id="@+id/merchant_withdraw_button"
@@ -322,7 +325,7 @@
                     android:text="CANCEL"
                     android:textColor="@android:color/white"
                     android:textSize="12sp"
-                    android:fontFamily="@font/kumbhsans_medium"
+                    android:fontFamily="@font/kumbhsans_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
         </LinearLayout>
@@ -338,14 +341,15 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/merchant_withdraw_button"
                 app:layout_constraintTop_toTopOf="parent">
-                <TextView
-                        android:layout_marginStart="8dp"
-                        android:text="NEXT"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/kumbhsans_medium"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-            </LinearLayout>
+
+            <TextView
+                    android:layout_marginStart="8dp"
+                    android:text="NEXT"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

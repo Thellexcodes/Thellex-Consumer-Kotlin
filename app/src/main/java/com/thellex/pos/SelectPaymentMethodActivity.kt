@@ -1,17 +1,27 @@
 package com.thellex.pos
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class SelectPaymentMethodActivity : AppCompatActivity() {
+    private lateinit var paymentCard1: View
+    private lateinit var paymentCard2: View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_select_payment_method)
+
+        // Initialize views
+        paymentCard1 = findViewById(R.id.paymentCard1)
+        paymentCard2 = findViewById(R.id.paymentCard2)
 
         val rootView = findViewById<View>(android.R.id.content)
         val statusBarHeight = resources.getIdentifier("status_bar_height", "dimen", "android").let { resId ->
@@ -29,6 +39,37 @@ class SelectPaymentMethodActivity : AppCompatActivity() {
             navBarHeight
         )
 
+        val backButton = findViewById<ImageButton>(R.id.select_payment_method_withdraw_back_button)
+        backButton.setOnClickListener {
+            finish()
+        }
 
+        setupClickAnimations()
+    }
+
+    private fun setupClickAnimations() {
+//        val scaleUp = ObjectAnimator.ofPropertyValuesHolder(
+//            paymentCard1,
+//            PropertyValuesHolder.ofFloat("scaleX", 1f, 1.03f),
+//            PropertyValuesHolder.ofFloat("scaleY", 1f, 1.03f)
+//        ).setDuration(100)
+//
+//        val scaleDown = ObjectAnimator.ofPropertyValuesHolder(
+//            paymentCard1,
+//            PropertyValuesHolder.ofFloat("scaleX", 1.03f, 1f),
+//            PropertyValuesHolder.ofFloat("scaleY", 1.03f, 1f)
+//        ).setDuration(100)
+
+        paymentCard1.setOnClickListener {
+//            scaleUp.start()
+//            scaleDown.start()
+            startActivity(Intent(this, WithdrawalSummaryActivity::class.java))
+        }
+
+        paymentCard2.setOnClickListener {
+//            scaleUp.start()
+//            scaleDown.start()
+            startActivity(Intent(this, WithdrawalSummaryActivity::class.java))
+        }
     }
 }
