@@ -76,11 +76,9 @@ class POSActivity : AppCompatActivity() {
             startActivity(Intent(this, WalletAddressGeneratorDepositorActivity::class.java))
         }
 
-        val viewAssetsButton = findViewById<AppCompatButton>(R.id.pos_view_assets_button)
-        viewAssetsButton.setOnClickListener {
+        val viewAssetsContainer = findViewById<ConstraintLayout>(R.id.pos_view_assets_button)
+        viewAssetsContainer.setOnClickListener {
             startActivity(Intent(this, WalletAssetsActivity::class.java))
         }
-
-
     }
 }
