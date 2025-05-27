@@ -14,6 +14,8 @@ class RequestAmountActivity : AppCompatActivity() {
         setContentView(R.layout.activity_request_amount)
 
         val merchant_withdraw_request_button = findViewById<LinearLayout>(R.id.merchant_withdraw_request_button)
+        val blacklistedAssetWarningLayout = findViewById<LinearLayout>(R.id.request_amount_blacklisted_asset_warning)
+
 
         val rootView = findViewById<View>(android.R.id.content)
         val statusBarHeight = resources.getIdentifier("status_bar_height", "dimen", "android").let { resId ->
@@ -40,6 +42,7 @@ class RequestAmountActivity : AppCompatActivity() {
                 }
             }
             PaymentType.REQUEST_FIAT-> {
+                blacklistedAssetWarningLayout.visibility = View.GONE
                 merchant_withdraw_request_button.setOnClickListener{
                     startActivity(Intent(this, DynamicFiatAccountActivity::class.java))
                 }
@@ -48,7 +51,6 @@ class RequestAmountActivity : AppCompatActivity() {
                 // Default fallback
             }
         }
-
 
         val backButton = findViewById<ImageButton>(R.id.merchant_withdraw_back_button)
         backButton.setOnClickListener {
