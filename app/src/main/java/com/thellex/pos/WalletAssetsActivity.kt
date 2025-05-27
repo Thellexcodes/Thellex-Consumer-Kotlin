@@ -37,7 +37,7 @@ class WalletAssetsActivity : AppCompatActivity() {
             Asset("USDT", "3.874", "17,267.07", "24,000.00", R.drawable.icon_usdt),
             Asset("USDC", "12.450", "11,390.50", "15,800.00", R.drawable.icon_usdc),
             Asset("PYUSD", "0.500", "500.00", "750.00", R.drawable.icon_pyusd),
-            Asset("USD", "100.00", "100.00", "150,000.00", R.drawable.icon_usd),
+            Asset("NGN", "100.00", "100.00", "150,000.00", R.drawable.icon_nigerian_flag),
         )
 
         // Initialize RecyclerView

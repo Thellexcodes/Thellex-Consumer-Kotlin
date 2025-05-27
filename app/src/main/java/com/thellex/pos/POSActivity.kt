@@ -7,13 +7,13 @@ import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.thellex.pos.data.model.PaymentType
 
 class POSActivity : AppCompatActivity() {
 
@@ -63,7 +63,9 @@ class POSActivity : AppCompatActivity() {
 
         val withdrawFundsButton = findViewById<LinearLayout>(R.id.pos_withdraw_button)
         withdrawFundsButton.setOnClickListener {
-            startActivity(Intent(this, MerchantWithdrawalActivity::class.java))
+            val intent = Intent(this, RequestAmountActivity::class.java)
+            intent.putExtra("type", PaymentType.WITHDRAW_FIAT)
+            startActivity(intent)
         }
 
         val requestAccessButton = findViewById<LinearLayout>(R.id.pos_request_button)

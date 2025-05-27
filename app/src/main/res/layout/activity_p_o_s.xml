@@ -332,7 +332,7 @@
                     <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/icon_lumens"
+                            android:src="@drawable/icon_stellar"
                             android:scaleType="centerCrop"
                             android:background="@drawable/circle_bg" />
                 </FrameLayout>
@@ -340,13 +340,12 @@
                 <FrameLayout
                         android:layout_width="22dp"
                         android:layout_height="22dp">
-
-                    <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/icon_ngn"
-                            android:scaleType="centerCrop"
-                            android:background="@drawable/circle_bg" />
+                        <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/icon_nigerian_flag"
+                                android:scaleType="centerCrop"
+                                android:background="@drawable/circle_bg" />
                 </FrameLayout>
             </LinearLayout>
 

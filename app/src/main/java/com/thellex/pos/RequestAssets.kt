@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.thellex.pos.data.model.PaymentType
 
 
 class RequestAssetsActivity : AppCompatActivity() {
@@ -28,10 +29,18 @@ class RequestAssetsActivity : AppCompatActivity() {
             insets
         }
 
-        // Find the button for navigating to receiver type and set the click listener
-        val receiverTypeButton = findViewById<LinearLayout>(R.id.posLinearLayoutCryptocurrency)
-        receiverTypeButton.setOnClickListener {
+        // Navigate to Crypto Receiver Type
+        val cryptoReceiverButton = findViewById<LinearLayout>(R.id.posLinearLayoutCryptocurrency)
+        cryptoReceiverButton.setOnClickListener {
             startActivity(Intent(this, POSChooseCryptoActivity::class.java))
+        }
+
+        // Navigate to Local Currency Receiver Type
+        val localCurrencyReceiverButton = findViewById<LinearLayout>(R.id.posLinearLayoutLocalCurrency)
+        localCurrencyReceiverButton.setOnClickListener {
+            val intent = Intent(this, RequestAmountActivity::class.java)
+            intent.putExtra("type", PaymentType.REQUEST_FIAT)
+            startActivity(intent)
         }
     }
 }

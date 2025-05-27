@@ -1,19 +1,17 @@
 package com.thellex.pos
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageButton
-import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class MerchantWithdrawalActivity : AppCompatActivity() {
+class DynamicFiatAccountActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_merchant_withdrawal)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_dynamic_fiat_account)
 
         val rootView = findViewById<View>(android.R.id.content)
         val statusBarHeight = resources.getIdentifier("status_bar_height", "dimen", "android").let { resId ->
@@ -31,14 +29,5 @@ class MerchantWithdrawalActivity : AppCompatActivity() {
             navBarHeight
         )
 
-        val backButton = findViewById<ImageButton>(R.id.merchant_withdraw_back_button)
-        backButton.setOnClickListener {
-            finish()
-        }
-
-        val merchant_withdraw_request_button = findViewById<LinearLayout>(R.id.merchant_withdraw_request_button)
-        merchant_withdraw_request_button.setOnClickListener{
-            startActivity(Intent(this, SelectPaymentMethodActivity::class.java))
-        }
     }
 }
