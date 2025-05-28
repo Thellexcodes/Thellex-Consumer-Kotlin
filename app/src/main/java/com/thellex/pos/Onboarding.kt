@@ -48,9 +48,6 @@ class Onboarding : AppCompatActivity() {
         binding.loginBtn.setOnClickListener {
             navigateToLogin()
         }
-
-        binding.signUpBtn.setOnClickListener {
-        }
     }
 
     private fun navigateToLogin() {

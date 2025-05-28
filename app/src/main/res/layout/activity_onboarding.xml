@@ -51,7 +51,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginBottom="16dp">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/loginBtn"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
@@ -60,21 +60,9 @@
                 android:textSize="12sp"
                 android:fontFamily="@font/kumbhsans_regular"
                 android:text="LOG IN"
-                android:backgroundTint="#2B2A45"
-                android:textColor="@android:color/white" />
-
-        <Button
-                android:id="@+id/signUpBtn"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:textSize="12sp"
-                android:text="SIGN UP"
-                android:backgroundTint="#FFCA2B"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:fontFamily="@font/kumbhsans_regular" />
-
+                android:background="@drawable/rounded_golden_yellow_shape"
+                android:textColor="@color/darkBlue"
+                />
 
     </LinearLayout>
 

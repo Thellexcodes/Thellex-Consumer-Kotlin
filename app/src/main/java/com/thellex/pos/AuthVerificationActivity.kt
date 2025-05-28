@@ -44,7 +44,6 @@ class AuthVerificationActivity : AppCompatActivity() {
             // show phone layout, hide email layout
         }
 
-
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, LoginPinActivity::class.java)
             startActivity(intent)
