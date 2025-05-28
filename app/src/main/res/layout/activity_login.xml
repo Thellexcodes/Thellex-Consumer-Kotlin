@@ -55,7 +55,44 @@
             tools:layout_editor_absoluteX="-16dp"
             app:layout_constraintVertical_bias="0.0">
 
+            <LinearLayout
+                    android:id="@+id/auth_verification_tab_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="42dp"
+                    android:padding="4dp"
+                    android:gravity="center"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/tab_email"
+                        android:layout_width="100dp"
+                        android:layout_height="28dp"
+                        android:layout_marginEnd="2dp"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        android:textSize="12sp"
+                        android:text="Email"
+                        android:textColor="#000000"
+                        android:background="@drawable/bg_orange_tab_selected" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/tab_phone"
+                        android:layout_width="100dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="2dp"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        android:textSize="12sp"
+                        android:text="Phone"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/bg_tab_unselected" />
+            </LinearLayout>
+
         <!-- Main Content -->
+
         <LinearLayout
                 android:id="@+id/emailLayout"
                 android:layout_width="match_parent"
@@ -63,7 +100,8 @@
                 android:orientation="vertical"
                 android:paddingHorizontal="24dp"
                 android:paddingBottom="16dp"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/auth_verification_tab_container"
+                android:layout_marginTop="42dp">
 
             <!-- Email Input -->
             <EditText

@@ -1,24 +1,20 @@
-package com.thellex.pos.ui.login
+package com.thellex.pos
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.os.Handler
+import android.os.Looper
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.thellex.pos.AuthVerificationActivity
-import com.thellex.pos.R
-import com.thellex.pos.databinding.ActivityLoginBinding
+import com.thellex.pos.ui.login.LoginPinActivity
 
-class LoginActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityLoginBinding
-
+class AuthVerificationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
+        setContentView(R.layout.activity_auth_verification)
 
         val tabEmail: AppCompatButton = findViewById(R.id.tab_email)
         val tabPhone: AppCompatButton = findViewById(R.id.tab_phone)
@@ -39,20 +35,27 @@ class LoginActivity : AppCompatActivity() {
         tabEmail.setOnClickListener {
             tabEmail.setBackgroundResource(R.drawable.bg_orange_tab_selected)
             tabPhone.setBackgroundResource(R.drawable.bg_tab_unselected)
+            // show email layout, hide phone layout
         }
 
         tabPhone.setOnClickListener {
             tabPhone.setBackgroundResource(R.drawable.bg_orange_tab_selected)
             tabEmail.setBackgroundResource(R.drawable.bg_tab_unselected)
+            // show phone layout, hide email layout
         }
 
-        binding.nextButton.setOnClickListener {
-            navigateToVerification()
-        }
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            val intent = Intent(this, LoginPinActivity::class.java)
+            startActivity(intent)
+            finish()
+        }, 2000)
     }
 
-    private fun navigateToVerification() {
-        val intent = Intent(this, AuthVerificationActivity::class.java)
+
+
+    private fun navigateToQuickActions() {
+        val intent = Intent(this, LoginPinActivity::class.java)
         startActivity(intent)
         finish()
     }

@@ -28,8 +28,38 @@
                 <androidx.appcompat.widget.AppCompatButton android:text="8" style="@style/KeypadButton"/>
                 <androidx.appcompat.widget.AppCompatButton android:text="9" style="@style/KeypadButton"/>
 
-                <!-- Row 4 -->
-                <Space android:layout_width="64dp" android:layout_height="64dp" />
+
+<!--                <androidx.appcompat.widget.AppCompatButton-->
+<!--                        android:id="@+id/buttonFaceId"-->
+<!--                        android:background="@drawable/keypad_button_bg"-->
+<!--                        android:layout_width="69dp"-->
+<!--                        android:layout_height="69dp"-->
+<!--                        android:layout_margin="8dp"-->
+<!--                        android:contentDescription="Face ID"-->
+<!--                        android:drawableTop="@drawable/icon_face_id"-->
+<!--                        android:gravity="center"-->
+<!--                        android:padding="8dp"-->
+<!--                        />-->
+
+                <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/buttonFaceId"
+                                style="@style/KeypadButton"
+                                android:text=""
+                                android:contentDescription="Face ID"/>
+
+                        <ImageView
+                                android:layout_gravity="center"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:src="@drawable/icon_face_id"
+                                android:elevation="5dp" />
+                </FrameLayout>
+
+
                 <androidx.appcompat.widget.AppCompatButton android:text="0" style="@style/KeypadButton"/>
                 <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/buttonBackspace"
