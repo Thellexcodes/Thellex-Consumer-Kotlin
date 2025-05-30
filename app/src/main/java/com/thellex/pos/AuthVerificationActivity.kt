@@ -4,20 +4,32 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import com.mukeshsolanki.OtpView
+import com.thellex.pos.data.model.PaymentType
+import com.thellex.pos.services.ApiClient
+import com.thellex.pos.services.VerifyUserDto
 import com.thellex.pos.ui.login.LoginPinActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AuthVerificationActivity : AppCompatActivity() {
+
+    private var token: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth_verification)
 
-        val tabEmail: AppCompatButton = findViewById(R.id.tab_email)
-        val tabPhone: AppCompatButton = findViewById(R.id.tab_phone)
+        token = intent.getStringExtra("token")
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
             val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -28,29 +40,67 @@ class AuthVerificationActivity : AppCompatActivity() {
                 view.paddingRight,
                 systemBarsInsets.bottom
             )
-
             insets
         }
 
-        tabEmail.setOnClickListener {
-            tabEmail.setBackgroundResource(R.drawable.bg_orange_tab_selected)
-            tabPhone.setBackgroundResource(R.drawable.bg_tab_unselected)
-            // show email layout, hide phone layout
+        val otpView = findViewById<OtpView>(R.id.otp_view)
+
+        otpView.setOtpCompletionListener { otp ->
+            val otpInt = otp.toIntOrNull()
+            if (otpInt != null) {
+                verifyOtp(otpInt)
+            } else {
+                Toast.makeText(this, "Invalid OTP entered", Toast.LENGTH_SHORT).show()
+            }
         }
 
-        tabPhone.setOnClickListener {
-            tabPhone.setBackgroundResource(R.drawable.bg_orange_tab_selected)
-            tabEmail.setBackgroundResource(R.drawable.bg_tab_unselected)
-            // show phone layout, hide email layout
-        }
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, LoginPinActivity::class.java)
-            startActivity(intent)
-            finish()
-        }, 2000)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                finish()
+            }
+        })
     }
 
+    private fun verifyOtp(otp: Int) {
+        val verifyUserRequestData = VerifyUserDto(code = otp)
+
+        lifecycleScope.launch {
+            try {
+                if (token.isNullOrBlank()) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@AuthVerificationActivity,
+                            "Authentication token missing. Please login again.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    return@launch // Stop further execution
+                }
+
+                val api = ApiClient.getAuthenticatedApi(token!!)
+                val response = api.verifyCode(verifyUserRequestData)
+
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    println("AuthVerificationActivity Response: $responseBody")
+                    withContext(Dispatchers.Main) {
+                        if (responseBody != null) {
+                            navigateToQuickActions()
+                        }
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@AuthVerificationActivity, "Error: $errorBody", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@AuthVerificationActivity, "Network Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
 
     private fun navigateToQuickActions() {

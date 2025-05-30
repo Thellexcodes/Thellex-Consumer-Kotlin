@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
             android:allowBackup="true"
             android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,80 +13,79 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/Theme.Thellex"
+            android:usesCleartextTraffic="true"
+            android:networkSecurityConfig="@xml/network_security_config"
             tools:targetApi="31">
-        <activity
-                android:name=".AuthVerificationActivity"
-                android:exported="false" />
-        <activity
-                android:name=".AuthVerificaitonActivity"
-                android:exported="false"
-                android:theme="@style/Theme.Thellex" />
-        <activity
-                android:name=".DynamicFiatAccountActivity"
-                android:exported="false" />
-        <activity
-                android:name=".RequestAmountActivity"
-                android:exported="false" />
-        <activity
-                android:name=".WithdrawalSummaryActivity"
-                android:exported="false" />
-        <activity
-                android:name=".SelectPaymentMethodActivity"
-                android:exported="false" />
-        <activity
-                android:name=".SingleAssetDeposit"
-                android:exported="false" />
-        <activity
-                android:name=".SingleAssetBalance"
-                android:exported="false" />
-        <activity
-                android:name=".WalletAssetsActivity"
-                android:exported="false" />
-        <activity
-                android:name=".ui.login.LoginPinActivity"
-                android:exported="false" />
-        <activity
-                android:name=".QuickActions"
-                android:exported="false"
-                android:theme="@style/Theme.Thellex" />
-        <activity
-                android:name=".ui.login.LoginActivity"
-                android:exported="false"
-                android:label="@string/title_activity_login" />
-        <activity
-                android:name=".POSActivity"
-                android:exported="false"
-                android:label="POSActivity" />
-        <activity
-                android:name=".POSChooseCryptoActivity"
-                android:exported="false"
-                android:label="POSChooseCryptoActivity" />
-        <activity
-                android:name=".RequestAssetsActivity"
-                android:exported="false"
-                android:label="RequestAssetsActivity" />
-        <activity
-                android:name=".POSReceiverTypeActivity"
-                android:exported="false"
-                android:label="POSReceiverTypeActivity" />
-        <activity
-                android:name=".WalletAddressGeneratorDepositorActivity"
-                android:exported="false"
-                android:label="POSAddressGeneratorActivity" />
-        <activity
-                android:name=".Onboarding"
-                android:exported="false"
-                android:theme="@style/Theme.Thellex" />
-        <activity
-                android:name=".MainActivity"
-                android:exported="true"
-                android:theme="@style/Theme.Thellex">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <activity
+                    android:name=".AuthVerificationActivity"
+                    android:exported="false"
+                    android:theme="@style/Theme.Thellex" />
+            <activity
+                    android:name=".DynamicFiatAccountActivity"
+                    android:exported="false" />
+            <activity
+                    android:name=".RequestAmountActivity"
+                    android:exported="false" />
+            <activity
+                    android:name=".WithdrawalSummaryActivity"
+                    android:exported="false" />
+            <activity
+                    android:name=".SelectPaymentMethodActivity"
+                    android:exported="false" />
+            <activity
+                    android:name=".SingleAssetDeposit"
+                    android:exported="false" />
+            <activity
+                    android:name=".SingleAssetBalance"
+                    android:exported="false" />
+            <activity
+                    android:name=".WalletAssetsActivity"
+                    android:exported="false" />
+            <activity
+                    android:name=".ui.login.LoginPinActivity"
+                    android:exported="false" />
+            <activity
+                    android:name=".QuickActions"
+                    android:exported="false"
+                    android:theme="@style/Theme.Thellex" />
+            <activity
+                    android:name=".ui.login.LoginActivity"
+                    android:exported="false"
+                    android:label="@string/title_activity_login" />
+            <activity
+                    android:name=".POSActivity"
+                    android:exported="false"
+                    android:label="POSActivity" />
+            <activity
+                    android:name=".POSChooseCryptoActivity"
+                    android:exported="false"
+                    android:label="POSChooseCryptoActivity" />
+            <activity
+                    android:name=".RequestAssetsActivity"
+                    android:exported="false"
+                    android:label="RequestAssetsActivity" />
+            <activity
+                    android:name=".POSReceiverTypeActivity"
+                    android:exported="false"
+                    android:label="POSReceiverTypeActivity" />
+            <activity
+                    android:name=".WalletAddressGeneratorDepositorActivity"
+                    android:exported="false"
+                    android:label="POSAddressGeneratorActivity" />
+            <activity
+                    android:name=".Onboarding"
+                    android:exported="false"
+                    android:theme="@style/Theme.Thellex" />
+            <activity
+                    android:name=".MainActivity"
+                    android:exported="true"
+                    android:theme="@style/Theme.Thellex">
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+                    <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+            </activity>
     </application>
 
 </manifest>

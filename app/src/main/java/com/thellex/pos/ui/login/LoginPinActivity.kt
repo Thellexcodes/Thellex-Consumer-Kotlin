@@ -42,11 +42,11 @@ class LoginPinActivity : AppCompatActivity() {
             navBarHeight
         )
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, POSActivity::class.java)
-            startActivity(intent)
-            finish()
-        }, 2000)
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            val intent = Intent(this, POSActivity::class.java)
+//            startActivity(intent)
+//            finish()
+//        }, 2000)
     }
 
     private fun handleKeyPress(input: String) {

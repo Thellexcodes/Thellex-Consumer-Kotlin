@@ -108,7 +108,7 @@
                     android:id="@+id/emailInput"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:hint="Email Address or Merchant UID"
+                    android:hint="Email Address or UID"
                     android:background="@drawable/rounded_edittext"
                     android:textSize="12sp"
                     android:paddingVertical="15dp"

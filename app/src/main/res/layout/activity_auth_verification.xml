@@ -83,64 +83,31 @@
             android:paddingHorizontal="20dp"
             app:layout_constraintVertical_bias="0.0">
 
-        <LinearLayout
-                android:id="@+id/auth_verification_tab_container"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="34dp"
-                android:padding="4dp"
-                android:gravity="center"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-            <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/tab_email"
-                    android:layout_width="100dp"
-                    android:layout_height="28dp"
-                    android:layout_marginEnd="2dp"
-                    android:fontFamily="@font/kumbhsans_regular"
-                    android:textSize="12sp"
-                    android:text="Email"
-                    android:textColor="#000000"
-                    android:background="@drawable/bg_orange_tab_selected" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/tab_phone"
-                    android:layout_width="100dp"
-                    android:layout_height="28dp"
-                    android:layout_marginStart="2dp"
-                    android:fontFamily="@font/kumbhsans_regular"
-                    android:textSize="12sp"
-                    android:text="Phone"
-                    android:textColor="#FFFFFF"
-                    android:background="@drawable/bg_tab_unselected" />
-        </LinearLayout>
-
 
         <com.mukeshsolanki.OtpView
                 android:id="@+id/otp_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="41dp"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 app:OtpItemCount="6"
                 app:OtpItemSpacing="12dp"
                 app:OtpViewType="rectangle"
-                app:OtpHideLineWhenFilled="true"
                 app:OtpState_filled="true"
-                app:layout_constraintTop_toBottomOf="@id/auth_verification_tab_container"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:inputType="number"
+                android:clickable="true" />
 
         <TextView
                 android:id="@+id/auth_verification_timer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0:59"
+                android:text="2:00"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
                 android:background="@drawable/rounded_border"
