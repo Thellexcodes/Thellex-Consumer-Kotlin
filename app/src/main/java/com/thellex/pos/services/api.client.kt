@@ -15,6 +15,7 @@ object ApiClient {
     fun getPublicApi(): ApiService = retrofitWithoutToken.create(ApiService::class.java)
 
     fun getAuthenticatedApi(token: String): ApiService {
+
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.HEADERS
         }

@@ -1,19 +1,15 @@
 package com.thellex.pos
 
+import UserViewModel
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.mukeshsolanki.OtpView
-import com.thellex.pos.data.model.PaymentType
 import com.thellex.pos.services.ApiClient
 import com.thellex.pos.services.VerifyUserDto
 import com.thellex.pos.ui.login.LoginPinActivity
@@ -22,12 +18,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AuthVerificationActivity : AppCompatActivity() {
+    private lateinit var viewModel: UserViewModel
 
     private var token: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth_verification)
+
+        viewModel = UserViewModel(applicationContext)
 
         token = intent.getStringExtra("token")
 
@@ -85,6 +84,8 @@ class AuthVerificationActivity : AppCompatActivity() {
                     println("AuthVerificationActivity Response: $responseBody")
                     withContext(Dispatchers.Main) {
                         if (responseBody != null) {
+                            viewModel.saveToken(token!!)
+//                            navigateToLoginPin()
                             navigateToQuickActions()
                         }
                     }
@@ -102,9 +103,14 @@ class AuthVerificationActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun navigateToQuickActions() {
+    private fun navigateToLoginPin() {
         val intent = Intent(this, LoginPinActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToQuickActions(){
+        val intent = Intent(this, POSActivity::class.java)
         startActivity(intent)
         finish()
     }

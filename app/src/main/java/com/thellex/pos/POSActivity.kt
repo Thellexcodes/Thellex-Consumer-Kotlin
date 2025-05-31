@@ -1,5 +1,6 @@
 package com.thellex.pos
 
+import UserViewModel
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -16,10 +17,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.thellex.pos.data.model.PaymentType
 
 class POSActivity : AppCompatActivity() {
+    private lateinit var viewModel: UserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p_o_s)
+
+        viewModel = UserViewModel(applicationContext)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
             val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -82,5 +86,7 @@ class POSActivity : AppCompatActivity() {
         viewAssetsContainer.setOnClickListener {
             startActivity(Intent(this, WalletAssetsActivity::class.java))
         }
+
+        //TODO: trigger create account for user
     }
 }

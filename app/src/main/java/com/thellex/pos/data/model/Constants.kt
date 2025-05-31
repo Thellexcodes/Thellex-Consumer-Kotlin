@@ -16,4 +16,5 @@ object Constants {
     }
     const val LOGIN_ENDPOINT = "user"
     const val VERIFY_CODE_ENDPOINT = "user/verify"
+    const val AUTH_LOGIN_ENDPOINT = "user/authLogin"
 }

@@ -67,8 +67,6 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Enter email", Toast.LENGTH_SHORT).show()
             }
         }
-
-        UserManager.init(this)
     }
 
     private fun makeLoginRequest(email: String) {
@@ -103,7 +101,7 @@ class LoginActivity : AppCompatActivity() {
     private fun navigateToVerification(res: LoginResponse) {
         val token = res.result
         if (token.isNotEmpty()) {
-            Toast.makeText(this, "Authentication token: $token", Toast.LENGTH_LONG).show()
+//            Toast.makeText(this, "Authentication token: $token", Toast.LENGTH_LONG).show()
             val intent = Intent(this, AuthVerificationActivity::class.java)
             intent.putExtra("token", token)
             startActivity(intent)
