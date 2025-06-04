@@ -10,3 +10,9 @@ data class ApiResponse<T>(
     val path: String,
     val statusCode: Int
 )
+
+@Serializable
+data class ErrorResponse(
+    val statusCode: Int,
+    val message: String
+)

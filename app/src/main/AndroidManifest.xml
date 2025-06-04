@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
             android:allowBackup="true"
             android:dataExtractionRules="@xml/data_extraction_rules"
@@ -69,7 +71,7 @@
                     android:exported="false"
                     android:label="POSReceiverTypeActivity" />
             <activity
-                    android:name=".WalletAddressGeneratorDepositorActivity"
+                    android:name=".PosAddressGeneratorActivity"
                     android:exported="false"
                     android:label="POSAddressGeneratorActivity" />
             <activity

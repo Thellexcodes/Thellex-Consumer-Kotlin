@@ -1,4 +1,4 @@
-package com.thellex.pos.data.model
+package com.thellex.pos.enums
 
 
 enum class ERRORS(val message: String) {

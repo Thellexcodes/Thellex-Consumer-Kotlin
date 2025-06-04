@@ -47,33 +47,26 @@ object DevModeTools {
 
 // --- Blockchain Types ---
 enum class SupportedBlockchain {
-    LISK, BASE, STELLAR, POLYGON, TRON, SOLANA, BEP20
+    lisk, base, stellar, bep20
 }
 
 // --- Blockchain Network Support ---
 val SUPPORTED_BLOCKCHAINS = listOf(
-    SupportedBlockchain.LISK,
-    SupportedBlockchain.BASE,
-    SupportedBlockchain.STELLAR,
-    SupportedBlockchain.POLYGON,
-    SupportedBlockchain.TRON,
-    SupportedBlockchain.SOLANA
+    SupportedBlockchain.lisk,
+    SupportedBlockchain.base,
+    SupportedBlockchain.stellar,
 )
 
 // --- Token Support ---
 enum class Token {
-    USDC, USDT, XLM, BTC
+    usdc, usdt, xlm, btc
 }
 
 // --- Chain Tokens Support ---
 val ChainTokens: Map<String, List<Token>> = mapOf(
-    "lisk" to listOf(Token.USDC, Token.USDT),
-    "base" to listOf(Token.USDC),
-    "stellar" to listOf(Token.USDC, Token.XLM),
-    "polygon" to listOf(Token.USDC),
-    "tron" to listOf(Token.USDC, Token.USDT),
-    "solana" to listOf(Token.USDC, Token.USDT),
-    "bep20" to listOf(Token.USDC, Token.USDT)
+    "lisk" to listOf(Token.usdc, Token.usdc),
+    "base" to listOf(Token.usdc),
+    "stellar" to listOf(Token.usdc, Token.xlm),
 )
 
 // --- Testnet Flag ---

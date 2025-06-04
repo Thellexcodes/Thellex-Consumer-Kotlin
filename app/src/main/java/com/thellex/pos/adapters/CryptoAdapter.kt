@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.pos.R
 import com.thellex.pos.data.model.Crypto
+import java.util.Locale
 
 class CryptoAdapter(private val cryptoList: List<Crypto>, private val onItemClick: (Crypto) -> Unit) : RecyclerView.Adapter<CryptoAdapter.CryptoViewHolder>() {
 
@@ -28,7 +29,7 @@ class CryptoAdapter(private val cryptoList: List<Crypto>, private val onItemClic
         private val cryptoIcon: ImageView = itemView.findViewById(R.id.cryptoIcon)
 
         fun bind(crypto: Crypto) {
-            cryptoName.text = crypto.blockchain.toString()
+            cryptoName.text = crypto.blockchain.toString().uppercase(Locale.getDefault())
             cryptoIcon.setImageResource(crypto.iconRes)
 
             itemView.setOnClickListener {

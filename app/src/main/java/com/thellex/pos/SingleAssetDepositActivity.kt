@@ -29,7 +29,7 @@ class SingleAssetDepositActivity : AppCompatActivity() {
         }
 
         binding.sadCryptoDepositCard.setOnClickListener {
-            startActivity(Intent(this, WalletAddressGeneratorDepositorActivity::class.java))
+            startActivity(Intent(this, PosAddressGeneratorActivity::class.java))
         }
     }
 }

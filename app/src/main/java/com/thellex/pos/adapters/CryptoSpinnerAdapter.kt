@@ -8,12 +8,14 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import com.thellex.pos.R
+import com.thellex.pos.data.model.BlockchainItem
 import com.thellex.pos.data.model.Crypto
+import java.util.Locale
 
 class CryptoSpinnerAdapter(
     context: Context,
-    private val items: List<Crypto>
-) : ArrayAdapter<Crypto>(context, 0, items) {
+    private val items: List<BlockchainItem>
+) : ArrayAdapter<BlockchainItem>(context, 0, items) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         return createItemView(position, convertView, parent)
@@ -31,7 +33,7 @@ class CryptoSpinnerAdapter(
         val name = view.findViewById<TextView>(R.id.cryptoName)
 
         icon.setImageResource(item.iconRes)
-        name.text = item.blockchain.toString()
+        name.text = item.chain.toString().uppercase(Locale.getDefault())
 
         return view
     }

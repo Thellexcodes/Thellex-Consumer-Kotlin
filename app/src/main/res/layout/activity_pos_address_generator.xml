@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:paddingTop="20dp"
         android:paddingHorizontal="20dp"
-        tools:context=".WalletAddressGeneratorDepositorActivity">
+        tools:context=".PosAddressGeneratorActivity">
 
     <!-- Top App Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -149,6 +149,7 @@
     </LinearLayout>
 
     <LinearLayout
+            android:id="@+id/copyAddressLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/button_ripple"

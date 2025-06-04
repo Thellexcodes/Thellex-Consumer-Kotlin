@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Looper
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputLayout
-import com.thellex.pos.data.model.ERRORS
+import com.thellex.pos.enums.ERRORS
 import com.thellex.pos.data.model.ErrorResponse
 import java.security.SecureRandom
 import java.security.cert.X509Certificate

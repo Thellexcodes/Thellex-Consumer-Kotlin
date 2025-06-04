@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
-import com.thellex.pos.data.model.ERRORS
+import com.thellex.pos.enums.ERRORS
 import com.thellex.pos.utils.Helpers.showLongToast
 import com.thellex.pos.databinding.ActivityMainBinding
 import com.thellex.pos.services.ApiClient

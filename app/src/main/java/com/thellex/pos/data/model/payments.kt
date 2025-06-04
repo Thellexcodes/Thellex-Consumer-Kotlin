@@ -13,7 +13,7 @@ data class CreateRequestPaymentDto(
     val network: SupportedBlockchain
 )
 
-//Responses
 data class RequestPaymentResponse(
-    @SerializedName("address") val address: String
+    @SerializedName("wallet") val wallet: QWallet,
+    @SerializedName("assetCode") val assetCode: String
 )

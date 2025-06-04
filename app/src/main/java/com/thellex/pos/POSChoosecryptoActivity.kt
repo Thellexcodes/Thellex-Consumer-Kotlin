@@ -47,7 +47,7 @@ class POSChooseCryptoActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         cryptoAdapter = CryptoAdapter(cryptoList) { selectedItem ->
-            val intent = Intent(this, WalletAddressGeneratorDepositorActivity::class.java)
+            val intent = Intent(this, PosAddressGeneratorActivity::class.java)
             intent.putExtra("type", PaymentType.REQUEST_CRYPTO)
             startActivity(intent)
         }
@@ -65,7 +65,7 @@ class POSChooseCryptoActivity : AppCompatActivity() {
 
 
     private val cryptoList = listOf(
-        Crypto(Token.USDT, R.drawable.icon_usdt),
+        Crypto(Token.usdt, R.drawable.icon_usdt),
     )
 
 }

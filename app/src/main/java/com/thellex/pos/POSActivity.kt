@@ -84,7 +84,7 @@ class POSActivity : AppCompatActivity() {
 
         val posQuickRequestBtn = findViewById<LinearLayout>(R.id.pos_quick_request_button)
         posQuickRequestBtn.setOnClickListener {
-            startActivity(Intent(this, WalletAddressGeneratorDepositorActivity::class.java))
+            startActivity(Intent(this, PosAddressGeneratorActivity::class.java))
         }
 
         val viewAssetsContainer = findViewById<ConstraintLayout>(R.id.pos_view_assets_button)
