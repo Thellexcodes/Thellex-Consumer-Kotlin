@@ -2,7 +2,6 @@ package com.thellex.pos
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -13,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.thellex.pos.databinding.ActivityOnboardingBinding
 import com.thellex.pos.ui.login.LoginActivity
 
-class Onboarding : AppCompatActivity() {
+class OnboardingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOnboardingBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

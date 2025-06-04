@@ -3,7 +3,7 @@ package com.thellex.pos.data.model
 object Constants {
     val BASE_URL: String
         get() = if (isEmulator()) {
-            "http://10.0.2.2:8100" // For Android Emulator
+            "http://192.168.13.51:8100" // For Android Emulator
         } else {
             "http://192.168.13.51:8100" // Your actual machine IP for physical devices
         }
@@ -17,4 +17,11 @@ object Constants {
     const val LOGIN_ENDPOINT = "user"
     const val VERIFY_CODE_ENDPOINT = "user/verify"
     const val AUTH_LOGIN_ENDPOINT = "user/authLogin"
+
+    // Payment Endpoints
+    const val REQUEST_CRYPTO_PAYMENT_ENDPOINT = "payments/request-crypto"
+    const val REQUEST_FIAT_PAYMENT_ENDPOINT = "payments/request-fiat"
+    const val WITHDRAW_PAYMENT_ENDPOINT = "payments/withdraw"
+    const val OFF_RAMP_PAYMENT_ENDPOINT = "payments/off-ramp"
+
 }

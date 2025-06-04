@@ -3,13 +3,12 @@ package com.thellex.pos
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.thellex.pos.adapters.Asset
+import com.thellex.pos.adapters.AssetAdapter
 
 class WalletAssetsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +42,7 @@ class WalletAssetsActivity : AppCompatActivity() {
         // Initialize RecyclerView
         val recyclerViewWalletAssets = findViewById<RecyclerView>(R.id.activity_wallet_assets_recycler)
         val walletAssetsAdapter = AssetAdapter(sampleAssets){
-            startActivity(Intent(this, SingleAssetBalance::class.java))
+            startActivity(Intent(this, SingleAssetBalanceActivity::class.java))
         }
 
         recyclerViewWalletAssets.layoutManager = LinearLayoutManager(this)

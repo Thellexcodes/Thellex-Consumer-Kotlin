@@ -2,6 +2,7 @@ package com.thellex.pos.ui.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
@@ -10,11 +11,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.thellex.pos.AuthVerificationActivity
 import com.thellex.pos.R
-import com.thellex.pos.Utils
+import com.thellex.pos.utils.Helpers
 import com.thellex.pos.databinding.ActivityLoginBinding
 import com.thellex.pos.services.ApiClient
-import com.thellex.pos.services.LoginRequestDto
-import com.thellex.pos.services.LoginResponse
+import com.thellex.pos.data.model.LoginRequestDto
+import com.thellex.pos.data.model.LoginResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
 
         client = OkHttpClient.Builder()
             .hostnameVerifier { _, _ -> true }
-            .sslSocketFactory(Utils.createUnsafeSslSocketFactory(), Utils.createUnsafeTrustManager())
+            .sslSocketFactory(Helpers.createUnsafeSslSocketFactory(), Helpers.createUnsafeTrustManager())
             .build()
 
         val tabEmail: AppCompatButton = findViewById(R.id.tab_email)
@@ -88,6 +89,7 @@ class LoginActivity : AppCompatActivity() {
                     val errorBody = response.errorBody()?.string()
                     withContext(Dispatchers.Main) {
                         Toast.makeText(this@LoginActivity, "Error: $errorBody", Toast.LENGTH_SHORT).show()
+                        Log.e("TAG", "$errorBody")
                     }
                 }
             } catch (e: Exception) {

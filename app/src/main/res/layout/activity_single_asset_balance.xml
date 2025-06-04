@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/general_gradient_background"
         android:paddingTop="20dp"
-        tools:context=".SingleAssetBalance">
+        tools:context=".SingleAssetBalanceActivity">
 
     <!-- Top App Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout

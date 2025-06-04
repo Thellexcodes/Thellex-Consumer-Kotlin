@@ -1,4 +1,4 @@
-package com.thellex.pos
+package com.thellex.pos.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.thellex.pos.R
+import com.thellex.pos.data.model.Crypto
 
 class CryptoAdapter(private val cryptoList: List<Crypto>, private val onItemClick: (Crypto) -> Unit) : RecyclerView.Adapter<CryptoAdapter.CryptoViewHolder>() {
 
@@ -26,8 +28,8 @@ class CryptoAdapter(private val cryptoList: List<Crypto>, private val onItemClic
         private val cryptoIcon: ImageView = itemView.findViewById(R.id.cryptoIcon)
 
         fun bind(crypto: Crypto) {
-            cryptoName.text = crypto.name
-            cryptoIcon.setImageResource(crypto.iconResId)
+            cryptoName.text = crypto.blockchain.toString()
+            cryptoIcon.setImageResource(crypto.iconRes)
 
             itemView.setOnClickListener {
                 onItemClick(crypto)

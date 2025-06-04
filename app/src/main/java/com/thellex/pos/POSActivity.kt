@@ -14,7 +14,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.thellex.pos.data.model.PaymentType
+import com.thellex.pos.data.model.PosTransaction
+import com.thellex.pos.settings.PaymentType
 
 class POSActivity : AppCompatActivity() {
     private lateinit var viewModel: UserViewModel
@@ -23,7 +24,10 @@ class POSActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p_o_s)
 
-        viewModel = UserViewModel(applicationContext)
+//        viewModel = ViewModelProvider(
+//            this,
+//            UserViewModelFactory(applicationContext)
+//        )[UserViewModel::class.java]
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
             val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -74,7 +78,8 @@ class POSActivity : AppCompatActivity() {
 
         val requestAccessButton = findViewById<LinearLayout>(R.id.pos_request_button)
         requestAccessButton.setOnClickListener {
-            startActivity(Intent(this, RequestAssetsActivity::class.java))
+//            startActivity(Intent(this, RequestAssetsActivity::class.java))
+            startActivity(Intent(this, POSChooseCryptoActivity::class.java))
         }
 
         val posQuickRequestBtn = findViewById<LinearLayout>(R.id.pos_quick_request_button)

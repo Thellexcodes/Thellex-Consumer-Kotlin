@@ -1,4 +1,4 @@
-package com.thellex.pos
+package com.thellex.pos.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import com.thellex.pos.R
 
 class CryptoAssetAdapter(context: Context, private val assets: List<CryptoAsset>) :
     ArrayAdapter<CryptoAsset>(context, 0, assets) {

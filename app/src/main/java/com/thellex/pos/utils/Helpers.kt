@@ -1,14 +1,17 @@
-package com.thellex.pos
+package com.thellex.pos.utils
 
 import android.content.Context
+import android.os.Looper
+import android.widget.Toast
 import com.google.android.material.textfield.TextInputLayout
+import com.thellex.pos.data.model.ERRORS
 import com.thellex.pos.data.model.ErrorResponse
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
 import kotlinx.serialization.json.Json
 
-object Utils {
+object Helpers {
     public fun getNavigationBarHeight(context: Context): Int {
         val resources = context.resources
         val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
@@ -62,6 +65,25 @@ object Utils {
 
     fun displayError(errorType: ERRORS, targetLayout: TextInputLayout) {
         targetLayout.helperText = errorType.message
+    }
+
+    fun Context.showLongToast(message: String, durationInMillis: Long = 10000L) {
+        val interval = 3500L // Toast.LENGTH_LONG duration
+        val toast = Toast.makeText(this, message, Toast.LENGTH_LONG)
+
+        val handler = android.os.Handler(Looper.getMainLooper())
+        val endTime = System.currentTimeMillis() + durationInMillis
+
+        val showToastRunnable = object : Runnable {
+            override fun run() {
+                if (System.currentTimeMillis() < endTime) {
+                    toast.show()
+                    handler.postDelayed(this, interval)
+                }
+            }
+        }
+
+        handler.post(showToastRunnable)
     }
 }
 

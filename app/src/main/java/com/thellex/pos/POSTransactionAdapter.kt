@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.thellex.pos.data.model.PosTransaction
 
 class POSTransactionAdapter(
     private val items: List<PosTransaction>,

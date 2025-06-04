@@ -33,10 +33,10 @@
                     android:name=".SelectPaymentMethodActivity"
                     android:exported="false" />
             <activity
-                    android:name=".SingleAssetDeposit"
+                    android:name=".SingleAssetDepositActivity"
                     android:exported="false" />
             <activity
-                    android:name=".SingleAssetBalance"
+                    android:name=".SingleAssetBalanceActivity"
                     android:exported="false" />
             <activity
                     android:name=".WalletAssetsActivity"
@@ -45,7 +45,7 @@
                     android:name=".ui.login.LoginPinActivity"
                     android:exported="false" />
             <activity
-                    android:name=".QuickActions"
+                    android:name=".QuickActionsActivity"
                     android:exported="false"
                     android:theme="@style/Theme.Thellex" />
             <activity
@@ -73,7 +73,7 @@
                     android:exported="false"
                     android:label="POSAddressGeneratorActivity" />
             <activity
-                    android:name=".Onboarding"
+                    android:name=".OnboardingActivity"
                     android:exported="false"
                     android:theme="@style/Theme.Thellex" />
             <activity

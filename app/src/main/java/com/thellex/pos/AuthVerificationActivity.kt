@@ -11,7 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.mukeshsolanki.OtpView
 import com.thellex.pos.services.ApiClient
-import com.thellex.pos.services.VerifyUserDto
+import com.thellex.pos.data.model.VerifyUserDto
 import com.thellex.pos.ui.login.LoginPinActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -81,7 +81,6 @@ class AuthVerificationActivity : AppCompatActivity() {
 
                 if (response.isSuccessful) {
                     val responseBody = response.body()
-                    println("AuthVerificationActivity Response: $responseBody")
                     withContext(Dispatchers.Main) {
                         if (responseBody != null) {
                             viewModel.saveToken(token!!)

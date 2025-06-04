@@ -7,7 +7,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.thellex.pos.databinding.ActivityQuickActionsBinding
 
-class QuickActions : AppCompatActivity() {
+class QuickActionsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityQuickActionsBinding
 

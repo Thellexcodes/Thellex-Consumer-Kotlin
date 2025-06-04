@@ -1,4 +1,4 @@
-package com.thellex.pos
+package com.thellex.pos.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.thellex.pos.R
+import com.thellex.pos.data.model.Transaction
+import com.thellex.pos.data.model.TransactionType
 
 class TransactionsAdapter(
     private val transactions: List<Transaction>

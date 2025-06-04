@@ -1,7 +1,7 @@
-package com.thellex.pos
+package com.thellex.pos.data.model
 
-class Transactions {
-}
+import com.thellex.pos.settings.SupportedBlockchain
+import com.thellex.pos.settings.Token
 
 data class Transaction(
     val id: String,
@@ -28,7 +28,16 @@ data class PosTransaction(
     val statusIconResId: Int
 )
 
-data class Crypto(
-    val name: String,
-    val iconResId: Int
-)
+//data class Crypto(
+//    val name: SupportedBlockchain,
+//    val iconResId: Int
+//)
+
+data class BlockchainItem(val chain: SupportedBlockchain, val iconRes: Int)
+
+
+data class Crypto(val blockchain: Token, val iconRes: Int) {
+    override fun toString(): String {
+        return blockchain.name
+    }
+}

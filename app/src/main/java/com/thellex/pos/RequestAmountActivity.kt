@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.thellex.pos.data.model.PaymentType
+import com.thellex.pos.settings.PaymentType
 
 class RequestAmountActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

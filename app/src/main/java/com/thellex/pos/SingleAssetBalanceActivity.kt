@@ -2,17 +2,14 @@ package com.thellex.pos
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.LinearLayout
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.thellex.pos.data.model.PosTransaction
 import com.thellex.pos.databinding.ActivitySingleAssetBalanceBinding
 
-class SingleAssetBalance : AppCompatActivity() {
+class SingleAssetBalanceActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySingleAssetBalanceBinding
 
@@ -49,7 +46,7 @@ class SingleAssetBalance : AppCompatActivity() {
         binding.singleAssetBalanceTransactionRecyclerView.addItemDecoration(ItemSpacingDecoration(itemSpacing))
 
         binding.singleAssetBalanceDepositBtn.setOnClickListener {
-            startActivity(Intent(this, SingleAssetDeposit::class.java))
+            startActivity(Intent(this, SingleAssetDepositActivity::class.java))
         }
     }
 }
