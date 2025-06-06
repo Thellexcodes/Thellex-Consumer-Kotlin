@@ -1,43 +1,76 @@
 package com.thellex.pos.data.model
 
+import com.google.gson.annotations.SerializedName
 import com.thellex.pos.settings.SupportedBlockchain
 import com.thellex.pos.settings.Token
 
 data class Transaction(
-    val id: String,
-    val type: TransactionType,
-    val description: String,
-    val amount: String,
-    val timestamp: String,
-    val iconResId: Int
-)
+    @SerializedName("id") val id: String,
+    @SerializedName("type") val type: TransactionType,
+    @SerializedName("description") val description: String,
+    @SerializedName("amount") val amount: String,
+    @SerializedName("timestamp") val timestamp: String,
+    @SerializedName("iconResId") val iconResId: Int )
 
-enum class TransactionType {
-        DEPOSIT,
-        WITHDRAW,
-//        BANK_TRANSFER
+ enum class TransactionType {
+    @SerializedName("DEPOSIT") DEPOSIT,
+    @SerializedName("WITHDRAW") WITHDRAW,
 }
 
-data class PosTransaction(
-    val iconResId: Int,
-    val tokenSymbol: String,
-    val senderName: String,
-    val time: String,
-    val amount: String,
-    val fiatValue: String,
-    val statusIconResId: Int
-)
+enum class TransactionStatus(val displayName: String) {
+    COMPLETED("Completed"),
+    REJECTED("Rejected"),
+    PENDING("Pending");
 
-//data class Crypto(
-//    val name: SupportedBlockchain,
-//    val iconResId: Int
-//)
-
-data class BlockchainItem(val chain: SupportedBlockchain, val iconRes: Int)
-
-
-data class Crypto(val blockchain: Token, val iconRes: Int) {
-    override fun toString(): String {
-        return blockchain.name
+    companion object {
+        fun fromString(value: String): TransactionStatus {
+            return values().firstOrNull {
+                it.name.equals(value, ignoreCase = true) || it.displayName.equals(value, ignoreCase = true)
+            } ?: PENDING
+        }
     }
 }
+
+
+
+data class PosTransaction(
+    @SerializedName("iconResId") val iconResId: Int?,                  // txn_icon
+    @SerializedName("statusIconResId") val statusIconResId: Int?,      // status_icon
+    @SerializedName("description") val description: String,           // txn_description
+    @SerializedName("time") val time: String,                         // time_text
+    @SerializedName("amountWithSymbol") val amountWithSymbol: String, // amount (e.g., "20 USDT")
+    @SerializedName("status") val status:  TransactionStatus                     // status (e.g., "Completed")
+)
+
+
+data class BlockchainItem(
+    @SerializedName("chain") val chain: SupportedBlockchain,
+    @SerializedName("iconRes") val iconRes: Int )
+
+data class Crypto(
+    @SerializedName("blockchain") val blockchain: Token,
+    @SerializedName("iconRes") val iconRes: Int
+) {
+    override fun toString(): String = blockchain.name
+}
+
+data class TransactionHistoryEntity(
+    @SerializedName("id") val id: String,
+    @SerializedName("user") val user: UserEntity,
+    @SerializedName("event") val event: String,
+    @SerializedName("transactionId") val transactionId: String,
+    @SerializedName("type") val type: String,
+    @SerializedName("currency") val currency: String,
+    @SerializedName("amount") val amount: String,
+    @SerializedName("fee") val fee: String,
+    @SerializedName("blockchainTxId") val blockchainTxId: String,
+    @SerializedName("status") val status: String,
+    @SerializedName("reason") val reason: String?,
+    @SerializedName("created_at") val createdAt: String,
+    @SerializedName("done_at") val doneAt: String?,
+    @SerializedName("wallet_id") val walletId: String,
+    @SerializedName("wallet_name") val walletName: String,
+    @SerializedName("wallet_currency") val walletCurrency: String,
+    @SerializedName("payment_status") val paymentStatus: String,
+    @SerializedName("payment_address") val paymentAddress: String,
+    @SerializedName("payment_network") val paymentNetwork: String )

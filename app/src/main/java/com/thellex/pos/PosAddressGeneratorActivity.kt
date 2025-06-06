@@ -155,7 +155,7 @@ class PosAddressGeneratorActivity : AppCompatActivity() {
 
                 if (response.status) {
                     val result = response.result
-                    walletAddress = result.wallet.address
+                    walletAddress = result?.wallet?.address ?: "Invalid Address"
                     Log.d("WalletAddress", "Received wallet address: $walletAddress")
 
                     withContext(Dispatchers.Main) {

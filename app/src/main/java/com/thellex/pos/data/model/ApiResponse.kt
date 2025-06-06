@@ -1,18 +1,19 @@
 package com.thellex.pos.data.model
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 
 @Serializable
 data class ApiResponse<T>(
-    val result: T,
-    val status: Boolean,
-    val sessionId: String? = null,
-    val path: String,
-    val statusCode: Int
+    @SerialName("result") val result: T? = null,
+    @SerialName("status") val status: Boolean,
+    @SerialName("sessionId") val sessionId: String? = null,
+    @SerialName("path") val path: String,
+    @SerialName("statusCode") val statusCode: Int
 )
 
 @Serializable
 data class ErrorResponse(
-    val statusCode: Int,
-    val message: String
+    @SerialName("statusCode") val statusCode: Int,
+    @SerialName("message") val message: String
 )

@@ -9,13 +9,14 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.gson.Gson
 import com.thellex.pos.AuthVerificationActivity
 import com.thellex.pos.R
+import com.thellex.pos.data.model.ApiResponse
 import com.thellex.pos.utils.Helpers
 import com.thellex.pos.databinding.ActivityLoginBinding
 import com.thellex.pos.services.ApiClient
 import com.thellex.pos.data.model.LoginRequestDto
-import com.thellex.pos.data.model.LoginResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -78,8 +79,10 @@ class LoginActivity : AppCompatActivity() {
                 val response = ApiClient.getPublicApi().loginUser(userRequestData)
                 if (response.isSuccessful) {
                     val responseBody = response.body()
+                    val rawJson = Gson().toJson(responseBody)
+                    Log.d("RAW_JSON_BODY", rawJson)
 
-                    // Update UI on main thread
+//                     Update UI on main thread
                     withContext(Dispatchers.Main) {
                         if (responseBody != null) {
                             navigateToVerification(responseBody)
@@ -100,16 +103,15 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun navigateToVerification(res: LoginResponse) {
-        val token = res.result
-        if (token.isNotEmpty()) {
-//            Toast.makeText(this, "Authentication token: $token", Toast.LENGTH_LONG).show()
-            val intent = Intent(this, AuthVerificationActivity::class.java)
-            intent.putExtra("token", token)
+    private fun navigateToVerification(res: ApiResponse<String>?) {
+        val token = res?.result
+        if (token?.isNotEmpty() == true) {
+            val intent = Intent(this, AuthVerificationActivity::class.java).apply {
+                putExtra("token", token)
+            }
             startActivity(intent)
         } else {
             Toast.makeText(this, "Authentication token is missing. Cannot proceed.", Toast.LENGTH_LONG).show()
         }
     }
-
 }

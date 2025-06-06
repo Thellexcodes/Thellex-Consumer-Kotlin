@@ -31,22 +31,22 @@ class SingleAssetBalanceActivity : AppCompatActivity() {
             insets
         }
 
-        val transactionList = listOf(
-            PosTransaction(R.drawable.icon_txn, "USDT", "FARIDA ABDUL", "Today, 10:09 AM", "20 USDT", "$3,890.0938", R.drawable.icon_receive_status),
-            PosTransaction(R.drawable.icon_txn, "USDC", "FARIDA ABDUL", "Today, 10:09 AM", "10 USDC", "$3,890.0938", R.drawable.icon_receive_status),
-            PosTransaction(R.drawable.icon_txn, "USDT", "ALARA Moyo", "Today, 10:09 AM", "20 USDT", "$3,890.0938", R.drawable.icon_send_status),
-            PosTransaction(R.drawable.icon_txn, "USDC", "FARIDA ABDUL", "Today, 10:09 AM", "20 USDC", "$3,890.0938", R.drawable.icon_send_status)
-        )
-
-        binding.singleAssetBalanceTransactionRecyclerView.layoutManager = LinearLayoutManager(this)
-
-        binding.singleAssetBalanceTransactionRecyclerView.adapter = POSTransactionAdapter(transactionList) { }
-
-        val itemSpacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
-        binding.singleAssetBalanceTransactionRecyclerView.addItemDecoration(ItemSpacingDecoration(itemSpacing))
-
-        binding.singleAssetBalanceDepositBtn.setOnClickListener {
-            startActivity(Intent(this, SingleAssetDepositActivity::class.java))
-        }
+//        val transactionList = listOf(
+//            PosTransaction(R.drawable.icon_txn, "USDT", "FARIDA ABDUL", "Today, 10:09 AM", "20 USDT", "$3,890.0938", R.drawable.icon_receive_status),
+////            PosTransaction(R.drawable.icon_txn, "USDC", "FARIDA ABDUL", "Today, 10:09 AM", "10 USDC", "$3,890.0938", R.drawable.icon_receive_status),
+////            PosTransaction(R.drawable.icon_txn, "USDT", "ALARA Moyo", "Today, 10:09 AM", "20 USDT", "$3,890.0938", R.drawable.icon_send_status),
+////            PosTransaction(R.drawable.icon_txn, "USDC", "FARIDA ABDUL", "Today, 10:09 AM", "20 USDC", "$3,890.0938", R.drawable.icon_send_status)
+//        )
+//
+//        binding.singleAssetBalanceTransactionRecyclerView.layoutManager = LinearLayoutManager(this)
+//
+//        binding.singleAssetBalanceTransactionRecyclerView.adapter = POSTransactionAdapter(transactionList) { }
+//
+//        val itemSpacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
+//        binding.singleAssetBalanceTransactionRecyclerView.addItemDecoration(ItemSpacingDecoration(itemSpacing))
+//
+//        binding.singleAssetBalanceDepositBtn.setOnClickListener {
+//            startActivity(Intent(this, SingleAssetDepositActivity::class.java))
+//        }
     }
 }

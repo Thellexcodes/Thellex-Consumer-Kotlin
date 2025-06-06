@@ -4,12 +4,17 @@ import android.content.Context
 import android.os.Looper
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputLayout
+import com.thellex.pos.R
 import com.thellex.pos.enums.ERRORS
 import com.thellex.pos.data.model.ErrorResponse
+import com.thellex.pos.data.model.TransactionStatus
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
 import kotlinx.serialization.json.Json
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 object Helpers {
     public fun getNavigationBarHeight(context: Context): Int {
@@ -85,5 +90,57 @@ object Helpers {
 
         handler.post(showToastRunnable)
     }
+
+    fun getIconResIdForToken(token: String): Int {
+        return when (token.lowercase(Locale.getDefault())) {
+            "usdt" -> R.drawable.icon_usdt
+            "trx" -> R.drawable.icon_usdt
+            "usdc" -> R.drawable.icon_usdc
+            "xlm" -> R.drawable.icon_stellar
+            else -> R.drawable.icon_txn
+        }
+    }
+
+    fun getStatusIconResId(status: String?): Int {
+        return when (normalizeStatusForIcon(status)) {
+            "received" -> R.drawable.icon_receive_status
+            "sent" -> R.drawable.icon_send_status
+            else -> R.drawable.icon_arrow_down
+        }
+    }
+
+    fun formatTimestamp(timestamp: String): String {
+        return "Time"
+//        return try {
+//            val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+//            parser.timeZone = TimeZone.getTimeZone("UTC")
+//            val date = parser.parse(timestamp)
+//            val formatter = SimpleDateFormat("MMM dd, hh:mm a", Locale.getDefault())
+//            formatter.format(date)
+//        } catch (e: Exception) {
+//            timestamp // fallback to raw string
+//        }
+    }
+
+    fun mapToTransactionStatus(rawStatus: String): TransactionStatus {
+        return when (rawStatus.lowercase(Locale.getDefault())) {
+            "accepted" -> TransactionStatus.COMPLETED
+            "completed" -> TransactionStatus.COMPLETED
+            "rejected" -> TransactionStatus.REJECTED
+            "pending" -> TransactionStatus.PENDING
+            else -> TransactionStatus.PENDING // fallback
+        }
+    }
+
+    private fun normalizeStatusForIcon(status: String?): String {
+        return when (status?.lowercase(Locale.getDefault())) {
+            "accepted" -> "received"
+            "completed" -> "received"
+            "received" -> "received"
+            "sent" -> "sent"
+            else -> "unknown"
+        }
+    }
+
 }
 

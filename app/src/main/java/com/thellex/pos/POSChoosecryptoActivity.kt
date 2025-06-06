@@ -3,6 +3,7 @@ package com.thellex.pos
 import UserViewModel
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -60,6 +61,11 @@ class POSChooseCryptoActivity : AppCompatActivity() {
         lifecycleScope.launch {
             // Do something with qWallet, for example:
 //            Log.d("QWALLET", "QID: ${qWallet?.id}, QSN: ${qWallet?.qsn}")
+        }
+
+        val backButton = findViewById<ImageView>(R.id.activity_wallet_back_button)
+        backButton.setOnClickListener {
+            finish()
         }
     }
 

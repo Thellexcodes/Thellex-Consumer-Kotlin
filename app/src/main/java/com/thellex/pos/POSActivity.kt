@@ -12,23 +12,47 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.thellex.pos.data.model.PosTransaction
+import com.thellex.pos.data.model.UserPreferences
 import com.thellex.pos.settings.PaymentType
+import com.thellex.pos.ui.login.UserViewModelFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class POSActivity : AppCompatActivity() {
     private lateinit var viewModel: UserViewModel
+    private lateinit var transactionRecyclerView: RecyclerView
+    private lateinit var transactionAdapter: POSTransactionAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p_o_s)
 
-//        viewModel = ViewModelProvider(
-//            this,
-//            UserViewModelFactory(applicationContext)
-//        )[UserViewModel::class.java]
+        setupWindowInsetsAndBars()
 
+        viewModel = ViewModelProvider(
+            this,
+            UserViewModelFactory(applicationContext)
+        )[UserViewModel::class.java]
+
+        val businessNameTextView = findViewById<TextView>(R.id.businessNameText)
+        businessNameTextView.text = businessNameTextView.text.toString().uppercase()
+
+        setupRecyclerView()
+
+        observeUserTransactions()
+
+        setupClickListeners()
+    }
+
+    private fun setupWindowInsetsAndBars() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
             val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
@@ -38,60 +62,70 @@ class POSActivity : AppCompatActivity() {
                 view.paddingRight,
                 systemBarsInsets.bottom
             )
+
             insets
         }
 
         val window = window
-
-        // Show system bars
         WindowCompat.setDecorFitsSystemWindows(window, true)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // Reduce status and nav bar opacity
             window.statusBarColor = Color.parseColor("#212C2C3A") // 13% alpha
-//            window.navigationBarColor = Color.parseColor("#ffffff") // same
         }
+    }
 
-        val businessNameTextView = findViewById<TextView>(R.id.pos_business_name)
-        businessNameTextView.text = businessNameTextView.text.toString().uppercase()
-
-        val transactionRecyclerView = findViewById<RecyclerView>(R.id.transaction_recycler)
+    private fun setupRecyclerView() {
+        transactionRecyclerView = findViewById(R.id.transaction_recycler)
         transactionRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        val transactionList = listOf(
-            PosTransaction(R.drawable.icon_usdt, "USDT", "FARIDA ABDUL", "Today, 10:09 AM", "20 USDT", "$3,890.0938", R.drawable.icon_receive_status),
-            PosTransaction(R.drawable.icon_usdc, "USDC", "FARIDA ABDUL", "Today, 10:09 AM", "10 USDC", "$3,890.0938", R.drawable.icon_receive_status),
-            PosTransaction(R.drawable.icon_usdt, "USDT", "ALARA Moyo", "Today, 10:09 AM", "20 USDT", "$3,890.0938", R.drawable.icon_send_status),
-            PosTransaction(R.drawable.icon_usdc, "USDC", "FARIDA ABDUL", "Today, 10:09 AM", "20 USDC", "$3,890.0938", R.drawable.icon_send_status)
-        )
-        transactionRecyclerView.adapter = POSTransactionAdapter(transactionList){}
+        transactionAdapter = POSTransactionAdapter(emptyList()) {}
+        transactionRecyclerView.adapter = transactionAdapter
 
         val itemSpacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
         transactionRecyclerView.addItemDecoration(ItemSpacingDecoration(itemSpacing))
+    }
 
-        val withdrawFundsButton = findViewById<LinearLayout>(R.id.pos_withdraw_button)
-        withdrawFundsButton.setOnClickListener {
-            val intent = Intent(this, RequestAmountActivity::class.java)
-            intent.putExtra("type", PaymentType.WITHDRAW_FIAT)
-            startActivity(intent)
+    private fun observeUserTransactions() {
+        lifecycleScope.launch {
+            UserPreferences.getAuthResult(applicationContext).collect { userEntity ->
+                val transactions = userEntity?.transactionHistory ?: emptyList()
+
+                val sortedTransactions = transactions.sortedByDescending { parseDate(it.createdAt) }
+
+                withContext(Dispatchers.Main) {
+                    transactionAdapter.updateList(sortedTransactions)
+                }
+            }
+        }
+    }
+
+    private fun setupClickListeners() {
+        findViewById<LinearLayout>(R.id.pos_withdraw_button).setOnClickListener {
+            startActivity(Intent(this, RequestAmountActivity::class.java).apply {
+                putExtra("type", PaymentType.WITHDRAW_FIAT)
+            })
         }
 
-        val requestAccessButton = findViewById<LinearLayout>(R.id.pos_request_button)
-        requestAccessButton.setOnClickListener {
-//            startActivity(Intent(this, RequestAssetsActivity::class.java))
+        findViewById<LinearLayout>(R.id.pos_request_button).setOnClickListener {
             startActivity(Intent(this, POSChooseCryptoActivity::class.java))
         }
 
-        val posQuickRequestBtn = findViewById<LinearLayout>(R.id.pos_quick_request_button)
-        posQuickRequestBtn.setOnClickListener {
+        findViewById<LinearLayout>(R.id.pos_quick_request_button).setOnClickListener {
             startActivity(Intent(this, PosAddressGeneratorActivity::class.java))
         }
 
-        val viewAssetsContainer = findViewById<ConstraintLayout>(R.id.pos_view_assets_button)
-        viewAssetsContainer.setOnClickListener {
+        findViewById<ConstraintLayout>(R.id.pos_view_assets_button).setOnClickListener {
             startActivity(Intent(this, WalletAssetsActivity::class.java))
         }
+    }
 
-        //TODO: trigger create account for user
+    private fun parseDate(dateString: String?): Date? {
+        return try {
+            // Adjust the pattern to your actual created_at format
+            val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+            formatter.parse(dateString ?: "")
+        } catch (e: Exception) {
+            null
+        }
     }
 }

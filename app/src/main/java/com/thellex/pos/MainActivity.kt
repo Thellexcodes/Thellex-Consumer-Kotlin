@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
@@ -12,10 +13,14 @@ import com.thellex.pos.enums.ERRORS
 import com.thellex.pos.utils.Helpers.showLongToast
 import com.thellex.pos.databinding.ActivityMainBinding
 import com.thellex.pos.services.ApiClient
+import com.thellex.pos.services.SocketService
 import com.thellex.pos.ui.login.LoginActivity
 import com.thellex.pos.ui.login.UserViewModelFactory
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -41,6 +46,14 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         checkAuthStatus()
+
+        // Assume checkAuthStatus updates viewModel.authResult or similar LiveData/StateFlow
+        lifecycleScope.launch {
+            val alertID = withTimeoutOrNull(5000) {
+                viewModel.authResult.firstOrNull { it != null }?.alertID
+            } ?: "default-id"
+            startSocketServiceWithAlertId(alertID)
+        }
     }
 
     private fun checkAuthStatus() {
@@ -63,20 +76,21 @@ class MainActivity : AppCompatActivity() {
 
                 if (response.isSuccessful) {
                     val authResponse = response.body()
-                    val address = authResponse?.result?.qWallet?.wallets?.getOrNull(0)?.address
-
                     val rawJson = Gson().toJson(authResponse)
-                    Log.d("RAW_JSON_BODY", rawJson)
-                    Log.d("WALLET_1", address.toString())
-                    Log.d("USERDATA", "user: ${authResponse?.result?.email}")
+
+//                    val address = authResponse?.result?.qWallet?.wallets?.getOrNull(0)?.address
+
+//                    Log.d("RAW_JSON_BODY", rawJson)
+//                    Log.d("WALLET_1", address.toString())
+//                    Log.d("USERDATA", "user: ${authResponse?.result?.email}")
+//                    Log.d("ALERT_ID", "${authResponse?.result?.alertID}")
 
                     val authResult = authResponse?.result
                     if (authResult != null) {
-                        viewModel.saveToken(authResult.token)
+                        viewModel.saveToken(authResponse.result.token ?: "")
                         viewModel.saveAuthResult(authResult)
 
                         if (authResult.isAuthenticated) {
-                            // User is authenticated, navigate to dashboard
                             navigateToDashboard()
                         } else {
                             viewModel.logout()
@@ -116,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.e("TAG", "Error message", e)
+//                Log.e("TAG", "Error message", e)
                 showLongToast(ERRORS.UNKNOWN_ERROR.message)
 //                viewModel.saveToken(null)
 //                viewModel.logout()
@@ -124,6 +138,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun startSocketServiceWithAlertId(alertID: String) {
+        lifecycleScope.launch {
+            val serviceIntent = Intent(this@MainActivity, SocketService::class.java).apply {
+                putExtra("alertID", alertID)
+            }
+            ContextCompat.startForegroundService(this@MainActivity, serviceIntent)
+        }
+    }
+
 
     private fun parseBackendErrorEnum(errorBody: String?): String? {
         return try {

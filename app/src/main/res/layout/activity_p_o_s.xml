@@ -16,73 +16,109 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/notificationHeaderContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
             <TextView
-                    android:id="@+id/pos_business_name"
+                    android:id="@+id/businessNameText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/kumbhsans_bold"
                     android:textSize="14sp"
                     android:textColor="@color/white"
                     android:text="Chibuzor &amp; Sons Ventures"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/pos_balance_currency_placeholder"
-                    app:layout_constraintTop_toBottomOf="@id/pos_business_name"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginTop="28dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:orientation="vertical"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-                            <TextView
-                                    android:textColor="@color/white"
-                                    android:text="TOTAL BALANCE"
-                                    android:fontFamily="@font/kumbhsans_bold"
-                                    android:textSize="10sp"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"/>
-                        <TextView
-                                android:textColor="@color/goldenYellow"
-                                android:fontFamily="@font/outfit_bold"
-                                android:textSize="24sp"
-                                android:text="$290.79"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"/>
-                    </LinearLayout>
+            <ImageView
+                    android:id="@+id/bellIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/bell"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            android:paddingVertical="14dp"
-                            android:paddingHorizontal="16dp"
-                            android:background="@drawable/rounded_border"
-                            android:layout_width="76dp"
-                            android:layout_height="46dp">
-                        <ImageView
-                                android:id="@+id/pos_currency_placeholder"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:src="@drawable/icon_nigerian_flag"
-                                />
-                        <ImageView
-                                android:src="@drawable/icon_arrow_down"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toEndOf="@+id/pos_currency_placeholder"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                    android:id="@+id/notificationBadge"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:background="@drawable/badge_background"
+                    android:text="0"
+                    android:textColor="@android:color/white"
+                    android:textSize="10sp"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="@id/bellIcon"
+                    app:layout_constraintEnd_toEndOf="@id/bellIcon" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/pos_balance_currency_placeholder"
+                app:layout_constraintTop_toBottomOf="@+id/notificationHeaderContainer"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="match_parent"
+                android:layout_marginTop="26dp"
+                android:layout_height="wrap_content">
+
+            <LinearLayout
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:textColor="@color/white"
+                        android:text="TOTAL BALANCE"
+                        android:fontFamily="@font/kumbhsans_bold"
+                        android:textSize="10sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                <TextView
+                        android:textColor="@color/goldenYellow"
+                        android:fontFamily="@font/outfit_bold"
+                        android:textSize="24sp"
+                        android:text="$290.79"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:paddingVertical="14dp"
+                    android:paddingHorizontal="16dp"
+                    android:background="@drawable/rounded_border"
+                    android:layout_width="76dp"
+                    android:layout_height="46dp">
+
+                <ImageView
+                        android:id="@+id/pos_currency_placeholder"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/icon_nigerian_flag" />
+
+                <ImageView
+                        android:src="@drawable/icon_arrow_down"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/pos_currency_placeholder"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/user_dashboard_actions_wrapper"
@@ -146,6 +182,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/pos_quick_actions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -154,41 +191,41 @@
                     android:weightSum="3"
                     app:layout_constraintTop_toBottomOf="@id/user_dashboard_actions_wrapper">
 
-<!-- Card 3: Request from External Wallet -->
-        <LinearLayout
-                android:id="@+id/pos_quick_request_button"
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                android:background="@drawable/card_button_background"
-                android:orientation="vertical"
-                android:padding="11dp"
-                android:layout_marginEnd="4dp">
-                <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-                        <ImageView
-                                android:id="@+id/icon_3"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/icon_qr_code"
-                                android:layout_gravity="center_horizontal"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+        <!-- Card 3: Request from External Wallet -->
+                <LinearLayout
+                        android:id="@+id/pos_quick_request_button"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/card_button_background"
+                        android:orientation="vertical"
+                        android:padding="11dp"
+                        android:layout_marginEnd="4dp">
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+                                <ImageView
+                                        android:id="@+id/icon_3"
+                                        android:layout_width="24dp"
+                                        android:layout_height="24dp"
+                                        android:src="@drawable/icon_qr_code"
+                                        android:layout_gravity="center_horizontal"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent" />
 
-                        <TextView
-                                android:id="@+id/text_3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Quick Request"
-                                android:textColor="#FFFFFF"
-                                android:textSize="12sp"
-                                android:fontFamily="@font/outfit_regular"
-                                android:layout_gravity="center_horizontal"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="@+id/icon_3" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-        </LinearLayout>
+                                <TextView
+                                        android:id="@+id/text_3"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Quick Request"
+                                        android:textColor="#FFFFFF"
+                                        android:textSize="12sp"
+                                        android:fontFamily="@font/outfit_regular"
+                                        android:layout_gravity="center_horizontal"
+                                        app:layout_constraintBottom_toBottomOf="parent"
+                                        app:layout_constraintStart_toStartOf="@+id/icon_3" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
 
         <!-- Card 1: Notifications -->
         <LinearLayout
@@ -374,6 +411,7 @@
                     android:id="@+id/textView3" />
 
             <TextView
+                    android:visibility="gone"
                     android:text="View All"
                     android:textColor="@color/white"
                     android:fontFamily="@font/kumbhsans_bold"
