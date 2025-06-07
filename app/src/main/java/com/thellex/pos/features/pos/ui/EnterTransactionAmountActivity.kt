@@ -6,11 +6,11 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.thellex.pos.features.fiat.DynamicFiatAccountActivity
+import com.thellex.pos.features.fiat.ManageFiatAccountActivity
 import com.thellex.pos.R
 import com.thellex.pos.settings.PaymentType
 
-class RequestAmountActivity : AppCompatActivity() {
+class EnterTransactionAmountActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_request_amount)
@@ -23,13 +23,13 @@ class RequestAmountActivity : AppCompatActivity() {
         when (type) {
             PaymentType.WITHDRAW_FIAT -> {
                 merchant_withdraw_request_button.setOnClickListener{
-                    startActivity(Intent(this, SelectPaymentMethodActivity::class.java))
+                    startActivity(Intent(this, SelectCryptoCurrencyActivity::class.java))
                 }
             }
             PaymentType.REQUEST_FIAT-> {
                 blacklistedAssetWarningLayout.visibility = View.GONE
                 merchant_withdraw_request_button.setOnClickListener{
-                    startActivity(Intent(this, DynamicFiatAccountActivity::class.java))
+                    startActivity(Intent(this, ManageFiatAccountActivity::class.java))
                 }
             }
             else -> { }

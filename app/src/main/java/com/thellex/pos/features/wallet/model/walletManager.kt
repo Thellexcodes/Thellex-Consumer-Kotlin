@@ -1,4 +1,4 @@
-package com.thellex.pos.data.model
+package com.thellex.pos.features.wallet.model
 
 import com.google.gson.annotations.SerializedName
 
@@ -11,6 +11,7 @@ data class WalletManagerBalanceResponse(
 data class WalletEntry(
     @SerializedName("address") val address: String,
     @SerializedName("network") val network: String,
-    @SerializedName("balance") val balance: Double,
+    @SerializedName("balanceInUsd") val balanceInUsd: Double,
+    @SerializedName("balanceInNgn") val balanceInNgn: Double,
     @SerializedName("assetCode") val assetCode: String
 )

@@ -28,7 +28,7 @@
 
                 <fragment
                         android:id="@+id/posFragment"
-                        android:name="com.thellex.pos.features.pos.ui.POSActivity"
+                        android:name="com.thellex.pos.features.pos.ui.POSHomeActivity"
                         android:label="POS"
                         tools:layout="@layout/activity_p_o_s">
                         <action

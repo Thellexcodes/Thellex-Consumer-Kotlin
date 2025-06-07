@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class POSActivity : AppCompatActivity() {
+class POSHomeActivity : AppCompatActivity() {
     private lateinit var viewModel: UserViewModel
     private lateinit var transactionRecyclerView: RecyclerView
     private lateinit var transactionAdapter: POSTransactionAdapter
@@ -105,7 +105,7 @@ class POSActivity : AppCompatActivity() {
 
     private fun setupClickListeners() {
         findViewById<LinearLayout>(R.id.pos_withdraw_button).setOnClickListener {
-            startActivity(Intent(this, RequestAmountActivity::class.java).apply {
+            startActivity(Intent(this, EnterTransactionAmountActivity::class.java).apply {
                 putExtra("type", PaymentType.WITHDRAW_FIAT)
             })
         }
@@ -115,7 +115,7 @@ class POSActivity : AppCompatActivity() {
         }
 
         findViewById<LinearLayout>(R.id.pos_quick_request_button).setOnClickListener {
-            startActivity(Intent(this, PosAddressGeneratorActivity::class.java))
+            startActivity(Intent(this, GeneratePOSAddressActivity::class.java))
         }
 
         findViewById<ConstraintLayout>(R.id.pos_view_assets_button).setOnClickListener {

@@ -8,7 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.thellex.pos.R
 import com.thellex.pos.features.pos.ui.POSChooseCryptoActivity
-import com.thellex.pos.features.pos.ui.RequestAmountActivity
+import com.thellex.pos.features.pos.ui.EnterTransactionAmountActivity
 import com.thellex.pos.settings.PaymentType
 
 
@@ -40,7 +40,7 @@ class RequestAssetsActivity : AppCompatActivity() {
         // Navigate to Local Currency Receiver Type
         val localCurrencyReceiverButton = findViewById<LinearLayout>(R.id.posLinearLayoutLocalCurrency)
         localCurrencyReceiverButton.setOnClickListener {
-            val intent = Intent(this, RequestAmountActivity::class.java)
+            val intent = Intent(this, EnterTransactionAmountActivity::class.java)
             intent.putExtra("type", PaymentType.REQUEST_FIAT)
             startActivity(intent)
         }

@@ -7,7 +7,7 @@
         android:background="@drawable/general_gradient_background"
         android:paddingTop="56dp"
         android:paddingHorizontal="20dp"
-        tools:context=".features.pos.ui.POSReceiverTypeActivity">
+        tools:context=".features.pos.ui.SelectReceiverTypeActivity">
 
     <!-- Main container for the layout -->
     <LinearLayout

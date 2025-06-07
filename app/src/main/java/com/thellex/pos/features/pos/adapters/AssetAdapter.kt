@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.thellex.pos.R
 
 class AssetAdapter(
-    private val assets: List<Asset>,
+    private var assets: MutableList<Asset>,
     private val onItemClick: (Asset) -> Unit
 ) : RecyclerView.Adapter<AssetAdapter.AssetViewHolder>() {
 
@@ -32,22 +32,27 @@ class AssetAdapter(
         holder.textAssetSymbol.text = asset.symbol
         holder.textTokenAmount.text = "${asset.amount} ${asset.symbol}"
         holder.textTokenValueUsd.text = "$ ${asset.usdValue}"
-        holder.textTokenValueNgn.text = "= ${asset.ngnValue} NGN"
+        holder.textTokenValueNgn.text = "= ${asset.valueInLocal} NGN"
         holder.imageAssetIcon.setImageResource(asset.iconResId)
 
-        // Add click listener
         holder.itemView.setOnClickListener {
             onItemClick(asset)
         }
     }
 
     override fun getItemCount(): Int = assets.size
+
+    fun updateData(newAssets: List<Asset>) {
+        assets.clear()
+        assets.addAll(newAssets)
+        notifyDataSetChanged()
+    }
 }
 
 data class Asset(
-    val symbol: String,       // e.g., "USDT"
-    val amount: String,       // e.g., "3.874"
-    val usdValue: String,     // e.g., "17,267.07"
-    val ngnValue: String,     // e.g., "24,000.00"
-    val iconResId: Int        // e.g., R.drawable.icon_usdt
+    val symbol: String,
+    val amount: String,
+    val usdValue: String,
+    val valueInLocal: String,
+    val iconResId: Int
 )

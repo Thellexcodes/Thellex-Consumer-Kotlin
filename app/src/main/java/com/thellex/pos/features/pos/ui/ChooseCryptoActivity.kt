@@ -20,7 +20,7 @@ import com.thellex.pos.settings.Token
 import com.thellex.pos.features.auth.viewModel.UserViewModelFactory
 import kotlinx.coroutines.launch
 
-class POSChooseCryptoActivity : AppCompatActivity() {
+class POSChooseCryptoActivity: AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var cryptoAdapter: CryptoAdapter
@@ -50,7 +50,7 @@ class POSChooseCryptoActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         cryptoAdapter = CryptoAdapter(cryptoList) { selectedItem ->
-            val intent = Intent(this, PosAddressGeneratorActivity::class.java)
+            val intent = Intent(this, GeneratePOSAddressActivity::class.java)
             intent.putExtra("type", PaymentType.REQUEST_CRYPTO)
             startActivity(intent)
         }

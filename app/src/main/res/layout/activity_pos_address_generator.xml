@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:paddingTop="20dp"
         android:paddingHorizontal="20dp"
-        tools:context=".features.pos.ui.PosAddressGeneratorActivity">
+        tools:context=".features.pos.ui.GeneratePOSAddressActivity">
 
     <!-- Top App Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout

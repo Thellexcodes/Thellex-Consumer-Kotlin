@@ -8,7 +8,7 @@
         android:paddingTop="20dp"
         android:paddingHorizontal="20dp"
         android:background="@drawable/general_gradient_background"
-        tools:context=".features.pos.ui.WithdrawalSummaryActivity">
+        tools:context=".features.pos.ui.POSWithdrawalSummaryActivity">
 
         <!-- Top App Bar -->
         <androidx.constraintlayout.widget.ConstraintLayout

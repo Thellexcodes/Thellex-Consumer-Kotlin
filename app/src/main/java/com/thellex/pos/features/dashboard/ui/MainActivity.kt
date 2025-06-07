@@ -1,4 +1,4 @@
-package com.thellex.pos.features.dashboard
+package com.thellex.pos.features.dashboard.ui
 
 import com.thellex.pos.features.auth.viewModel.UserViewModel
 import android.content.Intent
@@ -14,7 +14,7 @@ import com.thellex.pos.databinding.ActivityMainBinding
 import com.thellex.pos.features.onboarding.OnboardingActivity
 import com.thellex.pos.network.services.ApiClient
 import com.thellex.pos.network.services.SocketService
-import com.thellex.pos.features.pos.ui.POSActivity
+import com.thellex.pos.features.pos.ui.POSHomeActivity
 import com.thellex.pos.features.auth.ui.LoginActivity
 import com.thellex.pos.features.auth.viewModel.UserViewModelFactory
 import kotlinx.coroutines.Dispatchers
@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun navigateToDashboard() = withContext(Dispatchers.Main){
-        startActivity(Intent(this@MainActivity, POSActivity::class.java))
+        startActivity(Intent(this@MainActivity, POSHomeActivity::class.java))
         finish()
     }
 

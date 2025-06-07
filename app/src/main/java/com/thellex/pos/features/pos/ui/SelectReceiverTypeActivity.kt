@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.thellex.pos.R
 
 
-class POSReceiverTypeActivity : AppCompatActivity() {
+class SelectReceiverTypeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

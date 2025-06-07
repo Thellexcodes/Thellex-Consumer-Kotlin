@@ -2,55 +2,150 @@ package com.thellex.pos.features.wallet.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import androidx.activity.enableEdgeToEdge
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.thellex.pos.core.decorators.ItemSpacingDecoration
 import com.thellex.pos.R
+import com.thellex.pos.core.decorators.ItemSpacingDecoration
+import com.thellex.pos.features.auth.viewModel.UserViewModel
+import com.thellex.pos.features.auth.viewModel.UserViewModelFactory
 import com.thellex.pos.features.pos.adapters.Asset
 import com.thellex.pos.features.pos.adapters.AssetAdapter
+import com.thellex.pos.features.wallet.model.WalletEntry
+import com.thellex.pos.features.wallet.model.WalletManagerBalanceResponse
+import com.thellex.pos.features.wallet.model.WalletManagerModelFactory
+import com.thellex.pos.features.wallet.model.WalletManagerViewModel
+import com.thellex.pos.features.wallet.prefrences.WalletManagerPreferences
+import com.thellex.pos.network.services.ApiClient
+import com.thellex.pos.utils.Helpers
+import com.thellex.pos.utils.Helpers.formatDecimal
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 
 class WalletAssetsActivity : AppCompatActivity() {
+    private lateinit var walletPreferences: WalletManagerPreferences
+    private lateinit var userViewModel: UserViewModel
+    private lateinit var walletManagerViewModel: WalletManagerViewModel
+    private lateinit var walletAssetsAdapter: AssetAdapter
+    private lateinit var textTotalBalance: TextView
+    private val assetsList = mutableListOf<Asset>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_wallet_assets)
 
-        val rootView = findViewById<View>(android.R.id.content)
-        val statusBarHeight = resources.getIdentifier("status_bar_height", "dimen", "android").let { resId ->
-            if (resId > 0) resources.getDimensionPixelSize(resId) else 0
+        setupViewModels()
+        walletPreferences = walletManagerViewModel.getWalletPreferences()
+
+        setupRecyclerView()
+        textTotalBalance = findViewById(R.id.activity_wallet_balance_amount)
+
+        loadWalletData()
+    }
+
+    private fun setupViewModels() {
+        walletManagerViewModel = ViewModelProvider(
+            this,
+            WalletManagerModelFactory(applicationContext)
+        )[WalletManagerViewModel::class.java]
+
+        userViewModel = ViewModelProvider(
+            this,
+            UserViewModelFactory(applicationContext)
+        )[UserViewModel::class.java]
+    }
+
+    private fun setupRecyclerView() {
+        walletAssetsAdapter = AssetAdapter(assetsList) { asset ->
+            val intent = Intent(this, AssetBalanceActivity::class.java)
+            intent.putExtra("asset_symbol", asset.symbol)
+            startActivity(intent)
         }
-        val navBarHeight = resources.getIdentifier("navigation_bar_height", "dimen", "android").let { resId ->
-            if (resId > 0) resources.getDimensionPixelSize(resId) else 0
-        }
 
-        // Apply bottom padding equal to navigation bar height
-        rootView.setPadding(
-            rootView.paddingLeft,
-            statusBarHeight,
-            rootView.paddingRight,
-            navBarHeight
-        )
-
-        val sampleAssets = listOf(
-            Asset("USDT", "3.874", "17,267.07", "24,000.00", R.drawable.icon_usdt),
-            Asset("USDC", "12.450", "11,390.50", "15,800.00", R.drawable.icon_usdc),
-            Asset("PYUSD", "0.500", "500.00", "750.00", R.drawable.icon_pyusd),
-            Asset("NGN", "100.00", "100.00", "150,000.00", R.drawable.icon_nigerian_flag),
-        )
-
-        // Initialize RecyclerView
         val recyclerViewWalletAssets = findViewById<RecyclerView>(R.id.activity_wallet_assets_recycler)
-        val walletAssetsAdapter = AssetAdapter(sampleAssets){
-            startActivity(Intent(this, SingleAssetBalanceActivity::class.java))
-        }
-
         recyclerViewWalletAssets.layoutManager = LinearLayoutManager(this)
         recyclerViewWalletAssets.adapter = walletAssetsAdapter
 
         val itemSpacing = resources.getDimensionPixelSize(R.dimen.margin_2dp)
         recyclerViewWalletAssets.addItemDecoration(ItemSpacingDecoration(itemSpacing))
+    }
+
+    private fun loadWalletData() {
+        val cachedWallet = walletPreferences.getWalletBalance()
+
+        if (cachedWallet != null) {
+            updateUIFromResponse(cachedWallet)
+            // Optional: Refresh data in background without blocking UI
+            fetchWalletBalances(forceRefresh = false)
+        } else {
+            fetchWalletBalances(forceRefresh = true)
+        }
+    }
+
+    private fun updateUIFromResponse(response: WalletManagerBalanceResponse) {
+        val currency = response.currency ?: "N/A"
+        val totalBalance = response.totalBalance ?: "0"
+
+        textTotalBalance.text = "$totalBalance $currency"
+
+        val wallets = response.wallets
+        if (wallets.isEmpty()) {
+            walletAssetsAdapter.updateData(emptyList())
+            return
+        }
+
+        val newAssets = wallets.map { wallet: WalletEntry ->
+            Asset(
+                symbol = wallet.assetCode?.uppercase() ?: "N/A",
+                amount = formatDecimal(wallet.balanceInUsd ?: 0.0),
+                usdValue = formatDecimal(wallet.balanceInUsd ?: 0.0),
+                valueInLocal = formatDecimal(wallet.balanceInNgn ?: 0.0),
+                iconResId = Helpers.getIconResIdForToken(wallet.assetCode ?: "")
+            )
+        }
+
+        walletAssetsAdapter.updateData(newAssets)
+    }
+
+    private fun fetchWalletBalances(forceRefresh: Boolean) {
+        lifecycleScope.launch {
+            val token = withTimeoutOrNull(5000) {
+                userViewModel.token.first { !it.isNullOrBlank() }
+            }
+
+            if (token.isNullOrBlank()) {
+                return@launch
+            }
+
+            if (!forceRefresh) {
+                // If not forced, maybe check last update time here (optional)
+            }
+
+            try {
+                val api = ApiClient.getAuthenticatedWalletManagerApi(token)
+                val response = api.fetchBalance()
+
+                val walletBalanceResponse = response.result
+
+                if (walletBalanceResponse == null || walletBalanceResponse.wallets.isNullOrEmpty()) {
+                    return@launch
+                }
+
+                // Save fresh response to preferences
+                walletPreferences.saveWalletBalance(walletBalanceResponse)
+
+                withContext(Dispatchers.Main) {
+                    updateUIFromResponse(walletBalanceResponse)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 }

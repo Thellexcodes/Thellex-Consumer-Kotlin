@@ -6,7 +6,7 @@
         android:background="@drawable/general_gradient_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".features.dashboard.MainActivity">
+        tools:context=".features.dashboard.ui.MainActivity">
 
     <ImageView
             android:id="@+id/imageView"

@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/general_gradient_background"
         android:paddingTop="20dp"
-        tools:context=".features.wallet.ui.SingleAssetBalanceActivity">
+        tools:context=".features.wallet.ui.AssetBalanceActivity">
 
     <!-- Top App Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -89,6 +89,7 @@
     </LinearLayout>
 
     <LinearLayout
+            android:visibility="gone"
             android:id="@+id/single_asset_balance_actions_container"
             android:layout_width="match_parent"
             android:paddingHorizontal="20dp"

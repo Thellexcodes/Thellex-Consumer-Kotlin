@@ -6,9 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.thellex.pos.databinding.ActivitySingleAssetDepositBinding
-import com.thellex.pos.features.pos.ui.PosAddressGeneratorActivity
+import com.thellex.pos.features.pos.ui.GeneratePOSAddressActivity
 
-class SingleAssetDepositActivity : AppCompatActivity() {
+class AssetDepositActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySingleAssetDepositBinding
 
@@ -30,7 +30,7 @@ class SingleAssetDepositActivity : AppCompatActivity() {
         }
 
         binding.sadCryptoDepositCard.setOnClickListener {
-            startActivity(Intent(this, PosAddressGeneratorActivity::class.java))
+            startActivity(Intent(this, GeneratePOSAddressActivity::class.java))
         }
     }
 }

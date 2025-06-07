@@ -7,7 +7,7 @@ import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.thellex.pos.R
 
-class SelectPaymentMethodActivity : AppCompatActivity() {
+class SelectCryptoCurrencyActivity : AppCompatActivity() {
     private lateinit var paymentCard1: View
     private lateinit var paymentCard2: View
 
@@ -59,13 +59,13 @@ class SelectPaymentMethodActivity : AppCompatActivity() {
         paymentCard1.setOnClickListener {
 //            scaleUp.start()
 //            scaleDown.start()
-            startActivity(Intent(this, WithdrawalSummaryActivity::class.java))
+            startActivity(Intent(this, POSWithdrawalSummaryActivity::class.java))
         }
 
         paymentCard2.setOnClickListener {
 //            scaleUp.start()
 //            scaleDown.start()
-            startActivity(Intent(this, WithdrawalSummaryActivity::class.java))
+            startActivity(Intent(this, POSWithdrawalSummaryActivity::class.java))
         }
     }
 }

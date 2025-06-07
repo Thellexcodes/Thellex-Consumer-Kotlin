@@ -5,7 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.thellex.pos.R
 
-class WithdrawalSummaryActivity : AppCompatActivity() {
+class POSWithdrawalSummaryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_withdrawal_summary)

@@ -12,6 +12,7 @@ import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
 import kotlinx.serialization.json.Json
+import java.math.BigDecimal
 import java.util.Locale
 
 object Helpers {
@@ -140,5 +141,9 @@ object Helpers {
         }
     }
 
+    fun formatDecimal(value: Double): String {
+        // You can customize decimal places or formatting here
+        return BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString()
+    }
 }
 

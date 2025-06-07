@@ -40,7 +40,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.OkHttpClient
 
-class PosAddressGeneratorActivity : AppCompatActivity() {
+class GeneratePOSAddressActivity : AppCompatActivity() {
     private lateinit var paymentType: PaymentType
     private lateinit var client: OkHttpClient
     private lateinit var selectedBlockchain: SupportedBlockchain
@@ -163,12 +163,12 @@ class PosAddressGeneratorActivity : AppCompatActivity() {
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(this@PosAddressGeneratorActivity, "Request failed", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@GeneratePOSAddressActivity, "Request failed", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@PosAddressGeneratorActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@GeneratePOSAddressActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }

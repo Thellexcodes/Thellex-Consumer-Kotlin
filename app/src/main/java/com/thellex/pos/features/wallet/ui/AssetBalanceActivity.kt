@@ -6,7 +6,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.thellex.pos.databinding.ActivitySingleAssetBalanceBinding
 
-class SingleAssetBalanceActivity : AppCompatActivity() {
+class AssetBalanceActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySingleAssetBalanceBinding
 

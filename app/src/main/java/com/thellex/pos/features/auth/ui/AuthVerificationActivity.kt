@@ -13,7 +13,7 @@ import com.mukeshsolanki.OtpView
 import com.thellex.pos.R
 import com.thellex.pos.network.services.ApiClient
 import com.thellex.pos.data.model.VerifyUserDto
-import com.thellex.pos.features.pos.ui.POSActivity
+import com.thellex.pos.features.pos.ui.POSHomeActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -110,7 +110,7 @@ class AuthVerificationActivity : AppCompatActivity() {
     }
 
     private fun navigateToQuickActions(){
-        val intent = Intent(this, POSActivity::class.java)
+        val intent = Intent(this, POSHomeActivity::class.java)
         startActivity(intent)
         finish()
     }
