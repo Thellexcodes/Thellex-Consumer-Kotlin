@@ -9,7 +9,7 @@
         android:paddingHorizontal="20dp"
         android:paddingTop="20dp"
         android:background="@drawable/general_gradient_background"
-        tools:context=".WalletAssetsActivity">
+        tools:context=".features.wallet.ui.WalletAssetsActivity">
 
     <!-- Top App Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout

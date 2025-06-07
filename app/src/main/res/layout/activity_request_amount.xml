@@ -8,7 +8,7 @@
         android:paddingTop="20dp"
         android:paddingHorizontal="20dp"
         android:background="@drawable/general_gradient_background"
-        tools:context=".RequestAmountActivity">
+        tools:context=".features.pos.ui.RequestAmountActivity">
 
     <!-- Top App Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout

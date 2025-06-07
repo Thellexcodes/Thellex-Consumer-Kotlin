@@ -21,67 +21,67 @@
             android:networkSecurityConfig="@xml/network_security_config"
             tools:targetApi="31">
             <activity
-                    android:name=".AuthVerificationActivity"
+                    android:name=".features.auth.ui.AuthVerificationActivity"
                     android:exported="false"
                     android:theme="@style/Theme.Thellex" />
             <activity
-                    android:name=".DynamicFiatAccountActivity"
+                    android:name=".features.fiat.DynamicFiatAccountActivity"
                     android:exported="false" />
             <activity
-                    android:name=".RequestAmountActivity"
+                    android:name=".features.pos.ui.RequestAmountActivity"
                     android:exported="false" />
             <activity
-                    android:name=".WithdrawalSummaryActivity"
+                    android:name=".features.pos.ui.WithdrawalSummaryActivity"
                     android:exported="false" />
             <activity
-                    android:name=".SelectPaymentMethodActivity"
+                    android:name=".features.pos.ui.SelectPaymentMethodActivity"
                     android:exported="false" />
             <activity
-                    android:name=".SingleAssetDepositActivity"
+                    android:name=".features.wallet.ui.SingleAssetDepositActivity"
                     android:exported="false" />
             <activity
-                    android:name=".SingleAssetBalanceActivity"
+                    android:name=".features.wallet.ui.SingleAssetBalanceActivity"
                     android:exported="false" />
             <activity
-                    android:name=".WalletAssetsActivity"
+                    android:name=".features.wallet.ui.WalletAssetsActivity"
                     android:exported="false" />
             <activity
-                    android:name=".ui.login.LoginPinActivity"
+                    android:name=".features.auth.ui.LoginPinActivity"
                     android:exported="false" />
             <activity
-                    android:name=".QuickActionsActivity"
+                    android:name=".features.pos.ui.QuickActionsActivity"
                     android:exported="false"
                     android:theme="@style/Theme.Thellex" />
             <activity
-                    android:name=".ui.login.LoginActivity"
+                    android:name=".features.auth.ui.LoginActivity"
                     android:exported="false"
                     android:label="@string/title_activity_login" />
             <activity
-                    android:name=".POSActivity"
+                    android:name=".features.pos.ui.POSActivity"
                     android:exported="false"
                     android:label="POSActivity" />
             <activity
-                    android:name=".POSChooseCryptoActivity"
+                    android:name=".features.pos.ui.POSChooseCryptoActivity"
                     android:exported="false"
                     android:label="POSChooseCryptoActivity" />
             <activity
-                    android:name=".RequestAssetsActivity"
+                    android:name=".features.wallet.ui.RequestAssetsActivity"
                     android:exported="false"
                     android:label="RequestAssetsActivity" />
             <activity
-                    android:name=".POSReceiverTypeActivity"
+                    android:name=".features.pos.ui.POSReceiverTypeActivity"
                     android:exported="false"
                     android:label="POSReceiverTypeActivity" />
             <activity
-                    android:name=".PosAddressGeneratorActivity"
+                    android:name=".features.pos.ui.PosAddressGeneratorActivity"
                     android:exported="false"
                     android:label="POSAddressGeneratorActivity" />
             <activity
-                    android:name=".OnboardingActivity"
+                    android:name=".features.onboarding.OnboardingActivity"
                     android:exported="false"
                     android:theme="@style/Theme.Thellex" />
             <activity
-                    android:name=".MainActivity"
+                    android:name=".features.dashboard.MainActivity"
                     android:exported="true"
                     android:theme="@style/Theme.Thellex">
                 <intent-filter>
@@ -92,7 +92,7 @@
             </activity>
 
             <service
-                    android:name=".services.SocketService"
+                    android:name=".network.services.SocketService"
                     android:foregroundServiceType="dataSync"
                     android:enabled="true"
                     android:exported="false" />

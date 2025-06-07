@@ -8,7 +8,7 @@
         android:background="@drawable/general_gradient_background"
         android:paddingTop="20dp"
         android:paddingHorizontal="20dp"
-        tools:context=".DynamicFiatAccountActivity">
+        tools:context=".features.fiat.DynamicFiatAccountActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/dynamicFiatAccount_top_app_bar_container"

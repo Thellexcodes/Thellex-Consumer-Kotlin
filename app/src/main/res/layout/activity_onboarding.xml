@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         android:background="@drawable/general_gradient_background"
-        tools:context=".OnboardingActivity">
+        tools:context=".features.onboarding.OnboardingActivity">
 
     <!-- Vertical Guideline at 70% -->
     <androidx.constraintlayout.widget.Guideline

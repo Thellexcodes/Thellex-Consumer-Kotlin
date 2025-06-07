@@ -5,16 +5,14 @@ import android.os.Looper
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputLayout
 import com.thellex.pos.R
-import com.thellex.pos.enums.ERRORS
+import com.thellex.pos.data.enums.ERRORS
 import com.thellex.pos.data.model.ErrorResponse
 import com.thellex.pos.data.model.TransactionStatus
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
 import kotlinx.serialization.json.Json
-import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.TimeZone
 
 object Helpers {
     public fun getNavigationBarHeight(context: Context): Int {

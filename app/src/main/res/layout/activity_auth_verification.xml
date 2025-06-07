@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:paddingTop="20dp"
         android:background="@drawable/general_gradient_background"
-        tools:context=".AuthVerificationActivity">
+        tools:context=".features.auth.ui.AuthVerificationActivity">
 
     <!-- Guideline at 45% from the top (so the bottom section is 55%) -->
     <androidx.constraintlayout.widget.Guideline

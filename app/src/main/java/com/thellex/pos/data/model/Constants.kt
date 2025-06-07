@@ -24,4 +24,6 @@ object Constants {
     const val WITHDRAW_PAYMENT_ENDPOINT = "payments/withdraw"
     const val OFF_RAMP_PAYMENT_ENDPOINT = "payments/off-ramp"
 
+    // Wallet Manager Endpoints
+    const val WALLET_MANAGER_BALANCE_ENDPOINT= "wallet-manager/balance"
 }

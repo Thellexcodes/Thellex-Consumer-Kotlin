@@ -1,7 +1,7 @@
 package com.thellex.pos.data.model
 
 import com.google.gson.annotations.SerializedName
-import com.thellex.pos.enums.TierEnum
+import com.thellex.pos.data.enums.TierEnum
 import java.util.Date
 
 data class DKycEntity(

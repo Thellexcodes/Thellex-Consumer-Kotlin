@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/general_gradient_background"
-        tools:context=".QuickActionsActivity">
+        tools:context=".features.pos.ui.QuickActionsActivity">
 
     <androidx.fragment.app.FragmentContainerView
             android:id="@+id/nav_host_fragment"

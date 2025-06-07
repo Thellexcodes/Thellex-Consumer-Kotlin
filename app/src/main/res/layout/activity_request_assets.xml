@@ -7,7 +7,7 @@
         android:background="@drawable/general_gradient_background"
         android:paddingTop="56dp"
         android:paddingHorizontal="20dp"
-        tools:context=".RequestAssetsActivity">
+        tools:context=".features.wallet.ui.RequestAssetsActivity">
 
     <!-- Main container for the layout -->
     <LinearLayout
