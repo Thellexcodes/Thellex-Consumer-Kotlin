@@ -39,7 +39,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:fontFamily="@font/outfit_medium"
-                                        android:text="Stellar Wallet"
+                                        android:text="Wallet Address"
                                         android:textColor="@color/white"
                                         android:textSize="14sp"
                                         android:textStyle="bold" />
@@ -48,7 +48,7 @@
                                         android:fontFamily="@font/kumbhsans_regular"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Send to any Stellar or federation address."
+                                        android:text="Send to any wallet or federation address."
                                         android:textColor="@color/white"
                                         android:textSize="12sp" />
                         </LinearLayout>

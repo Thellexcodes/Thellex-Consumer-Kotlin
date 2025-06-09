@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.thellex.pos.core.decorators.ItemSpacingDecoration
 import com.thellex.pos.features.pos.adapters.POSTransactionAdapter
 import com.thellex.pos.R
+import com.thellex.pos.core.utils.Helpers
+import com.thellex.pos.core.utils.Helpers.parseDate
 import com.thellex.pos.data.model.UserPreferences
 import com.thellex.pos.settings.PaymentType
 import com.thellex.pos.features.auth.viewModel.UserViewModelFactory
@@ -125,13 +127,4 @@ class POSHomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun parseDate(dateString: String?): Date? {
-        return try {
-            // Adjust the pattern to your actual created_at format
-            val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-            formatter.parse(dateString ?: "")
-        } catch (e: Exception) {
-            null
-        }
-    }
 }

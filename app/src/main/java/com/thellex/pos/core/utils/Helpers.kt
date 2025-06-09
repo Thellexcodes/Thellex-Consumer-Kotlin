@@ -1,8 +1,10 @@
 package com.thellex.pos.core.utils
 
 import android.content.Context
+import android.os.Build
 import android.os.Looper
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import com.google.android.material.textfield.TextInputLayout
 import com.thellex.pos.R
 import com.thellex.pos.data.enums.ERRORS
@@ -13,7 +15,13 @@ import java.security.cert.X509Certificate
 import javax.net.ssl.*
 import kotlinx.serialization.json.Json
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 object Helpers {
     public fun getNavigationBarHeight(context: Context): Int {
@@ -144,6 +152,54 @@ object Helpers {
     fun formatDecimal(value: Double): String {
         // You can customize decimal places or formatting here
         return BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString()
+    }
+
+    fun parseDate(dateString: String?): Date? {
+        return try {
+            // Adjust the pattern to your actual created_at format
+            val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+            formatter.parse(dateString ?: "")
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun formatTransactionDate(createdAtStr: String?): String {
+        if (createdAtStr.isNullOrEmpty()) return "N/A"
+        return createdAtStr.toString()
+//        return try {
+//            // Parse ISO8601 date string to Date
+//            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+//            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+//            val date: Date = inputFormat.parse(createdAtStr) ?: return "N/A"
+//
+//            // Format time part like "11:28 PM"
+//            val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
+//
+//            // Format date part like "Jun 9, 2025"
+//            val dateFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+//
+//            // Check if date is today
+//            val today = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+//            val transactionDay = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(date)
+//
+//            if (transactionDay == today) {
+//                "Today, ${timeFormat.format(date)}"
+//            } else {
+//                "${dateFormat.format(date)}, ${timeFormat.format(date)}"
+//            }
+//        } catch (e: Exception) {
+//            "N/A"
+//        }
+    }
+
+    fun convertToUsd(currency: String, amountStr: String): String {
+        return try {
+            val amount = amountStr.toDouble()
+            String.format("%.2f", amount)  // For demo, just return amount formatted to 2 decimals
+        } catch (e: Exception) {
+            "0.00"
+        }
     }
 }
 

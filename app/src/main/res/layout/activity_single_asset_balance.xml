@@ -58,34 +58,20 @@
                 android:layout_gravity="center_horizontal">
 
             <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:src="@drawable/icon_usdt" />
 
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="USDT Balance"
+                    android:text="USDT"
                     android:textColor="@color/white"
-                    android:textSize="10sp"
+                    android:textSize="24sp"
                     android:fontFamily="@font/kumbhsans_bold" />
-
-            <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/icon_eye" />
         </LinearLayout>
 
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="232.89 USD"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:fontFamily="@font/outfit_light" />
     </LinearLayout>
 
     <LinearLayout
@@ -194,17 +180,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-                android:id="@+id/single_asset_balance_transaction_see_all"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="SEE All"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:fontFamily="@font/kumbhsans_bold"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/single_asset_balance_transaction_title"
-                app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/single_asset_balance_transaction_recycler_view"

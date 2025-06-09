@@ -29,9 +29,9 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 
 class WalletAssetsActivity : AppCompatActivity() {
-    private lateinit var walletPreferences: WalletManagerPreferences
     private lateinit var userViewModel: UserViewModel
     private lateinit var walletManagerViewModel: WalletManagerViewModel
+    private lateinit var walletPreferences: WalletManagerPreferences
     private lateinit var walletAssetsAdapter: AssetAdapter
     private lateinit var textTotalBalance: TextView
     private val assetsList = mutableListOf<Asset>()
