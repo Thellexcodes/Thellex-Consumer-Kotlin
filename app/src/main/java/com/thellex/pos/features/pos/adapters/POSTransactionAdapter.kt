@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.thellex.pos.R
 import com.thellex.pos.data.model.PosTransaction
 import com.thellex.pos.data.model.TransactionHistoryEntity
-import com.thellex.pos.utils.Helpers.formatTimestamp
-import com.thellex.pos.utils.Helpers.getIconResIdForToken
-import com.thellex.pos.utils.Helpers.getStatusIconResId
-import com.thellex.pos.utils.Helpers.mapToTransactionStatus
+import com.thellex.pos.core.utils.Helpers.formatTimestamp
+import com.thellex.pos.core.utils.Helpers.getIconResIdForToken
+import com.thellex.pos.core.utils.Helpers.getStatusIconResId
+import com.thellex.pos.core.utils.Helpers.mapToTransactionStatus
 import java.util.Locale
 
 class POSTransactionAdapter(

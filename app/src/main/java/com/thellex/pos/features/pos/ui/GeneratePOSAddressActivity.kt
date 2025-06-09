@@ -32,7 +32,7 @@ import com.thellex.pos.settings.PaymentType
 import com.thellex.pos.settings.SupportedBlockchain
 import com.thellex.pos.settings.Token
 import com.thellex.pos.features.auth.viewModel.UserViewModelFactory
-import com.thellex.pos.utils.Helpers
+import com.thellex.pos.core.utils.Helpers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

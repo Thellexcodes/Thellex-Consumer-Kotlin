@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/general_gradient_background"
+        android:padding="20dp"
+        tools:context=".features.wallet.ui.EnterAmountActivity">
+
+        <!-- Back Arrow -->
+        <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:src="@drawable/icon_back"
+                android:contentDescription="Back"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Amount Text -->
+        <TextView
+                android:id="@+id/amountText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1 USDT"
+                android:textSize="32sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/kumbhsans_bold"
+                app:layout_constraintTop_toBottomOf="@id/backButton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="32dp"/>
+
+        <!-- Amount in USD -->
+        <TextView
+                android:id="@+id/usdValueText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$0.33"
+                android:textColor="@color/steelBlueGrey"
+                android:textSize="16sp"
+                android:fontFamily="@font/kumbhsans_regular"
+                app:layout_constraintTop_toBottomOf="@id/amountText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp"/>
+
+        <!-- Balance Card -->
+        <LinearLayout
+                android:id="@+id/balanceCard"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_fec001_shape"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/usdValueText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="32dp">
+
+            <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/icon_info_circle"
+                    android:contentDescription="Warning" />
+
+            <TextView
+                    android:id="@+id/balanceText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Available Balance: 23.978 USDT"
+                    android:textColor="@color/goldenYellow"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:layout_marginStart="8dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/maxButton"
+                    android:layout_width="78dp"
+                    android:layout_height="28dp"
+                    android:background="@drawable/rounded_golden_yellow_shape"
+                    android:text="MAX"
+                    android:textSize="10sp"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:textColor="@color/midnight"
+                    style="?android:attr/borderlessButtonStyle"/>
+        </LinearLayout>
+
+
+    <!-- Sign Up Text -->
+    <LinearLayout
+            android:id="@+id/keypadContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="79dp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/balanceCard">
+
+        <GridLayout
+                android:id="@+id/keypad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:rowCount="4"
+                android:columnCount="3"
+                android:gravity="center"
+                android:useDefaultMargins="true">
+
+            <!-- Digits 1–9 -->
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="1"
+                    style="@style/EnterAmountButtonPinStyle"
+                    android:gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="2"
+                    style="@style/EnterAmountButtonPinStyle"
+                    android:gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="3"
+                    style="@style/EnterAmountButtonPinStyle"
+                    android:gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="4"
+                    style="@style/EnterAmountButtonPinStyle"
+                    android:gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="5"
+                    style="@style/EnterAmountButtonPinStyle"
+                    android:gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="6"
+                    style="@style/EnterAmountButtonPinStyle"
+                    android:gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="7"
+                    style="@style/EnterAmountButtonPinStyle"
+                    android:gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="8"
+                    style="@style/EnterAmountButtonPinStyle"
+                    android:gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="9"
+                    style="@style/EnterAmountButtonPinStyle"
+                    android:gravity="center" />
+
+            <!-- Dot, 0, Delete -->
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="."
+                    style="@style/EnterAmountButtonPinStyle"
+                    android:gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="0"
+                    style="@style/EnterAmountButtonPinStyle"
+                    android:gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                    android:text="⌫"
+                    android:id="@+id/deleteButton"
+                    style="@style/EnterAmountButtonPinStyle"
+                    android:gravity="center" />
+        </GridLayout>
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:layout_marginTop="79dp"
+            android:id="@+id/activity_enter_amount_continueButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/button_ripple"
+            android:text="Continue"
+            android:elevation="0dp"
+            android:fontFamily="@font/kumbhsans_bold"
+            android:textColor="@color/dark_purple"
+            android:textSize="10sp"
+            app:layout_constraintTop_toBottomOf="@+id/keypadContainer" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,4 @@
-package com.thellex.pos.data.model
+package com.thellex.pos.core.utils
 
 object Constants {
     val BASE_URL: String
@@ -14,9 +14,9 @@ object Constants {
                 || android.os.Build.MODEL.contains("Emulator")
                 || android.os.Build.MODEL.contains("Android SDK built for x86")
     }
-    const val LOGIN_ENDPOINT = "user"
+    const val LOGIN_ENDPOINT = "user/access"
     const val VERIFY_CODE_ENDPOINT = "user/verify"
-    const val AUTH_LOGIN_ENDPOINT = "user/authLogin"
+    const val AUTH_LOGIN_ENDPOINT = "user/authenticate"
 
     // Payment Endpoints
     const val REQUEST_CRYPTO_PAYMENT_ENDPOINT = "payments/request-crypto"

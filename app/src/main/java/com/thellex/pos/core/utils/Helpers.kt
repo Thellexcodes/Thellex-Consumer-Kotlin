@@ -1,4 +1,4 @@
-package com.thellex.pos.utils
+package com.thellex.pos.core.utils
 
 import android.content.Context
 import android.os.Looper

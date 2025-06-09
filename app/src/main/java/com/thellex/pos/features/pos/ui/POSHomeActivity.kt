@@ -51,7 +51,7 @@ class POSHomeActivity : AppCompatActivity() {
 
         setupRecyclerView()
 
-        observeUserTransactions()
+//        observeUserTransactions()
 
         setupClickListeners()
     }

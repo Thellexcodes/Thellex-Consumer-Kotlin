@@ -1,10 +1,13 @@
 package com.thellex.pos.features.wallet.ui
 
 import android.os.Bundle
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.thellex.pos.R
 import com.thellex.pos.databinding.ActivitySingleAssetBalanceBinding
+import com.thellex.pos.features.wallet.fragments.SendBottomSheetFragment
 
 class AssetBalanceActivity : AppCompatActivity() {
 
@@ -26,6 +29,12 @@ class AssetBalanceActivity : AppCompatActivity() {
                 systemBarsInsets.bottom
             )
             insets
+        }
+
+        val sendTextView = findViewById<LinearLayout>(R.id.activity_single_asset_balance_send_button)
+        sendTextView.setOnClickListener {
+            val bottomSheet = SendBottomSheetFragment()
+            bottomSheet.show(supportFragmentManager, bottomSheet.tag)
         }
 
 //        val transactionList = listOf(

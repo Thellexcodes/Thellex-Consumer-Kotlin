@@ -1,6 +1,6 @@
 package com.thellex.pos.network.services
 
-import com.thellex.pos.data.model.Constants
+import com.thellex.pos.core.utils.Constants
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

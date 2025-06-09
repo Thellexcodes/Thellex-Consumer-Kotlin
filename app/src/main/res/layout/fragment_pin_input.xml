@@ -14,32 +14,19 @@
                 android:rowCount="4">
 
                 <!-- Row 1 -->
-                <androidx.appcompat.widget.AppCompatButton android:text="1" style="@style/KeypadButton"/>
-                <androidx.appcompat.widget.AppCompatButton android:text="2" style="@style/KeypadButton"/>
-                <androidx.appcompat.widget.AppCompatButton android:text="3" style="@style/KeypadButton"/>
+                <androidx.appcompat.widget.AppCompatButton android:text="1" style="@style/LoginPinButtonStyle"/>
+                <androidx.appcompat.widget.AppCompatButton android:text="2" style="@style/LoginPinButtonStyle"/>
+                <androidx.appcompat.widget.AppCompatButton android:text="3" style="@style/LoginPinButtonStyle"/>
 
                 <!-- Row 2 -->
-                <androidx.appcompat.widget.AppCompatButton android:text="4" style="@style/KeypadButton"/>
-                <androidx.appcompat.widget.AppCompatButton android:text="5" style="@style/KeypadButton"/>
-                <androidx.appcompat.widget.AppCompatButton android:text="6" style="@style/KeypadButton"/>
+                <androidx.appcompat.widget.AppCompatButton android:text="4" style="@style/LoginPinButtonStyle"/>
+                <androidx.appcompat.widget.AppCompatButton android:text="5" style="@style/LoginPinButtonStyle"/>
+                <androidx.appcompat.widget.AppCompatButton android:text="6" style="@style/LoginPinButtonStyle"/>
 
                 <!-- Row 3 -->
-                <androidx.appcompat.widget.AppCompatButton android:text="7" style="@style/KeypadButton"/>
-                <androidx.appcompat.widget.AppCompatButton android:text="8" style="@style/KeypadButton"/>
-                <androidx.appcompat.widget.AppCompatButton android:text="9" style="@style/KeypadButton"/>
-
-
-<!--                <androidx.appcompat.widget.AppCompatButton-->
-<!--                        android:id="@+id/buttonFaceId"-->
-<!--                        android:background="@drawable/keypad_button_bg"-->
-<!--                        android:layout_width="69dp"-->
-<!--                        android:layout_height="69dp"-->
-<!--                        android:layout_margin="8dp"-->
-<!--                        android:contentDescription="Face ID"-->
-<!--                        android:drawableTop="@drawable/icon_face_id"-->
-<!--                        android:gravity="center"-->
-<!--                        android:padding="8dp"-->
-<!--                        />-->
+                <androidx.appcompat.widget.AppCompatButton android:text="7" style="@style/LoginPinButtonStyle"/>
+                <androidx.appcompat.widget.AppCompatButton android:text="8" style="@style/LoginPinButtonStyle"/>
+                <androidx.appcompat.widget.AppCompatButton android:text="9" style="@style/LoginPinButtonStyle"/>
 
                 <FrameLayout
                         android:layout_width="wrap_content"
@@ -47,7 +34,7 @@
 
                         <androidx.appcompat.widget.AppCompatButton
                                 android:id="@+id/buttonFaceId"
-                                style="@style/KeypadButton"
+                                style="@style/LoginPinButtonStyle"
                                 android:text=""
                                 android:contentDescription="Face ID"/>
 
@@ -59,12 +46,12 @@
                                 android:elevation="5dp" />
                 </FrameLayout>
 
+                <androidx.appcompat.widget.AppCompatButton android:text="0" style="@style/LoginPinButtonStyle"/>
 
-                <androidx.appcompat.widget.AppCompatButton android:text="0" style="@style/KeypadButton"/>
                 <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/buttonBackspace"
                         android:text="←"
-                        style="@style/KeypadButton"/>
+                        style="@style/LoginPinButtonStyle"/>
         </GridLayout>
 
 </LinearLayout>

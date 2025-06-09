@@ -1,7 +1,7 @@
 package com.thellex.pos.network.services
 
 import com.thellex.pos.data.model.ApiResponse
-import com.thellex.pos.data.model.Constants
+import com.thellex.pos.core.utils.Constants
 import com.thellex.pos.data.model.CreateRequestPaymentDto
 import com.thellex.pos.data.model.RequestPaymentResponse
 import retrofit2.http.Body

@@ -14,88 +14,100 @@
             android:fullBackupContent="@xml/backup_rules"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
+            android:networkSecurityConfig="@xml/network_security_config"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/Theme.Thellex"
             android:usesCleartextTraffic="true"
-            android:networkSecurityConfig="@xml/network_security_config"
             tools:targetApi="31">
-            <activity
-                    android:name=".features.auth.ui.AuthVerificationActivity"
-                    android:exported="false"
-                    android:theme="@style/Theme.Thellex" />
-            <activity
-                    android:name=".features.fiat.ManageFiatAccountActivity"
-                    android:exported="false" />
-            <activity
-                    android:name=".features.pos.ui.EnterTransactionAmountActivity"
-                    android:exported="false" />
-            <activity
-                    android:name=".features.pos.ui.POSWithdrawalSummaryActivity"
-                    android:exported="false" />
-            <activity
-                    android:name=".features.pos.ui.SelectCryptoCurrencyActivity"
-                    android:exported="false" />
-            <activity
-                    android:name=".features.wallet.ui.AssetDepositActivity"
-                    android:exported="false" />
-            <activity
-                    android:name=".features.wallet.ui.AssetBalanceActivity"
-                    android:exported="false" />
-            <activity
-                    android:name=".features.wallet.ui.WalletAssetsActivity"
-                    android:exported="false" />
-            <activity
-                    android:name=".features.auth.ui.LoginPinActivity"
-                    android:exported="false" />
-            <activity
-                    android:name=".features.pos.ui.POSQuickActionsActivity"
-                    android:exported="false"
-                    android:theme="@style/Theme.Thellex" />
-            <activity
-                    android:name=".features.auth.ui.LoginActivity"
-                    android:exported="false"
-                    android:label="@string/title_activity_login" />
-            <activity
-                    android:name=".features.pos.ui.POSHomeActivity"
-                    android:exported="false"
-                    android:label="POSActivity" />
-            <activity
-                    android:name=".features.pos.ui.POSChooseCryptoActivity"
-                    android:exported="false"
-                    android:label="POSChooseCryptoActivity" />
-            <activity
-                    android:name=".features.wallet.ui.RequestAssetsActivity"
-                    android:exported="false"
-                    android:label="RequestAssetsActivity" />
-            <activity
-                    android:name=".features.pos.ui.SelectReceiverTypeActivity"
-                    android:exported="false"
-                    android:label="POSReceiverTypeActivity" />
-            <activity
-                    android:name=".features.pos.ui.GeneratePOSAddressActivity"
-                    android:exported="false"
-                    android:label="POSAddressGeneratorActivity" />
-            <activity
-                    android:name=".features.onboarding.OnboardingActivity"
-                    android:exported="false"
-                    android:theme="@style/Theme.Thellex" />
-            <activity
-                    android:name=".features.dashboard.ui.MainActivity"
-                    android:exported="true"
-                    android:theme="@style/Theme.Thellex">
-                <intent-filter>
-                    <action android:name="android.intent.action.MAIN" />
+        <activity
+                android:name=".features.wallet.ui.TransactionSuccessActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.wallet.ui.TransactionConfirmActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.wallet.ui.EnterAmountActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.wallet.ui.SendToWalletActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.auth.ui.AuthVerificationActivity"
+                android:exported="false"
+                android:theme="@style/Theme.Thellex" />
+        <activity
+                android:name=".features.fiat.ManageFiatAccountActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.pos.ui.EnterTransactionAmountActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.pos.ui.POSWithdrawalSummaryActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.pos.ui.SelectCryptoCurrencyActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.wallet.ui.AssetDepositActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.wallet.ui.AssetBalanceActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.wallet.ui.WalletAssetsActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.auth.ui.LoginPinActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.pos.ui.POSQuickActionsActivity"
+                android:exported="false"
+                android:theme="@style/Theme.Thellex" />
+        <activity
+                android:name=".features.auth.ui.LoginActivity"
+                android:exported="false"
+                android:label="@string/title_activity_login" />
+        <activity
+                android:name=".features.pos.ui.POSHomeActivity"
+                android:exported="false"
+                android:label="POSActivity" />
+        <activity
+                android:name=".features.pos.ui.POSChooseCryptoActivity"
+                android:exported="false"
+                android:label="POSChooseCryptoActivity" />
+        <activity
+                android:name=".features.wallet.ui.RequestAssetsActivity"
+                android:exported="false"
+                android:label="RequestAssetsActivity" />
+        <activity
+                android:name=".features.pos.ui.SelectReceiverTypeActivity"
+                android:exported="false"
+                android:label="POSReceiverTypeActivity" />
+        <activity
+                android:name=".features.pos.ui.GeneratePOSAddressActivity"
+                android:exported="false"
+                android:label="POSAddressGeneratorActivity" />
+        <activity
+                android:name=".features.onboarding.OnboardingActivity"
+                android:exported="false"
+                android:theme="@style/Theme.Thellex" />
+        <activity
+                android:name=".features.dashboard.ui.MainActivity"
+                android:exported="true"
+                android:theme="@style/Theme.Thellex">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-                    <category android:name="android.intent.category.LAUNCHER" />
-                </intent-filter>
-            </activity>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
-            <service
-                    android:name=".network.services.SocketService"
-                    android:foregroundServiceType="dataSync"
-                    android:enabled="true"
-                    android:exported="false" />
+        <service
+                android:name=".network.services.SocketService"
+                android:enabled="true"
+                android:exported="false"
+                android:foregroundServiceType="dataSync" />
     </application>
 
 </manifest>

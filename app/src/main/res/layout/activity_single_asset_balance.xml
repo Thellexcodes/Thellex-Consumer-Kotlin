@@ -21,8 +21,8 @@
 
         <ImageView
                 android:id="@+id/single_asset_balance_back_button"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
                 android:src="@drawable/icon_back"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -89,7 +89,6 @@
     </LinearLayout>
 
     <LinearLayout
-            android:visibility="gone"
             android:id="@+id/single_asset_balance_actions_container"
             android:layout_width="match_parent"
             android:paddingHorizontal="20dp"
@@ -100,7 +99,7 @@
 
         <!-- Deposit -->
         <LinearLayout
-                android:id="@+id/single_asset_balance_deposit_btn"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
@@ -125,31 +124,31 @@
 
         <!-- Send -->
         <LinearLayout
+                android:id="@+id/activity_single_asset_balance_send_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="18dp"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:orientation="vertical">
+                <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/icon_send_new"
+                        app:shapeAppearanceOverlay="@style/RoundedImage" />
 
-            <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/icon_send_new"
-                    app:shapeAppearanceOverlay="@style/RoundedImage" />
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Send"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    android:fontFamily="@font/kumbhsans_regular" />
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Send"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_regular" />
         </LinearLayout>
 
-        <!-- Convert -->
+    <!-- Convert -->
         <LinearLayout
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"

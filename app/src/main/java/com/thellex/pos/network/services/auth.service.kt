@@ -1,7 +1,7 @@
 package com.thellex.pos.network.services
 
 import com.thellex.pos.data.model.ApiResponse
-import com.thellex.pos.data.model.Constants
+import com.thellex.pos.core.utils.Constants
 import com.thellex.pos.data.model.LoginRequestDto
 import com.thellex.pos.data.model.UserEntity
 import com.thellex.pos.data.model.VerifyUserDto

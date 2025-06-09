@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/send_bottom_sheet_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_border_midnight"
+        android:padding="20dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_wallet_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="17dp"
+                android:background="@drawable/rounded_border"
+                android:clickable="true"
+                android:focusable="true">
+                <ImageView
+                        android:id="@+id/img"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:src="@drawable/icon_rounded_wallet"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                        <!-- Text section next to image -->
+                        <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:layout_marginStart="12dp"
+                                app:layout_constraintStart_toEndOf="@id/img"
+                                app:layout_constraintTop_toTopOf="@id/img"
+                                app:layout_constraintBottom_toBottomOf="@id/img">
+
+                                <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/outfit_medium"
+                                        android:text="Stellar Wallet"
+                                        android:textColor="@color/white"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+
+                                <TextView
+                                        android:fontFamily="@font/kumbhsans_regular"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Send to any Stellar or federation address."
+                                        android:textColor="@color/white"
+                                        android:textSize="12sp" />
+                        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="gone"
+                android:id="@+id/layout_qr_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_border"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="17dp"
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintTop_toBottomOf="@id/layout_wallet_address"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <ImageView
+                        android:id="@+id/img_qr"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:src="@drawable/icon_rounded_qrcode"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="12dp"
+                        app:layout_constraintStart_toEndOf="@id/img_qr"
+                        app:layout_constraintTop_toTopOf="@id/img_qr"
+                        app:layout_constraintBottom_toBottomOf="@id/img_qr">
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/outfit_medium"
+                                android:text="QR Code"
+                                android:textColor="@color/white"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/kumbhsans_regular"
+                                android:text="Scan or show QR to receive funds."
+                                android:textColor="@color/white"
+                                android:textSize="12sp" />
+                </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

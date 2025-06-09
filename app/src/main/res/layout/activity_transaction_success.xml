@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:background="@drawable/general_gradient_background"
+        tools:context=".features.wallet.ui.TransactionSuccessActivity">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/activity_transaction_success_done_button">
+
+        <TextView
+                android:textColor="@color/white"
+                android:fontFamily="@font/kumbhsans_semibold"
+                android:textSize="24dp"
+                android:text="Transaction Successful"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        <TextView
+                android:textColor="@color/steelBlueGrey"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="14dp"
+                android:layout_marginTop="9dp"
+                android:text="Your transaction has been completed successfully."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/activity_transaction_success_recipientCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_border"
+                android:layout_marginBottom="24dp"
+                android:paddingVertical="24dp"
+                android:paddingHorizontal="14dp"
+                android:layout_marginTop="27dp"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout3">
+
+            <!-- First Row -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/activity_transaction_success_recipientRow1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                        android:id="@+id/activity_transaction_success_recipientLabel1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Recipient"
+                        android:textColor="@color/white"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                <LinearLayout
+                        android:id="@+id/activity_transaction_success_recipientDetailsLayout1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                    <TextView
+                            android:id="@+id/activity_transaction_success_recipientAddress1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="GAJSU9O4.....LDSXHSY67Y"
+                            android:textColor="@color/white"
+                            android:textSize="14sp" />
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Second Row -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/activity_transaction_success_recipientRow2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/activity_transaction_success_recipientRow1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="16dp">
+
+                <TextView
+                        android:id="@+id/activity_transaction_success_recipientLabel2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Amount"
+                        android:textColor="@color/white"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                <LinearLayout
+                        android:id="@+id/activity_transaction_success_recipientDetailsLayout2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                    <TextView
+                            android:id="@+id/activity_transaction_success_recipientAddress2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="1 USDT"
+                            android:textColor="@color/white"
+                            android:textSize="14sp" />
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/activity_transaction_success_root"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <LinearLayout
+                    android:id="@+id/activity_transaction_success_parentLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                <!-- Save Contact Section -->
+                <LinearLayout
+                        android:id="@+id/activity_transaction_success_linearLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:layout_marginEnd="24dp">
+
+                    <ImageView
+                            android:id="@+id/activity_transaction_success_icon"
+                            android:layout_width="33dp"
+                            android:layout_height="33dp"
+                            android:src="@drawable/icon_user_plus"
+                            android:contentDescription="Success Icon" />
+
+                    <TextView
+                            android:id="@+id/activity_transaction_success_saveContact"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Save Contact"
+                            android:fontFamily="@font/kumbhsans_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/steelBlueGrey" />
+                </LinearLayout>
+
+                <!-- View Transactions Section -->
+                <LinearLayout
+                        android:id="@+id/activity_transaction_success_transactionListLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                    <ImageView
+                            android:id="@+id/activity_transaction_success_transactionListIcon"
+                            android:layout_width="33dp"
+                            android:layout_height="33dp"
+                            android:src="@drawable/icon_transaction_list"
+                            android:contentDescription="Transaction List Icon" />
+
+                    <TextView
+                            android:id="@+id/activity_transaction_success_viewTransactions"
+                            android:layout_width="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:fontFamily="@font/kumbhsans_regular"
+                            android:textSize="14sp"
+                            android:layout_height="wrap_content"
+                            android:text="View Transactions"
+                            android:textColor="@color/steelBlueGrey" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </LinearLayout>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/activity_transaction_success_done_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@drawable/button_ripple"
+            android:text="Done"
+            android:elevation="0dp"
+            android:fontFamily="@font/kumbhsans_bold"
+            android:textColor="@color/dark_purple"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

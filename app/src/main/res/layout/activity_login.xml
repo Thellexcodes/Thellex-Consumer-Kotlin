@@ -14,7 +14,7 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="WELCOME!"
+            android:text="LOGIN TO THELLEX!"
             android:textSize="24sp"
             android:textStyle="bold"
             android:fontFamily="@font/outfit_bold"
@@ -24,36 +24,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="50dp"/>
 
-    <!-- Login Subtitle -->
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Log in to proceed"
-            android:fontFamily="@font/kumbhsans_regular"
-            android:textColor="@color/steelBlueGrey"
-            android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:id="@+id/textView" />
+
 
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guidelineTop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_begin="227dp" />
+            app:layout_constraintGuide_begin="100dp" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@drawable/login_rounded_layout"
-            android:paddingTop="34dp"
             app:layout_constraintTop_toBottomOf="@+id/guidelineTop"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:layout_editor_absoluteX="-16dp"
-            app:layout_constraintVertical_bias="0.0">
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
                     android:id="@+id/auth_verification_tab_container"
@@ -61,7 +47,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:visibility="gone"
-                    android:layout_marginTop="16dp"
                     android:layout_marginBottom="42dp"
                     android:padding="4dp"
                     android:gravity="center"
@@ -112,6 +97,9 @@
                     android:hint="@string/email_address"
                     android:background="@drawable/rounded_edittext"
                     android:textSize="12sp"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:inputType="textEmailAddress|textNoSuggestions"
                     android:paddingVertical="15dp"
                     android:fontFamily="@font/kumbhsans_regular"
                     android:textColor="#FFFFFF"

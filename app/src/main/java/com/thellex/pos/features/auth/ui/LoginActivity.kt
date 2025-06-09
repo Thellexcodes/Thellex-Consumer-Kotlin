@@ -12,7 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.thellex.pos.R
 import com.thellex.pos.data.model.ApiResponse
-import com.thellex.pos.utils.Helpers
+import com.thellex.pos.core.utils.Helpers
 import com.thellex.pos.databinding.ActivityLoginBinding
 import com.thellex.pos.network.services.ApiClient
 import com.thellex.pos.data.model.LoginRequestDto
@@ -81,7 +81,6 @@ class LoginActivity : AppCompatActivity() {
                     val rawJson = Gson().toJson(responseBody)
                     Log.d("RAW_JSON_BODY", rawJson)
 
-//                     Update UI on main thread
                     withContext(Dispatchers.Main) {
                         if (responseBody != null) {
                             navigateToVerification(responseBody)

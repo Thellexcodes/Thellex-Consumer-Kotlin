@@ -20,8 +20,8 @@ import com.thellex.pos.features.wallet.model.WalletManagerModelFactory
 import com.thellex.pos.features.wallet.model.WalletManagerViewModel
 import com.thellex.pos.features.wallet.prefrences.WalletManagerPreferences
 import com.thellex.pos.network.services.ApiClient
-import com.thellex.pos.utils.Helpers
-import com.thellex.pos.utils.Helpers.formatDecimal
+import com.thellex.pos.core.utils.Helpers
+import com.thellex.pos.core.utils.Helpers.formatDecimal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -78,11 +78,8 @@ class WalletAssetsActivity : AppCompatActivity() {
 
     private fun loadWalletData() {
         val cachedWallet = walletPreferences.getWalletBalance()
-
         if (cachedWallet != null) {
             updateUIFromResponse(cachedWallet)
-            // Optional: Refresh data in background without blocking UI
-            fetchWalletBalances(forceRefresh = false)
         } else {
             fetchWalletBalances(forceRefresh = true)
         }

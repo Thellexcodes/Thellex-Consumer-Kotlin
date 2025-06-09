@@ -10,7 +10,7 @@ import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
-import com.thellex.pos.data.model.Constants
+import com.thellex.pos.core.utils.Constants
 import com.thellex.pos.data.model.NotificationPayload
 import com.thellex.pos.data.model.UserPreferences
 import com.thellex.pos.data.enums.NotificationSockets

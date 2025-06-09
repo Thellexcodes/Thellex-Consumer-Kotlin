@@ -147,7 +147,7 @@
                                 android:src="@drawable/icon_leave" />
                         <TextView
                                 android:layout_marginStart="8dp"
-                                android:text="Withdraw"
+                                android:text="Withdraw Cash"
                                 android:textColor="@android:color/white"
                                 android:textSize="12sp"
                                 android:fontFamily="@font/kumbhsans_medium"
@@ -172,7 +172,7 @@
                                 android:src="@drawable/icon_request" />
                         <TextView
                                 android:layout_marginStart="8dp"
-                                android:text="Request"
+                                android:text="Request Crypto"
                                 android:textColor="@android:color/white"
                                 android:textSize="12sp"
                                 android:fontFamily="@font/kumbhsans_medium"

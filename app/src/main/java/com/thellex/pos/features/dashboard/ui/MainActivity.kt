@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.thellex.pos.data.enums.ERRORS
-import com.thellex.pos.utils.Helpers.showLongToast
+import com.thellex.pos.core.utils.Helpers.showLongToast
 import com.thellex.pos.databinding.ActivityMainBinding
 import com.thellex.pos.features.onboarding.OnboardingActivity
 import com.thellex.pos.network.services.ApiClient
@@ -128,11 +128,11 @@ class MainActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-//                Log.e("TAG", "Error message", e)
+                Log.e("TAG", "Error message", e)
                 showLongToast(ERRORS.UNKNOWN_ERROR.message)
-//                viewModel.saveToken(null)
-//                viewModel.logout()
-//                navigateToLogin()
+                viewModel.saveToken(null)
+                viewModel.logout()
+                navigateToLogin()
             }
         }
     }
