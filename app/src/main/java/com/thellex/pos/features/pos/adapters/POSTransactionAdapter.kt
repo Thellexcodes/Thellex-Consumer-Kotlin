@@ -58,14 +58,16 @@ class POSTransactionAdapter(
 
     fun updateList(newItems: List<TransactionHistoryEntity>) {
         items = newItems.map { entity ->
-            PosTransaction(
-                iconResId = getIconResIdForToken(entity.currency),
-                statusIconResId = getStatusIconResId(entity.status),
-                description = entity.currency.uppercase(Locale.getDefault()),
-                time = formatTimestamp("${entity.createdAt}"),
-                amountWithSymbol = entity.amount,
-                status = mapToTransactionStatus(entity.status)
-            )
+            entity.paymentStatus?.let { mapToTransactionStatus(it) }?.let {
+                PosTransaction(
+                    iconResId = getIconResIdForToken(entity.currency),
+                    statusIconResId = getStatusIconResId(entity.status),
+                    description = entity.currency.uppercase(Locale.getDefault()),
+                    time = formatTimestamp("${entity.createdAt}"),
+                    amountWithSymbol = entity.amount,
+                    status = it
+                )
+            }!!
         }
         notifyDataSetChanged()
     }

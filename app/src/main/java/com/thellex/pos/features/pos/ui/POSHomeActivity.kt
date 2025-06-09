@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -51,7 +52,7 @@ class POSHomeActivity : AppCompatActivity() {
 
         setupRecyclerView()
 
-//        observeUserTransactions()
+        observeUserTransactions()
 
         setupClickListeners()
     }
@@ -95,6 +96,7 @@ class POSHomeActivity : AppCompatActivity() {
                 val transactions = userEntity?.transactionHistory ?: emptyList()
 
                 val sortedTransactions = transactions.sortedByDescending { parseDate(it.createdAt) }
+                Log.d("RAW_JSON_BODY", sortedTransactions.toString())
 
                 withContext(Dispatchers.Main) {
                     transactionAdapter.updateList(sortedTransactions)

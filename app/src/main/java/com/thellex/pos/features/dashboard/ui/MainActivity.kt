@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.gson.Gson
 import com.thellex.pos.data.enums.ERRORS
 import com.thellex.pos.core.utils.Helpers.showLongToast
 import com.thellex.pos.databinding.ActivityMainBinding
@@ -75,10 +76,8 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val authResponse = response.body()
 //                    val rawJson = Gson().toJson(authResponse)
-
 //                    val address = authResponse?.result?.qWallet?.wallets?.getOrNull(0)?.address
-
-//                    Log.d("RAW_JSON_BODY", rawJson)
+//                    Log.d("RAW_JSON_BODY", authResponse?.result?.transactionHistory.toString())
 //                    Log.d("WALLET_1", address.toString())
 //                    Log.d("USERDATA", "user: ${authResponse?.result?.email}")
 //                    Log.d("ALERT_ID", "${authResponse?.result?.alertID}")

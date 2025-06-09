@@ -56,7 +56,7 @@ data class Crypto(
 
 data class TransactionHistoryEntity(
     @SerializedName("id") val id: String,
-    @SerializedName("user") val user: UserEntity,
+    @SerializedName("user") val user: UserEntity? = null,
     @SerializedName("event") val event: String,
     @SerializedName("transactionId") val transactionId: String,
     @SerializedName("type") val type: String,
@@ -64,13 +64,36 @@ data class TransactionHistoryEntity(
     @SerializedName("amount") val amount: String,
     @SerializedName("fee") val fee: String,
     @SerializedName("blockchainTxId") val blockchainTxId: String,
-    @SerializedName("status") val status: String,
-    @SerializedName("reason") val reason: String?,
-    @SerializedName("created_at") val createdAt: String,
-    @SerializedName("done_at") val doneAt: String?,
-    @SerializedName("wallet_id") val walletId: String,
-    @SerializedName("wallet_name") val walletName: String,
-    @SerializedName("wallet_currency") val walletCurrency: String,
-    @SerializedName("payment_status") val paymentStatus: String,
-    @SerializedName("payment_address") val paymentAddress: String,
-    @SerializedName("payment_network") val paymentNetwork: String )
+    @SerializedName("status") val status: String? = null,
+    @SerializedName("reason") val reason: String? = null,
+    @SerializedName("createdAt") val createdAt: String?,  // nullable for safety
+    @SerializedName("doneAt") val doneAt: String? = null,
+    @SerializedName("updatedAt") val updatedAt: String?,  // new field added, nullable
+    @SerializedName("walletId") val walletId: String?,
+    @SerializedName("walletName") val walletName: String?,
+    @SerializedName("walletCurrency") val walletCurrency: String?,
+    @SerializedName("paymentStatus") val paymentStatus: String?,
+    @SerializedName("paymentAddress") val paymentAddress: String?,
+    @SerializedName("paymentNetwork") val paymentNetwork: String?
+)
+
+//data class TransactionHistoryEntity(
+//    @SerializedName("id") val id: String,
+//    @SerializedName("user") val user: UserEntity,
+//    @SerializedName("event") val event: String,
+//    @SerializedName("transactionId") val transactionId: String,
+//    @SerializedName("type") val type: String,
+//    @SerializedName("currency") val currency: String,
+//    @SerializedName("amount") val amount: String,
+//    @SerializedName("fee") val fee: String,
+//    @SerializedName("blockchainTxId") val blockchainTxId: String,
+//    @SerializedName("status") val status: String,
+//    @SerializedName("reason") val reason: String?,
+//    @SerializedName("created_at") val createdAt: String,
+//    @SerializedName("done_at") val doneAt: String?,
+//    @SerializedName("wallet_id") val walletId: String,
+//    @SerializedName("wallet_name") val walletName: String,
+//    @SerializedName("wallet_currency") val walletCurrency: String,
+//    @SerializedName("payment_status") val paymentStatus: String,
+//    @SerializedName("payment_address") val paymentAddress: String,
+//    @SerializedName("payment_network") val paymentNetwork: String )
