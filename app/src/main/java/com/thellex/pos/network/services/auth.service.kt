@@ -2,6 +2,7 @@ package com.thellex.pos.network.services
 
 import com.thellex.pos.data.model.ApiResponse
 import com.thellex.pos.core.utils.Constants
+import com.thellex.pos.data.model.AuthenticatedUserResponse
 import com.thellex.pos.data.model.LoginRequestDto
 import com.thellex.pos.data.model.UserEntity
 import com.thellex.pos.data.model.VerifyUserDto
@@ -14,8 +15,8 @@ interface AuthService {
     suspend fun loginUser(@Body request: LoginRequestDto): Response<ApiResponse<String>>
 
     @POST(Constants.VERIFY_CODE_ENDPOINT)
-    suspend fun verifyCode(@Body request: VerifyUserDto): Response<ApiResponse<Boolean>>
+    suspend fun verifyCode(@Body request: VerifyUserDto): Response<ApiResponse<UserEntity>>
 
     @POST(Constants.AUTH_LOGIN_ENDPOINT)
-    suspend fun checkAuthStatus(): Response<ApiResponse<UserEntity>>
+    suspend fun checkAuthStatus(): Response<ApiResponse<AuthenticatedUserResponse>>
 }

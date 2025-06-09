@@ -1,7 +1,14 @@
 package com.thellex.pos.data.model
 
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+
+data class AuthenticatedUserResponse(
+    @SerializedName("token") val token: String,
+    @SerializedName("isAuthenticated") val isAuthenticated: Boolean,
+    @SerializedName("user") val user: UserEntity
+)
 
 @Serializable
 data class ApiResponse<T>(

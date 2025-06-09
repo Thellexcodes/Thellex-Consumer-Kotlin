@@ -46,41 +46,33 @@ data class QWallet(
     @SerializedName("updated_at") val updatedAt: String
 )
 
-data class QWalletEntity(
+data class QWalletProfileEntity(
     @SerializedName("id") val id: String,
     @SerializedName("qid") val qid: String,
-    @SerializedName("qsn") val qsn: String,
+    @SerializedName("q_sn") val qsn: String,
+    @SerializedName("state") val state: String,
+    @SerializedName("first_name") val firstName: String?,
+    @SerializedName("last_name") val lastName: String?,
     @SerializedName("reference") val reference: String?,
-    @SerializedName("currency") val currency: String?,
-    @SerializedName("address") val address: String?,
-    @SerializedName("network") val network: List<QwalletNetwork>?,
-    @SerializedName("is_crypto") val isCrypto: Boolean,
-    @SerializedName("destination_tag") val destinationTag: String?,
-    @SerializedName("deposit_address") val depositAddress: String?,
-    @SerializedName("total_payments") val totalPayments: String?,
+    @SerializedName("display_name") val displayName: String?,
+    @SerializedName("wallets") val wallets: List<QWalletEntity>?,
     @SerializedName("created_at") val createdAt: String,
-    @SerializedName("updated_at") val updatedAt: String,
-    @SerializedName("wallets") val wallets: List<QWallet>?
+    @SerializedName("updated_at") val updatedAt: String
 )
 
-@Serializable
-data class QwalletBalance(
-    @SerialName("id") val id: String,
-    @SerialName("name") val name: String,
-    @SerialName("currency") val currency: String,
-    @SerialName("balance") val balance: String,
-    @SerialName("locked") val locked: String,
-    @SerialName("staked") val staked: String,
-    @SerialName("user") val user: SubAccountData,
-    @SerialName("converted_balance") val convertedBalance: String,
-    @SerialName("reference_currency") val referenceCurrency: String,
-    @SerialName("is_crypto") val isCrypto: Boolean,
-    @SerialName("created_at") val createdAt: String,
-    @SerialName("updated_at") val updatedAt: String,
-    @SerialName("blockchain_enabled") val blockchainEnabled: Boolean,
-    @SerialName("default_network") val defaultNetwork: String? = null,
-    @SerialName("networks") val networks: List<QwalletNetwork>,
-    @SerialName("destination_tag") val destinationTag: String? = null
+
+data class QWalletEntity(
+    @SerializedName("id") val id: String,
+    @SerializedName("reference") val reference: String?,
+    @SerializedName("currency") val currency: String,
+    @SerializedName("address") val address: String,
+    @SerializedName("is_crypto") val isCrypto: Boolean?,
+    @SerializedName("destination_tag") val destinationTag: String?,
+    @SerializedName("total_payments") val totalPayments: String?,
+    @SerializedName("balance") val balance: String?,
+    @SerializedName("default_network") val defaultNetwork: String,
+    @SerializedName("created_at") val createdAt: String,
+    @SerializedName("updated_at") val updatedAt: String
 )
 
 @Serializable

@@ -78,8 +78,6 @@ class LoginActivity : AppCompatActivity() {
                 val response = ApiClient.getPublicApi().loginUser(userRequestData)
                 if (response.isSuccessful) {
                     val responseBody = response.body()
-                    val rawJson = Gson().toJson(responseBody)
-                    Log.d("RAW_JSON_BODY", rawJson)
 
                     withContext(Dispatchers.Main) {
                         if (responseBody != null) {

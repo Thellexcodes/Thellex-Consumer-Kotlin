@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.thellex.pos.data.model.AuthenticatedUserResponse
 import com.thellex.pos.data.model.UserEntity
 import com.thellex.pos.data.model.UserPreferences
+import com.thellex.pos.features.wallet.prefrences.WalletManagerPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +18,8 @@ class UserViewModel(application: Context):ViewModel() {
 
     @SuppressLint("StaticFieldLeak")
     private val context = application.applicationContext
+
+    private val walletPreferences = WalletManagerPreferences(context)
 
     private val _token = MutableStateFlow<String?>(null)
     val token: StateFlow<String?> = _token.asStateFlow()
@@ -55,12 +59,14 @@ class UserViewModel(application: Context):ViewModel() {
         }
     }
 
-    fun saveAuthResult(result: UserEntity) {
+    fun saveAuthResult(result: AuthenticatedUserResponse?) {
+        result ?: return
+
         viewModelScope.launch {
             UserPreferences.saveToken(context, result.token)
-            UserPreferences.saveAuthResultAsync(context, result)
+            UserPreferences.saveAuthResultAsync(context, result.user)
             _token.value = result.token
-            _authResult.value = result
+            _authResult.value = result.user
         }
     }
 
@@ -68,6 +74,7 @@ class UserViewModel(application: Context):ViewModel() {
         viewModelScope.launch {
             UserPreferences.clearToken(context)
             UserPreferences.clearAuthResult(context)
+            walletPreferences.clearWalletCache()
             _token.value = null
             _authResult.value = null
         }

@@ -79,7 +79,7 @@ object Helpers {
         targetLayout.helperText = errorType.message
     }
 
-    fun Context.showLongToast(message: String, durationInMillis: Long = 10000L) {
+    fun Context.showLongToast(message: String, durationInMillis: Long = 390000L) {
         val interval = 3500L // Toast.LENGTH_LONG duration
         val toast = Toast.makeText(this, message, Toast.LENGTH_LONG)
 

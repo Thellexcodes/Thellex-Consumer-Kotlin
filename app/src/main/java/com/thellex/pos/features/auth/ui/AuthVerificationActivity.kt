@@ -3,6 +3,7 @@ package com.thellex.pos.features.auth.ui
 import com.thellex.pos.features.auth.viewModel.UserViewModel
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.mukeshsolanki.OtpView
 import com.thellex.pos.R
+import com.thellex.pos.core.utils.Helpers.showLongToast
+import com.thellex.pos.data.model.AuthenticatedUserResponse
 import com.thellex.pos.network.services.ApiClient
 import com.thellex.pos.data.model.VerifyUserDto
 import com.thellex.pos.features.pos.ui.POSHomeActivity
@@ -74,28 +77,32 @@ class AuthVerificationActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                    return@launch // Stop further execution
+                    return@launch
                 }
 
                 val api = ApiClient.getAuthenticatedApi(token!!)
                 val response = api.verifyCode(verifyUserRequestData)
 
-                if (response.isSuccessful) {
-                    val responseBody = response.body()
+                response.body()?.result?.let { result ->
                     withContext(Dispatchers.Main) {
-                        if (responseBody != null) {
-                            viewModel.saveToken(token!!)
-//                            navigateToLoginPin()
-                            navigateToQuickActions()
-                        }
+                        viewModel.saveToken(token!!)
+                        viewModel.saveAuthResult(
+                            AuthenticatedUserResponse(
+                                token = token!!,
+                                user = result,
+                                isAuthenticated = true
+                            )
+                        )
+                        navigateToQuickActions()
                     }
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@AuthVerificationActivity, "Error: $errorBody", Toast.LENGTH_SHORT).show()
-                    }
+                } ?: run {
+                    val errorBody = response.errorBody()?.string().orEmpty()
+                    showLongToast(errorBody)
+                    Log.e("TAG", "Error message: $errorBody")
                 }
+
             } catch (e: Exception) {
+                Log.e("TAG", "Error message: $e")
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@AuthVerificationActivity, "Network Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }

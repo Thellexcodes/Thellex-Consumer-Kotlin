@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.google.gson.Gson
 import com.thellex.pos.data.enums.ERRORS
 import com.thellex.pos.core.utils.Helpers.showLongToast
 import com.thellex.pos.databinding.ActivityMainBinding
@@ -18,6 +17,8 @@ import com.thellex.pos.network.services.SocketService
 import com.thellex.pos.features.pos.ui.POSHomeActivity
 import com.thellex.pos.features.auth.ui.LoginActivity
 import com.thellex.pos.features.auth.viewModel.UserViewModelFactory
+import com.thellex.pos.features.wallet.model.WalletManagerModelFactory
+import com.thellex.pos.features.wallet.model.WalletManagerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -29,7 +30,7 @@ import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: UserViewModel
+    private lateinit var userModel: UserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        viewModel = ViewModelProvider(
+        userModel = ViewModelProvider(
             this,
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         // Assume checkAuthStatus updates viewModel.authResult or similar LiveData/StateFlow
         lifecycleScope.launch {
             val alertID = withTimeoutOrNull(5000) {
-                viewModel.authResult.firstOrNull { it != null }?.alertID
+                userModel.authResult.firstOrNull { it != null }?.alertID
             } ?: "default-id"
             startSocketServiceWithAlertId(alertID)
         }
@@ -60,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkAuthStatus() {
         lifecycleScope.launch {
             val token = withTimeoutOrNull(5000) {
-                viewModel.token.first { !it.isNullOrBlank() }
+                userModel.token.first { !it.isNullOrBlank() }
             }
 
             Log.e("AuthToken", token ?: "Token is null or timeout reached")
@@ -85,17 +86,17 @@ class MainActivity : AppCompatActivity() {
 
                     val authResult = authResponse?.result
                     if (authResult != null) {
-                        viewModel.saveToken(authResponse.result.token ?: "")
-                        viewModel.saveAuthResult(authResult)
+                        userModel.saveToken(authResponse.result.token ?: "")
+                        userModel.saveAuthResult(authResult)
 
                         if (authResult.isAuthenticated) {
                             navigateToDashboard()
                         } else {
-                            viewModel.logout()
+                            userModel.logout()
                             navigateToLogin()
                         }
                     } else {
-                        viewModel.logout()
+                        userModel.logout()
                         navigateToLogin()
                     }
                 } else {
@@ -105,24 +106,24 @@ class MainActivity : AppCompatActivity() {
 
                     when (errorEnum) {
                         ERRORS.USER_NOT_FOUND -> {
-//                            navigateToLogin()
+                            navigateToLogin()
                         }
                         ERRORS.USER_SUSPENDED -> {
                             // You may show a toast message if needed:
                              showLongToast("Your account has been suspended.")
-//                            viewModel.logout()
-//                            navigateToLogin()
+                            userModel.logout()
+                            navigateToLogin()
                         }
                         ERRORS.UNAUTHORIZED -> {
                             // Optionally show a message:
                              showLongToast("Unauthorized access. Please log in again.")
-//                            viewModel.logout()
-//                            navigateToLogin()
+                            userModel.logout()
+                            navigateToLogin()
                         }
                         else -> {
-                            // Optionally handle unknown errors:
+                            userModel.logout()
                             showLongToast("An unexpected error occurred: $errorEnum")
-//                            navigateToLogin()
+                            navigateToLogin()
                         }
                     }
                 }
@@ -130,8 +131,7 @@ class MainActivity : AppCompatActivity() {
                 e.printStackTrace()
                 Log.e("TAG", "Error message", e)
                 showLongToast(ERRORS.UNKNOWN_ERROR.message)
-                viewModel.saveToken(null)
-                viewModel.logout()
+                userModel.logout()
                 navigateToLogin()
             }
         }
@@ -146,11 +146,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun parseBackendErrorEnum(errorBody: String?): String? {
         return try {
             val json = JSONObject(errorBody ?: "{}")
-            json.optString("message", null) // assumes error enum is returned in the `message` field
+            json.optString("message", null.toString()) // assumes error enum is returned in the `message` field
         } catch (e: JSONException) {
             null
         }
