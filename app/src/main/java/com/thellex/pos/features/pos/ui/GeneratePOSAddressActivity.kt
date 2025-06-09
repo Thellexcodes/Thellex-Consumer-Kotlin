@@ -44,7 +44,7 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
     private lateinit var paymentType: PaymentType
     private lateinit var client: OkHttpClient
     private lateinit var selectedBlockchain: SupportedBlockchain
-    private lateinit var viewModel: UserViewModel
+    private lateinit var userModel: UserViewModel
     private var walletAddress: String? = null
 
     private val supportedBlockchains = listOf(
@@ -55,7 +55,7 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pos_address_generator)
 
-        viewModel = ViewModelProvider(
+        userModel = ViewModelProvider(
             this,
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
@@ -108,7 +108,7 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             val token = withTimeoutOrNull(5000) {
-                viewModel.token.first { !it.isNullOrBlank() }
+                userModel.token.first { !it.isNullOrBlank() }
             }
             makeRequestCryptoPayment(token!!, Token.usdt, SupportedBlockchain.bep20)
         }

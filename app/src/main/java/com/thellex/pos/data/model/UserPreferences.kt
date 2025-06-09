@@ -84,10 +84,28 @@ object UserPreferences {
             if (updatedUser != null) {
                 val newJson = gson.toJson(updatedUser)
                 prefs[AUTH_RESULT_KEY] = newJson
-//                Log.d("UserPreferencesS", "UserEntity updated: $newJson")
+                Log.d("UserPreferencesS", "UserEntity updated: $newJson")
             } else {
                 Log.w("UserPreferencesS", "No existing UserEntity to update.")
             }
+        }
+    }
+
+    // ✅ Add transaction history entry
+    suspend fun addTransactionHistory(context: Context, transaction: TransactionHistoryEntity) {
+        updateUserEntity(context) { user ->
+            val updatedList = user.transactionHistory?.toMutableList() ?: mutableListOf()
+            updatedList.add(transaction)
+            user.copy(transactionHistory = updatedList)
+        }
+    }
+
+    // ✅ Add notification
+    suspend fun addNotification(context: Context, notification: NotificationEntity) {
+        updateUserEntity(context) { user ->
+            val updatedList = user.notifications?.toMutableList() ?: mutableListOf()
+            updatedList.add(notification)
+            user.copy(notifications = updatedList)
         }
     }
 }

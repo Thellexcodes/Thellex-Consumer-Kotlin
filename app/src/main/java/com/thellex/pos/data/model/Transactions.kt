@@ -31,8 +31,6 @@ enum class TransactionStatus(val displayName: String) {
     }
 }
 
-
-
 data class PosTransaction(
     @SerializedName("iconResId") val iconResId: Int?,                  // txn_icon
     @SerializedName("statusIconResId") val statusIconResId: Int?,      // status_icon
@@ -41,7 +39,6 @@ data class PosTransaction(
     @SerializedName("amountWithSymbol") val amountWithSymbol: String, // amount (e.g., "20 USDT")
     @SerializedName("status") val status:  TransactionStatus                     // status (e.g., "Completed")
 )
-
 
 data class BlockchainItem(
     @SerializedName("chain") val chain: SupportedBlockchain,
@@ -61,8 +58,8 @@ data class TransactionHistoryEntity(
     @SerializedName("transactionId") val transactionId: String,
     @SerializedName("type") val type: String,
     @SerializedName("currency") val currency: String,
-    @SerializedName("amount") val amount: String,
-    @SerializedName("fee") val fee: String,
+    @SerializedName("amount") val amount: Double,
+    @SerializedName("fee") val fee: Double,
     @SerializedName("blockchainTxId") val blockchainTxId: String,
     @SerializedName("status") val status: String? = null,
     @SerializedName("reason") val reason: String? = null,

@@ -43,11 +43,11 @@ class SingleAssetTransactionAdapter(
 
             // Amount with minus sign for withdraws
             val amountText = if (isWithdraw) "-${transaction.amount}" else transaction.amount
-            tvAmount.text = amountText
+            tvAmount.text = amountText.toString()
             tvAmount.setTextColor(if (isWithdraw) withdrawColor else depositColor)
 
             // Equivalent USD (stub conversion, update with actual logic)
-            val equivalentUsd = convertToUsd(transaction.currency, transaction.amount)
+            val equivalentUsd = convertToUsd(transaction.currency, transaction.amount.toString())
             tvEquivalent.text = "$$equivalentUsd"
         }
     }

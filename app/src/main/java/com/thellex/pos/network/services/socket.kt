@@ -64,7 +64,7 @@ class SocketService : Service() {
             socket = IO.socket(Constants.BASE_URL, opts)
 
             socket.on(Socket.EVENT_CONNECT) {
-                Log.d("SocketService", "Connected to socket with alertID: $alertID")
+                Log.d("SocketServiceData", "Connected to socket with alertID: $alertID")
                 socket.emit("join", alertID)
             }
 
@@ -74,32 +74,21 @@ class SocketService : Service() {
                     val gson = Gson()
                     val payload = gson.fromJson(json.toString(), NotificationPayload::class.java)
 
-                    Log.d("SocketService", "Notification Received: ${payload.notification.title} - ${payload.transaction.transactionId}")
+                    Log.d("SocketServiceData", "Notification Received: ${payload.notification.title} - ${payload.transaction.transactionId}")
 
                     coroutineScope.launch {
                         try {
-                            UserPreferences.updateUserEntity(applicationContext) { userEntity ->
-                                val updatedTransactions = userEntity.transactionHistory?.toMutableList() ?: mutableListOf()
-                                updatedTransactions.add(payload.transaction)
+                            val appContext = this@SocketService.applicationContext
+                            UserPreferences.addTransactionHistory(appContext, payload.transaction)
+                            UserPreferences.addNotification(appContext, payload.notification)
 
-                                val updatedNotifications = userEntity.notifications?.toMutableList() ?: mutableListOf()
-                                updatedNotifications.add(payload.notification)
-
-                                val updatedUser = userEntity.copy(
-                                    transactionHistory = updatedTransactions,
-                                    notifications = updatedNotifications
-                                )
-
-                                Log.d("SocketService", "UserEntity updated with new transaction and notification")
-
-                                updatedUser
-                            }
+                            Log.d("SocketServiceData", "UserEntity updated with new transaction: ${payload.transaction.transactionId}")
                         } catch (e: Exception) {
-                            Log.e("SocketService", "Failed to update UserEntity: ${e.message}", e)
+                            Log.e("SocketServiceData", "Failed to update UserEntity: ${e.message}", e)
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("SocketService", "Failed to process socket event: ${e.message}", e)
+                    Log.e("SocketServiceData", "Failed to process socket event: ${e.message}", e)
                 }
             }
 

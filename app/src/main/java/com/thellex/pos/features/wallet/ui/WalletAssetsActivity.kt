@@ -130,7 +130,7 @@ class WalletAssetsActivity : AppCompatActivity() {
 
                 val walletBalanceResponse = response.result
 
-                if (walletBalanceResponse == null || walletBalanceResponse.wallets.isNullOrEmpty()) {
+                if (walletBalanceResponse == null || walletBalanceResponse.wallets.isEmpty()) {
                     return@launch
                 }
 

@@ -64,7 +64,7 @@ class POSTransactionAdapter(
                     statusIconResId = getStatusIconResId(entity.status),
                     description = entity.currency.uppercase(Locale.getDefault()),
                     time = formatTimestamp("${entity.createdAt}"),
-                    amountWithSymbol = entity.amount,
+                    amountWithSymbol = entity.amount.toString(),
                     status = it
                 )
             }!!

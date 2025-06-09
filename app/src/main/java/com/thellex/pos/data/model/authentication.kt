@@ -17,7 +17,7 @@ data class VerifyUserDto(
 )
 
 data class UserEntity(
-    @SerializedName("token") val token: String,
+    @SerializedName("token") val token: String?,
     @SerializedName("isAuthenticated") val isAuthenticated: Boolean,
     @SerializedName("id") val id: String,
     @SerializedName("uid") val uid: Int,
