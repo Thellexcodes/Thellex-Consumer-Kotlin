@@ -67,7 +67,7 @@ object UserPreferences {
         }
     }
 
-    suspend fun updateUserEntity(context: Context, updateBlock: (UserEntity) -> UserEntity) {
+    private suspend fun updateUserEntity(context: Context, updateBlock: (UserEntity) -> UserEntity) {
         Log.d("UserPreferencesS", "Updating UserEntity")
         context.dataStore.edit { prefs ->
             val currentJson = prefs[AUTH_RESULT_KEY]

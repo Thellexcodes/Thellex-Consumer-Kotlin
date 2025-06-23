@@ -62,8 +62,6 @@ class MainActivity : AppCompatActivity() {
                 userModel.token.first { !it.isNullOrBlank() }
             }
 
-            Log.e("AuthToken", token ?: "Token is null or timeout reached")
-
             if (token == null) {
                 navigateToLogin()
                 return@launch
@@ -92,39 +90,37 @@ class MainActivity : AppCompatActivity() {
                         navigateToLogin()
                     }
                 } else {
-//                    val errorBody = response.errorBody()?.string()
-//                    val errorCode = parseBackendErrorEnum(errorBody)
-//                    val errorEnum = ERRORS.fromCode(errorCode)
-//
-//                    when (errorEnum) {
-//                        ERRORS.USER_NOT_FOUND -> {
-//                            navigateToLogin()
-//                        }
-//                        ERRORS.USER_SUSPENDED -> {
-//                            // You may show a toast message if needed:
-//                             showLongToast("Your account has been suspended.")
-//                            userModel.logout()
-//                            navigateToLogin()
-//                        }
-//                        ERRORS.UNAUTHORIZED -> {
-//                            // Optionally show a message:
-//                             showLongToast("Unauthorized access. Please log in again.")
-//                            userModel.logout()
-//                            navigateToLogin()
-//                        }
-//                        else -> {
-//                            userModel.logout()
-//                            showLongToast("An unexpected error occurred: $errorEnum")
-//                            navigateToLogin()
-//                        }
-//                    }
+                    val errorBody = response.errorBody()?.string()
+                    val errorCode = parseBackendErrorEnum(errorBody)
+                    when (val errorEnum = ERRORS.fromCode(errorCode)) {
+                        ERRORS.USER_NOT_FOUND -> {
+                            navigateToLogin()
+                        }
+                        ERRORS.USER_SUSPENDED -> {
+                            // You may show a toast message if needed:
+                             showLongToast("Your account has been suspended.")
+                            userModel.logout()
+                            navigateToLogin()
+                        }
+                        ERRORS.UNAUTHORIZED -> {
+                            // Optionally show a message:
+                             showLongToast("Unauthorized access. Please log in again.")
+                            userModel.logout()
+                            navigateToLogin()
+                        }
+                        else -> {
+                            userModel.logout()
+                            showLongToast("An unexpected error occurred: $errorEnum")
+                            navigateToLogin()
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e("TAG", "Error message", e)
 //                showLongToast(ERRORS.UNKNOWN_ERROR.message)
-//                userModel.logout()
-//                navigateToLogin()
+                userModel.logout()
+                navigateToLogin()
             }
         }
     }

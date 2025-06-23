@@ -61,12 +61,10 @@ class UserViewModel(application: Context):ViewModel() {
     fun saveAuthResult(result: UserEntity?) {
         result ?: return
 
-//        viewModelScope.launch {
-//            UserPreferences.saveToken(context, result.token)
-//            UserPreferences.saveAuthResultAsync(context, result.user)
-//            _token.value = result.token
-//            _authResult.value = result.user
-//        }
+        viewModelScope.launch {
+            UserPreferences.saveAuthResultAsync(context, result)
+            _authResult.value = result
+        }
     }
 
     fun logout() {
