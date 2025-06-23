@@ -149,23 +149,23 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val paymentService = ApiClient.getAuthenticatedPaymentApi(authToken)
-                val response = paymentService.requestCryptoPayment(paymentRequest)
+//                val response = paymentService.requestCryptoPayment(paymentRequest)
 
-                if (response.status) {
-                    val result = response.result
-                    walletAddress = result?.wallet?.address ?: "Invalid Address"
-                    Log.d("WalletAddress", "Received wallet address: $walletAddress")
-
-                    withContext(Dispatchers.Main) {
-                        val qrImageView = findViewById<ImageView>(R.id.imageViewDynamicQr)
-                        val qrBitmap = generateQrCode(walletAddress ?: "no-address", assetCode)
-                        qrImageView.setImageBitmap(qrBitmap)
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@GeneratePOSAddressActivity, "Request failed", Toast.LENGTH_SHORT).show()
-                    }
-                }
+//                if (response.status) {
+//                    val result = response.result
+//                    walletAddress = result?.wallet?.address ?: "Invalid Address"
+//                    Log.d("WalletAddress", "Received wallet address: $walletAddress")
+//
+//                    withContext(Dispatchers.Main) {
+//                        val qrImageView = findViewById<ImageView>(R.id.imageViewDynamicQr)
+//                        val qrBitmap = generateQrCode(walletAddress ?: "no-address", assetCode)
+//                        qrImageView.setImageBitmap(qrBitmap)
+//                    }
+//                } else {
+//                    withContext(Dispatchers.Main) {
+//                        Toast.makeText(this@GeneratePOSAddressActivity, "Request failed", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@GeneratePOSAddressActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()

@@ -1,17 +1,22 @@
 package com.thellex.payments.features.wallet.model
 
 import com.google.gson.annotations.SerializedName
+import com.thellex.payments.data.model.TransactionHistoryEntity
+import com.thellex.payments.settings.Token
+import kotlinx.serialization.Serializable
 
-data class WalletManagerBalanceResponse(
-    @SerializedName("totalBalance") val totalBalance: String,
-    @SerializedName("currency") val currency: String,
-    @SerializedName("wallets") val wallets: List<WalletEntry>
+
+@Serializable
+data class WalletBalanceDto(
+    @SerializedName("totalInUsd") val totalInUsd: Double,
+    @SerializedName("wallets") val wallets: Map<String, WalletDto>
 )
 
-data class WalletEntry(
+@Serializable
+data class WalletDto(
+    @SerializedName("totalBalance") val totalBalance: String,
+    @SerializedName("networks") val networks: List<String>,
     @SerializedName("address") val address: String,
-    @SerializedName("network") val network: String,
-    @SerializedName("balanceInUsd") val balanceInUsd: Double,
-    @SerializedName("balanceInNgn") val balanceInNgn: Double,
-    @SerializedName("assetCode") val assetCode: String
+    @SerializedName("assetCode") val assetCode: Token,
+    @SerializedName("transactionHistory") val transactionHistory: List<TransactionHistoryEntity>
 )

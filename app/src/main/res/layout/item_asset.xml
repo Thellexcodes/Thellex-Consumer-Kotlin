@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/kumbhsans_bold"
-                android:text="USDT"
+                android:text="USDC"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 app:layout_constraintTop_toTopOf="@id/imageAssetIcon"

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -24,13 +23,17 @@ import com.thellex.payments.core.utils.Helpers.parseDate
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.wallet.model.WalletManagerModelFactory
+import com.thellex.payments.features.wallet.model.WalletManagerViewModel
 import com.thellex.payments.features.wallet.ui.WalletAssetsActivity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class POSHomeActivity : AppCompatActivity() {
-    private lateinit var viewModel: UserViewModel
+    private lateinit var userViewModel: UserViewModel
+    private lateinit var walletViewModel: WalletManagerViewModel
     private lateinit var transactionRecyclerView: RecyclerView
     private lateinit var transactionAdapter: POSTransactionAdapter
 
@@ -40,19 +43,23 @@ class POSHomeActivity : AppCompatActivity() {
 
         setupWindowInsetsAndBars()
 
-        viewModel = ViewModelProvider(
+        userViewModel = ViewModelProvider(
             this,
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
+
+        walletViewModel = ViewModelProvider(
+            this,
+            WalletManagerModelFactory(applicationContext)
+        )[WalletManagerViewModel::class.java]
 
         val businessNameTextView = findViewById<TextView>(R.id.businessNameText)
         businessNameTextView.text = businessNameTextView.text.toString().uppercase()
 
         setupRecyclerView()
-
         observeUserTransactions()
-
         setupClickListeners()
+        loadWalletData()
     }
 
     private fun setupWindowInsetsAndBars() {
@@ -86,6 +93,12 @@ class POSHomeActivity : AppCompatActivity() {
 
         val itemSpacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
         transactionRecyclerView.addItemDecoration(ItemSpacingDecoration(itemSpacing))
+    }
+
+    private fun loadWalletData() {
+        walletViewModel.loadWallet {
+            userViewModel.token.first { !it.isNullOrBlank() }
+        }
     }
 
     private fun observeUserTransactions() {

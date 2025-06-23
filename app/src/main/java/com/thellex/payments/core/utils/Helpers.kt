@@ -143,7 +143,7 @@ object Helpers {
         }
     }
 
-    fun formatDecimal(value: Double): String {
+    fun formatDecimal(value: String): String {
         // You can customize decimal places or formatting here
         return BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString()
     }
@@ -165,7 +165,6 @@ object Helpers {
             null
         }
     }
-
 
     fun convertToUsd(currency: String, amountStr: String): String {
         return try {

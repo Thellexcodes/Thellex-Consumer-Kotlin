@@ -17,8 +17,6 @@ data class Transaction(
     @SerializedName("WITHDRAW") WITHDRAW,
 }
 
-
-
 data class PosTransaction(
     @SerializedName("iconResId") val iconResId: Int?,
     @SerializedName("statusIconResId") val statusIconResId: Int?,
@@ -37,4 +35,11 @@ data class Crypto(
     @SerializedName("iconRes") val iconRes: Int
 ) {
     override fun toString(): String = blockchain.name
+}
+
+data class TokenListDto(
+    @SerializedName("token") val assetCode: Token,
+    @SerializedName("iconRes") val iconRes: Int
+) {
+    override fun toString(): String = assetCode.name
 }

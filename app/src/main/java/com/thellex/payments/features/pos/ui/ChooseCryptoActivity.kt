@@ -8,23 +8,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.core.decorators.ItemSpacingDecoration
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.features.pos.adapters.CryptoAdapter
 import com.thellex.payments.data.model.Crypto
+import com.thellex.payments.data.model.TokenListDto
 import com.thellex.payments.settings.PaymentType
-import com.thellex.payments.settings.Token
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
-import kotlinx.coroutines.launch
+import com.thellex.payments.features.wallet.model.WalletManagerModelFactory
+import com.thellex.payments.features.wallet.model.WalletManagerViewModel
 
-class POSChooseCryptoActivity: AppCompatActivity() {
+class POSChooseCryptoActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var cryptoAdapter: CryptoAdapter
     private lateinit var viewModel: UserViewModel
+    private lateinit var walletManagerViewModel: WalletManagerViewModel
+
+    private var cryptoList = mutableListOf<TokenListDto>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +50,11 @@ class POSChooseCryptoActivity: AppCompatActivity() {
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
 
+        walletManagerViewModel = ViewModelProvider(
+            this,
+            WalletManagerModelFactory(applicationContext)
+        )[WalletManagerViewModel::class.java]
+
         recyclerView = findViewById(R.id.pos_crypto_list_selection)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -59,11 +68,8 @@ class POSChooseCryptoActivity: AppCompatActivity() {
         val spacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
         recyclerView.addItemDecoration(ItemSpacingDecoration(spacing))
 
-        // ✅ Use a coroutine to access DataStore (suspend function)
-        lifecycleScope.launch {
-            // Do something with qWallet, for example:
-//            Log.d("QWALLET", "QID: ${qWallet?.id}, QSN: ${qWallet?.qsn}")
-        }
+        // Observe wallet data and update cryptoList dynamically
+        observeWalletData()
 
         val backButton = findViewById<ImageView>(R.id.activity_wallet_back_button)
         backButton.setOnClickListener {
@@ -71,9 +77,12 @@ class POSChooseCryptoActivity: AppCompatActivity() {
         }
     }
 
-
-    private val cryptoList = listOf(
-        Crypto(Token.usdt, R.drawable.icon_usdt),
-    )
-
+    private fun observeWalletData() {
+        walletManagerViewModel.walletBalance.observe(this) { walletDto ->
+            val updatedCryptoList = walletDto.wallets.values.map { wallet ->
+                TokenListDto(wallet.assetCode, Helpers.getIconResIdForToken(wallet.assetCode.toString()))
+            }
+            cryptoAdapter.updateData(updatedCryptoList)
+        }
+    }
 }

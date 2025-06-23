@@ -13,11 +13,6 @@ data class CreateRequestPaymentDto(
     val network: SupportedBlockchain
 )
 
-data class RequestPaymentResponse(
-    @SerializedName("wallet") val wallet: QWallet,
-    @SerializedName("assetCode") val assetCode: String
-)
-
 enum class PaymentStatus(val value: String) {
     None("None"),
     Complete("COMPLETE"),

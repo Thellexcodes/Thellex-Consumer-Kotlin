@@ -1,5 +1,6 @@
 package com.thellex.payments.features.pos.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
+import java.util.Locale
 
 class AssetAdapter(
     private var assets: MutableList<Asset>,
@@ -29,11 +31,12 @@ class AssetAdapter(
 
     override fun onBindViewHolder(holder: AssetViewHolder, position: Int) {
         val asset = assets[position]
-        holder.textAssetSymbol.text = asset.symbol
+        holder.textAssetSymbol.text = asset.symbol.uppercase(Locale.getDefault())
         holder.textTokenAmount.text = "${asset.amount} ${asset.symbol}"
         holder.textTokenValueUsd.text = "$ ${asset.usdValue}"
         holder.textTokenValueNgn.text = "= ${asset.valueInLocal} NGN"
         holder.imageAssetIcon.setImageResource(asset.iconResId)
+
 
         holder.itemView.setOnClickListener {
             onItemClick(asset)

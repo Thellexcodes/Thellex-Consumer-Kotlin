@@ -5,28 +5,21 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
 import com.thellex.payments.core.decorators.ItemSpacingDecoration
+import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.Helpers.formatDecimal
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.pos.adapters.Asset
 import com.thellex.payments.features.pos.adapters.AssetAdapter
-import com.thellex.payments.features.wallet.model.WalletEntry
-import com.thellex.payments.features.wallet.model.WalletManagerBalanceResponse
 import com.thellex.payments.features.wallet.model.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.model.WalletManagerViewModel
 import com.thellex.payments.features.wallet.prefrences.WalletManagerPreferences
-import com.thellex.payments.network.services.ApiClient
-import com.thellex.payments.core.utils.Helpers
-import com.thellex.payments.core.utils.Helpers.formatDecimal
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
+import java.util.Locale
+
 
 class WalletAssetsActivity : AppCompatActivity() {
     private lateinit var userViewModel: UserViewModel
@@ -46,7 +39,7 @@ class WalletAssetsActivity : AppCompatActivity() {
         setupRecyclerView()
         textTotalBalance = findViewById(R.id.activity_wallet_balance_amount)
 
-        loadWalletData()
+        observeWalletData()
     }
 
     private fun setupViewModels() {
@@ -76,73 +69,19 @@ class WalletAssetsActivity : AppCompatActivity() {
         recyclerViewWalletAssets.addItemDecoration(ItemSpacingDecoration(itemSpacing))
     }
 
-    private fun loadWalletData() {
-        val cachedWallet = walletPreferences.getWalletBalance()
-        if (cachedWallet != null) {
-            updateUIFromResponse(cachedWallet)
-        } else {
-            fetchWalletBalances(forceRefresh = true)
-        }
-    }
-
-    private fun updateUIFromResponse(response: WalletManagerBalanceResponse) {
-        val currency = response.currency ?: "N/A"
-        val totalBalance = response.totalBalance ?: "0"
-
-        textTotalBalance.text = "$totalBalance $currency"
-
-        val wallets = response.wallets
-        if (wallets.isEmpty()) {
-            walletAssetsAdapter.updateData(emptyList())
-            return
-        }
-
-        val newAssets = wallets.map { wallet: WalletEntry ->
-            Asset(
-                symbol = wallet.assetCode?.uppercase() ?: "N/A",
-                amount = formatDecimal(wallet.balanceInUsd ?: 0.0),
-                usdValue = formatDecimal(wallet.balanceInUsd ?: 0.0),
-                valueInLocal = formatDecimal(wallet.balanceInNgn ?: 0.0),
-                iconResId = Helpers.getIconResIdForToken(wallet.assetCode ?: "")
-            )
-        }
-
-        walletAssetsAdapter.updateData(newAssets)
-    }
-
-    private fun fetchWalletBalances(forceRefresh: Boolean) {
-        lifecycleScope.launch {
-            val token = withTimeoutOrNull(5000) {
-                userViewModel.token.first { !it.isNullOrBlank() }
+    private fun observeWalletData() {
+        walletManagerViewModel.walletBalance.observe(this) { walletDto ->
+            textTotalBalance.text = formatDecimal(walletDto.totalInUsd.toString())
+            val updatedAssets = walletDto.wallets.values.map { wallet ->
+                Asset(
+                    symbol = wallet.assetCode.toString().uppercase(Locale.getDefault()) ?: "N/A",
+                    amount = formatDecimal(wallet.totalBalance),
+                    usdValue = formatDecimal(wallet.totalBalance),
+                    valueInLocal = formatDecimal("0.00"),
+                    iconResId = Helpers.getIconResIdForToken(wallet.assetCode.toString() ?: "unknown")
+                )
             }
-
-            if (token.isNullOrBlank()) {
-                return@launch
-            }
-
-            if (!forceRefresh) {
-                // If not forced, maybe check last update time here (optional)
-            }
-
-            try {
-                val api = ApiClient.getAuthenticatedWalletManagerApi(token)
-                val response = api.fetchBalance()
-
-                val walletBalanceResponse = response.result
-
-                if (walletBalanceResponse == null || walletBalanceResponse.wallets.isEmpty()) {
-                    return@launch
-                }
-
-                // Save fresh response to preferences
-                walletPreferences.saveWalletBalance(walletBalanceResponse)
-
-                withContext(Dispatchers.Main) {
-                    updateUIFromResponse(walletBalanceResponse)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            walletAssetsAdapter.updateData(updatedAssets)
         }
     }
 }

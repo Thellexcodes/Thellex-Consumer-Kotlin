@@ -8,9 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
 import com.thellex.payments.data.model.Crypto
+import com.thellex.payments.data.model.TokenListDto
 import java.util.Locale
 
-class CryptoAdapter(private val cryptoList: List<Crypto>, private val onItemClick: (Crypto) -> Unit) : RecyclerView.Adapter<CryptoAdapter.CryptoViewHolder>() {
+class CryptoAdapter(
+    private val cryptoList: MutableList<TokenListDto>,
+    private val onItemClick: (TokenListDto) -> Unit
+) : RecyclerView.Adapter<CryptoAdapter.CryptoViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CryptoViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_crypto, parent, false)
@@ -24,12 +28,18 @@ class CryptoAdapter(private val cryptoList: List<Crypto>, private val onItemClic
 
     override fun getItemCount(): Int = cryptoList.size
 
+    fun updateData(newCryptoList: List<TokenListDto>) {
+        cryptoList.clear()
+        cryptoList.addAll(newCryptoList)
+        notifyDataSetChanged()
+    }
+
     inner class CryptoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val cryptoName: TextView = itemView.findViewById(R.id.cryptoName)
         private val cryptoIcon: ImageView = itemView.findViewById(R.id.cryptoIcon)
 
-        fun bind(crypto: Crypto) {
-            cryptoName.text = crypto.blockchain.toString().uppercase(Locale.getDefault())
+        fun bind(crypto: TokenListDto) {
+            cryptoName.text = crypto.assetCode.toString().uppercase(Locale.getDefault())
             cryptoIcon.setImageResource(crypto.iconRes)
 
             itemView.setOnClickListener {
@@ -38,4 +48,5 @@ class CryptoAdapter(private val cryptoList: List<Crypto>, private val onItemClic
         }
     }
 }
+
 
