@@ -1,0 +1,93 @@
+package com.thellex.payments.data.model
+
+import com.google.gson.annotations.SerializedName
+import com.thellex.payments.settings.PaymentType
+import com.thellex.payments.settings.SupportedBlockchain
+import com.thellex.payments.settings.Token
+
+data class CreateRequestPaymentDto(
+    val paymentType: PaymentType,
+    val assetCode: Token,
+    val assetIssuer: String? = null,
+    val amount: String? = null,
+    val network: SupportedBlockchain
+)
+
+data class RequestPaymentResponse(
+    @SerializedName("wallet") val wallet: QWallet,
+    @SerializedName("assetCode") val assetCode: String
+)
+
+enum class PaymentStatus(val value: String) {
+    None("None"),
+    Confirmed("confirmed"),
+    Accepted("accepted"),
+    Done("Done"),
+    Processing("Processing");
+
+    companion object {
+        fun from(value: String?): PaymentStatus {
+            return entries.firstOrNull { it.value.equals(value, ignoreCase = true) } ?: None
+        }
+    }
+}
+
+enum class WalletWebhookEvent(val value: String) {
+
+    // Errors
+    INVALID_USER("INVALID_USER"),
+    INVALID_CURRENCY("INVALID_CURRENCY"),
+    INVALID_AMOUNT("INVALID_AMOUNT"),
+    DUPLICATE_TRANSACTION("DUPLICATE_TRANSACTION"),
+    WALLET_NOT_FOUND("WALLET_NOT_FOUND"),
+    NETWORK_NOT_SUPPORTED("NETWORK_NOT_SUPPORTED"),
+    USER_NOT_FOUND("USER_NOT_FOUND"),
+    TRANSACTION_NOT_CONFIRMED("TRANSACTION_NOT_CONFIRMED"),
+    UNSUPPORTED_EVENT("UNSUPPORTED_EVENT"),
+    INVALID_SIGNATURE("INVALID_SIGNATURE"),
+    MISSING_REQUIRED_FIELDS("MISSING_REQUIRED_FIELDS"),
+    INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR"),
+    TRANSACTION_FOUND("TRANSACTION_FOUND"),
+    TRANSACTION_NOT_FOUND("TRANSACTION_NOT_FOUND"),
+
+    // Wallet events
+    WALLET_UPDATED("WALLET_UPDATED"),
+    WALLET_ADDRESS_GENERATED("WALLET_ADDRESS_GENERATED"),
+
+    // Deposit events
+    DEPOSIT_CONFIRMATION("DEPOSIT_CONFIRMATION"),
+    DEPOSIT_SUCCESSFUL("DEPOSIT_SUCCESSFUL"),
+    DEPOSIT_ON_HOLD("DEPOSIT_ON_HOLD"),
+    DEPOSIT_FAILED_AML("DEPOSIT_FAILED_AML"),
+    DEPOSIT_REJECTED("DEPOSIT_REJECTED"),
+
+    // Withdrawal events
+    WITHDRAW_SUCCESSFUL("WITHDRAW_SUCCESSFUL"),
+    WITHDRAW_REJECTED("WITHDRAW_REJECTED"),
+
+    // Order events
+    ORDER_DONE("ORDER_DONE"),
+    ORDER_CANCELLED("ORDER_CANCELLED"),
+
+    // Swap events
+    SWAP_COMPLETED("SWAP_COMPLETED"),
+    SWAP_REVERSED("SWAP_REVERSED"),
+    SWAP_FAILED("SWAP_FAILED"),
+
+    // Sell transaction events
+    SELL_TRANSACTION_SUCCESSFUL("SELL_TRANSACTION_SUCCESSFUL"),
+    SELL_TRANSACTION_PROCESSING("SELL_TRANSACTION_PROCESSING"),
+    SELL_TRANSACTION_FAILED("SELL_TRANSACTION_FAILED"),
+
+    // Buy transaction events
+    BUY_TRANSACTION_SUCCESSFUL("BUY_TRANSACTION_SUCCESSFUL"),
+    BUY_TRANSACTION_PROCESSING("BUY_TRANSACTION_PROCESSING"),
+    BUY_TRANSACTION_FAILED("BUY_TRANSACTION_FAILED");
+
+    companion object {
+        fun fromValue(value: String?): WalletWebhookEvent? {
+            return values().firstOrNull { it.value.equals(value, ignoreCase = true) }
+        }
+    }
+}
+
