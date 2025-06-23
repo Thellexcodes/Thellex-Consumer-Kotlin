@@ -17,27 +17,15 @@ data class Transaction(
     @SerializedName("WITHDRAW") WITHDRAW,
 }
 
-enum class TransactionStatus(val displayName: String) {
-    COMPLETED("Completed"),
-    REJECTED("Rejected"),
-    PENDING("Pending");
 
-    companion object {
-        fun fromString(value: String): TransactionStatus {
-            return values().firstOrNull {
-                it.name.equals(value, ignoreCase = true) || it.displayName.equals(value, ignoreCase = true)
-            } ?: PENDING
-        }
-    }
-}
 
 data class PosTransaction(
-    @SerializedName("iconResId") val iconResId: Int?,                  // txn_icon
-    @SerializedName("statusIconResId") val statusIconResId: Int?,      // status_icon
-    @SerializedName("description") val description: String,           // txn_description
-    @SerializedName("time") val time: String,                         // time_text
-    @SerializedName("amountWithSymbol") val amountWithSymbol: String, // amount (e.g., "20 USDT")
-    @SerializedName("status") val status:  TransactionStatus                     // status (e.g., "Completed")
+    @SerializedName("iconResId") val iconResId: Int?,
+    @SerializedName("statusIconResId") val statusIconResId: Int?,
+    @SerializedName("description") val description: String,
+    @SerializedName("time") val time: String,
+    @SerializedName("amountWithSymbol") val amountWithSymbol: String,
+    @SerializedName("status") val status:  PaymentStatus
 )
 
 data class BlockchainItem(

@@ -30,7 +30,7 @@ class AuthVerificationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_auth_verification)
 
         viewModel = UserViewModel(applicationContext)
-        
+
         token = intent.getStringExtra("token")
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->

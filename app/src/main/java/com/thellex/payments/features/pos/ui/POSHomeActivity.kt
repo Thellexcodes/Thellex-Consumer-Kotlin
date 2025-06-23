@@ -92,13 +92,10 @@ class POSHomeActivity : AppCompatActivity() {
         lifecycleScope.launch {
             UserPreferences.getAuthResult(applicationContext).collect { userEntity ->
                 val transactions = userEntity?.transactionHistory ?: emptyList()
-
-//                val sortedTransactions = transactions.sortedByDescending { parseDate(it.createdAt) }
-//                Log.d("RAW_JSON_BODY", sortedTransactions.toString())
-//
-//                withContext(Dispatchers.Main) {
-//                    transactionAdapter.updateList(sortedTransactions)
-//                }
+                val sortedTransactions = transactions.sortedByDescending { parseDate(it.createdAt) }
+                withContext(Dispatchers.Main) {
+                    transactionAdapter.updateList(sortedTransactions)
+                }
             }
         }
     }

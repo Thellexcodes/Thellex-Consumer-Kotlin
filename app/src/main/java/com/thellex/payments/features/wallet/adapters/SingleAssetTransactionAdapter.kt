@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.Helpers.convertToUsd
-import com.thellex.payments.core.utils.Helpers.formatTransactionDate
 import com.thellex.payments.data.model.TransactionHistoryEntity
 import com.thellex.payments.data.model.WalletWebhookEvent
 

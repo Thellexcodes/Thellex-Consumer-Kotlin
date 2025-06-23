@@ -64,7 +64,8 @@ data class TransactionHistoryEntity(
     @SerializedName("paymentStatus") val paymentStatus: String,
     @SerializedName("sourceAddress") val sourceAddress: String,
     @SerializedName("destinationAddress") val destinationAddress: String,
-    @SerializedName("paymentNetwork") val paymentNetwork: String
+    @SerializedName("paymentNetwork") val paymentNetwork: String,
+    @SerializedName("createdAt") val createdAt: String,
 )
 
 @Serializable

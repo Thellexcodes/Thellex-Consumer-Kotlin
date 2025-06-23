@@ -83,7 +83,6 @@ class MainActivity : AppCompatActivity() {
                     val authResult = authResponse?.result
                     if (authResult != null) {
                         userModel.saveAuthResult(authResult)
-
                         navigateToDashboard()
                     } else {
                         userModel.logout()

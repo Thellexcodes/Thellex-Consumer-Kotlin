@@ -20,20 +20,25 @@ data class RequestPaymentResponse(
 
 enum class PaymentStatus(val value: String) {
     None("None"),
+    Complete("COMPLETE"),
     Confirmed("confirmed"),
     Accepted("accepted"),
     Done("Done"),
-    Processing("Processing");
+    Processing("Processing"),
+
+    Outbound("OUTBOUND"),
+    Inbound("INBOUND"),
+    PendingRiskScreening("PENDING_RISK_SCREENING"),
+    Queued("QUEUED"),
+    Sent("SENT"),
+    Rejected("Rejected");
 
     companion object {
-        fun from(value: String?): PaymentStatus {
-            return entries.firstOrNull { it.value.equals(value, ignoreCase = true) } ?: None
-        }
+        fun fromValue(value: String): PaymentStatus? = entries.find { it.value.equals(value, ignoreCase = true) }
     }
 }
 
 enum class WalletWebhookEvent(val value: String) {
-
     // Errors
     INVALID_USER("INVALID_USER"),
     INVALID_CURRENCY("INVALID_CURRENCY"),
@@ -86,7 +91,7 @@ enum class WalletWebhookEvent(val value: String) {
 
     companion object {
         fun fromValue(value: String?): WalletWebhookEvent? {
-            return values().firstOrNull { it.value.equals(value, ignoreCase = true) }
+            return entries.firstOrNull { it.value.equals(value, ignoreCase = true) }
         }
     }
 }

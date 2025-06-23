@@ -7,7 +7,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.thellex.payments.R
 import com.thellex.payments.data.enums.ERRORS
 import com.thellex.payments.data.model.ErrorResponse
-import com.thellex.payments.data.model.TransactionStatus
+import com.thellex.payments.data.model.PaymentStatus
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
@@ -16,6 +16,7 @@ import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 object Helpers {
     public fun getNavigationBarHeight(context: Context): Int {
@@ -111,25 +112,24 @@ object Helpers {
     }
 
     fun formatTimestamp(timestamp: String): String {
-        return "Time"
-//        return try {
-//            val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-//            parser.timeZone = TimeZone.getTimeZone("UTC")
-//            val date = parser.parse(timestamp)
-//            val formatter = SimpleDateFormat("MMM dd, hh:mm a", Locale.getDefault())
-//            formatter.format(date)
-//        } catch (e: Exception) {
-//            timestamp // fallback to raw string
-//        }
+        return try {
+            val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.getDefault())
+            parser.timeZone = TimeZone.getTimeZone("UTC")
+            val date = parser.parse(timestamp)
+            val formatter = SimpleDateFormat("MMM dd, hh:mm a", Locale.getDefault())
+            formatter.format(date)
+        } catch (e: Exception) {
+            timestamp // fallback to raw string if parsing fails
+        }
     }
 
-    fun mapToTransactionStatus(rawStatus: String): TransactionStatus {
-        return when (rawStatus.lowercase(Locale.getDefault())) {
-            "accepted" -> TransactionStatus.COMPLETED
-            "completed" -> TransactionStatus.COMPLETED
-            "rejected" -> TransactionStatus.REJECTED
-            "pending" -> TransactionStatus.PENDING
-            else -> TransactionStatus.PENDING // fallback
+    fun mapToTransactionStatus(rawStatus: String): PaymentStatus {
+        return when (rawStatus.trim().lowercase(Locale.getDefault())) {
+            "accepted" -> PaymentStatus.Complete
+            "done" -> PaymentStatus.Complete
+            "rejected" -> PaymentStatus.Rejected
+            "pending" -> PaymentStatus.Processing
+            else -> PaymentStatus.Processing
         }
     }
 
@@ -148,6 +148,14 @@ object Helpers {
         return BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString()
     }
 
+    fun formatAmountWithSymbol(amountStr: String, symbol: String? = null, decimals: Int = 4): String {
+        val amount = amountStr.toDoubleOrNull() ?: 0.0
+        val symbolToUse = symbol ?: "$"
+        val formattedAmount = "%.${decimals}f".format(amount)
+        return "$symbolToUse$formattedAmount"
+    }
+
+
     fun parseDate(dateString: String?): Date? {
         return try {
             // Adjust the pattern to your actual created_at format
@@ -158,34 +166,6 @@ object Helpers {
         }
     }
 
-    fun formatTransactionDate(createdAtStr: String?): String {
-        if (createdAtStr.isNullOrEmpty()) return "N/A"
-        return createdAtStr.toString()
-//        return try {
-//            // Parse ISO8601 date string to Date
-//            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-//            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
-//            val date: Date = inputFormat.parse(createdAtStr) ?: return "N/A"
-//
-//            // Format time part like "11:28 PM"
-//            val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
-//
-//            // Format date part like "Jun 9, 2025"
-//            val dateFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
-//
-//            // Check if date is today
-//            val today = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
-//            val transactionDay = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(date)
-//
-//            if (transactionDay == today) {
-//                "Today, ${timeFormat.format(date)}"
-//            } else {
-//                "${dateFormat.format(date)}, ${timeFormat.format(date)}"
-//            }
-//        } catch (e: Exception) {
-//            "N/A"
-//        }
-    }
 
     fun convertToUsd(currency: String, amountStr: String): String {
         return try {

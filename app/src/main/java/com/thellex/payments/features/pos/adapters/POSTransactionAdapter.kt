@@ -5,14 +5,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.Helpers.formatAmountWithSymbol
 import com.thellex.payments.data.model.PosTransaction
 import com.thellex.payments.data.model.TransactionHistoryEntity
 import com.thellex.payments.core.utils.Helpers.formatTimestamp
 import com.thellex.payments.core.utils.Helpers.getIconResIdForToken
 import com.thellex.payments.core.utils.Helpers.getStatusIconResId
 import com.thellex.payments.core.utils.Helpers.mapToTransactionStatus
+import com.thellex.payments.data.model.PaymentStatus
 import java.util.Locale
 
 class POSTransactionAdapter(
@@ -52,24 +55,34 @@ class POSTransactionAdapter(
         holder.timeText.text = item.time
         holder.amount.text = item.amountWithSymbol
         holder.status.text = item.status.toString()
+
+        // Set green color if status is Complete
+        if (item.status == PaymentStatus.Complete) {
+            holder.status.setTextColor(
+                ContextCompat.getColor(holder.status.context, R.color.green)
+            )
+        } else {
+            // Reset to default color (black or whatever your default is)
+            holder.status.setTextColor(
+                ContextCompat.getColor(holder.status.context, R.color.white)
+            )
+        }
     }
 
     override fun getItemCount(): Int = items.size
 
     fun updateList(newItems: List<TransactionHistoryEntity>) {
-//        items = newItems.map { entity ->
-//            entity.paymentStatus?.let { mapToTransactionStatus(it) }?.let {
-//                PosTransaction(
-//                    iconResId = getIconResIdForToken(entity.currency),
-//                    statusIconResId = getStatusIconResId(entity.status),
-//                    description = entity.currency.uppercase(Locale.getDefault()),
-//                    time = formatTimestamp("${entity.createdAt}"),
-//                    amountWithSymbol = entity.amount.toString(),
-//                    status = it
-//                )
-//            }!!
-//        }
-//        notifyDataSetChanged()
+        items = newItems.map { entity ->
+            PosTransaction(
+                iconResId = getIconResIdForToken(entity.assetCode),
+                statusIconResId = getStatusIconResId(entity.paymentStatus),
+                description = entity.assetCode.uppercase(Locale.getDefault()),
+                time = formatTimestamp(entity.createdAt),
+                amountWithSymbol = formatAmountWithSymbol(entity.amount.toString()),
+                status = mapToTransactionStatus(entity.paymentStatus)
+            )
+        }
+        notifyDataSetChanged()
     }
 }
 
