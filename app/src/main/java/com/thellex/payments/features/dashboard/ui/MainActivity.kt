@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import com.thellex.payments.data.enums.ERRORS
 import com.thellex.payments.core.utils.Helpers.showLongToast
@@ -36,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         userModel = ViewModelProvider(
             this,
             UserViewModelFactory(applicationContext)
@@ -47,11 +47,8 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         checkAuthStatus()
 
-        // Assume checkAuthStatus updates viewModel.authResult or similar LiveData/StateFlow
-        lifecycleScope.launch {
-            val alertID = withTimeoutOrNull(5000) {
-                userModel.authResult.firstOrNull { it != null }?.alertID
-            } ?: "default-id"
+        userModel.authResult.observe(this) { authResult ->
+            val alertID = authResult?.alertID ?: "default-id"
             startSocketServiceWithAlertId(alertID)
         }
     }
@@ -59,10 +56,10 @@ class MainActivity : AppCompatActivity() {
     private fun checkAuthStatus() {
         lifecycleScope.launch {
             val token = withTimeoutOrNull(5000) {
-                userModel.token.first { !it.isNullOrBlank() }
+                userModel.token.asFlow().first { !it.isNullOrBlank() }
             }
 
-            if (token == null) {
+            if (token.isNullOrBlank()) {
                 navigateToLogin()
                 return@launch
             }
@@ -73,12 +70,6 @@ class MainActivity : AppCompatActivity() {
 
                 if (response.isSuccessful) {
                     val authResponse = response.body()
-//                    val rawJson = Gson().toJson(authResponse)
-//                    val address = authResponse?.result?.qWallet?.wallets?.getOrNull(0)?.address
-//                    Log.d("RAW_JSON_BODY", authResponse?.result?.transactionHistory.toString())
-//                    Log.d("WALLET_1", address.toString())
-//                    Log.d("USERDATA", "user: ${authResponse?.result?.email}")
-//                    Log.d("ALERT_ID", "${authResponse?.result?.alertID}")
 
                     val authResult = authResponse?.result
                     if (authResult != null) {
@@ -136,7 +127,7 @@ class MainActivity : AppCompatActivity() {
     private fun parseBackendErrorEnum(errorBody: String?): String? {
         return try {
             val json = JSONObject(errorBody ?: "{}")
-            json.optString("message", null.toString()) // assumes error enum is returned in the `message` field
+            json.optString("message", null.toString())
         } catch (e: JSONException) {
             null
         }

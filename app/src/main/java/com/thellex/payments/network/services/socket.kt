@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.net.URISyntaxException
@@ -45,11 +46,9 @@ class SocketService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         alertID = intent?.getStringExtra("alertID") ?: "default-id"
-
         if (!this::socket.isInitialized) {
             initializeSocket()
         }
-
         return START_STICKY
     }
 
@@ -64,7 +63,6 @@ class SocketService : Service() {
             socket = IO.socket(Constants.BASE_URL, opts)
 
             socket.on(Socket.EVENT_CONNECT) {
-                Log.d("SocketServiceData", "Connected to socket with alertID: $alertID")
                 socket.emit("join", alertID)
             }
 
@@ -74,7 +72,6 @@ class SocketService : Service() {
                     val gson = Gson()
                     val payload = gson.fromJson(json.toString(), NotificationPayload::class.java)
 
-                    Log.d("SocketServiceData", "Notification Received: ${payload.notification.title} - ${payload.transaction.transactionId}")
 
                     coroutineScope.launch {
                         try {
@@ -82,20 +79,37 @@ class SocketService : Service() {
                             UserPreferences.addTransactionHistory(appContext, payload.transaction)
                             UserPreferences.addNotification(appContext, payload.notification)
 
-                            Log.d("SocketServiceData", "UserEntity updated with new transaction: ${payload.transaction.transactionId}")
                         } catch (e: Exception) {
-                            Log.e("SocketServiceData", "Failed to update UserEntity: ${e.message}", e)
+                            Log.e("TAG", "Failed to update UserEntity: ${e.message}", e)
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("SocketServiceData", "Failed to process socket event: ${e.message}", e)
+                    Log.e("TAG", "Failed to process socket event: ${e.message}", e)
+                }
+            }
+
+            socket.on(NotificationSockets.WITHDRAWAL_SUCCESSFUL.event) { args ->
+                val json = args[0] as JSONObject
+                val gson = Gson()
+                val payload = gson.fromJson(json.toString(), NotificationPayload::class.java)
+
+                Log.d("TAG", "Received withdrawal payload: $payload")
+
+                coroutineScope.launch {
+                    try {
+                        val appContext = this@SocketService.applicationContext
+                        UserPreferences.updateTransactionById( appContext, payload.transaction.blockchainTxId, payload.transaction )
+                        UserPreferences.addNotification(appContext, payload.notification)
+                    } catch (e: Exception) {
+                        Log.e("TAG", "Failed to update UserEntity: ${e.message}", e)
+                    }
                 }
             }
 
             socket.connect()
         } catch (e: URISyntaxException) {
             e.printStackTrace()
-            Log.e("SocketService", "URI Syntax Exception: ${e.message}", e)
+            Log.e("TAG", "URI Syntax Exception: ${e.message}", e)
         }
     }
 

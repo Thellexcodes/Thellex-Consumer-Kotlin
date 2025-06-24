@@ -105,9 +105,7 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
                 try {
                     val chainEnum = SupportedBlockchain.valueOf(chainName)
                     BlockchainItem(chainEnum, Helpers.getIconResIdForBlockchain(chainName))
-                } catch (e: IllegalArgumentException) {
-                    null // Skip unsupported chains
-                }
+                } catch (e: IllegalArgumentException) { null }
             }
 
             // Update spinner adapter with new supported blockchains
@@ -143,16 +141,6 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
             walletAddress?.let { address ->
                 val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 clipboard.setPrimaryClip(ClipData.newPlainText("Wallet Address", address))
-
-                getSystemService(Vibrator::class.java)?.apply {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
-                    } else {
-                        @Suppress("DEPRECATION")
-                        vibrate(50)
-                    }
-                }
-
                 Toast.makeText(this, "Address copied to clipboard", Toast.LENGTH_SHORT).show()
             } ?: Toast.makeText(this, "Address not available yet", Toast.LENGTH_SHORT).show()
         }

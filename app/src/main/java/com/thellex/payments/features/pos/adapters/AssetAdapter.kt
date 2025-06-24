@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
+import com.thellex.payments.settings.LocalValue
 import java.util.Locale
 
 class AssetAdapter(
@@ -20,7 +21,7 @@ class AssetAdapter(
         val textAssetSymbol: TextView = itemView.findViewById(R.id.textAssetSymbol)
         val textTokenAmount: TextView = itemView.findViewById(R.id.textTokenAmount)
         val textTokenValueUsd: TextView = itemView.findViewById(R.id.textTokenValueUsd)
-        val textTokenValueNgn: TextView = itemView.findViewById(R.id.textTokenValueNgn)
+        val textTokenValueInLocal: TextView = itemView.findViewById(R.id.textTokenValueLocal)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AssetViewHolder {
@@ -34,7 +35,7 @@ class AssetAdapter(
         holder.textAssetSymbol.text = asset.symbol.uppercase(Locale.getDefault())
         holder.textTokenAmount.text = "${asset.amount} ${asset.symbol}"
         holder.textTokenValueUsd.text = "$ ${asset.usdValue}"
-        holder.textTokenValueNgn.text = "= ${asset.valueInLocal} NGN"
+        holder.textTokenValueInLocal.text = "\u2248 ${asset.valueInLocal} $LocalValue"
         holder.imageAssetIcon.setImageResource(asset.iconResId)
 
 

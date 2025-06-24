@@ -1,5 +1,6 @@
 package com.thellex.payments.core.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
 import android.widget.Toast
@@ -29,7 +30,9 @@ object Helpers {
 
     fun createUnsafeSslSocketFactory(): SSLSocketFactory {
         val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+            @SuppressLint("TrustAllX509TrustManager")
             override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+            @SuppressLint("TrustAllX509TrustManager")
             override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
             override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
         })
@@ -42,6 +45,7 @@ object Helpers {
     // Create an unsafe trust manager
     fun createUnsafeTrustManager(): X509TrustManager {
         return object : X509TrustManager {
+            @SuppressLint("TrustAllX509TrustManager")
             override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
             override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
             override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
@@ -72,10 +76,6 @@ object Helpers {
         } ?: Pair(null, "No error message available")
     }
 
-    fun displayError(errorType: ERRORS, targetLayout: TextInputLayout) {
-        targetLayout.helperText = errorType.message
-    }
-
     fun Context.showLongToast(message: String, durationInMillis: Long = 390000L) {
         val interval = 3500L // Toast.LENGTH_LONG duration
         val toast = Toast.makeText(this, message, Toast.LENGTH_LONG)
@@ -91,14 +91,12 @@ object Helpers {
                 }
             }
         }
-
         handler.post(showToastRunnable)
     }
 
     fun getIconResIdForToken(token: String): Int {
         return when (token.lowercase(Locale.getDefault())) {
             "usdt" -> R.drawable.icon_usdt
-            "trx" -> R.drawable.icon_usdt
             "usdc" -> R.drawable.icon_usdc
             "xlm" -> R.drawable.icon_stellar
             else -> R.drawable.icon_txn
@@ -107,7 +105,6 @@ object Helpers {
 
     fun getIconResIdForBlockchain(chain: String): Int {
         return when (chain.lowercase(Locale.getDefault())) {
-            "bep20" -> R.drawable.icon_bnb_chain
             "matic" -> R.drawable.icon_polygon
             else -> R.drawable.icon_bnb_chain
         }
@@ -147,8 +144,7 @@ object Helpers {
             "accepted" -> "received"
             "completed" -> "received"
             "received" -> "received"
-            "sent" -> "sent"
-            else -> "unknown"
+            else -> "sent"
         }
     }
 
@@ -159,7 +155,7 @@ object Helpers {
 
     fun formatAmountWithSymbol(amountStr: String, symbol: String? = null, decimals: Int = 4): String {
         val amount = amountStr.toDoubleOrNull() ?: 0.0
-        val symbolToUse = symbol ?: "$"
+        val symbolToUse = symbol ?: ""
         val formattedAmount = "%.${decimals}f".format(amount)
         return "$symbolToUse$formattedAmount"
     }
@@ -167,7 +163,6 @@ object Helpers {
 
     fun parseDate(dateString: String?): Date? {
         return try {
-            // Adjust the pattern to your actual created_at format
             val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
             formatter.parse(dateString ?: "")
         } catch (e: Exception) {
@@ -175,10 +170,11 @@ object Helpers {
         }
     }
 
+    @SuppressLint("DefaultLocale")
     fun convertToUsd(currency: String, amountStr: String): String {
         return try {
             val amount = amountStr.toDouble()
-            String.format("%.2f", amount)  // For demo, just return amount formatted to 2 decimals
+            String.format("%.2f", amount)
         } catch (e: Exception) {
             "0.00"
         }
