@@ -52,6 +52,7 @@
                     android:id="@+id/time_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_2dp"
                     android:text="Yesterday, 5:12 PM"
                     android:textColor="#AAAAAA"
                     android:textSize="10sp"
@@ -63,6 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:gravity="end"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
@@ -72,14 +74,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="- 8.50 USDT"
-                    android:textColor="#FF5252"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:fontFamily="@font/outfit_medium" />
 
             <TextView
                     android:id="@+id/status"
                     android:layout_width="wrap_content"
+                    android:layout_marginTop="@dimen/margin_2dp"
                     android:layout_height="wrap_content"
+                    android:gravity="end"
                     android:text="Completed"
                     android:textColor="#AAAAAA"
                     android:textSize="10sp"

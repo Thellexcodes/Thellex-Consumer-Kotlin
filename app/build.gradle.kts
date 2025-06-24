@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.thellex.pos"
+    namespace = "com.thellex.payments"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.thellex.pos"
+        applicationId = "com.thellex.payments"
         minSdk = 24
         targetSdk = 35
         versionCode = 2
