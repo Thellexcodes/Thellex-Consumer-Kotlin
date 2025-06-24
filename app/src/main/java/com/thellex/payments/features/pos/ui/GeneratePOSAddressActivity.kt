@@ -15,6 +15,7 @@ import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -33,46 +34,130 @@ import com.thellex.payments.settings.SupportedBlockchain
 import com.thellex.payments.settings.Token
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.features.wallet.model.WalletManagerModelFactory
+import com.thellex.payments.features.wallet.model.WalletManagerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import okhttp3.OkHttpClient
+import java.util.Locale
 
 class GeneratePOSAddressActivity : AppCompatActivity() {
+
     private lateinit var paymentType: PaymentType
-    private lateinit var client: OkHttpClient
     private lateinit var selectedBlockchain: SupportedBlockchain
     private lateinit var userModel: UserViewModel
-    private var walletAddress: String? = null
+    private lateinit var walletManagerViewModel: WalletManagerViewModel
+    private lateinit var supportedBlockchains: List<BlockchainItem>
 
-    private val supportedBlockchains = listOf(
-        BlockchainItem(SupportedBlockchain.bep20, R.drawable.icon_bnb_chain)
-    )
+    private var walletAddress: String? = null
+    private var assetCode: String = ""
+    private var assetCodeChainName: String = ""
+
+    private lateinit var qrImageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pos_address_generator)
 
-        userModel = ViewModelProvider(
-            this,
-            UserViewModelFactory(applicationContext)
-        )[UserViewModel::class.java]
+        // Get references
+        qrImageView = findViewById(R.id.imageViewDynamicQr)
+        val backButton = findViewById<ImageView>(R.id.activity_wallet_back_button)
+        val spinner = findViewById<Spinner>(R.id.cryptoAssetSpinner)
+        val copyAddressLayout = findViewById<LinearLayout>(R.id.copyAddressLayout)
+        val assetCodeTextView = findViewById<TextView>(R.id.qr_code_asset_code_name)
+        val assetCodeIconView = findViewById<ImageView>(R.id.icon_qr_code_asset)
 
-        client = OkHttpClient.Builder()
-            .hostnameVerifier { _, _ -> true }
-            .sslSocketFactory(Helpers.createUnsafeSslSocketFactory(), Helpers.createUnsafeTrustManager())
-            .build()
-
-        val qrImageView = findViewById<ImageView>(R.id.imageViewDynamicQr)
-
+        // Get intent data safely
+        assetCode = intent.getStringExtra("assetCode") ?: ""
+        assetCodeChainName = intent.getStringExtra("assetCodeChain") ?: ""
         val typeString = intent.getStringExtra("type")
+
+        // Set text/icon
+        assetCodeTextView.text = assetCode.uppercase()
+        val assetCodeIconResId = Helpers.getIconResIdForToken(assetCode)
+        assetCodeIconView.setImageResource(assetCodeIconResId)
+
+        // ViewModels
+        userModel = ViewModelProvider(this, UserViewModelFactory(applicationContext))[UserViewModel::class.java]
+        walletManagerViewModel = ViewModelProvider(this, WalletManagerModelFactory(applicationContext))[WalletManagerViewModel::class.java]
+
+        // Payment type
         paymentType = typeString?.let { PaymentType.valueOf(it) } ?: PaymentType.REQUEST_CRYPTO
 
-        val qrBitmap = generateQrCode("address", Token.usdt)
-        qrImageView.setImageBitmap(qrBitmap)
+        // Back button
+        backButton.setOnClickListener { finish() }
 
+        // Initialize empty supportedBlockchains list
+        supportedBlockchains = emptyList()
+
+        // Observe wallet balance and dynamically build supportedBlockchains
+        walletManagerViewModel.walletBalance.observe(this) { walletDto ->
+            // Extract unique chain names from all wallets' networks (strings)
+            val chainNames = walletDto.wallets.values
+                .flatMap { it.networks.map { chainName -> chainName.lowercase(Locale.getDefault()) } }
+                .distinct()
+
+            // Map to BlockchainItem list filtering unsupported chains gracefully
+            supportedBlockchains = chainNames.mapNotNull { chainName ->
+                try {
+                    val chainEnum = SupportedBlockchain.valueOf(chainName)
+                    BlockchainItem(chainEnum, Helpers.getIconResIdForBlockchain(chainName))
+                } catch (e: IllegalArgumentException) {
+                    null // Skip unsupported chains
+                }
+            }
+
+            // Update spinner adapter with new supported blockchains
+            val adapter = CryptoSpinnerAdapter(this, supportedBlockchains)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+
+            // Select the blockchain matching assetCodeChainName or fallback to first
+            val defaultIndex = supportedBlockchains.indexOfFirst {
+                it.chain.name.equals(assetCodeChainName, ignoreCase = true)
+            }.takeIf { it >= 0 } ?: 0
+
+            spinner.setSelection(defaultIndex)
+            selectedBlockchain = supportedBlockchains[defaultIndex].chain
+
+            // Spinner selection listener
+            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    selectedBlockchain = supportedBlockchains[position].chain
+                }
+                override fun onNothingSelected(parent: AdapterView<*>) {}
+            }
+
+            // Update wallet address and QR code for the selected assetCode
+            val wallet = walletDto.wallets[assetCode]
+            walletAddress = wallet?.address ?: "No address found"
+            val qrBitmap = generateQrCode(walletAddress ?: "no-address")
+            qrImageView.setImageBitmap(qrBitmap)
+        }
+
+        // Copy address logic
+        copyAddressLayout.setOnClickListener {
+            walletAddress?.let { address ->
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("Wallet Address", address))
+
+                getSystemService(Vibrator::class.java)?.apply {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
+                    } else {
+                        @Suppress("DEPRECATION")
+                        vibrate(50)
+                    }
+                }
+
+                Toast.makeText(this, "Address copied to clipboard", Toast.LENGTH_SHORT).show()
+            } ?: Toast.makeText(this, "Address not available yet", Toast.LENGTH_SHORT).show()
+        }
+
+        // Handle system bar insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
             val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(
@@ -83,100 +168,11 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
             )
             insets
         }
-
-        val backButton = findViewById<ImageView>(R.id.activity_wallet_back_button)
-        backButton.setOnClickListener {
-            finish()
-        }
-
-
-        val spinner = findViewById<Spinner>(R.id.cryptoAssetSpinner)
-        val adapter = CryptoSpinnerAdapter(this, supportedBlockchains)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
-
-        spinner.setSelection(0)
-        selectedBlockchain = supportedBlockchains[0].chain
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                selectedBlockchain = supportedBlockchains[position].chain
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-
-        lifecycleScope.launch {
-            val token = withTimeoutOrNull(5000) {
-                userModel.token.first { !it.isNullOrBlank() }
-            }
-            makeRequestCryptoPayment(token!!, Token.usdt, SupportedBlockchain.bep20)
-        }
-
-        val copyAddressLayout = findViewById<LinearLayout>(R.id.copyAddressLayout)
-        copyAddressLayout.setOnClickListener {
-            walletAddress?.let {
-                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText("Wallet Address", it)
-                clipboard.setPrimaryClip(clip)
-
-                // Vibrate for a short duration
-                val vibrator = getSystemService(Vibrator::class.java)
-                vibrator?.let { vib ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        vib.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
-                    } else {
-                        vib.vibrate(5)
-                    }
-                }
-
-                Toast.makeText(this, "Address copied to clipboard", Toast.LENGTH_SHORT).show()
-            } ?: Toast.makeText(this, "Address not available yet", Toast.LENGTH_SHORT).show()
-        }
     }
 
-    private fun makeRequestCryptoPayment(
-        authToken: String,
-        assetCode: Token,
-        network: SupportedBlockchain,
-    ) {
-        val paymentRequest = CreateRequestPaymentDto(
-            paymentType = PaymentType.REQUEST_CRYPTO,
-            assetCode = assetCode,
-            network = network
-        )
-
-        lifecycleScope.launch {
-            try {
-                val paymentService = ApiClient.getAuthenticatedPaymentApi(authToken)
-//                val response = paymentService.requestCryptoPayment(paymentRequest)
-
-//                if (response.status) {
-//                    val result = response.result
-//                    walletAddress = result?.wallet?.address ?: "Invalid Address"
-//                    Log.d("WalletAddress", "Received wallet address: $walletAddress")
-//
-//                    withContext(Dispatchers.Main) {
-//                        val qrImageView = findViewById<ImageView>(R.id.imageViewDynamicQr)
-//                        val qrBitmap = generateQrCode(walletAddress ?: "no-address", assetCode)
-//                        qrImageView.setImageBitmap(qrBitmap)
-//                    }
-//                } else {
-//                    withContext(Dispatchers.Main) {
-//                        Toast.makeText(this@GeneratePOSAddressActivity, "Request failed", Toast.LENGTH_SHORT).show()
-//                    }
-//                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@GeneratePOSAddressActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-
-    private fun generateQrCode(data: String, assetType: Token?): Bitmap? {
+    private fun generateQrCode(data: String): Bitmap? {
         val size = 800
-        val barcodeEncoder = BarcodeEncoder()
-        return barcodeEncoder.encodeBitmap(data, BarcodeFormat.QR_CODE, size, size)
+        return BarcodeEncoder().encodeBitmap(data, BarcodeFormat.QR_CODE, size, size)
     }
 }
+

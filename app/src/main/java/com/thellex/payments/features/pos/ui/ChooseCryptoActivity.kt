@@ -3,6 +3,7 @@ package com.thellex.payments.features.pos.ui
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -42,6 +43,7 @@ class POSChooseCryptoActivity : AppCompatActivity() {
                 view.paddingRight,
                 systemBarsInsets.bottom
             )
+
             insets
         }
 
@@ -59,16 +61,19 @@ class POSChooseCryptoActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         cryptoAdapter = CryptoAdapter(cryptoList) { selectedItem ->
+            val assetCode = selectedItem.assetCode
             val intent = Intent(this, GeneratePOSAddressActivity::class.java)
-            intent.putExtra("type", PaymentType.REQUEST_CRYPTO)
+            intent.putExtra("type", PaymentType.REQUEST_CRYPTO.name)
+            intent.putExtra("assetCode", assetCode.name)
+            intent.putExtra("assetCodeChain", selectedItem.chainName)
             startActivity(intent)
         }
+
         recyclerView.adapter = cryptoAdapter
 
         val spacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
         recyclerView.addItemDecoration(ItemSpacingDecoration(spacing))
 
-        // Observe wallet data and update cryptoList dynamically
         observeWalletData()
 
         val backButton = findViewById<ImageView>(R.id.activity_wallet_back_button)
@@ -80,7 +85,9 @@ class POSChooseCryptoActivity : AppCompatActivity() {
     private fun observeWalletData() {
         walletManagerViewModel.walletBalance.observe(this) { walletDto ->
             val updatedCryptoList = walletDto.wallets.values.map { wallet ->
-                TokenListDto(wallet.assetCode, Helpers.getIconResIdForToken(wallet.assetCode.toString()))
+                TokenListDto(wallet.assetCode,
+                    Helpers.getIconResIdForToken(wallet.assetCode.toString()),
+                    chainName = wallet.networks[0] )
             }
             cryptoAdapter.updateData(updatedCryptoList)
         }

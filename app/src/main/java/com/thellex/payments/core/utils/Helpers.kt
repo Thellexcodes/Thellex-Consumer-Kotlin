@@ -6,8 +6,10 @@ import android.widget.Toast
 import com.google.android.material.textfield.TextInputLayout
 import com.thellex.payments.R
 import com.thellex.payments.data.enums.ERRORS
+import com.thellex.payments.data.model.BlockchainItem
 import com.thellex.payments.data.model.ErrorResponse
 import com.thellex.payments.data.model.PaymentStatus
+import com.thellex.payments.settings.SupportedBlockchain
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
@@ -103,11 +105,18 @@ object Helpers {
         }
     }
 
+    fun getIconResIdForBlockchain(chain: String): Int {
+        return when (chain.lowercase(Locale.getDefault())) {
+            "bep20" -> R.drawable.icon_bnb_chain
+            "matic" -> R.drawable.icon_polygon
+            else -> R.drawable.icon_bnb_chain
+        }
+    }
+
     fun getStatusIconResId(status: String?): Int {
         return when (normalizeStatusForIcon(status)) {
             "received" -> R.drawable.icon_receive_status
-            "sent" -> R.drawable.icon_send_status
-            else -> R.drawable.icon_arrow_down
+            else -> R.drawable.icon_send_status
         }
     }
 
@@ -119,7 +128,7 @@ object Helpers {
             val formatter = SimpleDateFormat("MMM dd, hh:mm a", Locale.getDefault())
             formatter.format(date)
         } catch (e: Exception) {
-            timestamp // fallback to raw string if parsing fails
+            timestamp
         }
     }
 

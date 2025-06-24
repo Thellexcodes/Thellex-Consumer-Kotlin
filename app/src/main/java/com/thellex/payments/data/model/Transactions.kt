@@ -39,7 +39,8 @@ data class Crypto(
 
 data class TokenListDto(
     @SerializedName("token") val assetCode: Token,
-    @SerializedName("iconRes") val iconRes: Int
+    @SerializedName("iconRes") val iconRes: Int,
+    @SerializedName("chain") val chainName: String?
 ) {
     override fun toString(): String = assetCode.name
 }

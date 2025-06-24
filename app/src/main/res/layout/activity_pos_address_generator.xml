@@ -20,8 +20,8 @@
 
         <ImageView
                 android:id="@+id/activity_wallet_back_button"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
                 android:src="@drawable/icon_back"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -55,11 +55,13 @@
                 app:layout_constraintBottom_toBottomOf="parent">
 
             <ImageView
+                    android:id="@+id/icon_qr_code_asset"
                     android:src="@drawable/icon_usdt"
                     android:layout_width="28dp"
                     android:layout_height="28dp" />
 
             <TextView
+                    android:id="@+id/qr_code_asset_code_name"
                     android:layout_marginLeft="10dp"
                     android:fontFamily="@font/kumbhsans_bold"
                     android:textColor="@color/white"
