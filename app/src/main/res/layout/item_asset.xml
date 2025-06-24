@@ -74,7 +74,7 @@
 
         <!-- Value in NGN -->
         <TextView
-                android:id="@+id/textTokenValueNgn"
+                android:id="@+id/textTokenValueLocal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/kumbhsans_light"

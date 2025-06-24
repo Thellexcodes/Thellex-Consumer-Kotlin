@@ -17,54 +17,53 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
-
-            <ImageView
-                    android:id="@+id/activity_wallet_back_button"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/icon_back"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                <ImageView
+                        android:id="@+id/activity_wallet_back_button"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/icon_back"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Main container for the layout -->
-    <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="26dp"
-            app:layout_constraintStart_toStartOf="parent"
-            android:id="@+id/posRequestAssetsMainContainer"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/activity_wallet_top_app_bar_container">
-
-        <TextView
-                android:id="@+id/posRequestAssetsTitle"
-                android:textColor="@color/white"
-                android:fontFamily="@font/kumbhsans_bold"
-                android:textSize="14sp"
+        <!-- Main container for the layout -->
+        <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="REQUEST" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="31dp"
+                app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/posRequestAssetsMainContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/activity_wallet_top_app_bar_container">
 
-        <TextView
-                android:id="@+id/posRequestAssetsSelectCurrencyLabel"
-                android:textColor="@color/white"
-                android:layout_marginTop="26sp"
-                android:fontFamily="@font/kumbhsans_regular"
-                android:textSize="14sp"
-                android:text="Select cryptocurrency"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-    </LinearLayout>
+            <TextView
+                    android:id="@+id/posRequestAssetsTitle"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:textSize="14sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="REQUEST" />
+
+            <TextView
+                    android:id="@+id/posRequestAssetsSelectCurrencyLabel"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="26sp"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="14sp"
+                    android:text="Select cryptocurrency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
 
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/pos_crypto_list_selection"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/posRequestAssetsMainContainer"
-            android:layout_marginTop="16dp" />
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/pos_crypto_list_selection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/posRequestAssetsMainContainer"
+                android:layout_marginTop="16dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -68,14 +68,12 @@ object UserPreferences {
     }
 
     private suspend fun updateUserEntity(context: Context, updateBlock: (UserEntity) -> UserEntity) {
-        Log.d("UserPreferencesS", "Updating UserEntity")
         context.dataStore.edit { prefs ->
             val currentJson = prefs[AUTH_RESULT_KEY]
             val currentUser = currentJson?.let {
                 try {
                     gson.fromJson(it, UserEntity::class.java)
                 } catch (e: Exception) {
-                    Log.e("UserPreferencesS", "Error parsing current UserEntity: ${e.message}")
                     null
                 }
             }
@@ -84,28 +82,45 @@ object UserPreferences {
             if (updatedUser != null) {
                 val newJson = gson.toJson(updatedUser)
                 prefs[AUTH_RESULT_KEY] = newJson
-                Log.d("UserPreferencesS", "UserEntity updated: $newJson")
             } else {
-                Log.w("UserPreferencesS", "No existing UserEntity to update.")
             }
         }
     }
 
-    // ✅ Add transaction history entry
     suspend fun addTransactionHistory(context: Context, transaction: TransactionHistoryEntity) {
-//        updateUserEntity(context) { user ->
-//            val updatedList = user.transactionHistory?.toMutableList() ?: mutableListOf()
-////            updatedList.add(transaction)
-//            user.copy(transactionHistory = updatedList)
-//        }
-    }
-
-    // ✅ Add notification
-    suspend fun addNotification(context: Context, notification: NotificationEntity) {
         updateUserEntity(context) { user ->
-            val updatedList = user.notifications?.toMutableList() ?: mutableListOf()
-            updatedList.add(notification)
-            user.copy(notifications = updatedList)
+            val updatedList = user.transactionHistory.toMutableList()
+            updatedList.add(transaction)
+            val sortedList = updatedList.sortedByDescending { it.createdAt }
+            user.copy(transactionHistory = sortedList)
         }
     }
+
+    suspend fun updateTransactionById(
+        context: Context,
+        blockchainTxId: String,
+        updatedTransaction: TransactionHistoryEntity
+    ) {
+        updateUserEntity(context) { user ->
+            val newList = user.transactionHistory.map {
+                if (it.blockchainTxId == blockchainTxId) {
+                    updatedTransaction
+                } else {
+                    it
+                }
+            }.sortedByDescending { it.createdAt }
+            user.copy(transactionHistory = newList)
+        }
+    }
+
+    // Add notification and sort by createdAt descending
+    suspend fun addNotification(context: Context, notification: NotificationEntity) {
+        updateUserEntity(context) { user ->
+            val updatedList = user.notifications.toMutableList()
+            updatedList.add(notification)
+            val sortedList = updatedList.sortedByDescending { it.createdAt }
+            user.copy(notifications = sortedList)
+        }
+    }
+
 }

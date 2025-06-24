@@ -30,7 +30,7 @@ data class UserEntity(
     @SerializedName("suspended") val suspended: Boolean,
     @SerializedName("alertID") val alertID: String,
     @SerializedName("tier") val tier: String,
-    @SerializedName("kyc") val kyc: KycInfoEntity,
+    @SerializedName("kyc") val kyc: KycInfoEntity? = null,
     @SerializedName("transactionHistory") val transactionHistory: List<TransactionHistoryEntity>,
     @SerializedName("notifications") val notifications: List<NotificationEntity>,
     @SerializedName("settings") val settings: List<StoreSettingsEntity>,

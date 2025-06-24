@@ -3,7 +3,6 @@ package com.thellex.payments.features.pos.ui
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,7 +14,6 @@ import com.thellex.payments.core.decorators.ItemSpacingDecoration
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.features.pos.adapters.CryptoAdapter
-import com.thellex.payments.data.model.Crypto
 import com.thellex.payments.data.model.TokenListDto
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory

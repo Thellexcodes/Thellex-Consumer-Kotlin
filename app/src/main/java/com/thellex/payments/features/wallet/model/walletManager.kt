@@ -15,6 +15,7 @@ data class WalletBalanceDto(
 @Serializable
 data class WalletDto(
     @SerializedName("totalBalance") val totalBalance: String,
+    @SerializedName("valueInLocal") val valueInLocal: String,
     @SerializedName("networks") val networks: List<String>,
     @SerializedName("address") val address: String,
     @SerializedName("assetCode") val assetCode: Token,

@@ -77,7 +77,7 @@ class WalletAssetsActivity : AppCompatActivity() {
                     symbol = wallet.assetCode.toString().uppercase(Locale.getDefault()) ?: "N/A",
                     amount = formatDecimal(wallet.totalBalance),
                     usdValue = formatDecimal(wallet.totalBalance),
-                    valueInLocal = formatDecimal("0.00"),
+                    valueInLocal = formatDecimal(wallet.valueInLocal),
                     iconResId = Helpers.getIconResIdForToken(wallet.assetCode.toString() ?: "unknown")
                 )
             }
