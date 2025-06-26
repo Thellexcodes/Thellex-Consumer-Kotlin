@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <application
@@ -21,8 +20,15 @@
             android:usesCleartextTraffic="true"
             tools:targetApi="31">
         <activity
-                android:name=".features.kyc.ui.StartKycActivity"
+                android:name=".features.kyc.ui.basic.BasicInfoActivity"
                 android:exported="false" />
+        <!-- KYC Feature Activities -->
+        <activity
+                android:name=".features.kyc.ui.basic.BasicKycOverview"
+                android:exported="false" />
+        <activity
+                android:name=".features.kyc.ui.StartKycActivity"
+                android:exported="false" /> <!-- Wallet Feature Activities -->
         <activity
                 android:name=".features.wallet.ui.WithdrawCrypto"
                 android:exported="false" />
@@ -39,12 +45,29 @@
                 android:name=".features.wallet.ui.SendToWalletActivity"
                 android:exported="false" />
         <activity
+                android:name=".features.wallet.ui.AssetDepositActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.wallet.ui.AssetBalanceActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.wallet.ui.WalletAssetsActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.wallet.ui.RequestAssetsActivity"
+                android:exported="false"
+                android:label="RequestAssetsActivity" /> <!-- Auth Feature Activities -->
+        <activity
                 android:name=".features.auth.ui.AuthVerificationActivity"
                 android:exported="false"
                 android:theme="@style/Theme.Thellex" />
         <activity
-                android:name=".features.fiat.ManageFiatAccountActivity"
+                android:name=".features.auth.ui.LoginPinActivity"
                 android:exported="false" />
+        <activity
+                android:name=".features.auth.ui.LoginActivity"
+                android:exported="false"
+                android:label="@string/title_activity_login" /> <!-- POS Feature Activities -->
         <activity
                 android:name=".features.pos.ui.EnterTransactionAmountActivity"
                 android:exported="false" />
@@ -55,25 +78,9 @@
                 android:name=".features.pos.ui.SelectCryptoCurrencyActivity"
                 android:exported="false" />
         <activity
-                android:name=".features.wallet.ui.AssetDepositActivity"
-                android:exported="false" />
-        <activity
-                android:name=".features.wallet.ui.AssetBalanceActivity"
-                android:exported="false" />
-        <activity
-                android:name=".features.wallet.ui.WalletAssetsActivity"
-                android:exported="false" />
-        <activity
-                android:name=".features.auth.ui.LoginPinActivity"
-                android:exported="false" />
-        <activity
                 android:name=".features.pos.ui.POSQuickActionsActivity"
                 android:exported="false"
                 android:theme="@style/Theme.Thellex" />
-        <activity
-                android:name=".features.auth.ui.LoginActivity"
-                android:exported="false"
-                android:label="@string/title_activity_login" />
         <activity
                 android:name=".features.pos.ui.POSHomeActivity"
                 android:exported="false"
@@ -83,21 +90,20 @@
                 android:exported="false"
                 android:label="POSChooseCryptoActivity" />
         <activity
-                android:name=".features.wallet.ui.RequestAssetsActivity"
-                android:exported="false"
-                android:label="RequestAssetsActivity" />
-        <activity
                 android:name=".features.pos.ui.SelectReceiverTypeActivity"
                 android:exported="false"
                 android:label="POSReceiverTypeActivity" />
         <activity
                 android:name=".features.pos.ui.GeneratePOSAddressActivity"
                 android:exported="false"
-                android:label="POSAddressGeneratorActivity" />
+                android:label="POSAddressGeneratorActivity" /> <!-- Fiat Feature Activity -->
+        <activity
+                android:name=".features.fiat.ManageFiatAccountActivity"
+                android:exported="false" /> <!-- Onboarding Feature Activity -->
         <activity
                 android:name=".features.onboarding.OnboardingActivity"
                 android:exported="false"
-                android:theme="@style/Theme.Thellex" />
+                android:theme="@style/Theme.Thellex" /> <!-- Dashboard -->
         <activity
                 android:name=".features.dashboard.ui.MainActivity"
                 android:exported="true"
@@ -107,8 +113,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
+        </activity> <!-- Services -->
         <service
                 android:name=".network.services.SocketService"
                 android:enabled="true"

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_kyc_overview_layout_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="20dp"
+        android:paddingHorizontal="20dp"
+        android:background="@drawable/general_gradient_background"
+        tools:context=".features.kyc.ui.basic.BasicKycOverview">
+
+    <ImageView
+            android:id="@+id/activity_kyc_overview_iv_back_icon"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:src="@drawable/icon_back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+            android:id="@+id/activity_kyc_overview_tv_kyc_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="31dp"
+            android:text="KYC"
+            android:textColor="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_iv_back_icon"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/activity_kyc_overview_layout_kyc_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+            android:padding="17dp"
+            android:background="@drawable/rounded_border_midnight"
+            app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_tv_kyc_title">
+
+        <TextView
+                android:id="@+id/activity_kyc_overview_tv_kyc_start_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:text="START YOUR KYC"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/activity_kyc_overview_tv_kyc_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Complete your KYC to start transacting up to $1,000,000.00"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:fontFamily="@font/kumbhsans_regular"
+                app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_tv_kyc_start_header"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/activity_kyc_overview_layout_start_kyc_button"
+                android:layout_width="126dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="11dp"
+                android:background="@drawable/rounded_border_button_golden"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_tv_kyc_description"
+                app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                    android:id="@+id/activity_kyc_overview_tv_start_kyc_button_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Start KYC"
+                    android:textAllCaps="true"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:textSize="10sp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/activity_kyc_overview_layout_kyc_requirements"
+            android:padding="17dp"
+            android:layout_marginTop="13dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_border_midnight"
+            app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_layout_kyc_card">
+
+        <TextView
+                android:id="@+id/activity_kyc_overview_tv_requirements_header"
+                android:textColor="@color/white"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:text="REQUIREMENTS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <LinearLayout
+                android:id="@+id/activity_kyc_overview_layout_user_data_requirement"
+                android:layout_marginTop="11dp"
+                android:background="@drawable/rounded_border"
+                android:padding="11dp"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_tv_requirements_header">
+
+            <ImageView
+                    android:id="@+id/activity_kyc_overview_iv_user_data_icon"
+                    android:src="@drawable/icon_user_plus"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"/>
+
+            <TextView
+                    android:layout_marginLeft="11dp"
+                    android:id="@+id/activity_kyc_overview_tv_user_data_text"
+                    android:textColor="@color/white"
+                    android:text="USER DATA"
+                    android:fontFamily="@font/kumbhsans_light"
+                    android:textSize="10sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

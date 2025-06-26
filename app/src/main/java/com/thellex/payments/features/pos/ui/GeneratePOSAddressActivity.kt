@@ -5,11 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ImageView
@@ -21,27 +17,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.thellex.payments.R
 import com.thellex.payments.features.pos.adapters.CryptoSpinnerAdapter
 import com.thellex.payments.data.model.BlockchainItem
-import com.thellex.payments.data.model.CreateRequestPaymentDto
-import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.settings.SupportedBlockchain
-import com.thellex.payments.settings.Token
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.core.utils.Helpers
-import com.thellex.payments.features.wallet.model.WalletManagerModelFactory
-import com.thellex.payments.features.wallet.model.WalletManagerViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
-import okhttp3.OkHttpClient
+import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
+import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import java.util.Locale
 
 class GeneratePOSAddressActivity : AppCompatActivity() {

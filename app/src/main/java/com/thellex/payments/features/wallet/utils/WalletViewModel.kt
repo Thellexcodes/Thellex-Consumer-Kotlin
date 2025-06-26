@@ -1,12 +1,12 @@
-package com.thellex.payments.features.wallet.model
+package com.thellex.payments.features.wallet.utils
 
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.thellex.payments.features.wallet.model.WalletBalanceDto
 import com.thellex.payments.features.wallet.prefrences.WalletManagerPreferences
-import com.thellex.payments.features.wallet.utils.WalletRepository
 import kotlinx.coroutines.launch
 
 class WalletManagerViewModel(application: Context): AndroidViewModel(application as Application) {

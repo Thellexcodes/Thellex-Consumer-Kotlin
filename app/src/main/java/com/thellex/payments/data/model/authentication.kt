@@ -29,12 +29,13 @@ data class UserEntity(
     @SerializedName("emailVerified") val emailVerified: Boolean,
     @SerializedName("suspended") val suspended: Boolean,
     @SerializedName("alertID") val alertID: String,
-    @SerializedName("tier") val tier: String,
     @SerializedName("kyc") val kyc: KycInfoEntity? = null,
     @SerializedName("transactionHistory") val transactionHistory: List<TransactionHistoryEntity>,
     @SerializedName("notifications") val notifications: List<NotificationEntity>,
     @SerializedName("settings") val settings: List<StoreSettingsEntity>,
-    @SerializedName("bankAccounts") val bankAccounts: List<BankAccountEntity>
+    @SerializedName("bankAccounts") val bankAccounts: List<BankAccountEntity>,
+    @SerializedName("currentTier") val currentTier: TierInfo? = null,
+    @SerializedName("nextTier") val nextTier: TierInfo? = null
 )
 
 @Serializable

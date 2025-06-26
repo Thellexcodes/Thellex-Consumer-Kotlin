@@ -1,30 +1,26 @@
-package com.thellex.payments.features.kyc.ui
+package com.thellex.payments.features.kyc.ui.basic
 
-import android.content.Intent
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.thellex.payments.databinding.ActivityStartKycBinding
-import com.thellex.payments.features.kyc.ui.basic.BasicKycOverview
+import com.thellex.payments.R
+import com.thellex.payments.databinding.ActivityBasicInfoBinding
 
-class StartKycActivity : AppCompatActivity() {
+class BasicInfoActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityStartKycBinding
+    private lateinit var binding: ActivityBasicInfoBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityStartKycBinding.inflate(layoutInflater)
+        binding = ActivityBasicInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
-        }
-
-        binding.activityStartBtnContinue.setOnClickListener {
-            startActivity(Intent(this, BasicKycOverview::class.java))
         }
     }
 }
