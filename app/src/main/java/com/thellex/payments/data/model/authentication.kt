@@ -45,7 +45,8 @@ data class KycInfoEntity(
     @SerializedName("phone") val phone: String,
     @SerializedName("country") val country: String,
     @SerializedName("address") val address: String,
-    @SerializedName("businessName") val businessName: String
+    @SerializedName("businessName") val businessName: String,
+    @SerializedName("status") val status: Boolean
 )
 
 @Serializable

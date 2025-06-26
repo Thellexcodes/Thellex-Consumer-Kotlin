@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/general_gradient_background"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        tools:context=".features.kyc.ui.StartKycActivity">
+
+    <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <!-- Title and description -->
+            <LinearLayout
+                    android:id="@+id/linearLayout5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                <TextView
+                        android:textSize="48sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/outfit_bold"
+                        android:text="Secure &amp; Unlock More with KYC"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                <TextView
+                        android:textSize="14sp"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        android:layout_marginTop="19dp"
+                        android:textColor="@color/steelBlueGrey"
+                        android:text="KYC keeps your wallet safe. With each KYC level, you gain access to bigger transaction limits and lower fees."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- Tiers container -->
+            <LinearLayout
+                    android:id="@+id/activity_start_linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="28dp">
+
+                <!-- TIER 1 -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/activity_start_constraintLayout_tier1"
+                        android:padding="11dp"
+                        android:background="@drawable/rounded_border"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp">
+
+                    <TextView
+                            android:id="@+id/activity_start_kyc_tier1"
+                            android:text="TIER 1"
+                            android:fontFamily="@font/kumbhsans_light"
+                            android:textColor="@color/steelBlueGrey"
+                            android:textSize="10sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                            android:id="@+id/activity_start_kyc_tier1_value"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/activity_start_kyc_tier1"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/kumbhsans_bold"
+                            android:textSize="12sp"
+                            android:textColor="@color/white"
+                            android:text="PERSONAL TIER"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    <TextView
+                            android:id="@+id/activity_start_kyc_tier1_limit"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/activity_start_kyc_tier1_value"
+                            android:layout_marginTop="12dp"
+                            android:fontFamily="@font/kumbhsans_bold"
+                            android:textSize="12sp"
+                            android:textColor="@color/goldenYellow"
+                            android:text="500K/DAY"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Repeat the same for TIER 2, 3, 4 with layout_width="match_parent" -->
+
+                <!-- TIER 2 -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/activity_start_constraintLayout_tier2"
+                        android:padding="11dp"
+                        android:background="@drawable/rounded_border_midnight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp">
+
+                    <TextView
+                            android:id="@+id/activity_start_kyc_tier2"
+                            android:text="TIER 2"
+                            android:fontFamily="@font/kumbhsans_light"
+                            android:textColor="@color/steelBlueGrey"
+                            android:textSize="10sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                            android:id="@+id/activity_start_kyc_tier2_value"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/activity_start_kyc_tier2"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/kumbhsans_bold"
+                            android:textSize="12sp"
+                            android:textColor="@color/white"
+                            android:text="PROFESSIONAL TIER"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    <TextView
+                            android:id="@+id/activity_start_kyc_tier2_limit"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/activity_start_kyc_tier2_value"
+                            android:layout_marginTop="12dp"
+                            android:fontFamily="@font/kumbhsans_bold"
+                            android:textSize="12sp"
+                            android:textColor="@color/goldenYellow"
+                            android:text="1M/DAY"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/activity_start_constraintLayout_tier3"
+                        android:padding="11dp"
+                        android:background="@drawable/rounded_border_midnight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp">
+
+                    <TextView
+                            android:id="@+id/activity_start_kyc_tier3"
+                            android:text="TIER 3"
+                            android:fontFamily="@font/kumbhsans_light"
+                            android:textColor="@color/steelBlueGrey"
+                            android:textSize="10sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                            android:id="@+id/activity_start_kyc_tier3_value"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/activity_start_kyc_tier3"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/kumbhsans_bold"
+                            android:textSize="12sp"
+                            android:textColor="@color/white"
+                            android:text="BUSINESS TIER"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    <TextView
+                            android:id="@+id/activity_start_kyc_tier3_limit"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/activity_start_kyc_tier3_value"
+                            android:layout_marginTop="12dp"
+                            android:fontFamily="@font/kumbhsans_bold"
+                            android:textSize="12sp"
+                            android:textColor="@color/goldenYellow"
+                            android:text="UP TO 5M/DAY"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/activity_start_constraintLayout_tier4"
+                        android:padding="11dp"
+                        android:background="@drawable/rounded_border_midnight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp">
+
+                    <TextView
+                            android:id="@+id/activity_start_kyc_tier4"
+                            android:text="TIER 4"
+                            android:fontFamily="@font/kumbhsans_light"
+                            android:textColor="@color/steelBlueGrey"
+                            android:textSize="10sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                            android:id="@+id/activity_start_kyc_tier4_value"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/activity_start_kyc_tier4"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/kumbhsans_bold"
+                            android:textSize="12sp"
+                            android:textColor="@color/white"
+                            android:text="ENTERPRISE TIER"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    <TextView
+                            android:id="@+id/activity_start_kyc_tier4_limit"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/activity_start_kyc_tier4_value"
+                            android:layout_marginTop="12dp"
+                            android:fontFamily="@font/kumbhsans_bold"
+                            android:textSize="12sp"
+                            android:textColor="@color/goldenYellow"
+                            android:text="UP TO 50M/DAY"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+            <!-- Footer Text -->
+            <LinearLayout
+                    android:id="@+id/linearLayout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginTop="18dp">
+
+                <TextView
+                        android:text="By continuing, you accept the "
+                        android:textSize="11sp"
+                        android:textColor="@color/steelBlueGrey"
+                        android:fontFamily="@font/kumbhsans_light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                <TextView
+                        android:text="Privacy Policy and Terms of Service"
+                        android:textSize="11sp"
+                        android:textColor="@color/goldenYellow"
+                        android:fontFamily="@font/kumbhsans_bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- Continue Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/activity_start_btn_continue"
+                    android:text="Continue"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/outfit_bold"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/rounded_border_button_golden"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
