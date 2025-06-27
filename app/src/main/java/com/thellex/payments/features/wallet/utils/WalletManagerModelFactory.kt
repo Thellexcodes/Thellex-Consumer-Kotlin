@@ -1,4 +1,4 @@
-package com.thellex.payments.features.wallet.model
+package com.thellex.payments.features.wallet.utils
 
 import android.content.Context
 import androidx.lifecycle.ViewModel

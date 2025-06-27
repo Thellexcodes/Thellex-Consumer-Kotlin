@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/fragmentKycStep2_scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:background="@drawable/general_gradient_background"
+        android:padding="20dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/fragmentKycStep2Root"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <!-- Top App Bar Container -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fragmentKycStep2_activity_wallet_top_app_bar_container"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:paddingBottom="12dp">
+
+            <ImageView
+                    android:id="@+id/fragmentKycStep2_activity_wallet_back_button"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:src="@drawable/icon_back"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Title and Subtitle -->
+        <LinearLayout
+                android:id="@+id/fragmentKycStep2_linearLayout4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="31dp"
+                app:layout_constraintTop_toBottomOf="@id/fragmentKycStep2_activity_wallet_top_app_bar_container"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                    android:text="Verify Your Identity"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:text="Enter your identification and address details"
+                    android:layout_marginTop="5dp"
+                    android:textSize="14sp"
+                    android:textColorHint="@color/steelBlueGrey"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Info Warning Box -->
+        <LinearLayout
+                android:id="@+id/fragmentKycStep2_linearLayout6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:paddingVertical="14dp"
+                android:paddingHorizontal="20dp"
+                android:background="@drawable/rounded_golden_yellow_15pct"
+                app:layout_constraintTop_toBottomOf="@id/fragmentKycStep2_linearLayout4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                    android:text="Please ensure you cross check your details before submitting."
+                    android:textSize="10sp"
+                    android:textColor="@color/goldenYellow"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Input Fields Container -->
+        <LinearLayout
+                android:id="@+id/fragmentKycStep2_llInputContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@id/fragmentKycStep2_linearLayout6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- NIN Group -->
+            <LinearLayout
+                    android:id="@+id/fragmentKycStep2_llNinGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="12dp">
+
+                <TextView
+                        android:id="@+id/fragmentKycStep2_tvNinLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="NIN (National ID Number)"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_light" />
+
+                <EditText
+                        android:id="@+id/fragmentKycStep2_etNin"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="Enter your NIN"
+                        android:textSize="10sp"
+                        android:textColor="@color/steelBlueGrey"
+                        android:textColorHint="@color/steelBlueGrey"
+                        android:inputType="text"
+                        android:background="@drawable/rounded_edittext" />
+            </LinearLayout>
+
+            <!-- BVN Group -->
+            <LinearLayout
+                    android:id="@+id/fragmentKycStep2_llBvnGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="12dp">
+
+                <TextView
+                        android:id="@+id/fragmentKycStep2_tvBvnLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="BVN (Bank Verification Number)"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_light" />
+
+                <EditText
+                        android:id="@+id/fragmentKycStep2_etBvn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="Enter your BVN"
+                        android:textSize="10sp"
+                        android:textColor="@color/steelBlueGrey"
+                        android:textColorHint="@color/steelBlueGrey"
+                        android:inputType="number"
+                        android:background="@drawable/rounded_edittext" />
+            </LinearLayout>
+
+            <!-- House Number Group -->
+            <LinearLayout
+                    android:id="@+id/fragmentKycStep2_llHouseNumberGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="12dp">
+
+                <TextView
+                        android:id="@+id/fragmentKycStep2_tvHouseNumberLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="House Number"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_light" />
+
+                <EditText
+                        android:id="@+id/fragmentKycStep2_etHouseNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="Enter House Number"
+                        android:textSize="10sp"
+                        android:textColor="@color/steelBlueGrey"
+                        android:textColorHint="@color/steelBlueGrey"
+                        android:inputType="text"
+                        android:background="@drawable/rounded_edittext" />
+            </LinearLayout>
+
+            <!-- Street Name Group -->
+            <LinearLayout
+                    android:id="@+id/fragmentKycStep2_llStreetNameGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="12dp">
+
+                <TextView
+                        android:id="@+id/fragmentKycStep2_tvStreetNameLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Street Name"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_light" />
+
+                <EditText
+                        android:id="@+id/fragmentKycStep2_etStreetName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="Enter Street Name"
+                        android:textSize="10sp"
+                        android:textColor="@color/steelBlueGrey"
+                        android:textColorHint="@color/steelBlueGrey"
+                        android:inputType="text"
+                        android:background="@drawable/rounded_edittext" />
+            </LinearLayout>
+
+            <!-- State Group -->
+            <LinearLayout
+                    android:id="@+id/fragmentKycStep2_llStateGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="12dp">
+
+                <TextView
+                        android:id="@+id/fragmentKycStep2_tvStateLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="State"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_light" />
+
+                <EditText
+                        android:id="@+id/fragmentKycStep2_etState"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="Enter State"
+                        android:textSize="10sp"
+                        android:textColor="@color/steelBlueGrey"
+                        android:textColorHint="@color/steelBlueGrey"
+                        android:inputType="text"
+                        android:background="@drawable/rounded_edittext" />
+            </LinearLayout>
+
+            <!-- Local Government Area Group -->
+            <LinearLayout
+                    android:id="@+id/fragmentKycStep2_llLgaGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="12dp">
+
+                <TextView
+                        android:id="@+id/fragmentKycStep2_tvLgaLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Local Government Area (LGA)"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_light" />
+
+                <EditText
+                        android:id="@+id/fragmentKycStep2_etLga"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="Enter LGA"
+                        android:textSize="10sp"
+                        android:textColor="@color/steelBlueGrey"
+                        android:textColorHint="@color/steelBlueGrey"
+                        android:inputType="text"
+                        android:background="@drawable/rounded_edittext" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Continue Button -->
+        <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/fragmentKycStep2_btnContinue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Continue"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textColor="@color/white"
+                android:background="@drawable/rounded_border_button_golden"
+                android:layout_marginTop="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

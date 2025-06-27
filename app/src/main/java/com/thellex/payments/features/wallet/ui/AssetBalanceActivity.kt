@@ -6,20 +6,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.thellex.payments.core.utils.Helpers.parseDate
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivitySingleAssetBalanceBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
-import com.thellex.payments.features.wallet.adapters.SingleAssetTransactionAdapter
 import com.thellex.payments.features.wallet.fragments.SendBottomSheetFragment
-import com.thellex.payments.features.wallet.model.WalletManagerModelFactory
-import com.thellex.payments.features.wallet.model.WalletManagerViewModel
+import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
+import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.features.wallet.prefrences.WalletManagerPreferences
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class AssetBalanceActivity : AppCompatActivity() {
 

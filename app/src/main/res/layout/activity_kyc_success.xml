@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/general_gradient_background"
+        android:padding="20dp"
+        tools:context=".features.auth.ui.KycSuccessActivity">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/proceedToDashboardButton"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+                android:textColor="@color/white"
+                android:fontFamily="@font/outfit_bold"
+                android:textSize="24dp"
+                android:text="Success"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <TextView
+                android:textColor="@color/steelBlueGrey"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="14sp"
+                android:text="Your account is one tier higher!"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:id="@+id/new_limits_label"
+                    android:fontFamily="@font/kumbhsans_light"
+                    android:textSize="10sp"
+                    android:text="NEW LIMITS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            <LinearLayout
+                    app:layout_constraintTop_toBottomOf="@id/new_limits_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:background="@drawable/rounded_border"
+                        android:padding="20dp"
+                        android:id="@+id/limits_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                    <!-- Row 1: Daily Credit and Debit Limits -->
+                    <LinearLayout
+                            android:id="@+id/daily_credit_limit_column"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginEnd="8dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/daily_debit_limit_column"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                                android:text="Daily credit limit"
+                                android:textColor="@color/steelBlueGrey"
+                                android:fontFamily="@font/kumbhsans_light"
+                                android:textSize="10sp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        <TextView
+                                android:id="@+id/daily_credit_limit_text"
+                                android:text="50,000.00 NGN"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/kumbhsans_regular"
+                                android:textStyle="normal"
+                                android:layout_marginTop="5dp"
+                                android:textSize="12sp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:id="@+id/daily_debit_limit_column"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toEndOf="@id/daily_credit_limit_column"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                                android:text="Daily debit limit"
+                                android:textColor="@color/steelBlueGrey"
+                                android:fontFamily="@font/kumbhsans_light"
+                                android:textSize="10sp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        <TextView
+                                android:id="@+id/daily_debit_limit_text"
+                                android:text="50,000.00 NGN"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/kumbhsans_regular"
+                                android:textStyle="normal"
+                                android:textSize="12sp"
+                                android:layout_marginTop="5dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <!-- Row 2: Single Debit Limit and Fee Percentage -->
+                    <LinearLayout
+                            android:id="@+id/single_debit_limit_column"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginEnd="8dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/daily_credit_limit_column"
+                            app:layout_constraintEnd_toStartOf="@+id/fee_percentage_column"
+                            android:layout_marginTop="12dp">
+
+                        <TextView
+                                android:text="Single Debit limit"
+                                android:textColor="@color/steelBlueGrey"
+                                android:fontFamily="@font/kumbhsans_light"
+                                android:textSize="10sp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        <TextView
+                                android:id="@+id/single_debit_limit_text"
+                                android:text="50,000.00 NGN"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/kumbhsans_regular"
+                                android:textStyle="normal"
+                                android:textSize="12sp"
+                                android:layout_width="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:id="@+id/fee_percentage_column"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintStart_toEndOf="@id/single_debit_limit_column"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/daily_debit_limit_column"
+                            android:layout_marginTop="12dp">
+
+                        <TextView
+                                android:text="Fee percentage"
+                                android:textColor="@color/steelBlueGrey"
+                                android:fontFamily="@font/kumbhsans_light"
+                                android:textSize="10sp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        <TextView
+                                android:id="@+id/fee_percentage_text"
+                                android:text="50,000.00 NGN"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/kumbhsans_regular"
+                                android:textStyle="normal"
+                                android:textSize="12sp"
+                                android:layout_marginTop="5dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/proceedToDashboardButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_ripple"
+            android:text="PROCEED TO DASHBOARD"
+            android:elevation="0dp"
+            android:fontFamily="@font/kumbhsans_bold"
+            android:textColor="@color/dark_purple"
+            android:layout_marginBottom="20dp"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toTopOf="@+id/upgradeLimitsButton"
+            tools:layout_editor_absoluteX="20dp" />
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/upgradeLimitsButton"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_border"
+            android:text="UPGRADE FOR HIGHER LIMITS"
+            android:elevation="0dp"
+            android:fontFamily="@font/kumbhsans_bold"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            tools:layout_editor_absoluteX="20dp"
+            app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

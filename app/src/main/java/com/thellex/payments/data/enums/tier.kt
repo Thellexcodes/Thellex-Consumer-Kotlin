@@ -10,7 +10,7 @@ enum class TierEnum(val value: String) {
 
     companion object {
         fun fromValue(value: String): TierEnum {
-            return values().find { it.value == value } ?: NONE
+            return entries.firstOrNull { it.value.equals(value, ignoreCase = true) } ?: NONE
         }
     }
 }

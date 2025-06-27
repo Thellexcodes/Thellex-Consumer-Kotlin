@@ -15,8 +15,8 @@ import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.pos.adapters.Asset
 import com.thellex.payments.features.pos.adapters.AssetAdapter
-import com.thellex.payments.features.wallet.model.WalletManagerModelFactory
-import com.thellex.payments.features.wallet.model.WalletManagerViewModel
+import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
+import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.features.wallet.prefrences.WalletManagerPreferences
 import java.util.Locale
 

@@ -3,6 +3,10 @@ package com.thellex.payments.core.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputLayout
 import com.thellex.payments.R
@@ -20,6 +24,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import java.util.regex.Pattern
 
 object Helpers {
     public fun getNavigationBarHeight(context: Context): Int {
@@ -178,6 +183,28 @@ object Helpers {
         } catch (e: Exception) {
             "0.00"
         }
+    }
+
+    fun highlightCurrency(textView: TextView, inputText: String, highlightColor: Int) {
+        val spannable = SpannableString(inputText)
+
+        // Regex to find currency amounts like $100 or $1,000,000.00
+        val pattern = Pattern.compile("\\$[\\d,]+(?:\\.\\d{2})?")
+        val matcher = pattern.matcher(inputText)
+
+        while (matcher.find()) {
+            val start = matcher.start()
+            val end = matcher.end()
+
+            spannable.setSpan(
+                ForegroundColorSpan(highlightColor),
+                start,
+                end,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+
+        textView.text = spannable
     }
 }
 

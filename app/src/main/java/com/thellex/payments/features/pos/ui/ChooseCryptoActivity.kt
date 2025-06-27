@@ -17,8 +17,8 @@ import com.thellex.payments.features.pos.adapters.CryptoAdapter
 import com.thellex.payments.data.model.TokenListDto
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
-import com.thellex.payments.features.wallet.model.WalletManagerModelFactory
-import com.thellex.payments.features.wallet.model.WalletManagerViewModel
+import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
+import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 
 class POSChooseCryptoActivity : AppCompatActivity() {
 

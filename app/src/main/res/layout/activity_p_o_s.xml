@@ -17,92 +17,92 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/activity_pos_notificationHeaderContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent">
-
-                    <!-- Avatar Icon -->
-                    <ImageView
-                            android:id="@+id/activity_pos_avatarIcon"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/icon_avatar"
-                            android:contentDescription="User Avatar"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
-
-                    <!-- User Info Vertical -->
-                    <LinearLayout
-                            android:id="@+id/activity_pos_userInfoContainer"
-                            android:orientation="vertical"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toEndOf="@id/activity_pos_avatarIcon">
-
-                        <TextView
-                                android:id="@+id/activity_pos_userNameText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="User"
-                                android:textColor="@color/white"
-                                android:textSize="12sp"
-                                android:fontFamily="@font/kumbhsans_bold" />
-
-                        <TextView
-                                android:id="@+id/activity_pos_userUidText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="uid: 1234343"
-                                android:textColor="@color/white"
-                                android:textSize="10sp" />
-
-                    </LinearLayout>
-
-                    <!-- Bell Icon -->
                     <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/activity_pos_bellContainer"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/activity_pos_notificationHeaderContainer"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            android:clickable="true"
-                            android:focusable="true">
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent">
 
+                        <!-- Avatar Icon -->
                         <ImageView
-                                android:id="@+id/activity_pos_bellIcon"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/bell"
+                                android:id="@+id/activity_pos_avatarIcon"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/icon_avatar"
+                                android:contentDescription="User Avatar"
                                 app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent" />
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent" />
 
-                        <TextView
-                                android:id="@+id/activity_pos_notificationBadge"
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
-                                android:background="@drawable/badge_background"
-                                android:text="0"
-                                android:textColor="@android:color/white"
-                                android:textSize="6sp"
-                                android:gravity="center"
-                                app:layout_constraintTop_toTopOf="@id/activity_pos_bellIcon"
-                                app:layout_constraintEnd_toEndOf="@id/activity_pos_bellIcon"
-                                android:minWidth="16dp"
-                                android:minHeight="16dp"
-                                android:padding="2dp" />
+                        <!-- User Info Vertical -->
+                        <LinearLayout
+                                android:id="@+id/activity_pos_userInfoContainer"
+                                android:orientation="vertical"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/activity_pos_avatarIcon">
+
+                            <TextView
+                                    android:id="@+id/activity_pos_userNameText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="User"
+                                    android:textColor="@color/white"
+                                    android:textSize="12sp"
+                                    android:fontFamily="@font/kumbhsans_bold" />
+
+                            <TextView
+                                    android:id="@+id/activity_pos_userUidText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="uid: 1234343"
+                                    android:textColor="@color/white"
+                                    android:textSize="10sp" />
+
+                        </LinearLayout>
+
+                        <!-- Bell Icon -->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/activity_pos_bellContainer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:clickable="true"
+                                android:focusable="true">
+
+                            <ImageView
+                                    android:id="@+id/activity_pos_bellIcon"
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/bell"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                            <TextView
+                                    android:id="@+id/activity_pos_notificationBadge"
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:background="@drawable/badge_background"
+                                    android:text="0"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="6sp"
+                                    android:gravity="center"
+                                    app:layout_constraintTop_toTopOf="@id/activity_pos_bellIcon"
+                                    app:layout_constraintEnd_toEndOf="@id/activity_pos_bellIcon"
+                                    android:minWidth="16dp"
+                                    android:minHeight="16dp"
+                                    android:padding="2dp" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
-                </androidx.constraintlayout.widget.ConstraintLayout>
 
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -201,7 +201,7 @@
                                     android:padding="8dp"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
-                                    app:layout_constraintEnd_toStartOf="@+id/pos_request_button"
+                                    app:layout_constraintEnd_toStartOf="@+id/activity_pos_request_button"
                                     >
                                 <ImageView
                                         android:layout_width="20dp"
@@ -217,7 +217,7 @@
                                         android:layout_height="wrap_content" />
                             </LinearLayout>
                             <LinearLayout
-                                    android:id="@+id/pos_request_button"
+                                    android:id="@+id/activity_pos_request_button"
                                     android:layout_width="0dp"
                                     android:layout_height="48dp"
                                     android:orientation="horizontal"

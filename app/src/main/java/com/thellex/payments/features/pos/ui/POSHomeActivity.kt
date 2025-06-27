@@ -18,12 +18,14 @@ import com.thellex.payments.core.decorators.ItemSpacingDecoration
 import com.thellex.payments.features.pos.adapters.POSTransactionAdapter
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.Helpers.parseDate
+import com.thellex.payments.data.enums.TierEnum
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivityPOSBinding
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
-import com.thellex.payments.features.wallet.model.WalletManagerModelFactory
-import com.thellex.payments.features.wallet.model.WalletManagerViewModel
+import com.thellex.payments.features.kyc.ui.StartKycActivity
+import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
+import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.features.wallet.ui.WalletAssetsActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -127,7 +129,6 @@ class POSHomeActivity : AppCompatActivity() {
         }
     }
 
-
     private fun updateBalanceText(balance: String) {
         binding.tvBalance.text = if (isBalanceVisible) "$$balance" else "•••••"
     }
@@ -151,8 +152,8 @@ class POSHomeActivity : AppCompatActivity() {
             })
         }
 
-        binding.posRequestButton.setOnClickListener {
-            startActivity(Intent(this, POSChooseCryptoActivity::class.java))
+        binding.activityPosRequestButton.setOnClickListener {
+            showRequestOptionsModal()
         }
 
         binding.posQuickRequestButton.setOnClickListener {
@@ -162,5 +163,28 @@ class POSHomeActivity : AppCompatActivity() {
         binding.posViewAssetsButton.setOnClickListener {
             startActivity(Intent(this, WalletAssetsActivity::class.java))
         }
+    }
+
+    private fun showRequestOptionsModal() {
+        val user = userViewModel.authResult.value ?: return
+
+        val isKycDone = user.kyc?.status ?: false
+        val tier = user.currentTier?.name ?: TierEnum.BASIC.name
+
+        val modal = RequestOptionsModalFragment.newInstance(isKycDone = isKycDone, tier = tier.toString())
+
+        modal.setListener(object : RequestOptionsModalFragment.ReceiveOptionsListener {
+            override fun onFiatClick() { }
+            override fun onCryptoClick() {
+                startActivity(Intent(this@POSHomeActivity, POSChooseCryptoActivity::class.java))
+            }
+            override fun onBankClick() { }
+            override fun onStartKyc() {
+                modal.dismiss()
+                startActivity(Intent(this@POSHomeActivity, StartKycActivity::class.java))
+            }
+        })
+
+        modal.show(supportFragmentManager, "RequestOptionsModal")
     }
 }
