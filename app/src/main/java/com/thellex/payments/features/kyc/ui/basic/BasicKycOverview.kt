@@ -1,5 +1,6 @@
 package com.thellex.payments.features.kyc.ui.basic
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -31,5 +32,9 @@ class BasicKycOverview : AppCompatActivity() {
         val goldColor = ContextCompat.getColor(this, R.color.goldenYellow)
         highlightCurrency(descriptionTextView, text, goldColor)
 
+        binding.activityKycOverviewLayoutStartKycButton.setOnClickListener{
+            val intent = Intent(this, BasicKycInfoActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

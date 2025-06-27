@@ -1,7 +1,6 @@
 package com.thellex.payments.data.model
 
 import com.google.gson.annotations.SerializedName
-import com.thellex.payments.data.enums.TierEnum
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -39,18 +38,6 @@ data class UserEntity(
 )
 
 @Serializable
-data class KycInfoEntity(
-    @SerializedName("firstName") val firstName: String,
-    @SerializedName("middleName") val middleName: String,
-    @SerializedName("lastName") val lastName: String,
-    @SerializedName("phone") val phone: String,
-    @SerializedName("country") val country: String,
-    @SerializedName("address") val address: String,
-    @SerializedName("businessName") val businessName: String,
-    @SerializedName("status") val status: Boolean
-)
-
-@Serializable
 data class TransactionHistoryEntity(
     @SerializedName("event") val event: String,
     @SerializedName("transactionId") val transactionId: String,
@@ -68,24 +55,6 @@ data class TransactionHistoryEntity(
     @SerializedName("destinationAddress") val destinationAddress: String,
     @SerializedName("paymentNetwork") val paymentNetwork: String,
     @SerializedName("createdAt") val createdAt: String,
-)
-
-@Serializable
-data class StoreSettingsEntity(
-    @SerializedName("storeName") val storeName: String,
-    @SerializedName("storeLogoUrl") val storeLogoUrl: String,
-    @SerializedName("currency") val currency: String,
-    @SerializedName("taxRate") val taxRate: Int,
-    @SerializedName("isTaxInclusive") val isTaxInclusive: Boolean,
-    @SerializedName("payoutFrequency") val payoutFrequency: String,
-    @SerializedName("payoutDay") val payoutDay: String,
-    @SerializedName("enableCardPayments") val enableCardPayments: Boolean,
-    @SerializedName("enableCashPayments") val enableCashPayments: Boolean,
-    @SerializedName("enableCryptoPayments") val enableCryptoPayments: Boolean,
-    @SerializedName("notifyOnSale") val notifyOnSale: Boolean,
-    @SerializedName("notifyOnPayout") val notifyOnPayout: Boolean,
-    @SerializedName("themeColor") val themeColor: String,
-    @SerializedName("language") val language: String
 )
 
 @Serializable

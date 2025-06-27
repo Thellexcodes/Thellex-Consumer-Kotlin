@@ -20,7 +20,8 @@
             android:usesCleartextTraffic="true"
             tools:targetApi="31">
         <activity
-                android:name=".features.kyc.ui.basic.BasicInfoActivity"
+                android:name=".features.kyc.ui.basic.BasicKycInfoActivity"
+                android:windowSoftInputMode="adjustResize|stateHidden"
                 android:exported="false" />
         <!-- KYC Feature Activities -->
         <activity
