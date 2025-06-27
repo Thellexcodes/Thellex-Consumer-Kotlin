@@ -15,47 +15,47 @@ import kotlinx.serialization.Serializable
 data class BasicKycFormModelData(
     @SerialName("firstName")
     @SerializedName("firstName")
-    var firstName: String = "",
+    var firstName: String = "John",
 
     @SerialName("middleName")
     @SerializedName("middleName")
-    var middleName: String = "",
+    var middleName: String = "Michael",
 
     @SerialName("lastName")
     @SerializedName("lastName")
-    var lastName: String = "",
+    var lastName: String = "Doe",
 
     @SerialName("phoneNumber")
     @SerializedName("phoneNumber")
-    var phoneNumber: String = "",
+    var phoneNumber: String = "08012345678",
 
     @SerialName("dob")
     @SerializedName("dob")
-    var dob: String = "",
+    var dob: String = "01/01/1990",
 
     @SerialName("nin")
     @SerializedName("nin")
-    var nin: String = "",
+    var nin: String = "12345678901",
 
     @SerialName("bvn")
     @SerializedName("bvn")
-    var bvn: String = "",
+    var bvn: String = "22345678901",
 
     @SerialName("houseNumber")
     @SerializedName("houseNumber")
-    var houseNumber: String = "",
+    var houseNumber: String = "12",
 
     @SerialName("streetName")
     @SerializedName("streetName")
-    var streetName: String = "",
+    var streetName: String = "Freedom Street",
 
     @SerialName("state")
     @SerializedName("state")
-    var state: String = "",
+    var state: String = "Lagos",
 
     @SerialName("lga")
     @SerializedName("lga")
-    var lga: String = "",
+    var lga: String = "Ikeja",
 
     @SerialName("idType")
     @SerializedName("idType")
@@ -65,7 +65,6 @@ data class BasicKycFormModelData(
     @SerializedName("additionalIdType")
     var additionalIdType: IdTypeEnum = IdTypeEnum.BVN
 )
-
 
 class BasicKycFormViewModel(application: Context): AndroidViewModel(application as Application) {
     val formData = MutableLiveData<BasicKycFormModelData>()

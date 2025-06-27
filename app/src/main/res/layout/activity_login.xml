@@ -108,6 +108,7 @@
             <!-- Next Button -->
 
             <!-- Sign Up Text -->
+
             <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/nextButton"
                     android:layout_width="match_parent"

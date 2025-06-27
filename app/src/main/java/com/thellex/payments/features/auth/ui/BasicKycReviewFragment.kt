@@ -1,36 +1,34 @@
 package com.thellex.payments.features.auth.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.thellex.payments.databinding.FragmentBasicKycReviewBinding
 import com.thellex.payments.features.auth.viewModel.BasicKycFormViewModel
 import com.thellex.payments.features.auth.viewModel.BasicKycFormViewModelFactory
 
-class BasicKycReviewFragment : Fragment() {
+class BasicKycReviewActivity : AppCompatActivity() {
 
-    private var _binding: FragmentBasicKycReviewBinding? = null
-    private val binding get() = _binding!!
-
+    private lateinit var binding: FragmentBasicKycReviewBinding
     private lateinit var basicKycFormModel: BasicKycFormViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentBasicKycReviewBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = FragmentBasicKycReviewBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         basicKycFormModel = ViewModelProvider(
             this,
-            BasicKycFormViewModelFactory(requireContext().applicationContext)
+            BasicKycFormViewModelFactory(applicationContext)
         )[BasicKycFormViewModel::class.java]
 
-//        viewModel.formData.observe(viewLifecycleOwner) { data ->
+        // Observe form data changes and update UI
+//        basicKycFormModel.formData.observe(this) { data ->
 //            binding.summaryTextView.text = buildString {
 //                appendLine("First Name: ${data.firstName}")
 //                appendLine("Middle Name: ${data.middleName}")
@@ -48,15 +46,10 @@ class BasicKycReviewFragment : Fragment() {
 //            }
 //        }
 //
-//        binding.btnSubmit.setOnClickListener {
-//            // Submit form or send to backend
-//            Toast.makeText(requireContext(), "Form submitted!", Toast.LENGTH_SHORT).show()
-//            // (activity as? BasicInfoActivity)?.finish() // or go to confirmation screen
-//        }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        binding.submitBtn.setOnClickListener {
+            startActivity( Intent(this, KycSuccessActivity::class.java))
+            finish()
+        }
     }
 }
+

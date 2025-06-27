@@ -54,7 +54,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.activity)
-
     implementation("com.github.mukeshsolanki.android-otpview-pinview:otpview:3.1.0")
     implementation("com.github.mukeshsolanki.android-otpview-pinview:otpview-compose:3.1.0")
     implementation("com.google.android.material:material:1.11.0")

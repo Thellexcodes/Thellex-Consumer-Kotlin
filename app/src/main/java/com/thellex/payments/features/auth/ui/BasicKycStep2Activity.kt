@@ -1,35 +1,29 @@
 package com.thellex.payments.features.auth.ui
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.data.model.IdTypeEnum
 import com.thellex.payments.databinding.FragmentKycStep2Binding
 import com.thellex.payments.features.auth.viewModel.BasicKycFormViewModel
 import com.thellex.payments.features.auth.viewModel.BasicKycFormViewModelFactory
-import com.thellex.payments.features.kyc.ui.basic.BasicKycInfoActivity
 
-class BasicKycStep2Fragment : Fragment() {
+class BasicKycStep2Activity : AppCompatActivity() {
 
-    private var _binding: FragmentKycStep2Binding? = null
-    private val binding get() = _binding!!
-
+    private lateinit var binding: FragmentKycStep2Binding
     private lateinit var basicKycFormModel: BasicKycFormViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentKycStep2Binding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = FragmentKycStep2Binding.inflate(layoutInflater)
+        setContentView(binding.root)
+        ActivityTracker.add(this)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         basicKycFormModel = ViewModelProvider(
-            requireActivity(),  // Shared across fragments
-            BasicKycFormViewModelFactory(requireContext().applicationContext)
+            this,
+            BasicKycFormViewModelFactory(applicationContext)
         )[BasicKycFormViewModel::class.java]
 
         binding.fragmentKycStep2BtnContinue.setOnClickListener {
@@ -43,13 +37,11 @@ class BasicKycStep2Fragment : Fragment() {
                 idType = IdTypeEnum.NIN,
                 additionalIdType = IdTypeEnum.BVN
             )
-
-            (activity as? BasicKycInfoActivity)?.goToNextStep()
+            goToNextStep()
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun goToNextStep() {
+         startActivity(Intent(this, BasicKycReviewActivity::class.java))
     }
 }

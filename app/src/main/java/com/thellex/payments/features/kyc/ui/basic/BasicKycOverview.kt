@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.Helpers.highlightCurrency
 import com.thellex.payments.databinding.ActivityKycOverviewBinding
+import com.thellex.payments.features.auth.ui.BasicKycStep1Activity
 
 class BasicKycOverview : AppCompatActivity() {
 
@@ -33,7 +34,7 @@ class BasicKycOverview : AppCompatActivity() {
         highlightCurrency(descriptionTextView, text, goldColor)
 
         binding.activityKycOverviewLayoutStartKycButton.setOnClickListener{
-            val intent = Intent(this, BasicKycInfoActivity::class.java)
+            val intent = Intent(this, BasicKycStep1Activity::class.java)
             startActivity(intent)
         }
     }

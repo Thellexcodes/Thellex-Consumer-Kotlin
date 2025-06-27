@@ -20,8 +20,7 @@
             android:usesCleartextTraffic="true"
             tools:targetApi="31">
         <activity
-                android:name=".features.kyc.ui.basic.BasicKycInfoActivity"
-                android:windowSoftInputMode="adjustResize|stateHidden"
+                android:name=".features.auth.ui.KycSuccessActivity"
                 android:exported="false" />
         <!-- KYC Feature Activities -->
         <activity
@@ -29,6 +28,15 @@
                 android:exported="false" />
         <activity
                 android:name=".features.kyc.ui.StartKycActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.auth.ui.BasicKycStep1Activity"
+                android:exported="false" />
+        <activity
+                android:name=".features.auth.ui.BasicKycStep2Activity"
+                android:exported="false" />
+        <activity
+                android:name=".features.auth.ui.BasicKycReviewActivity"
                 android:exported="false" /> <!-- Wallet Feature Activities -->
         <activity
                 android:name=".features.wallet.ui.WithdrawCrypto"
