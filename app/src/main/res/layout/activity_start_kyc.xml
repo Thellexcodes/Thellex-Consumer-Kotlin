@@ -108,6 +108,7 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/activity_start_constraintLayout_tier2"
                             android:padding="11dp"
+                            android:visibility="gone"
                             android:background="@drawable/rounded_border_midnight"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -151,6 +152,7 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/activity_start_constraintLayout_tier3"
+                            android:visibility="gone"
                             android:padding="11dp"
                             android:background="@drawable/rounded_border_midnight"
                             android:layout_width="match_parent"
@@ -199,6 +201,7 @@
                             android:background="@drawable/rounded_border_midnight"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:visibility="gone"
                             android:layout_marginBottom="16dp">
 
                         <TextView

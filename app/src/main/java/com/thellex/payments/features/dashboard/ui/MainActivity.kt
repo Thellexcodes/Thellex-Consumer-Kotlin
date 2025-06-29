@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import com.thellex.payments.data.enums.ERRORS
-import com.thellex.payments.core.utils.Helpers.showLongToast
 import com.thellex.payments.databinding.ActivityMainBinding
 import com.thellex.payments.features.onboarding.OnboardingActivity
 import com.thellex.payments.network.services.ApiClient
@@ -20,7 +19,6 @@ import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
@@ -30,6 +28,9 @@ import org.json.JSONObject
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var userModel: UserViewModel
+
+    // Guard to show error toast only once per failure
+    private var hasShownErrorToast = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +71,6 @@ class MainActivity : AppCompatActivity() {
 
                 if (response.isSuccessful) {
                     val authResponse = response.body()
-
                     val authResult = authResponse?.result
                     if (authResult != null) {
                         userModel.saveAuthResult(authResult)
@@ -80,6 +80,10 @@ class MainActivity : AppCompatActivity() {
                         navigateToLogin()
                     }
                 } else {
+                    // Prevent multiple toasts for repeated errors
+                    if (hasShownErrorToast) return@launch
+                    hasShownErrorToast = true
+
                     val errorBody = response.errorBody()?.string()
                     val errorCode = parseBackendErrorEnum(errorBody)
                     when (val errorEnum = ERRORS.fromCode(errorCode)) {
@@ -87,20 +91,15 @@ class MainActivity : AppCompatActivity() {
                             navigateToLogin()
                         }
                         ERRORS.USER_SUSPENDED -> {
-                            // You may show a toast message if needed:
-                             showLongToast("Your account has been suspended.")
                             userModel.logout()
                             navigateToLogin()
                         }
                         ERRORS.UNAUTHORIZED -> {
-                            // Optionally show a message:
-                             showLongToast("Unauthorized access. Please log in again.")
                             userModel.logout()
                             navigateToLogin()
                         }
                         else -> {
                             userModel.logout()
-                            showLongToast("An unexpected error occurred: $errorEnum")
                             navigateToLogin()
                         }
                     }
@@ -108,7 +107,9 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e("TAG", "Error message", e)
-//                showLongToast(ERRORS.UNKNOWN_ERROR.message)
+                if (!hasShownErrorToast) {
+                    hasShownErrorToast = true
+                }
                 userModel.logout()
                 navigateToLogin()
             }
@@ -139,7 +140,7 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
-    private suspend fun navigateToDashboard() = withContext(Dispatchers.Main){
+    private suspend fun navigateToDashboard() = withContext(Dispatchers.Main) {
         startActivity(Intent(this@MainActivity, POSHomeActivity::class.java))
         finish()
     }

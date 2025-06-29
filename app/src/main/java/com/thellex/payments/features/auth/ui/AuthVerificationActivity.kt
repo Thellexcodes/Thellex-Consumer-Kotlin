@@ -12,7 +12,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.mukeshsolanki.OtpView
 import com.thellex.payments.R
-import com.thellex.payments.core.utils.Helpers.showLongToast
 import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.data.model.VerifyUserDto
 import com.thellex.payments.features.pos.ui.POSHomeActivity
@@ -90,7 +89,6 @@ class AuthVerificationActivity : AppCompatActivity() {
                     }
                 } ?: run {
                     val errorBody = response.errorBody()?.string().orEmpty()
-                    showLongToast(errorBody)
                     Log.e("TAG", "Error message: $errorBody")
                 }
 
