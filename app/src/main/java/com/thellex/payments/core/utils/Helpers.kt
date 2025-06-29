@@ -20,6 +20,7 @@ import java.security.cert.X509Certificate
 import javax.net.ssl.*
 import kotlinx.serialization.json.Json
 import java.math.BigDecimal
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -81,22 +82,8 @@ object Helpers {
         } ?: Pair(null, "No error message available")
     }
 
-    fun Context.showLongToast(message: String, durationInMillis: Long = 390000L) {
-        val interval = 3500L // Toast.LENGTH_LONG duration
-        val toast = Toast.makeText(this, message, Toast.LENGTH_LONG)
-
-        val handler = android.os.Handler(Looper.getMainLooper())
-        val endTime = System.currentTimeMillis() + durationInMillis
-
-        val showToastRunnable = object : Runnable {
-            override fun run() {
-                if (System.currentTimeMillis() < endTime) {
-                    toast.show()
-                    handler.postDelayed(this, interval)
-                }
-            }
-        }
-        handler.post(showToastRunnable)
+    fun Context.showSingleToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     fun getIconResIdForToken(token: String): Int {
@@ -188,8 +175,7 @@ object Helpers {
     fun highlightCurrency(textView: TextView, inputText: String, highlightColor: Int) {
         val spannable = SpannableString(inputText)
 
-        // Regex to find currency amounts like $100 or $1,000,000.00
-        val pattern = Pattern.compile("\\$[\\d,]+(?:\\.\\d{2})?")
+        val pattern = Pattern.compile("[\\p{Sc}][\\d,]+(?:\\.\\d{2})?")
         val matcher = pattern.matcher(inputText)
 
         while (matcher.find()) {
@@ -203,8 +189,23 @@ object Helpers {
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
-
         textView.text = spannable
+    }
+
+    fun formatNumberWithCommas(number: Int?): String {
+        return if (number != null) {
+            NumberFormat.getNumberInstance(Locale.US).format(number)
+        } else {
+            "N/A"
+        }
+    }
+
+    fun formatCurrencyWithNGN(number: Int?): String {
+        return if (number != null) {
+            "NGN " + NumberFormat.getNumberInstance(Locale.US).format(number)
+        } else {
+            "NGN N/A"
+        }
     }
 }
 

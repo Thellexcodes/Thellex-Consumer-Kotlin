@@ -24,7 +24,7 @@
                 android:exported="false" />
         <!-- KYC Feature Activities -->
         <activity
-                android:name=".features.kyc.ui.basic.BasicKycOverview"
+                android:name=".features.kyc.ui.basic.BasicKycRequirements"
                 android:exported="false" />
         <activity
                 android:name=".features.kyc.ui.StartKycActivity"
@@ -36,7 +36,7 @@
                 android:name=".features.auth.ui.BasicKycStep2Activity"
                 android:exported="false" />
         <activity
-                android:name=".features.auth.ui.BasicKycReviewActivity"
+                android:name=".features.auth.ui.BasicKycAttestationActivity"
                 android:exported="false" /> <!-- Wallet Feature Activities -->
         <activity
                 android:name=".features.wallet.ui.WithdrawCrypto"

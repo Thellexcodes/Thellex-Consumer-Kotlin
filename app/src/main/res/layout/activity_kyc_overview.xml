@@ -9,7 +9,7 @@
         android:paddingTop="20dp"
         android:paddingHorizontal="20dp"
         android:background="@drawable/general_gradient_background"
-        tools:context=".features.kyc.ui.basic.BasicKycOverview">
+        tools:context=".features.kyc.ui.basic.BasicKycRequirements">
 
     <ImageView
             android:id="@+id/activity_kyc_overview_iv_back_icon"
@@ -23,11 +23,11 @@
             android:id="@+id/activity_kyc_overview_tv_kyc_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="31dp"
-            android:text="KYC"
+            android:text="Kyc Requirements"
             android:textColor="@color/white"
-            app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_iv_back_icon"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/activity_kyc_overview_iv_back_icon" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/activity_kyc_overview_layout_kyc_card"
@@ -96,42 +96,27 @@
             android:background="@drawable/rounded_border_midnight"
             app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_layout_kyc_card">
 
-        <TextView
-                android:id="@+id/activity_kyc_overview_tv_requirements_header"
-                android:textColor="@color/white"
-                android:fontFamily="@font/kumbhsans_bold"
-                android:text="REQUIREMENTS"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-        <LinearLayout
-                android:id="@+id/activity_kyc_overview_layout_user_data_requirement"
-                android:layout_marginTop="11dp"
-                android:background="@drawable/rounded_border"
-                android:padding="11dp"
-                android:gravity="center_vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_tv_requirements_header">
-
-            <ImageView
-                    android:id="@+id/activity_kyc_overview_iv_user_data_icon"
-                    android:src="@drawable/icon_user_plus"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"/>
-
             <TextView
-                    android:layout_marginLeft="11dp"
-                    android:id="@+id/activity_kyc_overview_tv_user_data_text"
+                    android:id="@+id/activity_kyc_overview_tv_requirements_header"
                     android:textColor="@color/white"
-                    android:text="USER DATA"
-                    android:fontFamily="@font/kumbhsans_light"
-                    android:textSize="10sp"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:text="REQUIREMENTS"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-        </LinearLayout>
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvRequirements"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_tv_requirements_header"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="8dp"
+                    android:scrollbars="vertical" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

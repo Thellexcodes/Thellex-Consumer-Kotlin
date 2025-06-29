@@ -1,6 +1,9 @@
 package com.thellex.payments.network.services
 
+import com.google.gson.GsonBuilder
 import com.thellex.payments.core.utils.Constants
+import com.thellex.payments.data.enums.TierEnum
+import com.thellex.payments.data.enums.TierEnumDeserializer
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -34,10 +37,14 @@ object ApiClient {
     }
 
     private fun getRetrofitWithToken(token: String): Retrofit {
+        val enumGson = GsonBuilder()
+            .registerTypeAdapter(TierEnum::class.java, TierEnumDeserializer())
+            .create()
+
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .client(getClientWithToken(token))
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(enumGson))
             .build()
     }
 

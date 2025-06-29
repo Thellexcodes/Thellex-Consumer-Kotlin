@@ -113,7 +113,7 @@
                             android:layout_height="wrap_content" />
 
                     <TextView
-                            android:text="Samuel"
+                            android:id="@+id/firstname_text"
                             android:textColor="@color/white"
                             android:fontFamily="@font/kumbhsans_regular"
                             android:layout_marginTop="5dp"
@@ -142,7 +142,7 @@
                             android:layout_height="wrap_content" />
 
                     <TextView
-                            android:text="Anthony"
+                            android:id="@+id/lastname_text"
                             android:textColor="@color/white"
                             android:fontFamily="@font/kumbhsans_regular"
                             android:textStyle="normal"
@@ -178,7 +178,7 @@
                             android:layout_height="wrap_content" />
 
                     <TextView
-                            android:text="Michael"
+                            android:id="@+id/middle_name_text"
                             android:textColor="@color/white"
                             android:fontFamily="@font/kumbhsans_regular"
                             android:layout_marginTop="5dp"
@@ -206,7 +206,7 @@
                             android:layout_height="wrap_content" />
 
                     <TextView
-                            android:text="01/01/1990"
+                            android:id="@+id/dob_text"
                             android:textColor="@color/white"
                             android:fontFamily="@font/kumbhsans_regular"
                             android:layout_marginTop="5dp"
@@ -249,7 +249,6 @@
 
             <TextView
                     android:id="@+id/phone_number_text"
-                    android:text="345678"
                     android:textColor="@color/white"
                     android:fontFamily="@font/kumbhsans_regular"
                     android:textStyle="normal"
@@ -278,7 +277,6 @@
 
             <TextView
                     android:id="@+id/nin_text"
-                    android:text="1239w34201"
                     android:textColor="@color/white"
                     android:fontFamily="@font/kumbhsans_regular"
                     android:textStyle="normal"
@@ -308,7 +306,6 @@
 
             <TextView
                     android:id="@+id/bvn_text"
-                    android:text="22345678901"
                     android:textColor="@color/white"
                     android:fontFamily="@font/kumbhsans_regular"
                     android:textStyle="normal"
@@ -339,7 +336,6 @@
 
             <TextView
                     android:id="@+id/house_number_text"
-                    android:text="12"
                     android:textColor="@color/white"
                     android:fontFamily="@font/kumbhsans_regular"
                     android:textStyle="normal"
@@ -383,7 +379,6 @@
 
             <TextView
                     android:id="@+id/street_name_text"
-                    android:text="Freedom Street"
                     android:textColor="@color/white"
                     android:fontFamily="@font/kumbhsans_regular"
                     android:textStyle="normal"
@@ -413,7 +408,6 @@
 
             <TextView
                     android:id="@+id/state_text"
-                    android:text="Lagos"
                     android:textColor="@color/white"
                     android:fontFamily="@font/kumbhsans_regular"
                     android:textStyle="normal"
@@ -445,7 +439,6 @@
 
             <TextView
                     android:id="@+id/lga_text"
-                    android:text="Ikeja"
                     android:textColor="@color/white"
                     android:fontFamily="@font/kumbhsans_regular"
                     android:textStyle="normal"
@@ -476,7 +469,6 @@
 
             <TextView
                     android:id="@+id/id_type_text"
-                    android:text="1234q232342"
                     android:textColor="@color/white"
                     android:fontFamily="@font/kumbhsans_regular"
                     android:textStyle="normal"

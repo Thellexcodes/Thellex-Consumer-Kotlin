@@ -15,47 +15,47 @@ import kotlinx.serialization.Serializable
 data class BasicKycFormModelData(
     @SerialName("firstName")
     @SerializedName("firstName")
-    var firstName: String = "John",
+    var firstName: String = "",
 
     @SerialName("middleName")
     @SerializedName("middleName")
-    var middleName: String = "Michael",
+    var middleName: String = "",
 
     @SerialName("lastName")
     @SerializedName("lastName")
-    var lastName: String = "Doe",
+    var lastName: String = "",
 
     @SerialName("phoneNumber")
     @SerializedName("phoneNumber")
-    var phoneNumber: String = "08012345678",
+    var phoneNumber: String = "",
 
     @SerialName("dob")
     @SerializedName("dob")
-    var dob: String = "01/01/1990",
+    var dob: String = "",
 
     @SerialName("nin")
     @SerializedName("nin")
-    var nin: String = "12345678901",
+    var nin: String = "",
 
     @SerialName("bvn")
     @SerializedName("bvn")
-    var bvn: String = "22345678901",
+    var bvn: String = "",
 
     @SerialName("houseNumber")
     @SerializedName("houseNumber")
-    var houseNumber: String = "12",
+    var houseNumber: String = "",
 
     @SerialName("streetName")
     @SerializedName("streetName")
-    var streetName: String = "Freedom Street",
+    var streetName: String = "",
 
     @SerialName("state")
     @SerializedName("state")
-    var state: String = "Lagos",
+    var state: String = "",
 
     @SerialName("lga")
     @SerializedName("lga")
-    var lga: String = "Ikeja",
+    var lga: String = "",
 
     @SerialName("idType")
     @SerializedName("idType")
@@ -66,9 +66,10 @@ data class BasicKycFormModelData(
     var additionalIdType: IdTypeEnum = IdTypeEnum.BVN
 )
 
-class BasicKycFormViewModel(application: Context): AndroidViewModel(application as Application) {
-    val formData = MutableLiveData<BasicKycFormModelData>()
+class BasicKycFormViewModel(application: Context) : AndroidViewModel(application as Application) {
+    val formData = MutableLiveData<BasicKycFormModelData>(BasicKycFormModelData())
 }
+
 
 class BasicKycFormViewModelFactory(
     private val context: Context
