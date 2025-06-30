@@ -125,7 +125,7 @@ class POSHomeActivity : AppCompatActivity() {
     private fun observeUserUid() {
         userViewModel.authResult.observe(this) { userDto ->
             val upperUid = userDto?.uid?.toString()?.uppercase() ?: "N/A"
-            binding.activityPosUserUidText.text = "UID: $upperUid"
+            binding.activityPosUserUidText.text = upperUid
         }
     }
 

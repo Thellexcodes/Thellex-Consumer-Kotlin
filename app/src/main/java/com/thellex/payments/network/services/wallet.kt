@@ -9,4 +9,3 @@ interface WalletManagerService {
     @GET(Constants.WALLET_MANAGER_BALANCE_ENDPOINT)
     suspend fun fetchBalance(): ApiResponse<WalletBalanceDto>
 }
-

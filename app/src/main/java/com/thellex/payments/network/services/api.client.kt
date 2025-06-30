@@ -62,4 +62,7 @@ object ApiClient {
     // Authenticated API for WalletManagerService
     fun getAuthenticatedWalletManagerApi(token: String): WalletManagerService = getRetrofitWithToken(token).create(
         WalletManagerService::class.java)
+
+    // Authenticated API for KycService
+    fun getAuthenticatedKycApi(token: String): KycService = getRetrofitWithToken(token).create(KycService::class.java)
 }

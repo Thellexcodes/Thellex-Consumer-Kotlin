@@ -51,7 +51,7 @@
                                     android:id="@+id/activity_pos_userNameText"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="User"
+                                    android:text="UID"
                                     android:textColor="@color/white"
                                     android:textSize="12sp"
                                     android:fontFamily="@font/kumbhsans_bold" />
@@ -60,7 +60,7 @@
                                     android:id="@+id/activity_pos_userUidText"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="uid: 1234343"
+                                    android:text="1234343"
                                     android:textColor="@color/white"
                                     android:textSize="10sp" />
 

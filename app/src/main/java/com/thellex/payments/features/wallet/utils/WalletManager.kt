@@ -1,6 +1,5 @@
 package com.thellex.payments.features.wallet.utils
 
-import android.util.Log
 import com.thellex.payments.features.wallet.model.WalletBalanceDto
 import com.thellex.payments.features.wallet.prefrences.WalletManagerPreferences
 import com.thellex.payments.network.services.ApiClient

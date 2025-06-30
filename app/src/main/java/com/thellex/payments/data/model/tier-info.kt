@@ -9,7 +9,7 @@ data class TierInfo(
     @SerializedName("target") val target: String,
     @SerializedName("description") val description: String,
     @SerializedName("transactionLimits") val transactionLimits: TransactionLimits,
-    @SerializedName("txnFees") val txnFees: List<TxnFee> = emptyList(),
+    @SerializedName("txnFee") val txnFee: TxnFeeDetails,
     @SerializedName("requirements") val requirements: List<String> = emptyList(),
 )
 
@@ -21,9 +21,8 @@ data class TransactionLimits(
 )
 
 @Serializable
-data class TxnFee(
-    @SerializedName("type") val type: String,
+data class TxnFeeDetails(
     @SerializedName("min") val min: Int,
-    @SerializedName("max") val max: Int? = null,
-    @SerializedName("feePercentage") val feePercentage: Double,
+    @SerializedName("max") val max: Int,
+    @SerializedName("feePercentage") val feePercentage: Double
 )

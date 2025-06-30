@@ -26,4 +26,7 @@ object Constants {
 
     // Wallet Manager Endpoints
     const val WALLET_MANAGER_BALANCE_ENDPOINT= "wallet-manager/balance"
+
+    // KYC and KYB
+    const val KYC_ENDPOINT = "kyc/basic"
 }
