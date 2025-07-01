@@ -1,17 +1,26 @@
 package com.thellex.payments.features.pos.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import androidx.appcompat.widget.AppCompatButton
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.thellex.payments.R
+import com.thellex.payments.data.enums.TierEnum
+import com.thellex.payments.databinding.FragmentRequestOptionsModalBinding
+import com.thellex.payments.features.auth.viewModel.UserViewModel
+import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 
 class RequestOptionsModalFragment : BottomSheetDialogFragment() {
+
+    private lateinit var userViewModel: UserViewModel
+    private var listener: ReceiveOptionsListener? = null
+
+    private var isKycDone: Boolean = false
+
+    private var _binding: FragmentRequestOptionsModalBinding? = null
+    private val binding get() = _binding!!
 
     interface ReceiveOptionsListener {
         fun onFiatClick()
@@ -20,101 +29,60 @@ class RequestOptionsModalFragment : BottomSheetDialogFragment() {
         fun onStartKyc()
     }
 
-    private var listener: ReceiveOptionsListener? = null
-
     fun setListener(listener: ReceiveOptionsListener) {
         this.listener = listener
     }
 
-    private var isKycDone: Boolean = false
-    private var tier: String? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            isKycDone = it.getBoolean("isKycDone", false)
-            tier = it.getString("tier")
-        }
+        val factory = UserViewModelFactory(requireContext())
+        userViewModel = ViewModelProvider(this, factory)[UserViewModel::class.java]
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_request_options_modal, container, false)
+    ): View {
+        _binding = FragmentRequestOptionsModalBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val btnReceiveFromFiat = view.findViewById<ConstraintLayout>(R.id.btnReceiveFromFiat)
-        val btnReceiveCrypto = view.findViewById<ConstraintLayout>(R.id.btnReceiveCrypto)
-        val btnReceiveFromBank = view.findViewById<ConstraintLayout>(R.id.btnReceiveFromBank)
+        super.onViewCreated(view, savedInstanceState)
 
-        val btnContinueFiat = view.findViewById<AppCompatButton>(R.id.btnContinueFiat)
-        val btnContinueCrypto = view.findViewById<AppCompatButton>(R.id.btnContinueCrypto)
-        val btnContinueBank = view.findViewById<AppCompatButton>(R.id.btnContinueBank)
+        userViewModel.authResult.observe(viewLifecycleOwner) { userDto ->
+            isKycDone = userDto?.currentTier?.name != TierEnum.NONE
 
-        val badgeKycFiat = view.findViewById<TextView>(R.id.badgeKycFiat)
-        val badgeKycBank = view.findViewById<TextView>(R.id.badgeKycBank)
-
-        if (isKycDone) {
-            badgeKycFiat.visibility = View.GONE
-            badgeKycBank.visibility = View.GONE
-        } else {
-            badgeKycFiat.visibility = View.VISIBLE
-            badgeKycBank.visibility = View.VISIBLE
-        }
-
-        btnReceiveFromFiat.setOnClickListener {
             if (isKycDone) {
-                listener?.onFiatClick()
+                binding.badgeKycNaira.visibility = View.GONE
+                binding.badgeKycFiat3.visibility = View.GONE
             } else {
-                listener?.onStartKyc()
+                binding.badgeKycNaira.visibility = View.VISIBLE
+                binding.badgeKycFiat3.visibility = View.VISIBLE
             }
         }
 
-        btnReceiveCrypto.setOnClickListener {
+        binding.fragmentRequestOptionsReceiveFromFiat.setOnClickListener {
+            if (isKycDone) listener?.onBankClick() else listener?.onStartKyc()
+        }
+
+        binding.fragmentRequestOptionsOnChainDeposit.setOnClickListener {
             listener?.onCryptoClick()
         }
 
-        btnReceiveFromBank.setOnClickListener {
-            if (isKycDone) {
-                listener?.onBankClick()
-            } else {
-                listener?.onStartKyc()
-            }
-        }
-
-        // Click listeners for the Continue buttons (same behavior)
-        btnContinueFiat.setOnClickListener {
-            if (isKycDone) {
-                listener?.onFiatClick()
-            } else {
-                listener?.onStartKyc()
-            }
-        }
-
-        btnContinueCrypto.setOnClickListener {
-            listener?.onCryptoClick()
-        }
-
-        btnContinueBank.setOnClickListener {
-            if (isKycDone) {
-                listener?.onBankClick()
-            } else {
-                listener?.onStartKyc()
-            }
+        binding.fragmentRequestOptionsFiatToCrypto.setOnClickListener {
+            if (isKycDone) listener?.onFiatClick() else listener?.onStartKyc()
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     companion object {
-        fun newInstance(isKycDone: Boolean, tier: String?): RequestOptionsModalFragment {
-            val fragment = RequestOptionsModalFragment()
-            val args = Bundle().apply {
-                putBoolean("isKycDone", isKycDone)
-                putString("tier", tier)
-            }
-            fragment.arguments = args
-            return fragment
+        fun newInstance(): RequestOptionsModalFragment {
+            return RequestOptionsModalFragment()
         }
     }
 }

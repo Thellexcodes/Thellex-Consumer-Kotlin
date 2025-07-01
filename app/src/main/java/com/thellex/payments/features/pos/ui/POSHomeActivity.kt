@@ -166,12 +166,7 @@ class POSHomeActivity : AppCompatActivity() {
     }
 
     private fun showRequestOptionsModal() {
-        val user = userViewModel.authResult.value ?: return
-
-        val isKycDone = user.kyc?.status ?: false
-        val tier = user.currentTier?.name ?: TierEnum.BASIC.name
-
-        val modal = RequestOptionsModalFragment.newInstance(isKycDone = isKycDone, tier = tier.toString())
+        val modal = RequestOptionsModalFragment.newInstance()
 
         modal.setListener(object : RequestOptionsModalFragment.ReceiveOptionsListener {
             override fun onFiatClick() { }
