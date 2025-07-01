@@ -188,10 +188,11 @@ class POSHomeActivity : AppCompatActivity() {
             }
 
             override fun onWithdrawToBank() {
-                startActivity(Intent(this@POSHomeActivity, WithdrawToCryptoWalletActivity::class.java))
+//                startActivity(Intent(this@POSHomeActivity, WithdrawToBankActivity::class.java))
             }
 
             override fun onWithdrawToCryptoWallet() {
+                startActivity(Intent(this@POSHomeActivity, WithdrawToCryptoWalletActivity::class.java))
             }
 
             override fun onStartKyc() {
