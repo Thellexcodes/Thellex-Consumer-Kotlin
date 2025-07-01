@@ -6,6 +6,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ImageView
@@ -81,46 +82,52 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
 
         // Observe wallet balance and dynamically build supportedBlockchains
         walletManagerViewModel.walletBalance.observe(this) { walletDto ->
-            // Extract unique chain names from all wallets' networks (strings)
+            // Extract unique chain names from wallet.network (string, not array anymore)
             val chainNames = walletDto.wallets.values
-                .flatMap { it.networks.map { chainName -> chainName.lowercase(Locale.getDefault()) } }
+                .map { it.network.lowercase(Locale.getDefault()) }
                 .distinct()
 
-            // Map to BlockchainItem list filtering unsupported chains gracefully
-            supportedBlockchains = chainNames.mapNotNull { chainName ->
-                try {
-                    val chainEnum = SupportedBlockchain.valueOf(chainName)
-                    BlockchainItem(chainEnum, Helpers.getIconResIdForBlockchain(chainName))
-                } catch (e: IllegalArgumentException) { null }
-            }
+            Log.d("TAG", "ChainNames $chainNames")
 
-            // Update spinner adapter with new supported blockchains
-            val adapter = CryptoSpinnerAdapter(this, supportedBlockchains)
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner.adapter = adapter
-
-            // Select the blockchain matching assetCodeChainName or fallback to first
-            val defaultIndex = supportedBlockchains.indexOfFirst {
-                it.chain.name.equals(assetCodeChainName, ignoreCase = true)
-            }.takeIf { it >= 0 } ?: 0
-
-            spinner.setSelection(defaultIndex)
-            selectedBlockchain = supportedBlockchains[defaultIndex].chain
-
-            // Spinner selection listener
-            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                    selectedBlockchain = supportedBlockchains[position].chain
-                }
-                override fun onNothingSelected(parent: AdapterView<*>) {}
-            }
-
-            // Update wallet address and QR code for the selected assetCode
-            val wallet = walletDto.wallets[assetCode]
-            walletAddress = wallet?.address ?: "No address found"
-            val qrBitmap = generateQrCode(walletAddress ?: "no-address")
-            qrImageView.setImageBitmap(qrBitmap)
+            // Map to BlockchainItem list, filtering unsupported chains gracefully
+//            supportedBlockchains = chainNames.mapNotNull { chainName ->
+//                try {
+//                    val chainEnum = SupportedBlockchain.valueOf(chainName.uppercase())
+//                    BlockchainItem(chainEnum, Helpers.getIconResIdForBlockchain(chainName))
+//                } catch (e: IllegalArgumentException) {
+//                    null
+//                }
+//            }
+//
+//            // Update spinner adapter with new supported blockchains
+//            val adapter = CryptoSpinnerAdapter(this, supportedBlockchains)
+//            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+//            spinner.adapter = adapter
+//
+//            // Select the blockchain matching assetCodeChainName or fallback to first
+//            val defaultIndex = supportedBlockchains.indexOfFirst {
+//                it.chain.name.equals(assetCodeChainName, ignoreCase = true)
+//            }.takeIf { it >= 0 } ?: 0
+//
+//            spinner.setSelection(defaultIndex)
+//            selectedBlockchain = supportedBlockchains[defaultIndex].chain
+//
+//            // Spinner selection listener
+//            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+//                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+//                    selectedBlockchain = supportedBlockchains[position].chain
+//                }
+//
+//                override fun onNothingSelected(parent: AdapterView<*>) {}
+//            }
+//
+//            // Update wallet address and QR code for the selected assetCode
+//            val wallet = walletDto.wallets[assetCode]
+//            walletAddress = wallet?.address ?: "No address found"
+//            val qrBitmap = generateQrCode(walletAddress!!)
+//            qrImageView.setImageBitmap(qrBitmap)
         }
+
 
         // Copy address logic
         copyAddressLayout.setOnClickListener {

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/fragment_withdrawal_options_modal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:background="@drawable/general_gradient_background">
+
+    <!-- Title -->
+    <TextView
+            android:id="@+id/fragment_withdrawal_options_title"
+            android:text="Select Withdrawal Method"
+            android:textColor="@color/goldenYellow"
+            android:fontFamily="@font/outfit_light"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+            android:id="@+id/fragment_withdrawal_options_container"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@id/fragment_withdrawal_options_title"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <!-- Option 1: Withdraw to Bank -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fragment_withdrawal_options_bank_transfer"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_border"
+                android:padding="12dp"
+                android:clickable="true"
+                android:focusable="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/bankOptionContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                <TextView
+                        android:id="@+id/textBankTransfer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bank Transfer"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                        android:id="@+id/textDescBankTransfer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Withdraw funds directly to your bank account."
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_light"
+                        app:layout_constraintTop_toBottomOf="@id/textBankTransfer"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                        android:id="@+id/badgeKycBank"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="KYC Required"
+                        android:textColor="@color/pinkRed"
+                        android:layout_marginTop="11dp"
+                        android:textSize="8sp"
+                        app:layout_constraintTop_toBottomOf="@id/textDescBankTransfer"
+                        app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageView
+                    android:id="@+id/fragment_withdrawal_options_icon_bank"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/iocn_naira_golden"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Option 2: Withdraw Crypto -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fragment_withdrawal_options_crypto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_border"
+                android:padding="12dp"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/fragment_withdrawal_options_icon_crypto">
+
+                <TextView
+                        android:id="@+id/fragment_withdrawal_options_text_crypto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Crypto Withdrawal"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                        android:id="@+id/fragment_withdrawal_options_desc_crypto"
+                        android:fontFamily="@font/kumbhsans_light"
+                        android:layout_marginTop="8dp"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        android:text="Send crypto assets to your external wallet."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/fragment_withdrawal_options_text_crypto"
+                        app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageView
+                    android:id="@+id/fragment_withdrawal_options_icon_crypto"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/icon_nodes"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginStart="8dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Option 3: Withdraw to Naira/Fiat -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/fragment_withdrawal_options_fiat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_border"
+                android:padding="12dp"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/fragment_withdrawal_options_icon_fiat">
+
+                <TextView
+                        android:id="@+id/fragment_withdrawal_options_text_fiat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Crypto-to-Fiat Withdrawal"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                        android:id="@+id/fragment_withdrawal_options_desc_fiat"
+                        android:fontFamily="@font/kumbhsans_light"
+                        android:layout_marginTop="8dp"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        android:text="Withdraw crypto to your local fiat account (e.g., Naira)."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/fragment_withdrawal_options_text_fiat"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                        android:id="@+id/badgeKycFiat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="KYC Required"
+                        android:textColor="@color/pinkRed"
+                        android:layout_marginTop="11dp"
+                        android:textSize="8sp"
+                        app:layout_constraintTop_toBottomOf="@id/fragment_withdrawal_options_desc_fiat"
+                        app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ImageView
+                    android:id="@+id/fragment_withdrawal_options_icon_fiat"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/icon_fiat_btc"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginStart="8dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
