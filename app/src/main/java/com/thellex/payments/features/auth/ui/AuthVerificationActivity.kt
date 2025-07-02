@@ -2,39 +2,66 @@ package com.thellex.payments.features.auth.ui
 
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.mukeshsolanki.OtpView
-import com.thellex.payments.R
+import com.otpview.OTPListener
+import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.data.model.VerifyUserDto
+import com.thellex.payments.databinding.ActivityAuthVerificationBinding
+import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.pos.ui.POSHomeActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
+import kotlin.time.ExperimentalTime
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+
 
 class AuthVerificationActivity : AppCompatActivity() {
-    private lateinit var viewModel: UserViewModel
 
+    private lateinit var binding: ActivityAuthVerificationBinding
+    private lateinit var userModel: UserViewModel
     private var token: String? = null
+    private var countDownTimer: CountDownTimer? = null
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_auth_verification)
 
-        viewModel = UserViewModel(applicationContext)
+        binding = ActivityAuthVerificationBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        userModel = ViewModelProvider(
+            this,
+            UserViewModelFactory(applicationContext)
+        )[UserViewModel::class.java]
+
+        ActivityTracker.add(this)
 
         token = intent.getStringExtra("token")
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
-            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        setupInsets()
+        setupOtpListener()
 
+        startExpirationTimer()
+    }
+
+    private fun setupInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(
                 view.paddingLeft,
                 systemBarsInsets.top,
@@ -43,23 +70,74 @@ class AuthVerificationActivity : AppCompatActivity() {
             )
             insets
         }
+    }
 
-        val otpView = findViewById<OtpView>(R.id.otp_view)
-
-        otpView.setOtpCompletionListener { otp ->
-            val otpInt = otp.toIntOrNull()
-            if (otpInt != null) {
-                verifyOtp(otpInt)
-            } else {
-                Toast.makeText(this, "Invalid OTP entered", Toast.LENGTH_SHORT).show()
+    private fun setupOtpListener() {
+        binding.otpView.otpListener = object : OTPListener {
+            override fun onInteractionListener() {
+            }
+            override fun onOTPComplete(otp: String) {
+                val otpInt = otp.toIntOrNull()
+                if (otpInt != null) {
+                    verifyOtp(otpInt)
+                } else {
+                    CustomToast.show(this@AuthVerificationActivity,"Warning", "Invalid OTP entered")
+                }
             }
         }
+    }
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                finish()
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun startExpirationTimer() {
+        val expiresAtMillis = getExpirationMillis()
+        if (expiresAtMillis == null) {
+            binding.authVerificationTimer.text = ""
+            return
+        }
+
+        val nowMillis = System.currentTimeMillis()
+        val millisUntilExpired = expiresAtMillis - nowMillis
+
+        if (millisUntilExpired <= 0) {
+            binding.authVerificationTimer.text = "00:00"
+            return
+        }
+
+        countDownTimer?.cancel()
+
+        countDownTimer = object : CountDownTimer(millisUntilExpired, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)
+                val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60
+                binding.authVerificationTimer.text = String.format("%02d:%02d", minutes, seconds)
             }
-        })
+
+            override fun onFinish() {
+                binding.authVerificationTimer.text = "00:00"
+            }
+        }.start()
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getExpirationMillis(): Long? {
+        return try {
+            val expiresAtStr = userModel.getExpiresAt() ?: return null
+
+            // Parse ISO string like "2025-07-02T22:31:08.175+00"
+            val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+            val offsetDateTime = OffsetDateTime.parse(expiresAtStr.toString(), formatter)
+
+            offsetDateTime.toInstant().toEpochMilli()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    override fun onDestroy() {
+        countDownTimer?.cancel()
+        super.onDestroy()
     }
 
     private fun verifyOtp(otp: Int) {
@@ -83,8 +161,8 @@ class AuthVerificationActivity : AppCompatActivity() {
 
                 response.body()?.result?.let { result ->
                     withContext(Dispatchers.Main) {
-                        viewModel.saveToken(token!!)
-                        viewModel.saveAuthResult(result)
+                        userModel.saveToken(token!!)
+                        userModel.saveAuthResult(result)
                         navigateToQuickActions()
                     }
                 } ?: run {
@@ -102,14 +180,12 @@ class AuthVerificationActivity : AppCompatActivity() {
     }
 
     private fun navigateToLoginPin() {
-        val intent = Intent(this, LoginPinActivity::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, LoginPinActivity::class.java))
         finish()
     }
 
-    private fun navigateToQuickActions(){
-        val intent = Intent(this, POSHomeActivity::class.java)
-        startActivity(intent)
+    private fun navigateToQuickActions() {
+        startActivity(Intent(this, POSHomeActivity::class.java))
         finish()
     }
 }

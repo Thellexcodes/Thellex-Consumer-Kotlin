@@ -55,6 +55,7 @@ data class BasicKycFormModelDto(
     @SerializedName("state") val state: String? = null,
     @SerializedName("lga") val lga: String? = null
 )
+
 data class KycResponseDto(
     @SerializedName("isVerified") val isVerified: Boolean,
     @SerializedName("currentTier") val currentTier: TierInfo,

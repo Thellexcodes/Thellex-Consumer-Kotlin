@@ -2,23 +2,19 @@ package com.thellex.payments.core.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Looper
+import android.text.InputFilter
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Patterns
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import com.google.android.material.textfield.TextInputLayout
 import com.thellex.payments.R
-import com.thellex.payments.data.enums.ERRORS
-import com.thellex.payments.data.model.BlockchainItem
-import com.thellex.payments.data.model.ErrorResponse
 import com.thellex.payments.data.model.PaymentStatus
-import com.thellex.payments.settings.SupportedBlockchain
-import java.security.SecureRandom
-import java.security.cert.X509Certificate
-import javax.net.ssl.*
-import kotlinx.serialization.json.Json
+import org.json.JSONException
+import org.json.JSONObject
+import retrofit2.HttpException
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -34,52 +30,13 @@ object Helpers {
         return if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
     }
 
-    fun createUnsafeSslSocketFactory(): SSLSocketFactory {
-        val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
-            @SuppressLint("TrustAllX509TrustManager")
-            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
-            @SuppressLint("TrustAllX509TrustManager")
-            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
-            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
-        })
-
-        val sslContext = SSLContext.getInstance("SSL")
-        sslContext.init(null, trustAllCerts, SecureRandom())
-        return sslContext.socketFactory
-    }
-
-    // Create an unsafe trust manager
-    fun createUnsafeTrustManager(): X509TrustManager {
-        return object : X509TrustManager {
-            @SuppressLint("TrustAllX509TrustManager")
-            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
-            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
-            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+    fun parseBackendErrorEnum(errorBody: String?): String? {
+        return try {
+            val json = JSONObject(errorBody ?: "{}")
+            json.optString("message", null.toString())
+        } catch (e: JSONException) {
+            null
         }
-    }
-
-    public fun parseErrorMessage(errorResponse: String?): Pair<ERRORS?, String> {
-        return errorResponse?.let {
-            try {
-                val jsonObject = Json.decodeFromString<ErrorResponse>(it)
-
-                val errorType = when (jsonObject.message) {
-                    "EMAIL_EXISTS" -> ERRORS.EMAIL_EXISTS
-                    "BRAND_EXISTS" -> ERRORS.BRAND_EXISTS
-                    "REJECTED_AGREEMENT" -> ERRORS.REJECTED_AGREEMENT
-                    "INVALID_CREDENTIAL" -> ERRORS.INVALID_CREDENTIAL
-                    "EMAIL_NOT_VERIFIED" -> ERRORS.EMAIL_NOT_VERIFIED
-                    "PHONE_NOT_VERIFIED" -> ERRORS.PHONE_NOT_VERIFIED
-                    "UNKNOWN_ERROR" -> ERRORS.UNKNOWN_ERROR
-                    else -> null
-                }
-
-                Pair(errorType, jsonObject.message)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Pair(null, "Error parsing error response: ${e.message}")
-            }
-        } ?: Pair(null, "No error message available")
     }
 
     fun Context.showSingleToast(message: String) {
@@ -101,6 +58,15 @@ object Helpers {
             else -> R.drawable.icon_bnb_chain
         }
     }
+
+    fun getDisplayNameForNetwork(network: String): String {
+        return when (network.lowercase(Locale.getDefault())) {
+            "matic" -> "Polygon"
+            "bep20" -> "Binance"
+            else -> network.replaceFirstChar { it.uppercase() }
+        }
+    }
+
 
     fun getStatusIconResId(status: String?): Int {
         return when (normalizeStatusForIcon(status)) {
@@ -200,12 +166,43 @@ object Helpers {
         }
     }
 
+    fun getErrorMessageFromException(e: Exception): String {
+        return if (e is HttpException) {
+            val errorBody = e.response()?.errorBody()?.string()
+            parseErrorMessage(errorBody) ?: "Network error"
+        } else {
+            "Network error"
+        }
+    }
+
+    private fun parseErrorMessage(errorBody: String?): String? {
+        if (errorBody == null) return null
+        return try {
+            val json = JSONObject(errorBody)
+            json.optString("message", null)
+        } catch (ex: Exception) {
+            null
+        }
+    }
+
     fun formatCurrencyWithNGN(number: Int?): String {
         return if (number != null) {
             "NGN " + NumberFormat.getNumberInstance(Locale.US).format(number)
         } else {
             "NGN N/A"
         }
+    }
+
+    fun isValidEmail(email: String): Boolean {
+        return Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()
+    }
+
+    fun applyEmailCharacterFilter(editText: EditText) {
+        val allowedPattern = "[a-zA-Z0-9@._-]+"
+        val emailFilter = InputFilter { source, _, _, _, _, _ ->
+            if (source.toString().matches(allowedPattern.toRegex())) source else ""
+        }
+        editText.filters = arrayOf(emailFilter)
     }
 }
 

@@ -1,15 +1,20 @@
 package com.thellex.payments.features.dashboard.ui
 
+import android.app.Dialog
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
-import com.thellex.payments.data.enums.ERRORS
+import com.thellex.payments.R
+import com.thellex.payments.core.utils.ErrorHandler
+import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.databinding.ActivityMainBinding
 import com.thellex.payments.features.onboarding.OnboardingActivity
 import com.thellex.payments.network.services.ApiClient
@@ -22,8 +27,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import org.json.JSONException
-import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -66,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             try {
-                val api = ApiClient.getAuthenticatedApi(token)
+                val api = ApiClient.getAuthenticatedApi("")
                 val response = api.checkAuthStatus()
 
                 if (response.isSuccessful) {
@@ -74,27 +77,30 @@ class MainActivity : AppCompatActivity() {
                     val authResult = authResponse?.result
                     if (authResult != null) {
                         userModel.saveAuthResult(authResult)
-                        navigateToDashboard()
+                        navigateToDashboard()  // Uncomment if you want to navigate here
                     } else {
                         userModel.logout()
                         navigateToLogin()
                     }
                 } else {
-                    // Prevent multiple toasts for repeated errors
+                    if (response.code() == 404) {
+                        showServerUnavailableDialog()
+                        return@launch
+                    }
+
                     if (hasShownErrorToast) return@launch
                     hasShownErrorToast = true
 
                     val errorBody = response.errorBody()?.string()
-                    val errorCode = parseBackendErrorEnum(errorBody)
-                    when (val errorEnum = ERRORS.fromCode(errorCode)) {
-                        ERRORS.USER_NOT_FOUND -> {
-                            navigateToLogin()
-                        }
-                        ERRORS.USER_SUSPENDED -> {
-                            userModel.logout()
-                            navigateToLogin()
-                        }
-                        ERRORS.UNAUTHORIZED -> {
+                    val errorCode = Helpers.parseBackendErrorEnum(errorBody)
+                    val errorEnum = UserErrorEnum.fromCode(errorCode)
+
+                    ErrorHandler.handle(context = this@MainActivity, "Error", error = errorEnum)
+
+                    when (errorEnum) {
+                        UserErrorEnum.USER_NOT_FOUND,
+                        UserErrorEnum.USER_SUSPENDED,
+                        UserErrorEnum.UNAUTHORIZED -> {
                             userModel.logout()
                             navigateToLogin()
                         }
@@ -109,6 +115,9 @@ class MainActivity : AppCompatActivity() {
                 Log.e("TAG", "Error message", e)
                 if (!hasShownErrorToast) {
                     hasShownErrorToast = true
+                    val errorMessage = Helpers.getErrorMessageFromException(e)
+                    val userError = UserErrorEnum.fromCode(errorMessage)
+//                    ErrorHandler.handle(this@MainActivity, "Error", userError)
                 }
                 userModel.logout()
                 navigateToLogin()
@@ -122,15 +131,6 @@ class MainActivity : AppCompatActivity() {
                 putExtra("alertID", alertID)
             }
             ContextCompat.startForegroundService(this@MainActivity, serviceIntent)
-        }
-    }
-
-    private fun parseBackendErrorEnum(errorBody: String?): String? {
-        return try {
-            val json = JSONObject(errorBody ?: "{}")
-            json.optString("message", null.toString())
-        } catch (e: JSONException) {
-            null
         }
     }
 
@@ -148,5 +148,19 @@ class MainActivity : AppCompatActivity() {
     private suspend fun navigateToLogin() = withContext(Dispatchers.Main) {
         startActivity(Intent(this@MainActivity, LoginActivity::class.java))
         finish()
+    }
+
+    private fun showServerUnavailableDialog() {
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_server_error)
+        dialog.setCancelable(false)
+
+        val btnRetry = dialog.findViewById<Button>(R.id.btn_retry)
+        btnRetry.setOnClickListener {
+            dialog.dismiss()
+            checkAuthStatus()
+        }
+
+        dialog.show()
     }
 }

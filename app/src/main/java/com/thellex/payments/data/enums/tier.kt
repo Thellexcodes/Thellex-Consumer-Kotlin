@@ -21,18 +21,6 @@ enum class TierEnum(val value: String) {
     }
 }
 
-class TierEnumDeserializer : JsonDeserializer<TierEnum> {
-    override fun deserialize(
-        json: JsonElement?,
-        typeOfT: Type?,
-        context: JsonDeserializationContext?
-    ): TierEnum? {
-        val value = json?.asString
-        return value?.let { TierEnum.fromValue(it) }
-    }
-}
-
-
 enum class BasicKycRequirementsEnum(val displayName: String) {
     ID_TYPE("ID Type"),
     ADDITIONAL_ID_TYPE("Additional ID Type"),

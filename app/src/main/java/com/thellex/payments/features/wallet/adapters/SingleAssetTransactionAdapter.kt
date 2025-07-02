@@ -7,14 +7,13 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
-import com.thellex.payments.core.utils.Helpers.convertToUsd
-import com.thellex.payments.data.model.TransactionHistoryEntity
+import com.thellex.payments.data.model.ITransactionHistoryEntity
 import com.thellex.payments.data.model.WalletWebhookEvent
 
 
 class SingleAssetTransactionAdapter(
     private val currencyFilter: String,
-    private val transactions: List<TransactionHistoryEntity>
+    private val transactions: List<ITransactionHistoryEntity>
 ) : RecyclerView.Adapter<SingleAssetTransactionAdapter.TransactionViewHolder>() {
 
     private val filteredTransactions = transactions.filter {
@@ -27,7 +26,7 @@ class SingleAssetTransactionAdapter(
         private val tvAmount: TextView = itemView.findViewById(R.id.tvAmount)
         private val tvEquivalent: TextView = itemView.findViewById(R.id.tvEquivalent)
 
-        fun bind(transaction: TransactionHistoryEntity) {
+        fun bind(transaction: ITransactionHistoryEntity) {
             val context = itemView.context
             val eventEnum = WalletWebhookEvent.fromValue(transaction.event)
             val isWithdraw = eventEnum == WalletWebhookEvent.WITHDRAW_SUCCESSFUL

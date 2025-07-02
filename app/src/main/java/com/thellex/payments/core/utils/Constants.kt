@@ -20,9 +20,7 @@ object Constants {
 
     // Payment Endpoints
     const val REQUEST_CRYPTO_PAYMENT_ENDPOINT = "payments/request-crypto"
-    const val REQUEST_FIAT_PAYMENT_ENDPOINT = "payments/request-fiat"
-    const val WITHDRAW_PAYMENT_ENDPOINT = "payments/withdraw"
-    const val OFF_RAMP_PAYMENT_ENDPOINT = "payments/off-ramp"
+    const val WITHDRAW_CRYPTO_PAYMENT_ENDPOINT = "payments/withdraw-crypto"
 
     // Wallet Manager Endpoints
     const val WALLET_MANAGER_BALANCE_ENDPOINT= "wallet-manager/balance"
@@ -30,3 +28,36 @@ object Constants {
     // KYC and KYB
     const val KYC_ENDPOINT = "kyc/basic"
 }
+
+//object Constants {
+//    private const val API_VERSION = "v1"
+//
+//    val BASE_URL: String
+//        get() = if (isEmulator()) {
+//            "https://goat-touched-mite.ngrok-free.app/"
+//        } else {
+//            "https://goat-touched-mite.ngrok-free.app/"
+//        }
+//
+//    private fun isEmulator(): Boolean {
+//        return android.os.Build.FINGERPRINT.contains("generic")
+//                || android.os.Build.FINGERPRINT.lowercase().contains("emulator")
+//                || android.os.Build.MODEL.contains("Emulator")
+//                || android.os.Build.MODEL.contains("Android SDK built for x86")
+//    }
+//
+//    // Auth Endpoints
+//    const val LOGIN_ENDPOINT = "$API_VERSION/user/access"
+//    const val VERIFY_CODE_ENDPOINT = "$API_VERSION/user/verify"
+//    const val AUTH_LOGIN_ENDPOINT = "$API_VERSION/user/authenticate"
+//
+//    // Payment Endpoints
+//    const val REQUEST_CRYPTO_PAYMENT_ENDPOINT = "$API_VERSION/payments/request-crypto"
+//    const val WITHDRAW_CRYPTO_PAYMENT_ENDPOINT = "$API_VERSION/payments/withdraw-crypto"
+//
+//    // Wallet Manager Endpoints
+//    const val WALLET_MANAGER_BALANCE_ENDPOINT = "$API_VERSION/wallet-manager/balance"
+//
+//    // KYC and KYB
+//    const val KYC_ENDPOINT = "$API_VERSION/kyc/basic"
+//}

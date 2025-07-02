@@ -87,7 +87,7 @@ object UserPreferences {
         }
     }
 
-    suspend fun addTransactionHistory(context: Context, transaction: TransactionHistoryEntity) {
+    suspend fun addTransactionHistory(context: Context, transaction: ITransactionHistoryEntity) {
         updateUserEntity(context) { user ->
             val updatedList = user.transactionHistory.toMutableList()
             updatedList.add(transaction)
@@ -99,7 +99,7 @@ object UserPreferences {
     suspend fun updateTransactionById(
         context: Context,
         blockchainTxId: String,
-        updatedTransaction: TransactionHistoryEntity
+        updatedTransaction: ITransactionHistoryEntity
     ) {
         updateUserEntity(context) { user ->
             val newList = user.transactionHistory.map {

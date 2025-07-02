@@ -9,10 +9,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.Spinner
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -24,12 +20,12 @@ import com.thellex.payments.R
 import com.thellex.payments.features.pos.adapters.CryptoSpinnerAdapter
 import com.thellex.payments.data.model.BlockchainItem
 import com.thellex.payments.settings.PaymentType
-import com.thellex.payments.settings.SupportedBlockchain
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.databinding.ActivityPosAddressGeneratorBinding
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
+import com.thellex.payments.settings.SupportedBlockchainEnum
 import java.util.Locale
 
 class GeneratePOSAddressActivity : AppCompatActivity() {
@@ -37,7 +33,7 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPosAddressGeneratorBinding
 
     private lateinit var paymentType: PaymentType
-    private var selectedBlockchain: SupportedBlockchain? = null
+    private var selectedBlockchain: SupportedBlockchainEnum? = null
     private lateinit var userModel: UserViewModel
     private lateinit var walletManagerViewModel: WalletManagerViewModel
     private var supportedBlockchains: List<BlockchainItem> = emptyList()
@@ -77,12 +73,12 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
         // Observe wallet balance and update UI accordingly
         walletManagerViewModel.walletBalance.observe(this) { walletDto ->
             val wallet = walletDto.wallets[assetCode]
-            val networkName = wallet?.network?.lowercase(Locale.getDefault())
+            val networkName = wallet?.network?.name?.lowercase(Locale.getDefault())
 
 
             val supportedChain = networkName?.let {
                 try {
-                    SupportedBlockchain.valueOf(it.lowercase())
+                    SupportedBlockchainEnum.valueOf(it.lowercase())
                 } catch (e: IllegalArgumentException) { null }
             }
 

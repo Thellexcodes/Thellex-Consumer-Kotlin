@@ -1,4 +1,4 @@
-package com.thellex.payments.features.pos.ui
+package com.thellex.payments.features.pos.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater

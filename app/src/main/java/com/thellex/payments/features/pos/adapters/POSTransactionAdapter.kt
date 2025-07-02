@@ -10,11 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.Helpers.formatAmountWithSymbol
 import com.thellex.payments.data.model.PosTransaction
-import com.thellex.payments.data.model.TransactionHistoryEntity
 import com.thellex.payments.core.utils.Helpers.formatTimestamp
 import com.thellex.payments.core.utils.Helpers.getIconResIdForToken
 import com.thellex.payments.core.utils.Helpers.getStatusIconResId
 import com.thellex.payments.core.utils.Helpers.mapToTransactionStatus
+import com.thellex.payments.data.model.ITransactionHistoryEntity
 import com.thellex.payments.data.model.PaymentStatus
 import java.util.Locale
 
@@ -71,7 +71,7 @@ class POSTransactionAdapter(
 
     override fun getItemCount(): Int = items.size
 
-    fun updateList(newItems: List<TransactionHistoryEntity>) {
+    fun updateList(newItems: List<ITransactionHistoryEntity>) {
         items = newItems.map { entity ->
             PosTransaction(
                 iconResId = getIconResIdForToken(entity.assetCode),

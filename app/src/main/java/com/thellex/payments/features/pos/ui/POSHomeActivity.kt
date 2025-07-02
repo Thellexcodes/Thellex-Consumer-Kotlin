@@ -17,12 +17,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.core.decorators.ItemSpacingDecoration
 import com.thellex.payments.features.pos.adapters.POSTransactionAdapter
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers.parseDate
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivityPOSBinding
+import com.thellex.payments.features.auth.ui.AuthVerificationActivity
+import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.kyc.ui.StartKycActivity
+import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
+import com.thellex.payments.features.pos.fragments.WithdrawalOptionsModalFragment
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.features.wallet.ui.WalletAssetsActivity
@@ -45,6 +50,10 @@ class POSHomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPOSBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //close previous activities
+        ActivityTracker.finishActivity(LoginActivity::class.java)
+        ActivityTracker.finishActivity(AuthVerificationActivity::class.java)
 
         setupWindowInsetsAndBars()
 
