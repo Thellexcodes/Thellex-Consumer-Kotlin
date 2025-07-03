@@ -123,15 +123,16 @@
                                         android:layout_height="wrap_content"
                                         android:text="On-Chain Deposit"
                                         android:textColor="@color/white"
-                                        android:textSize="10sp"
+                                        android:fontFamily="@font/kumbhsans_semibold"
+                                        android:textSize="12sp"
                                         app:layout_constraintTop_toTopOf="parent"
                                         app:layout_constraintStart_toStartOf="parent" />
 
                                 <TextView
                                         android:id="@+id/fragment_request_options_desc2"
-                                        android:fontFamily="@font/kumbhsans_light"
                                         android:layout_marginTop="8dp"
                                         android:textSize="10sp"
+                                        android:fontFamily="@font/kumbhsans_regular"
                                         android:textColor="@color/white"
                                         android:text="Transfer crypto assets from your external wallets to Thellex."
                                         android:layout_width="wrap_content"

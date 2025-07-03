@@ -32,6 +32,7 @@ class BasicKycRequirements : AppCompatActivity() {
         setupViewModel()
         observeUserLimits()
         setupStartKycButton()
+        val kycType = intent.getStringExtra("KYC_TYPE")
     }
 
     private fun setupWindowInsets() {

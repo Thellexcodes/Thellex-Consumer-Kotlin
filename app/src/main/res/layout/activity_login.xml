@@ -154,23 +154,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
-            <com.mukeshsolanki.OtpView
-                    android:id="@+id/otp_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:textAllCaps="true"
-                    android:itemBackground="@drawable/otp_item_background"
-                    android:textColor="@android:color/white"
-                    app:OtpHideLineWhenFilled="true"
-                    app:OtpItemCount="6"
-                    app:OtpItemSpacing="6dp"
-                    app:OtpState_filled="true"
-                    android:width="54dp"
-                    android:height="57dp"
-                    tools:layout_editor_absoluteY="48dp"
-                    tools:layout_editor_absoluteX="46dp" />
-
             <TextView
                     android:id="@+id/timeTextView"
                     android:visibility="gone"

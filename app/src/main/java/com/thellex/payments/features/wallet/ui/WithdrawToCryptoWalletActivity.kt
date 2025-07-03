@@ -1,15 +1,19 @@
 package com.thellex.payments.features.wallet.ui
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.thellex.payments.R
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.core.utils.Helpers
-import com.thellex.payments.data.enums.UserErrorEnum
+import com.thellex.payments.data.enums.PaymentErrorEnum
 import com.thellex.payments.data.model.CreateRequestPaymentDto
 import com.thellex.payments.databinding.ActivityWithdrawToCryptoWalletBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
@@ -23,9 +27,9 @@ import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.settings.SupportedBlockchainEnum
 import kotlinx.coroutines.launch
+import okio.blackholeSink
 import java.util.Locale
 import retrofit2.HttpException
-
 
 class WithdrawToCryptoWalletActivity : AppCompatActivity() {
 
@@ -62,10 +66,40 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
 
         observeWalletBalance()
         setupClickListeners()
+        setupLiveValidation()
+
+        binding.withdrawAmountEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                val input = s?.toString()?.toDoubleOrNull()
+                val availableBalance = walletManagerViewModel.walletBalance.value?.totalInUsd ?: 0.0
+
+                if (input != null && input > availableBalance) {
+                    binding.withdrawAmountEditText.error = "Insufficient balance"
+                } else {
+                    binding.withdrawAmountEditText.error = null
+                }
+            }
+        })
+
+        binding.buttonMax.setOnClickListener {
+            walletManagerViewModel.walletBalance.value?.let { balance ->
+                val maxAmount = balance.totalInUsd.toString()
+                binding.withdrawAmountEditText.setText(maxAmount)
+            } ?: run {
+                CustomToast.show(this, message = "Balance not available")
+            }
+        }
+
     }
 
     private fun observeWalletBalance() {
         walletManagerViewModel.walletBalance.observe(this) { balance ->
+            val formatted = Helpers.formatBalance(balance.totalInUsd.toString())
+            binding.textAvailableBalance.text = "Available: $formatted USD"
             val firstToken = balance.wallets.values.firstOrNull()
             firstToken?.let {
                 updateSelectedNetworkAndToken(it)
@@ -88,6 +122,22 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
 
         binding.withdrawBtn.setOnClickListener {
             handleSubmitButtonClick()
+        }
+    }
+
+    private fun setupLiveValidation() {
+        binding.withdrawAmountEditText.doOnTextChanged { text, _, _, _ ->
+            val isValid = !text.isNullOrBlank()
+            binding.withdrawAmountEditText.setBackgroundResource(
+                if (isValid) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
+            )
+        }
+
+        binding.withdrawCryptoWalletEdittextWalletAddress.doOnTextChanged { text, _, _, _ ->
+            val isValid = !text.isNullOrBlank()
+            binding.withdrawCryptoWalletEdittextWalletAddress.setBackgroundResource(
+                if (isValid) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
+            )
         }
     }
 
@@ -132,29 +182,53 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
     }
 
     private fun handleSubmitButtonClick() {
-        val amount = binding.withdrawAmountEditText.text.toString().trim()
-        if (amount.isEmpty()) {
-            Toast.makeText(this, "Enter amount", Toast.LENGTH_SHORT).show()
+        val amountStr = binding.withdrawAmountEditText.text.toString().trim()
+        val walletAddress = binding.withdrawCryptoWalletEdittextWalletAddress.text.toString().trim()
+
+        val isAmountValid = amountStr.isNotEmpty()
+        val isWalletValid = Helpers.isValidEvmAddress(walletAddress)
+
+        // Update background resources for inputs based on validation
+        binding.withdrawAmountEditText.setBackgroundResource(
+            if (isAmountValid) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
+        )
+        binding.withdrawCryptoWalletEdittextWalletAddress.setBackgroundResource(
+            if (isWalletValid) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
+        )
+
+        if (!isAmountValid) {
+            CustomToast.show(this, "Warning", "Amount is empty")
+            return
+        }
+
+        if (!isWalletValid) {
+            CustomToast.show(this, "Warning", "Invalid wallet address")
+            return
+        }
+
+        val amount = amountStr.toDoubleOrNull()
+        if (amount == null) {
+            CustomToast.show(this, "Warning", "Invalid amount format")
+            return
+        }
+
+        val availableBalance = walletManagerViewModel.walletBalance.value?.totalInUsd ?: 0.0
+        if (amount > availableBalance) {
+            CustomToast.show(this, "Warning", "Insufficient balance")
             return
         }
 
         val tokenToUse = selectedToken ?: run {
-            Toast.makeText(this, "No token selected for network", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val walletAddress = binding.withdrawCryptoWalletEdittextWalletAddress.text.toString().trim()
-        if (walletAddress.isEmpty()) {
-            Toast.makeText(this, "Enter wallet address", Toast.LENGTH_SHORT).show()
+            CustomToast.show(this, "Warning", "No token selected")
             return
         }
 
         val requestDto = CreateRequestPaymentDto(
             paymentType = PaymentType.WITHDRAW_CRYPTO,
-            assetCode = selectedToken!!.assetCode,
-            amount = amount,
-            network = selectedToken!!.network,
-            sourceAddress = selectedToken!!.address,
+            assetCode = tokenToUse.assetCode,
+            amount = amountStr,
+            network = tokenToUse.network,
+            sourceAddress = tokenToUse.address,
             fundUid = walletAddress,
         )
 
@@ -162,17 +236,15 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
             try {
                 val response = ApiClient.getAuthenticatedPaymentApi(cachedToken.toString()).withdrawCrypto(requestDto)
                 if (response.result != null) {
-                    CustomToast.show(this@WithdrawToCryptoWalletActivity, message = "Withdrawal submitted")
+                    CustomToast.show(this@WithdrawToCryptoWalletActivity, "Success", "Withdrawal submitted")
                     Log.i(TAG, "Withdrawal successful: ${response.result}")
                 }
             } catch (e: Exception) {
                 val errorMessage = Helpers.getErrorMessageFromException(e)
-                val userError = UserErrorEnum.fromCode(errorMessage)
+                val userError = PaymentErrorEnum.fromCode(errorMessage)
                 ErrorHandler.handle(this@WithdrawToCryptoWalletActivity, "Error", userError)
                 Log.e(TAG, "Network error during withdrawal: $errorMessage", e)
             }
         }
-
     }
-
 }

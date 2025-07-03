@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             try {
-                val api = ApiClient.getAuthenticatedApi("")
+                val api = ApiClient.getAuthenticatedApi(token)
                 val response = api.checkAuthStatus()
 
                 if (response.isSuccessful) {
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                     val authResult = authResponse?.result
                     if (authResult != null) {
                         userModel.saveAuthResult(authResult)
-                        navigateToDashboard()  // Uncomment if you want to navigate here
+                        navigateToDashboard()
                     } else {
                         userModel.logout()
                         navigateToLogin()
@@ -94,7 +94,6 @@ class MainActivity : AppCompatActivity() {
                     val errorBody = response.errorBody()?.string()
                     val errorCode = Helpers.parseBackendErrorEnum(errorBody)
                     val errorEnum = UserErrorEnum.fromCode(errorCode)
-
                     ErrorHandler.handle(context = this@MainActivity, "Error", error = errorEnum)
 
                     when (errorEnum) {
@@ -117,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                     hasShownErrorToast = true
                     val errorMessage = Helpers.getErrorMessageFromException(e)
                     val userError = UserErrorEnum.fromCode(errorMessage)
-//                    ErrorHandler.handle(this@MainActivity, "Error", userError)
+                    ErrorHandler.handle(this@MainActivity, "Error", userError)
                 }
                 userModel.logout()
                 navigateToLogin()

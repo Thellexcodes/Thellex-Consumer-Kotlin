@@ -117,13 +117,14 @@
                         android:layout_height="wrap_content"
                         android:text="On-chain Withdrawal"
                         android:textColor="@color/white"
-                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_semibold"
+                        android:textSize="12sp"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
                         android:id="@+id/fragment_withdrawal_options_desc_crypto"
-                        android:fontFamily="@font/kumbhsans_light"
+                        android:fontFamily="@font/kumbhsans_regular"
                         android:layout_marginTop="8dp"
                         android:textSize="10sp"
                         android:textColor="@color/white"
@@ -148,7 +149,6 @@
         <!-- Option 3: Withdraw to Naira/Fiat -->
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/fragment_withdrawal_options_fiat"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_border"
@@ -170,15 +170,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Crypto-to-Fiat Withdrawal"
+                        android:fontFamily="@font/kumbhsans_semibold"
                         android:textColor="@color/white"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
                         android:id="@+id/fragment_withdrawal_options_desc_fiat"
-                        android:fontFamily="@font/kumbhsans_light"
-                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        android:layout_marginTop="4dp"
                         android:textSize="10sp"
                         android:textColor="@color/white"
                         android:text="Withdraw crypto to your local fiat account (e.g., Naira)."

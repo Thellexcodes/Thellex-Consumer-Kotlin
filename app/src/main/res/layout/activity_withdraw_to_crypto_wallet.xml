@@ -64,7 +64,7 @@
                     android:fontFamily="@font/kumbhsans_regular"
                     android:paddingVertical="15dp"
                     android:textColorHint="@color/steelBlueGrey"
-                    android:textColor="@color/steelBlueGrey"
+                    android:textColor="@color/white"
                     android:background="@drawable/rounded_edittext_midnight_bg"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -98,7 +98,7 @@
                         android:textColorHint="@color/steelBlueGrey"
                         android:textSize="12sp"
                         android:fontFamily="@font/kumbhsans_regular"
-                        android:textColor="@color/steelBlueGrey"
+                        android:textColor="@color/white"
                         android:background="@drawable/rounded_edittext_midnight_bg"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -155,7 +155,7 @@
                         android:layout_height="wrap_content"
                         android:hint="0.00"
                         android:textColor="@color/white"
-                        android:textColorHint="@color/white"
+                        android:textColorHint="@color/steelBlueGrey"
                         android:background="@drawable/rounded_edittext_midnight_bg"
                         android:inputType="numberDecimal"
                         android:fontFamily="@font/outfit_bold"
@@ -258,6 +258,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
+                android:visibility="gone"
                 android:layout_marginTop="18dp"
                 android:background="@drawable/rounded_border_midnight"
                 android:layout_height="wrap_content">

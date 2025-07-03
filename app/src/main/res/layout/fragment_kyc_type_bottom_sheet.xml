@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/kycTypeRoot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/rounded_border_midnight"
+        android:padding="24dp"
+        tools:context=".features.kyc.ui.basic.KycTypeBottomSheetFragment">
+
+    <LinearLayout
+            android:id="@+id/kycTitleContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+                android:id="@+id/kycTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SELECT AN OPTION"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:fontFamily="@font/kumbhsans_regular" />
+
+        <TextView
+                android:id="@+id/kycSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Select the type of ID to validate"
+                android:textColor="@color/steelBlueGrey"
+                android:textSize="14sp"
+                android:fontFamily="@font/kumbhsans_regular" />
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/kycOptionsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/kycTitleContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- NIN Option -->
+        <LinearLayout
+                android:id="@+id/ninOption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="15dp"
+                android:background="@drawable/rounded_border"
+                android:clickable="true"
+                android:focusable="true">
+
+            <ImageView
+                    android:id="@+id/ninIcon"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginBottom="12dp"
+                    android:src="@drawable/icon_passport" />
+
+            <TextView
+                    android:id="@+id/ninTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="National Identification Number (NIN)"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/kumbhsans_bold" />
+
+            <TextView
+                    android:id="@+id/ninSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="Don’t know your NIN? Dial *346# on your registered number."
+                    android:textColor="@color/steelBlueGrey"
+                    android:textSize="10sp"
+                    android:fontFamily="@font/kumbhsans_regular" />
+        </LinearLayout>
+
+        <!-- Passport Option -->
+        <LinearLayout
+                android:id="@+id/passportOption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="15dp"
+                android:background="@drawable/rounded_border"
+                android:clickable="true"
+                android:focusable="true">
+
+            <ImageView
+                    android:id="@+id/passportIcon"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginBottom="12dp"
+                    android:src="@drawable/icon_passport" />
+
+            <TextView
+                    android:id="@+id/passportTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Passport or Voter ID"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/kumbhsans_bold" />
+
+            <TextView
+                    android:id="@+id/passportSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="Includes International Passport, Voter’s Card, Driver’s License, and others"
+                    android:textColor="@color/steelBlueGrey"
+                    android:textSize="10sp"
+                    android:fontFamily="@font/kumbhsans_regular" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -161,7 +161,6 @@ class AuthVerificationActivity : AppCompatActivity() {
 
                 response.body()?.result?.let { result ->
                     withContext(Dispatchers.Main) {
-                        userModel.saveToken(token!!)
                         userModel.saveAuthResult(result)
                         navigateToQuickActions()
                     }

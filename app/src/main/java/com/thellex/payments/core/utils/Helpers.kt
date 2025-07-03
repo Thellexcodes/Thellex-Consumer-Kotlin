@@ -204,5 +204,19 @@ object Helpers {
         }
         editText.filters = arrayOf(emailFilter)
     }
+
+    fun isValidEvmAddress(address: String): Boolean {
+        val regex = Regex("^0x[a-fA-F0-9]{40}$")
+        return regex.matches(address)
+    }
+
+    fun formatBalance(amount: String?): String {
+        return try {
+            val value = amount?.toDoubleOrNull() ?: 0.0
+            String.format("%.2f", value)
+        } catch (e: Exception) {
+            "0.00"
+        }
+    }
 }
 

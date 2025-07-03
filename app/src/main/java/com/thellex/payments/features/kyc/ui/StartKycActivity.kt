@@ -3,7 +3,6 @@ package com.thellex.payments.features.kyc.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -13,6 +12,7 @@ import com.thellex.payments.databinding.ActivityStartKycBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.kyc.ui.basic.BasicKycRequirements
+import com.thellex.payments.features.kyc.ui.basic.KycTypeBottomSheetFragment
 
 class StartKycActivity : AppCompatActivity() {
 
@@ -54,7 +54,8 @@ class StartKycActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.activityStartBtnContinue.setOnClickListener {
-            startActivity(Intent(this, BasicKycRequirements::class.java))
+            val modal = KycTypeBottomSheetFragment()
+            modal.show(supportFragmentManager, modal.tag)
         }
     }
 
