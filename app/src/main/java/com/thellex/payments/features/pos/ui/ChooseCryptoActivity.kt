@@ -85,7 +85,8 @@ class POSChooseCryptoActivity : AppCompatActivity() {
             val updatedCryptoList = walletDto.wallets.values.map { wallet ->
                 TokenListDto(wallet.assetCode,
                     Helpers.getIconResIdForToken(wallet.assetCode.toString()),
-                    chainName = wallet.networks[0] )
+                    chainName = wallet.network.name
+                )
             }
             cryptoAdapter.updateData(updatedCryptoList)
         }

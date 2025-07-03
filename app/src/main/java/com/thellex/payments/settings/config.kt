@@ -1,15 +1,15 @@
 package com.thellex.payments.settings
 
 // --- Blockchain Only ---
-enum class SupportedBlockchain {
-    lisk, base, stellar, bep20, matic
-}
+enum class SupportedBlockchainEnum {
+    lisk, base, stellar, bep20, matic;
 
-val SUPPORTED_BLOCKCHAINS = listOf(
-    SupportedBlockchain.lisk,
-    SupportedBlockchain.base,
-    SupportedBlockchain.stellar,
-)
+    companion object {
+        fun fromValue(value: String): SupportedBlockchainEnum? {
+            return values().find { it.name.equals(value, ignoreCase = true) }
+        }
+    }
+}
 
 enum class Token {
     usdc, usdt, xlm, btc
@@ -22,4 +22,5 @@ enum class PaymentType {
     REQUEST_FIAT,
     WITHDRAW_FIAT,
     REQUEST_CRYPTO,
+    WITHDRAW_CRYPTO
 }

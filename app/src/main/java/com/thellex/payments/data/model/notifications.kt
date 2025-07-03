@@ -8,7 +8,7 @@ data class NotificationPayload(
     val notification: NotificationEntity,
 
     @SerializedName("transaction")
-    val transaction: TransactionHistoryEntity
+    val transaction: ITransactionHistoryEntity
 )
 
 @Serializable

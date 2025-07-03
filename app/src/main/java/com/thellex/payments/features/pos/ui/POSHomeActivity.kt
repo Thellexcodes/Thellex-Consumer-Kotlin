@@ -17,16 +17,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.core.decorators.ItemSpacingDecoration
 import com.thellex.payments.features.pos.adapters.POSTransactionAdapter
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers.parseDate
-import com.thellex.payments.data.enums.TierEnum
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivityPOSBinding
+import com.thellex.payments.features.auth.ui.AuthVerificationActivity
+import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.kyc.ui.StartKycActivity
+import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
+import com.thellex.payments.features.pos.fragments.WithdrawalOptionsModalFragment
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.features.wallet.ui.WalletAssetsActivity
+import com.thellex.payments.features.wallet.ui.WithdrawToCryptoWalletActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -45,6 +50,10 @@ class POSHomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPOSBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //close previous activities
+        ActivityTracker.finishActivity(LoginActivity::class.java)
+        ActivityTracker.finishActivity(AuthVerificationActivity::class.java)
 
         setupWindowInsetsAndBars()
 
@@ -125,7 +134,7 @@ class POSHomeActivity : AppCompatActivity() {
     private fun observeUserUid() {
         userViewModel.authResult.observe(this) { userDto ->
             val upperUid = userDto?.uid?.toString()?.uppercase() ?: "N/A"
-            binding.activityPosUserUidText.text = "UID: $upperUid"
+            binding.activityPosUserUidText.text = upperUid
         }
     }
 
@@ -147,17 +156,11 @@ class POSHomeActivity : AppCompatActivity() {
 
     private fun setupClickListeners() {
         binding.posWithdrawButton.setOnClickListener {
-            startActivity(Intent(this, EnterTransactionAmountActivity::class.java).apply {
-                putExtra("type", PaymentType.WITHDRAW_FIAT)
-            })
+            showWithdrawalOptionsModal()
         }
 
         binding.activityPosRequestButton.setOnClickListener {
             showRequestOptionsModal()
-        }
-
-        binding.posQuickRequestButton.setOnClickListener {
-            startActivity(Intent(this, GeneratePOSAddressActivity::class.java))
         }
 
         binding.posViewAssetsButton.setOnClickListener {
@@ -166,12 +169,7 @@ class POSHomeActivity : AppCompatActivity() {
     }
 
     private fun showRequestOptionsModal() {
-        val user = userViewModel.authResult.value ?: return
-
-        val isKycDone = user.kyc?.status ?: false
-        val tier = user.currentTier?.name ?: TierEnum.BASIC.name
-
-        val modal = RequestOptionsModalFragment.newInstance(isKycDone = isKycDone, tier = tier.toString())
+        val modal = RequestOptionsModalFragment.newInstance()
 
         modal.setListener(object : RequestOptionsModalFragment.ReceiveOptionsListener {
             override fun onFiatClick() { }
@@ -187,4 +185,32 @@ class POSHomeActivity : AppCompatActivity() {
 
         modal.show(supportFragmentManager, "RequestOptionsModal")
     }
+
+    private fun showWithdrawalOptionsModal() {
+        val modal = WithdrawalOptionsModalFragment.newInstance()
+
+        modal.setListener(object : WithdrawalOptionsModalFragment.WithdrawalOptionsListener {
+            override fun onWithdrawToFiat() {
+                startActivity(Intent(this@POSHomeActivity, EnterTransactionAmountActivity::class.java).apply {
+                    putExtra("type", PaymentType.WITHDRAW_FIAT)
+                })
+            }
+
+            override fun onWithdrawToBank() {
+//                startActivity(Intent(this@POSHomeActivity, WithdrawToBankActivity::class.java))
+            }
+
+            override fun onWithdrawToCryptoWallet() {
+                startActivity(Intent(this@POSHomeActivity, WithdrawToCryptoWalletActivity::class.java))
+            }
+
+            override fun onStartKyc() {
+                modal.dismiss()
+                startActivity(Intent(this@POSHomeActivity, StartKycActivity::class.java))
+            }
+        })
+
+        modal.show(supportFragmentManager, "WithdrawalOptionsModal")
+    }
+
 }

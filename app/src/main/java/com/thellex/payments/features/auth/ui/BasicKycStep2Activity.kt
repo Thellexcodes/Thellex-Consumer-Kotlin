@@ -38,38 +38,48 @@ class BasicKycStep2Activity : AppCompatActivity() {
             populateFields(formData)
         }
 
-          binding.fragmentKycStep2BtnContinue.setOnClickListener {
-                val nin = binding.fragmentKycStep2EtNin.text.toString().trim()
-                val bvn = binding.fragmentKycStep2EtBvn.text.toString().trim()
+        binding.fragmentKycStep2BtnContinue.setOnClickListener {
+            val nin = binding.fragmentKycStep2EtNin.text.toString().trim()
+            val bvn = binding.fragmentKycStep2EtBvn.text.toString().trim()
 
-                // Step 2 Validations
-                if (nin.isEmpty()) {
-                    showSingleToast("Please enter your NIN")
-                    return@setOnClickListener
-                }
-
-                if (bvn.isEmpty()) {
-                    showSingleToast("Please enter your BVN")
-                    return@setOnClickListener
-                }
-
-                val current = basicKycFormModel.formData.value ?: BasicKycFormModelData()
-
-                val updated = current.copy(
-                    nin = nin,
-                    bvn = bvn,
-                    idType = IdTypeEnum.NIN,
-                    additionalIdType = IdTypeEnum.BVN
-                )
-
-                basicKycFormModel.formData.value = updated
-
-                val json = Gson().toJson(updated)
-                val intent = Intent(this, BasicKycAttestationActivity::class.java)
-                intent.putExtra("FORM_DATA_JSON", json)
-                startActivity(intent)
+            // Step 2 Validations
+            if (nin.isEmpty()) {
+                showSingleToast("Please enter your NIN")
+                return@setOnClickListener
             }
+
+            if (!nin.all { it.isDigit() }) {
+                showSingleToast("NIN must contain only numbers")
+                return@setOnClickListener
+            }
+
+            if (bvn.isEmpty()) {
+                showSingleToast("Please enter your BVN")
+                return@setOnClickListener
+            }
+
+            if (!bvn.all { it.isDigit() }) {
+                showSingleToast("BVN must contain only numbers")
+                return@setOnClickListener
+            }
+
+            val current = basicKycFormModel.formData.value ?: BasicKycFormModelData()
+
+            val updated = current.copy(
+                nin = nin,
+                bvn = bvn,
+                idType = IdTypeEnum.NIN,
+                additionalIdType = IdTypeEnum.BVN
+            )
+
+            basicKycFormModel.formData.value = updated
+
+            val json = Gson().toJson(updated)
+            val intent = Intent(this, BasicKycAttestationActivity::class.java)
+            intent.putExtra("FORM_DATA_JSON", json)
+            startActivity(intent)
         }
+    }
 
     private fun populateFields(data: BasicKycFormModelData) {
         binding.fragmentKycStep2EtNin.setText(data.nin)

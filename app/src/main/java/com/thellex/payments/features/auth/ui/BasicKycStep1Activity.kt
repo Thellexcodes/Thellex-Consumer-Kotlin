@@ -44,7 +44,7 @@ class BasicKycStep1Activity : AppCompatActivity() {
             val day = calendar.get(Calendar.DAY_OF_MONTH)
 
             val datePickerDialog = DatePickerDialog(this, { _, y, m, d ->
-                val formattedDate = String.format("%02d/%02d/%04d", d, m + 1, y)
+                val formattedDate = String.format("%04d-%02d-%02d", y, m + 1, d)
                 binding.fragmentKycStep1EtDob.setText(formattedDate)
             }, year, month, day)
 

@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:background="@drawable/general_gradient_background"
+        tools:context=".features.wallet.ui.WithdrawToCryptoWalletActivity">
+
+    <!-- Top App Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/activity_wallet_top_app_bar_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+                android:id="@+id/activity_wallet_back_button"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/icon_back"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/textView4" />
+
+        <TextView
+                android:textColor="@color/white"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textSize="14dp"
+                android:text="WITHDRAW"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/activity_wallet_back_button"
+                android:id="@+id/textView4" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            app:layout_constraintTop_toBottomOf="@+id/activity_wallet_top_app_bar_container"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/linearLayout4">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <!-- Add contact icon here next -->
+            <EditText
+                    android:id="@+id/withdraw_crypto_wallet_edittext_wallet_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter wallet address"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:paddingVertical="15dp"
+                    android:textColorHint="@color/steelBlueGrey"
+                    android:textColor="@color/steelBlueGrey"
+                    android:background="@drawable/rounded_edittext_midnight_bg"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="48dp" />
+
+            <ImageView
+                    android:id="@+id/withdraw_crypto_wallet_icon_contact"
+                    android:visibility="gone"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="12dp"
+                    android:contentDescription="Contact Icon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/withdraw_crypto_wallet_edittext_wallet_address"
+                    app:layout_constraintBottom_toBottomOf="@id/withdraw_crypto_wallet_edittext_wallet_address"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp">
+                <EditText
+                        android:id="@+id/withdraw_crypto_wallet_edittext_amount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Select Network"
+                        android:textColorHint="@color/steelBlueGrey"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        android:textColor="@color/steelBlueGrey"
+                        android:background="@drawable/rounded_edittext_midnight_bg"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:paddingVertical="15dp"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="48dp"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:inputType="none"
+                        android:cursorVisible="false"
+            />
+
+            <ImageView
+                        android:id="@+id/withdraw_crypto_wallet_icon_arrow_down"
+                        android:layout_width="44dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="Dropdown Arrow"
+                        android:src="@drawable/icon_arrow_down"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/rounded_border_midnight"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:fontFamily="@font/kumbhsans_light"
+                    android:id="@+id/labelAmount"
+                    android:textSize="10sp"
+                    android:text="AMOUNT"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- Container for EditText and Spinner -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/withdraw_amount_container"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/labelAmount"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                <EditText
+                        android:id="@+id/withdrawAmountEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="0.00"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white"
+                        android:background="@drawable/rounded_edittext_midnight_bg"
+                        android:inputType="numberDecimal"
+                        android:fontFamily="@font/outfit_bold"
+                        android:textSize="24sp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/withdraw_spinner"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/withdraw_spinner"
+                        android:layout_width="112dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/rounded_edittext_midnight_bg"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                            android:id="@+id/withdraw_spinner_ticker_icon"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/icon_usdt"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <TextView
+                            android:id="@+id/withdraw_spinner_text"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="USDT"
+                            android:textSize="10sp"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@color/steelBlueGrey"
+                            android:fontFamily="@font/kumbhsans_regular"
+                            app:layout_constraintStart_toEndOf="@id/withdraw_spinner_ticker_icon"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/withdraw_spinner_icon"
+                            app:layout_constraintVertical_bias="0.5" />
+
+                    <ImageView
+                            android:id="@+id/withdraw_spinner_icon"
+                            android:layout_width="24dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/icon_arrow_down"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    app:layout_constraintTop_toBottomOf="@id/withdraw_amount_container"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp">
+
+                <TextView
+                        android:id="@+id/textAvailableBalance"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="AVAILABLE BALANCE: 0.00"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_light"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/buttonMax"
+                        app:layout_constraintHorizontal_bias="0" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/buttonMax"
+                        android:layout_width="41dp"
+                        android:layout_height="22dp"
+                        android:text="MAX"
+                        android:textAllCaps="true"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        android:background="@drawable/rounded_badge_primary_bg"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/rounded_border_midnight"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:fontFamily="@font/kumbhsans_light"
+                    android:id="@+id/receive_labelAmount"
+                    android:textSize="10sp"
+                    android:text="Receive"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- Container for EditText and Spinner -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/receive_amount_container"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintTop_toBottomOf="@id/receive_labelAmount"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                <EditText
+                        android:id="@+id/receive_editTextAmount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:hint="0.00"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white"
+                        android:background="@drawable/rounded_edittext_midnight_bg"
+                        android:fontFamily="@font/outfit_bold"
+                        android:textSize="24sp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:inputType="none"
+                        android:cursorVisible="false"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/receive_withdraw_spinner"
+                        app:layout_constraintHorizontal_bias="0" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:visibility="gone"
+                        android:id="@+id/receive_withdraw_spinner"
+                        android:layout_width="88dp"
+                        android:layout_height="46dp"
+                        android:background="@drawable/rounded_edittext_midnight_bg"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                            android:id="@+id/receive_withdraw_spinner_ticker_icon"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/icon_usdt"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <TextView
+                            android:id="@+id/receive_withdraw_spinner_text"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="USDT"
+                            android:textSize="10sp"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@color/steelBlueGrey"
+                            android:fontFamily="@font/kumbhsans_regular"
+                            app:layout_constraintStart_toEndOf="@id/receive_withdraw_spinner_ticker_icon"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintVertical_bias="0.5"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    app:layout_constraintTop_toBottomOf="@id/receive_amount_container"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp">
+
+                <ImageView
+                        android:id="@+id/receive_icon_info_circle"
+                        android:src="@drawable/icon_info_circle"
+                        android:layout_width="22dp"
+                        android:layout_height="13dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                        android:id="@+id/receive_textAvailableBalance"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Network fee: 0.00 USDT"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:layout_marginLeft="5dp"
+                        android:fontFamily="@font/kumbhsans_light"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/receive_icon_info_circle"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/withdrawBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_ripple"
+            android:text="Withdraw"
+            android:elevation="0dp"
+            android:fontFamily="@font/kumbhsans_bold"
+            android:textColor="@color/dark_purple"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

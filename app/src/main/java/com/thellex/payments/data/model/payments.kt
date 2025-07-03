@@ -2,15 +2,31 @@ package com.thellex.payments.data.model
 
 import com.google.gson.annotations.SerializedName
 import com.thellex.payments.settings.PaymentType
-import com.thellex.payments.settings.SupportedBlockchain
+import com.thellex.payments.settings.SupportedBlockchainEnum
 import com.thellex.payments.settings.Token
+import kotlinx.serialization.Serializable
 
 data class CreateRequestPaymentDto(
-    val paymentType: PaymentType,
-    val assetCode: Token,
-    val assetIssuer: String? = null,
-    val amount: String? = null,
-    val network: SupportedBlockchain
+    @SerializedName("paymentType") val paymentType: PaymentType,
+    @SerializedName("assetCode") val assetCode: Token,
+    @SerializedName("assetIssuer") val assetIssuer: String? = null,
+    @SerializedName("amount") val amount: String? = null,
+    @SerializedName("network") val network: SupportedBlockchainEnum,
+    @SerializedName("sourceAddress") val sourceAddress: String,
+    @SerializedName("fund_uid") val fundUid: String,
+    @SerializedName("transaction_note") val transactionNote: String? = null,
+    @SerializedName("narration") val narration: String? = null,
+    @SerializedName("fund_uid2") val fundUid2: String? = null
+)
+
+@Serializable
+data class BankAccountEntity(
+    @SerializedName("bankName") val bankName: String,
+    @SerializedName("accountName") val accountName: String,
+    @SerializedName("accountNumber") val accountNumber: String,
+    @SerializedName("swiftCode") val swiftCode: String,
+    @SerializedName("iban") val iban: String,
+    @SerializedName("isPrimary") val isPrimary: Boolean
 )
 
 enum class PaymentStatus(val value: String) {

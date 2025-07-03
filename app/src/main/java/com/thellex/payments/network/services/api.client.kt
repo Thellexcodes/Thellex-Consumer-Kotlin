@@ -1,16 +1,18 @@
 package com.thellex.payments.network.services
 
+import InstantDeserializer
 import com.google.gson.GsonBuilder
 import com.thellex.payments.core.utils.Constants
 import com.thellex.payments.data.enums.TierEnum
-import com.thellex.payments.data.enums.TierEnumDeserializer
+import com.thellex.payments.settings.SupportedBlockchainEnum
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 object ApiClient {
-
     private val retrofitWithoutToken: Retrofit = Retrofit.Builder()
         .baseUrl(Constants.BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
@@ -36,9 +38,12 @@ object ApiClient {
             .build()
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun getRetrofitWithToken(token: String): Retrofit {
         val enumGson = GsonBuilder()
             .registerTypeAdapter(TierEnum::class.java, TierEnumDeserializer())
+            .registerTypeAdapter(SupportedBlockchainEnum::class.java, SupportedBlockchainDeserializer())
+            .registerTypeAdapter(Instant::class.java, InstantDeserializer())
             .create()
 
         return Retrofit.Builder()
@@ -62,4 +67,7 @@ object ApiClient {
     // Authenticated API for WalletManagerService
     fun getAuthenticatedWalletManagerApi(token: String): WalletManagerService = getRetrofitWithToken(token).create(
         WalletManagerService::class.java)
+
+    // Authenticated API for KycService
+    fun getAuthenticatedKycApi(token: String): KycService = getRetrofitWithToken(token).create(KycService::class.java)
 }

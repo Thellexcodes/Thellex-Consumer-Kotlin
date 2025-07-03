@@ -24,15 +24,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                    android:id="@+id/fragment_basic_kyc_fragmentKycStep1_activity_wallet_back_button"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:src="@drawable/icon_back"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                <ImageView
+                        android:id="@+id/fragment_basic_kyc_fragmentKycStep1_activity_wallet_back_button"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/icon_back"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -321,6 +320,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:orientation="vertical"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/bvn_column"
                 app:layout_constraintTop_toBottomOf="@id/nin_column"
@@ -348,6 +348,7 @@
 
     <!-- Row 5: Street Name / State -->
     <androidx.constraintlayout.widget.ConstraintLayout
+            android:visibility="gone"
             android:background="@drawable/rounded_border"
             android:padding="20dp"
             android:id="@+id/constraintLayout9"
