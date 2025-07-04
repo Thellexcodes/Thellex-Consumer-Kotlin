@@ -30,7 +30,7 @@
                 android:exported="false" />
         <activity
                 android:name=".features.auth.ui.KycSuccessActivity"
-                android:exported="false" /> <!-- KYC Feature Activities -->
+                android:exported="false" />
         <activity
                 android:name=".features.kyc.ui.basic.BasicKycRequirements"
                 android:exported="false" />

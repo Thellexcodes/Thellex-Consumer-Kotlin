@@ -33,7 +33,7 @@
                 android:id="@+id/titleText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="INTERNATIONAL PASSPORT"
+                android:text="SELF VERIFICAITON"
                 android:textColor="@color/white"
                 android:textSize="12sp"
                 android:fontFamily="@font/kumbhsans_bold"
@@ -70,7 +70,7 @@
         <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Face Verification"
+                android:text="Take a Selfie"
                 android:textColor="@color/white"
                 android:textAlignment="center"
                 android:gravity="center"
@@ -193,11 +193,11 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/nextButton"
+            android:id="@+id/startButton"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="@drawable/button_ripple"
-            android:text="Next"
+            android:text="Take Photo"
             android:elevation="2dp"
             android:fontFamily="@font/kumbhsans_bold"
             android:textColor="@color/dark_purple"

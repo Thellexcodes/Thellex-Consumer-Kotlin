@@ -123,7 +123,6 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val response = ApiClient.getPublicApi().loginUser(userRequestData)
-
                 if (response.isSuccessful) {
                     val result = response.body()?.result
                     if (result != null) {

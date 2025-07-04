@@ -9,6 +9,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.thellex.payments.data.model.KycInfoEntity
+import com.thellex.payments.data.model.KycResponseDto
 import com.thellex.payments.data.model.UserEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -67,6 +69,20 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
 
     fun saveExpiresAt(timeString: String) {
         prefs.edit().putString("expiresAt", timeString).apply()
+    }
+
+    fun updateUserWithKycResult(result: KycResponseDto) {
+        viewModelScope.launch {
+            val currentUser = _authResult.value
+            if (currentUser != null) {
+                val updatedUser = currentUser.copy(
+                    currentTier = result.currentTier,
+                    nextTier = result.nextTier,
+                    outstandingKyc = result.outstandingKyc
+                )
+                saveAuthResult(updatedUser)
+            }
+        }
     }
 
     @OptIn(ExperimentalTime::class)

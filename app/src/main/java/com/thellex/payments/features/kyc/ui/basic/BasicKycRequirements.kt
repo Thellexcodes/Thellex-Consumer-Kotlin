@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers.highlightCurrency
 import com.thellex.payments.data.enums.BasicKycRequirementsEnum
 import com.thellex.payments.databinding.ActivityKycOverviewBinding
@@ -27,6 +28,7 @@ class BasicKycRequirements : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityKycOverviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
 
         setupWindowInsets()
         setupViewModel()
