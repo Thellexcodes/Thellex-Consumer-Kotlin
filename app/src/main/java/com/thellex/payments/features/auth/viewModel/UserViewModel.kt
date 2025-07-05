@@ -2,19 +2,17 @@ package com.thellex.payments.features.auth.viewModel
 
 import android.app.Application
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.thellex.payments.data.model.KycInfoEntity
+import com.thellex.payments.data.model.INotificationConsumeDto
 import com.thellex.payments.data.model.KycResponseDto
 import com.thellex.payments.data.model.UserEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.time.format.DateTimeParseException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -79,6 +77,22 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                     currentTier = result.currentTier,
                     nextTier = result.nextTier,
                     outstandingKyc = result.outstandingKyc
+                )
+                saveAuthResult(updatedUser)
+            }
+        }
+    }
+
+    fun updateNotificationConsumed(result: INotificationConsumeDto) {
+        viewModelScope.launch {
+            val currentUser = _authResult.value
+            if (currentUser != null) {
+                val updatedList = currentUser.notifications.map {
+                    if (it.txnID == result.id) it.copy(consumed = result.consumed) else it
+                }
+
+                val updatedUser = currentUser.copy(
+                    notifications = updatedList
                 )
                 saveAuthResult(updatedUser)
             }

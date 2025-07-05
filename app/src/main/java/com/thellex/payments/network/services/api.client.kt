@@ -4,6 +4,7 @@ import InstantDeserializer
 import com.google.gson.GsonBuilder
 import com.thellex.payments.core.utils.Constants
 import com.thellex.payments.data.enums.TierEnum
+import com.thellex.payments.data.model.NotificationKindEnum
 import com.thellex.payments.settings.SupportedBlockchainEnum
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -41,6 +42,7 @@ object ApiClient {
     @OptIn(ExperimentalTime::class)
     private fun getRetrofitWithToken(token: String): Retrofit {
         val enumGson = GsonBuilder()
+            .registerTypeAdapter(NotificationKindEnum::class.java, NotificationKindEnumDeserializer())
             .registerTypeAdapter(TierEnum::class.java, TierEnumDeserializer())
             .registerTypeAdapter(SupportedBlockchainEnum::class.java, SupportedBlockchainDeserializer())
             .registerTypeAdapter(Instant::class.java, InstantDeserializer())
@@ -70,4 +72,7 @@ object ApiClient {
 
     // Authenticated API for KycService
     fun getAuthenticatedKycApi(token: String): KycService = getRetrofitWithToken(token).create(KycService::class.java)
+
+    // Authenticated API for NotificationService
+    fun  getAuthenticatedNotificationApi(token: String): NotificationService = getRetrofitWithToken(token).create(NotificationService::class.java)
 }

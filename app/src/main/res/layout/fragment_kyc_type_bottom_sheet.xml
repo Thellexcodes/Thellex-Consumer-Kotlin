@@ -96,6 +96,7 @@
                 android:paddingHorizontal="20dp"
                 android:paddingVertical="15dp"
                 android:background="@drawable/rounded_border"
+                android:visibility="gone"
                 android:clickable="true"
                 android:focusable="true">
 

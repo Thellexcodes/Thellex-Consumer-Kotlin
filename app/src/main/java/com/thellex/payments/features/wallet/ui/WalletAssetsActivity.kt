@@ -56,9 +56,10 @@ class WalletAssetsActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         walletAssetsAdapter = AssetAdapter(assetsList) { asset ->
-            val intent = Intent(this, AssetBalanceActivity::class.java)
-            intent.putExtra("asset_symbol", asset.symbol)
-            startActivity(intent)
+            //TODO: Improve later
+//            val intent = Intent(this, AssetBalanceActivity::class.java)
+//            intent.putExtra("asset_symbol", asset.symbol)
+//            startActivity(intent)
         }
 
         val recyclerViewWalletAssets = findViewById<RecyclerView>(R.id.activity_wallet_assets_recycler)

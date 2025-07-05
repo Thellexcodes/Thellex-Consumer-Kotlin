@@ -20,6 +20,9 @@
             android:usesCleartextTraffic="true"
             tools:targetApi="31">
         <activity
+                android:name=".features.notifications.ui.NotificationsActivity"
+                android:exported="false" />
+        <activity
                 android:name=".features.kyc.ui.FaceVerificationActivity"
                 android:exported="false" />
         <activity

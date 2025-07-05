@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -26,6 +28,7 @@ import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.kyc.ui.StartKycActivity
+import com.thellex.payments.features.notifications.ui.NotificationsActivity
 import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
 import com.thellex.payments.features.pos.fragments.WithdrawalOptionsModalFragment
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
@@ -51,7 +54,6 @@ class POSHomeActivity : AppCompatActivity() {
         binding = ActivityPOSBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //close previous activities
         ActivityTracker.finishActivity(LoginActivity::class.java)
         ActivityTracker.finishActivity(AuthVerificationActivity::class.java)
 
@@ -73,6 +75,7 @@ class POSHomeActivity : AppCompatActivity() {
         setupWalletBalanceObserver()
         loadWalletData()
         observeUserUid()
+        observeNotification()
     }
 
     private fun setupWindowInsetsAndBars() {
@@ -98,7 +101,7 @@ class POSHomeActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        transactionRecyclerView = binding.transactionRecycler
+        transactionRecyclerView = binding.recyclerRecentTransactions
         transactionRecyclerView.layoutManager = LinearLayoutManager(this)
 
         transactionAdapter = POSTransactionAdapter(emptyList()) {}
@@ -149,8 +152,37 @@ class POSHomeActivity : AppCompatActivity() {
                 val sortedTransactions = transactions.sortedByDescending { parseDate(it.createdAt) }
                 withContext(Dispatchers.Main) {
                     transactionAdapter.updateList(sortedTransactions)
+
+                    if (sortedTransactions.isEmpty()) {
+                        binding.recyclerRecentTransactions.visibility = View.GONE
+                        binding.titleRecentTransactions.visibility = View.GONE
+                        binding.emptyTransactionsView.visibility = View.VISIBLE
+                    } else {
+                        binding.recyclerRecentTransactions.visibility = View.VISIBLE
+                        binding.titleRecentTransactions.visibility = View.VISIBLE
+                        binding.emptyTransactionsView.visibility = View.GONE
+                    }
                 }
             }
+        }
+    }
+
+    private fun observeNotification() {
+        userViewModel.authResult.observe(this) { dto ->
+            dto?.notifications?.let { notifications ->
+                val unconsumedCount = notifications.count { !it.consumed }
+
+                updateNotificationBadge(unconsumedCount)
+            }
+        }
+    }
+
+    private fun updateNotificationBadge(count: Int) {
+        if (count > 0) {
+            binding.activityPosNotificationBadge .visibility = View.VISIBLE
+            binding.activityPosNotificationBadge.text = "$count"
+        } else {
+            binding.activityPosNotificationBadge.visibility = View.GONE
         }
     }
 
@@ -165,6 +197,10 @@ class POSHomeActivity : AppCompatActivity() {
 
         binding.posViewAssetsButton.setOnClickListener {
             startActivity(Intent(this, WalletAssetsActivity::class.java))
+        }
+
+        binding.activityPosBellContainer.setOnClickListener{
+            startActivity(Intent(this, NotificationsActivity::class.java))
         }
     }
 
@@ -212,5 +248,4 @@ class POSHomeActivity : AppCompatActivity() {
 
         modal.show(supportFragmentManager, "WithdrawalOptionsModal")
     }
-
 }

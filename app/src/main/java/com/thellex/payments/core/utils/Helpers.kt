@@ -2,6 +2,7 @@ package com.thellex.payments.core.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.text.InputFilter
 import android.text.Spannable
 import android.text.SpannableString
@@ -10,6 +11,7 @@ import android.util.Patterns
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import com.thellex.payments.R
 import com.thellex.payments.data.model.PaymentStatus
 import org.json.JSONException
@@ -18,6 +20,9 @@ import retrofit2.HttpException
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -85,6 +90,16 @@ object Helpers {
         } catch (e: Exception) {
             timestamp
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun formatToDeviceTimeZone(isoUtcString: String): String {
+        return try {
+            val zonedDateTime = ZonedDateTime.parse(isoUtcString)
+                .withZoneSameInstant(ZoneId.systemDefault())
+            val formatter = DateTimeFormatter.ofPattern("h:mm a")
+            zonedDateTime.format(formatter)
+        } catch (e: Exception) { "" }
     }
 
     fun mapToTransactionStatus(rawStatus: String): PaymentStatus {
@@ -216,6 +231,27 @@ object Helpers {
             String.format("%.2f", value)
         } catch (e: Exception) {
             "0.00"
+        }
+    }
+
+    fun getFriendlyLabel(kind: String): String {
+        return when (kind) {
+            "CRYPTO_DEPOSIT_SUCCESSFUL" -> "DEPOSIT"
+            "CRYPTO_WITHDRAWAL_SUCCESSFUL" -> "WITHDRAWAL"
+            "CRYPTO_WITHDRAWAL_FAILED" -> "WITHDRAWAL FAILED"
+            "PAYMENT_RECEIVED" -> "PAYMENT RECEIVED"
+            "PAYMENT_FAILED" -> "PAYMENT FAILED"
+            "PAYMENT_PENDING" -> "PAYMENT PENDING"
+            "ORDER_CREATED" -> "ORDER CREATED"
+            "ORDER_COMPLETED" -> "ORDER COMPLETED"
+            "ORDER_CANCELLED" -> "ORDER CANCELLED"
+            "POS_SESSION_STARTED" -> "POS SESSION STARTED"
+            "POS_SESSION_ENDED" -> "POS SESSION ENDED"
+            "POS_DEVICE_CONNECTED" -> "POS CONNECTED"
+            "POS_DEVICE_DISCONNECTED" -> "POS DISCONNECTED"
+            "NEW_DEVICE_REGISTERED" -> "NEW DEVICE"
+            "SYSTEM_MAINTENANCE" -> "MAINTENANCE"
+            else -> kind.replace('_', ' ').uppercase()
         }
     }
 }
