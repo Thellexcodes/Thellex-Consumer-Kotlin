@@ -14,7 +14,7 @@ class WalletManagerViewModel(application: Context): AndroidViewModel(application
     private val repository = WalletRepository.getInstance()
     private val preferences = WalletManagerPreferences(application)
 
-    val walletBalance: LiveData<WalletBalanceDto> = repository.walletBalance
+    val walletBalance: LiveData<WalletBalanceDto?> = repository.walletBalance
 
     fun loadWallet(tokenProvider: suspend () -> String?) {
         viewModelScope.launch {
@@ -26,4 +26,3 @@ class WalletManagerViewModel(application: Context): AndroidViewModel(application
         return preferences
     }
 }
-

@@ -3,12 +3,12 @@ package com.thellex.payments.data.model
 import com.google.gson.annotations.SerializedName
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.settings.SupportedBlockchainEnum
-import com.thellex.payments.settings.Token
+import com.thellex.payments.settings.TokensEnum
 import kotlinx.serialization.Serializable
 
 data class CreateRequestPaymentDto(
     @SerializedName("paymentType") val paymentType: PaymentType,
-    @SerializedName("assetCode") val assetCode: Token,
+    @SerializedName("assetCode") val assetCode: TokensEnum,
     @SerializedName("assetIssuer") val assetIssuer: String? = null,
     @SerializedName("amount") val amount: String? = null,
     @SerializedName("network") val network: SupportedBlockchainEnum,

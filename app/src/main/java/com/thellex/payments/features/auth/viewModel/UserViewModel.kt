@@ -9,8 +9,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.thellex.payments.data.model.INotificationConsumeDto
+import com.thellex.payments.data.model.ITransactionHistoryEntity
 import com.thellex.payments.data.model.KycResponseDto
+import com.thellex.payments.data.model.Transaction
 import com.thellex.payments.data.model.UserEntity
+import com.thellex.payments.data.model.UserPreferences
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
@@ -20,7 +23,6 @@ import kotlin.time.Instant
 class UserViewModel(application: Context) : AndroidViewModel(application as Application) {
 
     private val repository = UserRepository.getInstance(application)
-
     private val prefs = application.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
     val token: LiveData<String?> = repository.getToken().asLiveData()
@@ -79,6 +81,8 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                     outstandingKyc = result.outstandingKyc
                 )
                 saveAuthResult(updatedUser)
+            } else {
+                Log.w("TAG", "Cannot update KYC - user is null")
             }
         }
     }
@@ -90,11 +94,52 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 val updatedList = currentUser.notifications.map {
                     if (it.txnID == result.id) it.copy(consumed = result.consumed) else it
                 }
-
-                val updatedUser = currentUser.copy(
-                    notifications = updatedList
-                )
+                val updatedUser = currentUser.copy(notifications = updatedList)
                 saveAuthResult(updatedUser)
+            } else {
+                Log.w("TAG", "Cannot update notification - user is null")
+            }
+        }
+    }
+
+    fun addTransaction(transaction: ITransactionHistoryEntity) {
+        viewModelScope.launch {
+            val currentUser = _authResult.value
+            if (currentUser != null) {
+                val updatedList = currentUser.transactionHistory.toMutableList()
+
+                if (updatedList.isEmpty()) {
+                    updatedList.add(transaction)
+                } else {
+                    val exists = updatedList.any { it.blockchainTxId == transaction.blockchainTxId }
+                    if (!exists) {
+                        updatedList.add(transaction)
+                    } else {
+                        Log.w("UserViewModel", "Transaction already exists: ${transaction.blockchainTxId}")
+                    }
+                }
+
+                val sortedList = updatedList.sortedByDescending { it.createdAt }
+                val updatedUser = currentUser.copy(transactionHistory = sortedList)
+                saveAuthResult(updatedUser)
+            } else {
+                Log.w("UserViewModel", "Cannot add transaction - user is null")
+            }
+        }
+    }
+
+
+    fun updateTransaction(updatedTransaction: ITransactionHistoryEntity) {
+        viewModelScope.launch {
+            val currentUser = _authResult.value
+            if (currentUser != null) {
+                val updatedTransactions = currentUser.transactionHistory.map {
+                    if (it.transactionId == updatedTransaction.transactionId) updatedTransaction else it
+                }
+                val updatedUser = currentUser.copy(transactionHistory = updatedTransactions)
+                saveAuthResult(updatedUser)
+            } else {
+                Log.w("TAG", "Cannot update transaction - user is null")
             }
         }
     }
@@ -116,4 +161,3 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         return expiresAtInstant > nowInstant
     }
 }
-

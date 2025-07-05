@@ -80,7 +80,7 @@
                 android:id="@+id/activity_wallet_balance_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="232.89 USD"
+                android:text="0.00 USD"
                 android:textSize="24sp"
                 android:textColor="@color/white"
                 android:fontFamily="@font/outfit_light"

@@ -47,50 +47,49 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
         binding = ActivityPosAddressGeneratorBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Get intent data safely
         assetCode = intent.getStringExtra("assetCode") ?: ""
         assetCodeChainName = intent.getStringExtra("assetCodeChain") ?: ""
         val typeString = intent.getStringExtra("type")
 
-        // Set text/icon
         binding.qrCodeAssetCodeName.text = assetCode.uppercase()
         val assetCodeIconResId = Helpers.getIconResIdForToken(assetCode)
         binding.iconQrCodeAsset.setImageResource(assetCodeIconResId)
 
-        // ViewModels
         userModel = ViewModelProvider(this, UserViewModelFactory(applicationContext))[UserViewModel::class.java]
         walletManagerViewModel = ViewModelProvider(this, WalletManagerModelFactory(applicationContext))[WalletManagerViewModel::class.java]
 
-        // Payment type
         paymentType = typeString?.let { PaymentType.valueOf(it) } ?: PaymentType.REQUEST_CRYPTO
 
-        // Back button
         binding.activityWalletBackButton.setOnClickListener { finish() }
 
-        // Setup spinner listener once
         setupSpinner()
 
-        // Observe wallet balance and update UI accordingly
         walletManagerViewModel.walletBalance.observe(this) { walletDto ->
-            val wallet = walletDto.wallets[assetCode]
-            val networkName = wallet?.network?.name?.lowercase(Locale.getDefault())
+            val wallet = walletDto?.wallets?.get(assetCode)
+            val rawNetworkName = wallet?.network?.name?.lowercase(Locale.getDefault())
 
+            val displayNetworkName = when (rawNetworkName) {
+                "matic" -> "Polygon PoS"
+                else -> rawNetworkName?.replaceFirstChar { it.uppercase() } ?: "Unknown"
+            }
+//            binding.qrNetworkName.text = displayNetworkName
 
-            val supportedChain = networkName?.let {
+            val supportedChain = rawNetworkName?.let {
                 try {
-                    SupportedBlockchainEnum.valueOf(it.lowercase())
-                } catch (e: IllegalArgumentException) { null }
+                    SupportedBlockchainEnum.valueOf(it)
+                } catch (e: IllegalArgumentException) {
+                    null
+                }
             }
 
             supportedChain?.let {
                 supportedBlockchains = listOf(
-                    BlockchainItem(it, Helpers.getIconResIdForBlockchain(networkName))
+                    BlockchainItem(it, Helpers.getIconResIdForBlockchain(rawNetworkName))
                 )
             } ?: run {
                 supportedBlockchains = emptyList()
             }
 
-            // Update spinner adapter
             val adapter = CryptoSpinnerAdapter(this, supportedBlockchains)
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.cryptoAssetSpinner.adapter = adapter
@@ -102,7 +101,6 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
                 selectedBlockchain = null
             }
 
-            // Update wallet address and QR code safely
             walletAddress = wallet?.address
             if (walletAddress.isNullOrEmpty()) {
                 walletAddress = "No address found"
@@ -112,7 +110,6 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
             binding.imageViewDynamicQr.setImageBitmap(qrBitmap)
         }
 
-        // Copy address logic
         binding.copyAddressLayout.setOnClickListener {
             walletAddress?.takeIf { it != "No address found" }?.let { address ->
                 val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -123,7 +120,6 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
             }
         }
 
-        // Handle system bar insets for better UI
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(
@@ -143,9 +139,7 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
                 Log.d("GeneratePOSAddress", "Spinner selected blockchain: $selectedBlockchain")
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // Optional: handle no selection case
-            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
     }
 

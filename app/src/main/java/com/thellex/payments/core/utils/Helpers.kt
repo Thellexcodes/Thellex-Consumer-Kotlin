@@ -254,5 +254,11 @@ object Helpers {
             else -> kind.replace('_', ' ').uppercase()
         }
     }
+
+    fun String.truncateMiddle(startChars: Int = 4, endChars: Int = 4, delimiter: String = "....."): String {
+        if (this.length <= startChars + endChars) return this
+        return this.take(startChars) + delimiter + this.takeLast(endChars)
+    }
+
 }
 

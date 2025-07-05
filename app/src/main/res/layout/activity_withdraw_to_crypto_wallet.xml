@@ -9,6 +9,7 @@
         android:background="@drawable/general_gradient_background"
         tools:context=".features.wallet.ui.WithdrawToCryptoWalletActivity">
 
+
     <!-- Top App Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/activity_wallet_top_app_bar_container"
@@ -72,12 +73,12 @@
                     android:paddingEnd="48dp" />
 
             <ImageView
-                    android:id="@+id/withdraw_crypto_wallet_icon_contact"
-                    android:visibility="gone"
+                    android:id="@+id/qrCodeScanner"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginEnd="12dp"
                     android:contentDescription="Contact Icon"
+                    android:src="@drawable/icon_qr_code"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/withdraw_crypto_wallet_edittext_wallet_address"
                     app:layout_constraintBottom_toBottomOf="@id/withdraw_crypto_wallet_edittext_wallet_address"

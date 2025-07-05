@@ -11,7 +11,7 @@ enum class SupportedBlockchainEnum {
     }
 }
 
-enum class Token {
+enum class TokensEnum {
     usdc, usdt, xlm, btc
 }
 

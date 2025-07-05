@@ -72,8 +72,8 @@ class WalletAssetsActivity : AppCompatActivity() {
 
     private fun observeWalletData() {
         walletManagerViewModel.walletBalance.observe(this) { walletDto ->
-            textTotalBalance.text = formatDecimal(walletDto.totalInUsd.toString())
-            val updatedAssets = walletDto.wallets.values.map { wallet ->
+            textTotalBalance.text = formatDecimal(walletDto?.totalInUsd.toString())
+            val updatedAssets = walletDto?.wallets?.values?.map { wallet ->
                 Asset(
                     symbol = wallet.assetCode.toString().uppercase(Locale.getDefault()) ?: "N/A",
                     amount = formatDecimal(wallet.totalBalance),
@@ -82,7 +82,7 @@ class WalletAssetsActivity : AppCompatActivity() {
                     iconResId = Helpers.getIconResIdForToken(wallet.assetCode.toString() ?: "unknown")
                 )
             }
-            walletAssetsAdapter.updateData(updatedAssets)
+            walletAssetsAdapter.updateData(updatedAssets!!)
         }
     }
 }

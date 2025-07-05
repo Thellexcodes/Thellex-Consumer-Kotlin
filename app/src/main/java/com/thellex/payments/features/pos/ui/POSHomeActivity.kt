@@ -46,7 +46,7 @@ class POSHomeActivity : AppCompatActivity() {
     private lateinit var walletManagerViewModel: WalletManagerViewModel
     private lateinit var transactionRecyclerView: RecyclerView
     private lateinit var transactionAdapter: POSTransactionAdapter
-    private var isBalanceVisible = false
+    private var isBalanceVisible = true
     private var currentBalance = "0.00"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -149,7 +149,7 @@ class POSHomeActivity : AppCompatActivity() {
         lifecycleScope.launch {
             UserPreferences.getAuthResult(applicationContext).collect { userEntity ->
                 val transactions = userEntity?.transactionHistory ?: emptyList()
-                val sortedTransactions = transactions.sortedByDescending { parseDate(it.createdAt) }
+                val sortedTransactions = transactions.sortedByDescending { it.createdAt }
                 withContext(Dispatchers.Main) {
                     transactionAdapter.updateList(sortedTransactions)
 

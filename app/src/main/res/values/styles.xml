@@ -55,5 +55,10 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="zxing_CaptureTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
 </resources>
 

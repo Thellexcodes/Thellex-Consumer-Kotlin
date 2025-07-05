@@ -70,7 +70,7 @@ class SocketService : Service() {
                     val json = args[0] as JSONObject
                     val gson = Gson()
                     val payload = gson.fromJson(json.toString(), NotificationPayload::class.java)
-
+//                    Log.d("TAG", "Received deposit payload: $payload")
 
                     coroutineScope.launch {
                         try {
@@ -92,12 +92,12 @@ class SocketService : Service() {
                 val gson = Gson()
                 val payload = gson.fromJson(json.toString(), NotificationPayload::class.java)
 
-                Log.d("TAG", "Received withdrawal payload: $payload")
+                Log.d("TAG", "Received transaction payload: ${payload.transaction}")
 
                 coroutineScope.launch {
                     try {
                         val appContext = this@SocketService.applicationContext
-                        UserPreferences.updateTransactionById( appContext, payload.transaction.blockchainTxId, payload.transaction )
+                        UserPreferences.updateTransactionById(appContext, payload.transaction.blockchainTxId, payload.transaction )
                         UserPreferences.addNotification(appContext, payload.notification)
                     } catch (e: Exception) {
                         Log.e("TAG", "Failed to update UserEntity: ${e.message}", e)
@@ -133,5 +133,9 @@ class SocketService : Service() {
             val manager = getSystemService(NotificationManager::class.java)
             manager?.createNotificationChannel(serviceChannel)
         }
+    }
+
+    companion object{
+        private val TAG = "TAG"
     }
 }

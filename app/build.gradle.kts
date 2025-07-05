@@ -69,6 +69,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.0")
     implementation ("com.github.appsfeature:otp-view:1.1")
     implementation ("com.github.dhaval2404:imagepicker:2.1")
+    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
 
     // ✅ Socket.IO client
     implementation ("io.socket:socket.io-client:2.0.0") {

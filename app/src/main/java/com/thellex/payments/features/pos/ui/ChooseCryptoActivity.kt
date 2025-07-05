@@ -82,13 +82,13 @@ class POSChooseCryptoActivity : AppCompatActivity() {
 
     private fun observeWalletData() {
         walletManagerViewModel.walletBalance.observe(this) { walletDto ->
-            val updatedCryptoList = walletDto.wallets.values.map { wallet ->
+            val updatedCryptoList = walletDto?.wallets?.values?.map { wallet ->
                 TokenListDto(wallet.assetCode,
                     Helpers.getIconResIdForToken(wallet.assetCode.toString()),
                     chainName = wallet.network.name
                 )
             }
-            cryptoAdapter.updateData(updatedCryptoList)
+            cryptoAdapter.updateData(updatedCryptoList!!)
         }
     }
 }
