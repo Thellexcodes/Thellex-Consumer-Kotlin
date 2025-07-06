@@ -1,12 +1,17 @@
 package com.thellex.payments.features.dashboard.ui
 
+import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
@@ -14,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.Helpers.showSystemNotification
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.databinding.ActivityMainBinding
 import com.thellex.payments.features.onboarding.OnboardingActivity
@@ -32,7 +38,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var userModel: UserViewModel
 
-    // Guard to show error toast only once per failure
     private var hasShownErrorToast = false
 
     override fun onCreate(savedInstanceState: Bundle?) {

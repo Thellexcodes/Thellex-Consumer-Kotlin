@@ -10,7 +10,9 @@ import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
+import com.thellex.payments.R
 import com.thellex.payments.core.utils.Constants
+import com.thellex.payments.core.utils.Helpers.showSystemNotification
 import com.thellex.payments.data.model.NotificationPayload
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.data.enums.NotificationSockets
@@ -34,12 +36,15 @@ class SocketService : Service() {
         super.onCreate()
         createNotificationChannel()
 
-        Log.d("SocketService", "SocketService onCreate")
+        Log.d(TAG, "SocketService onCreate")
 
         val notification = Notification.Builder(this, "socket_channel")
-            .setContentTitle("Socket Service Running")
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentTitle("Thellex")
+            .setSmallIcon(R.drawable.thellex_logo_white)
+            .setPriority(Notification.PRIORITY_MIN) // minimize prominence
+            .setCategory(Notification.CATEGORY_SERVICE) // mark as service
             .build()
+
         startForeground(1, notification)
     }
 
@@ -70,20 +75,23 @@ class SocketService : Service() {
                     val json = args[0] as JSONObject
                     val gson = Gson()
                     val payload = gson.fromJson(json.toString(), NotificationPayload::class.java)
-//                    Log.d("TAG", "Received deposit payload: $payload")
 
                     coroutineScope.launch {
                         try {
                             val appContext = this@SocketService.applicationContext
                             UserPreferences.addTransactionHistory(appContext, payload.transaction)
                             UserPreferences.addNotification(appContext, payload.notification)
-
+                            showSystemNotification(
+                                this@SocketService,
+                                "Deposit Complete",
+                                "You've successfully deposited ${payload.transaction.amount} ${payload.transaction.assetCode.uppercase()}."
+                            )
                         } catch (e: Exception) {
-                            Log.e("TAG", "Failed to update UserEntity: ${e.message}", e)
+                            Log.e(TAG, "Failed to update UserEntity: ${e.message}", e)
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("TAG", "Failed to process socket event: ${e.message}", e)
+                    Log.e(TAG, "Failed to process socket event: ${e.message}", e)
                 }
             }
 
@@ -92,15 +100,21 @@ class SocketService : Service() {
                 val gson = Gson()
                 val payload = gson.fromJson(json.toString(), NotificationPayload::class.java)
 
-                Log.d("TAG", "Received transaction payload: ${payload.transaction}")
+                Log.d(TAG, "Received transaction payload: ${payload.transaction}")
+
+                showSystemNotification(
+                    this@SocketService,
+                    "Withdraw Complete",
+                    "You've successfully withdrawn ${payload.transaction.amount} ${payload.transaction.assetCode.uppercase()}."
+                )
 
                 coroutineScope.launch {
                     try {
                         val appContext = this@SocketService.applicationContext
-                        UserPreferences.updateTransactionById(appContext, payload.transaction.blockchainTxId, payload.transaction )
+                        UserPreferences.updateTransactionById(appContext, payload.transaction.blockchainTxId, payload.transaction)
                         UserPreferences.addNotification(appContext, payload.notification)
                     } catch (e: Exception) {
-                        Log.e("TAG", "Failed to update UserEntity: ${e.message}", e)
+                        Log.e(TAG, "Failed to update UserEntity: ${e.message}", e)
                     }
                 }
             }
@@ -108,7 +122,7 @@ class SocketService : Service() {
             socket.connect()
         } catch (e: URISyntaxException) {
             e.printStackTrace()
-            Log.e("TAG", "URI Syntax Exception: ${e.message}", e)
+            Log.e(TAG, "URI Syntax Exception: ${e.message}", e)
         }
     }
 
@@ -128,14 +142,18 @@ class SocketService : Service() {
             val serviceChannel = NotificationChannel(
                 "socket_channel",
                 "Socket Background Service",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Channel for SocketService foreground notification"
+                setShowBadge(false)
+                lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+            }
             val manager = getSystemService(NotificationManager::class.java)
             manager?.createNotificationChannel(serviceChannel)
         }
     }
 
-    companion object{
-        private val TAG = "TAG"
+    companion object {
+        private const val TAG = "SocketService"
     }
 }

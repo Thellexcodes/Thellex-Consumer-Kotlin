@@ -38,7 +38,7 @@ class WalletRepository private constructor() {
 
         val currentTime = System.currentTimeMillis()
         val lastSaved = preferences.getWalletBalanceSaveTime()
-        val cacheValidDuration = 1 * 60 * 1000L
+        val cacheValidDuration = 5 * 60 * 1000L
         val timeSinceLastSave = currentTime - lastSaved
         val isExpired = timeSinceLastSave > cacheValidDuration
 
@@ -99,7 +99,7 @@ class WalletRepository private constructor() {
     }
 
     companion object {
-        private const val TAG = "TAG"
+        private const val TAG = "WalletRepo"
 
         @Volatile
         private var instance: WalletRepository? = null

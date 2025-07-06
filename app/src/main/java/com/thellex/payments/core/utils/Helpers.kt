@@ -1,7 +1,11 @@
 package com.thellex.payments.core.utils
 
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.text.InputFilter
 import android.text.Spannable
@@ -12,8 +16,10 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
 import com.thellex.payments.R
 import com.thellex.payments.data.model.PaymentStatus
+import com.thellex.payments.features.dashboard.ui.MainActivity
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.HttpException
@@ -71,7 +77,6 @@ object Helpers {
             else -> network.replaceFirstChar { it.uppercase() }
         }
     }
-
 
     fun getStatusIconResId(status: String?): Int {
         return when (normalizeStatusForIcon(status)) {
@@ -260,5 +265,47 @@ object Helpers {
         return this.take(startChars) + delimiter + this.takeLast(endChars)
     }
 
+    fun showSystemNotification(context: Context, title: String, message: String) {
+        val channelId = "my_channel_id"
+        val notificationId = 1001
+
+        // Intent to open the app when notification is tapped
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Notification Manager
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Create the NotificationChannel for Android 8.0+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "My App Notifications"
+            val descriptionText = "Shows important app updates"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(channelId, name, importance).apply {
+                description = descriptionText
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // Build the notification
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(R.drawable.thellex_logo_white)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        // Show the notification
+        notificationManager.notify(notificationId, notification)
+    }
 }
 
