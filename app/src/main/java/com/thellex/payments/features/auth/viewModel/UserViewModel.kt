@@ -78,7 +78,8 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 val updatedUser = currentUser.copy(
                     currentTier = result.currentTier,
                     nextTier = result.nextTier,
-                    outstandingKyc = result.outstandingKyc
+                    outstandingKyc = result.outstandingKyc,
+                    remainingTiers = result.remainingTiers
                 )
                 saveAuthResult(updatedUser)
             } else {

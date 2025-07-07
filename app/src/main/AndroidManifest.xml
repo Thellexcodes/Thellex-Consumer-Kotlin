@@ -56,7 +56,7 @@
                 android:screenOrientation="fullSensor"
                 tools:replace="screenOrientation" />
         <activity
-                android:name=".features.auth.ui.KycSuccessActivity"
+                android:name=".features.kyc.ui.basic.KycSuccessActivity"
                 android:exported="false"
                 android:screenOrientation="portrait" />
         <activity
@@ -68,15 +68,15 @@
                 android:exported="false"
                 android:screenOrientation="portrait" />
         <activity
-                android:name=".features.auth.ui.BasicKycStep1Activity"
+                android:name=".features.kyc.ui.basic.BasicKycStep1Activity"
                 android:exported="false"
                 android:screenOrientation="portrait" />
         <activity
-                android:name=".features.auth.ui.BasicKycStep2Activity"
+                android:name=".features.kyc.ui.basic.BasicKycStep2Activity"
                 android:exported="false"
                 android:screenOrientation="portrait" />
         <activity
-                android:name=".features.auth.ui.BasicKycAttestationActivity"
+                android:name=".features.kyc.ui.basic.BasicKycAttestationActivity"
                 android:exported="false"
                 android:screenOrientation="portrait" />
         <activity

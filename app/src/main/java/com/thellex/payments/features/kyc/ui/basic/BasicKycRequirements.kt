@@ -14,7 +14,6 @@ import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers.highlightCurrency
 import com.thellex.payments.data.enums.BasicKycRequirementsEnum
 import com.thellex.payments.databinding.ActivityKycOverviewBinding
-import com.thellex.payments.features.auth.ui.BasicKycStep1Activity
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.kyc.adapters.KycRequirementsAdapter

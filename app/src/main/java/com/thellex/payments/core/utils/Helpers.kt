@@ -12,11 +12,13 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Patterns
+import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.thellex.payments.R
 import com.thellex.payments.data.model.PaymentStatus
 import com.thellex.payments.features.dashboard.ui.MainActivity
@@ -306,6 +308,36 @@ object Helpers {
 
         // Show the notification
         notificationManager.notify(notificationId, notification)
+    }
+
+    fun Button.setProcessing(
+        submitting: Boolean,
+        loadingText: String = "Processing...",
+        defaultText: String = "Submit",
+        submittingBackgroundRes: Int = R.drawable.rounded_border_button_darkblue,
+        defaultBackgroundRes: Int = R.drawable.rounded_border_button_golden,
+        submittingTextColor: Int = R.color.white,
+        defaultTextColor: Int = R.color.darkBlue
+    ) {
+        isEnabled = !submitting
+        text = if (submitting) loadingText else defaultText
+        setBackgroundResource(if (submitting) submittingBackgroundRes else defaultBackgroundRes)
+        setTextColor(ContextCompat.getColor(context, if (submitting) submittingTextColor else defaultTextColor))
+    }
+
+    fun Button.setSubmitting(
+        submitting: Boolean,
+        loadingText: String = "Submitting...",
+        defaultText: String = "Submit",
+        submittingBackgroundRes: Int = R.drawable.rounded_border_button_darkblue,
+        defaultBackgroundRes: Int = R.drawable.rounded_border_button_golden,
+        submittingTextColor: Int = R.color.white,
+        defaultTextColor: Int = R.color.darkBlue
+    ) {
+        isEnabled = !submitting
+        text = if (submitting) loadingText else defaultText
+        setBackgroundResource(if (submitting) submittingBackgroundRes else defaultBackgroundRes)
+        setTextColor(ContextCompat.getColor(context, if (submitting) submittingTextColor else defaultTextColor))
     }
 }
 

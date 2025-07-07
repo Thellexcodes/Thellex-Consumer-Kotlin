@@ -54,6 +54,8 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+        binding.backButton.setOnClickListener { finish() }
+
         binding.logout.setOnClickListener {
             onLogout()
         }

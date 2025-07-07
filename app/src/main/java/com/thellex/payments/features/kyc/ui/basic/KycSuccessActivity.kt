@@ -1,19 +1,18 @@
-package com.thellex.payments.features.auth.ui
+package com.thellex.payments.features.kyc.ui.basic
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
-import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.databinding.ActivityKycSuccessBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.kyc.ui.FaceVerificationActivity
+import com.thellex.payments.features.kyc.ui.StartKycActivity
 import com.thellex.payments.features.pos.ui.POSHomeActivity
 
 class KycSuccessActivity : AppCompatActivity() {
@@ -29,6 +28,8 @@ class KycSuccessActivity : AppCompatActivity() {
         setupViewModel()
         observeUser()
         setupListeners()
+        ActivityTracker.add(this)
+        closeAllOtherActivities()
     }
 
     // --- Setup Methods ---
@@ -55,8 +56,6 @@ class KycSuccessActivity : AppCompatActivity() {
         userViewModel.authResult.observe(this) { user ->
             user?.currentTier?.let { currentTier ->
                 val limits = currentTier.transactionLimits
-                Log.d("TAG", "KyC success $currentTier")
-//                val feeText = if (currentTier.txnFees.isNotEmpty()) "Check fees" else "N/A"
                 val withdrawalFee = currentTier.txnFee.feePercentage.toString()
 
                 binding.dailyCreditLimitText.text = "${limits.dailyCreditLimit} NGN"
@@ -69,14 +68,20 @@ class KycSuccessActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.proceedToDashboardButton.setOnClickListener {
-            closeAllOtherActivities()
             startActivity(Intent(this, POSHomeActivity::class.java))
+        }
+
+        binding.upgradeLimitsButton.setOnClickListener{
+            startActivity(Intent(this, StartKycActivity::class.java))
         }
     }
 
-    // --- Utility Methods ---
     private fun closeAllOtherActivities() {
+        ActivityTracker.finishActivity(StartKycActivity::class.java)
+        ActivityTracker.finishActivity(BasicKycStep1Activity::class.java)
         ActivityTracker.finishActivity(BasicKycStep2Activity::class.java)
-        // Add more if needed
+        ActivityTracker.finishActivity(PassportActivity::class.java)
+        ActivityTracker.finishActivity(FaceVerificationActivity::class.java)
+        ActivityTracker.finishActivity(StartKycActivity::class.java)
     }
 }

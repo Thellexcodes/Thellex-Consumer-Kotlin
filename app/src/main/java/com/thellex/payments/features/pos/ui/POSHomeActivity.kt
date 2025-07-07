@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -26,10 +25,10 @@ import com.thellex.payments.core.decorators.ItemSpacingDecoration
 import com.thellex.payments.features.pos.adapters.POSTransactionAdapter
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
-import com.thellex.payments.core.utils.Helpers.parseDate
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivityPOSBinding
 import com.thellex.payments.features.auth.ui.AuthVerificationActivity
+import com.thellex.payments.features.kyc.ui.basic.KycSuccessActivity
 import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
@@ -62,10 +61,6 @@ class POSHomeActivity : AppCompatActivity() {
         binding = ActivityPOSBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ActivityTracker.finishActivity(LoginActivity::class.java)
-        ActivityTracker.finishActivity(AuthVerificationActivity::class.java)
-        ActivityTracker.finishActivity(TransactionSuccessActivity::class.java)
-
         setupWindowInsetsAndBars()
 
         userViewModel = ViewModelProvider(
@@ -86,6 +81,7 @@ class POSHomeActivity : AppCompatActivity() {
         observeUserUid()
         observeNotification()
         setupNotification()
+        closeAllOtherActivities()
     }
 
     private fun setupWindowInsetsAndBars() {
@@ -311,5 +307,12 @@ class POSHomeActivity : AppCompatActivity() {
             // Save that we've asked for permission already
             sharedPref.edit().putBoolean("asked_notification_permission", true).apply()
         }
+    }
+
+    private fun closeAllOtherActivities() {
+        ActivityTracker.finishActivity(LoginActivity::class.java)
+        ActivityTracker.finishActivity(AuthVerificationActivity::class.java)
+        ActivityTracker.finishActivity(TransactionSuccessActivity::class.java)
+        ActivityTracker.finishActivity(KycSuccessActivity::class.java)
     }
 }

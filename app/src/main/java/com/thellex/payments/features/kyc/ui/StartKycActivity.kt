@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers.formatCurrencyWithNGN
 import com.thellex.payments.databinding.ActivityStartKycBinding
+import com.thellex.payments.features.kyc.ui.basic.KycSuccessActivity
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.kyc.ui.basic.KycTypeBottomSheetFragment
@@ -27,6 +29,8 @@ class StartKycActivity : AppCompatActivity() {
         // Inflate layout and set content view
         binding = ActivityStartKycBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
+        ActivityTracker.finishActivity(KycSuccessActivity::class.java)
 
         // Handle safe area insets (e.g., notch, system bars)
         applyWindowInsets()
