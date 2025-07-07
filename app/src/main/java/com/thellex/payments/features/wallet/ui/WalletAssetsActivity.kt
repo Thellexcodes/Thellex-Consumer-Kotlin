@@ -42,6 +42,10 @@ class WalletAssetsActivity : AppCompatActivity() {
 
         setupRecyclerView()
         observeWalletData()
+
+        binding.backButton.setOnClickListener{
+            finish()
+        }
     }
 
     private fun setupViewModels() {
@@ -80,7 +84,6 @@ class WalletAssetsActivity : AppCompatActivity() {
     }
 
     private fun activateWalletForAsset(asset: Asset) {
-        Log.d(TAG, "Fetching new balance now")
         loadWalletData()
     }
 
@@ -111,6 +114,6 @@ class WalletAssetsActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val TAG = "TAG"
+        private val TAG = "TAGad"
     }
 }

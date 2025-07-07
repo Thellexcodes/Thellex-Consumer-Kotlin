@@ -16,6 +16,7 @@ enum class UserErrorEnum(
     USER_NOT_FOUND("access/USER_NOT_FOUND", "User not found."),
     CODE_ALREADY_SENT("access/CODE_ALREADY_SENT", "Verification code already sent."),
     USER_SUSPENDED("access/USER_SUSPENDED", "Your account is currently suspended."),
+    TOKEN_MISSING("access/TOKEN_MISSING", "Authentication token missing. Please login again."),
     UNAUTHORIZED("access/UNAUTHORIZED", "Unauthorized. Please login."),
     UNKNOWN_ERROR("unknown", "An unknown error occurred.");
 

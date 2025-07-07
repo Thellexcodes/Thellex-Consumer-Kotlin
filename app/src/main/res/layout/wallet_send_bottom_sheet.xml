@@ -30,7 +30,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical"
-                                android:layout_marginStart="12dp"
+                                android:layout_marginStart="13dp"
                                 app:layout_constraintStart_toEndOf="@id/img"
                                 app:layout_constraintTop_toTopOf="@id/img"
                                 app:layout_constraintBottom_toBottomOf="@id/img">

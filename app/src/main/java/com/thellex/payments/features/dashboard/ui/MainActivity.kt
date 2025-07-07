@@ -100,7 +100,6 @@ class MainActivity : AppCompatActivity() {
                     val errorBody = response.errorBody()?.string()
                     val errorCode = Helpers.parseBackendErrorEnum(errorBody)
                     val errorEnum = UserErrorEnum.fromCode(errorCode)
-                    ErrorHandler.handle(context = this@MainActivity, "Error", error = errorEnum)
 
                     when (errorEnum) {
                         UserErrorEnum.USER_NOT_FOUND,

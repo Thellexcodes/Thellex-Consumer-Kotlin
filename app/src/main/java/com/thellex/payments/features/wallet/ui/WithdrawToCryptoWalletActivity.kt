@@ -138,7 +138,6 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
         walletManagerViewModel.walletBalance.observe(this) { balance ->
             val walletMap = balance?.wallets ?: return@observe
 
-            // Set the default token if not already selected
             val defaultWallet = walletMap.values.firstOrNull { it.assetCode == defaultToken }
                 ?: walletMap.values.firstOrNull()
 
@@ -146,8 +145,6 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
                 selectedToken = defaultWallet
                 defaultToken = defaultWallet.assetCode
                 selectedNetwork = defaultWallet.network
-
-                Log.d(TAG, "Selected token by default: ${defaultToken.name}")
                 updateUIWithWallet(defaultWallet)
             } else {
                 selectedToken?.let {
@@ -165,10 +162,6 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        binding.activityWalletBackButton.setOnClickListener{
-            finish()
-        }
-
         binding.withdrawCryptoWalletEdittextAmount.setOnClickListener {
             showNetworkSelection()
         }
@@ -191,6 +184,10 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
                 captureActivity = com.journeyapps.barcodescanner.CaptureActivity::class.java
             }
             qrScannerLauncher.launch(options)
+        }
+
+        binding.backButton.setOnClickListener{
+            finish()
         }
     }
 

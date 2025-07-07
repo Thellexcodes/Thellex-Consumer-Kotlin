@@ -1,14 +1,11 @@
 package com.thellex.payments.features.pos.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.thellex.payments.R
-import com.thellex.payments.data.model.Crypto
 import com.thellex.payments.data.model.TokenListDto
+import com.thellex.payments.databinding.ItemCryptoBinding
 import java.util.Locale
 
 class CryptoAdapter(
@@ -17,8 +14,8 @@ class CryptoAdapter(
 ) : RecyclerView.Adapter<CryptoAdapter.CryptoViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CryptoViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_crypto, parent, false)
-        return CryptoViewHolder(view)
+        val binding = ItemCryptoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CryptoViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CryptoViewHolder, position: Int) {
@@ -34,19 +31,20 @@ class CryptoAdapter(
         notifyDataSetChanged()
     }
 
-    inner class CryptoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val cryptoName: TextView = itemView.findViewById(R.id.cryptoName)
-        private val cryptoIcon: ImageView = itemView.findViewById(R.id.cryptoIcon)
+    inner class CryptoViewHolder(private val binding: ItemCryptoBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(crypto: TokenListDto) {
-            cryptoName.text = crypto.assetCode.toString().uppercase(Locale.getDefault())
-            cryptoIcon.setImageResource(crypto.iconRes)
+            binding.cryptoName.text = crypto.assetCode.toString().uppercase(Locale.getDefault())
+            binding.cryptoIcon.setImageResource(crypto.iconRes)
 
-            itemView.setOnClickListener {
+            binding.root.setOnClickListener {
                 onItemClick(crypto)
             }
         }
     }
+
+    companion object {
+        private val TAG = "TAG"
+    }
 }
-
-

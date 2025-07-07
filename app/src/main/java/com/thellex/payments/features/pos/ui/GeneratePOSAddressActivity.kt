@@ -60,7 +60,7 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
 
         paymentType = typeString?.let { PaymentType.valueOf(it) } ?: PaymentType.REQUEST_CRYPTO
 
-        binding.activityWalletBackButton.setOnClickListener { finish() }
+        binding.backButton.setOnClickListener { finish() }
 
         setupSpinner()
 

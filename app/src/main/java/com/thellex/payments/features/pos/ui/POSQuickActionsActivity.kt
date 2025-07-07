@@ -25,7 +25,6 @@ class POSQuickActionsActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_dashboard -> {
                     if (navController.currentDestination?.id != R.id.dashboardFragment) {
-                        // Navigate to the dashboard fragment
                         navController.navigate(R.id.home_graph)
                     }
                     true
@@ -50,7 +49,6 @@ class POSQuickActionsActivity : AppCompatActivity() {
     override fun onBackPressed() {
         val navController = findNavController(R.id.nav_host_fragment)
         if (navController.currentDestination?.id == R.id.posFragment) {
-            // If we're on the posFragment, navigate up to the dashboard
             if (!navController.navigateUp()) {
                 super.onBackPressed()
             }

@@ -18,12 +18,25 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
                 <ImageView
-                        android:id="@+id/activity_wallet_back_button"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
+                        android:id="@+id/backButton"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
                         android:src="@drawable/icon_back"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView4" />
+
+                <TextView
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/kumbhsans_bold"
+                        android:textSize="14sp"
+                        android:text="@string/request"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/backButton"
+                        android:id="@+id/textView4" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Main container for the layout -->
@@ -38,18 +51,8 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_wallet_top_app_bar_container">
 
             <TextView
-                    android:id="@+id/posRequestAssetsTitle"
-                    android:textColor="@color/white"
-                    android:fontFamily="@font/kumbhsans_bold"
-                    android:textSize="14sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="REQUEST" />
-
-            <TextView
                     android:id="@+id/posRequestAssetsSelectCurrencyLabel"
                     android:textColor="@color/white"
-                    android:layout_marginTop="26sp"
                     android:fontFamily="@font/kumbhsans_regular"
                     android:textSize="14sp"
                     android:text="Select cryptocurrency"

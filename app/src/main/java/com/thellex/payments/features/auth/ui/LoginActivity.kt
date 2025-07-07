@@ -6,9 +6,11 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
@@ -24,14 +26,13 @@ import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.data.model.LoginRequestDto
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.json.JSONObject
 import kotlin.time.ExperimentalTime
 
 class LoginActivity : AppCompatActivity() {
-    companion object {
-        private const val TAG = "TAG"
-    }
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var userModel: UserViewModel
@@ -116,8 +117,24 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun setSubmitting(submitting: Boolean) {
+        isSubmitting = submitting
+
+        binding.nextButton.isEnabled = !submitting
+
+        if (submitting) {
+            binding.nextButton.text = "Requesting..."
+            binding.nextButton.setBackgroundResource(R.drawable.rounded_border_button_darkblue)
+            binding.nextButton.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+        } else {
+            binding.nextButton.text = "Next"
+            binding.nextButton.setBackgroundResource(R.drawable.button_ripple_golden_yellow)
+            binding.nextButton.setTextColor(ContextCompat.getColor(this, R.color.darkBlue))
+        }
+    }
+
     private fun makeLoginRequest(email: String) {
-        isSubmitting = true
+        setSubmitting(true)
         val userRequestData = LoginRequestDto(email = email)
 
         lifecycleScope.launch {
@@ -136,11 +153,15 @@ class LoginActivity : AppCompatActivity() {
                     val errorBody = response.errorBody()?.string()
                     val code = JSONObject(errorBody ?: "").optString("message")
                     val userError = UserErrorEnum.fromCode(code)
-                    Log.d(TAG, "User errorEnum $userError")
+
+                    Log.d(TAG, "User errorEnum: $userError")
+                    Log.d(TAG, "Is CODE_ALREADY_SENT? ${userError == UserErrorEnum.CODE_ALREADY_SENT}")
+
                     if (userError == UserErrorEnum.CODE_ALREADY_SENT) {
-                        val accessToken = JSONObject(errorBody ?: "").optString("access_token")
-                        if (accessToken.isNotEmpty()) {
-                            userModel.saveToken(accessToken)
+                        val accessToken = withTimeoutOrNull(5000) {
+                            userModel.token.asFlow().first { !it.isNullOrBlank() }
+                        }
+                        if (!accessToken.isNullOrBlank()) {
                             navigateToVerification(accessToken)
                         } else {
                             ErrorHandler.handle(this@LoginActivity, "Error", userError)
@@ -153,11 +174,10 @@ class LoginActivity : AppCompatActivity() {
                 val userError = UserErrorEnum.fromCode(e.message)
                 ErrorHandler.handle(this@LoginActivity, "Error", userError)
             } finally {
-                isSubmitting = false
+                setSubmitting(false)
             }
         }
     }
-
 
     private fun navigateToVerification(token: String?) {
         if (!token.isNullOrEmpty()) {
@@ -173,6 +193,10 @@ class LoginActivity : AppCompatActivity() {
                 message = "Authentication token is missing. Please login again."
             )
         }
+    }
+
+    companion object {
+        private const val TAG = "TAG"
     }
 }
 

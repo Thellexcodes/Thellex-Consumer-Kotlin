@@ -119,7 +119,7 @@ class WalletRepository private constructor(private  val context: Context) {
     }
 
     companion object {
-        private const val TAG = "TAGG"
+        private const val TAG = ""
 
         @Volatile
         private var instance: WalletRepository? = null
