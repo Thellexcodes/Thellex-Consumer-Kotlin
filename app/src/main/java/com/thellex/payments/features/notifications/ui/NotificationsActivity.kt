@@ -3,6 +3,7 @@ package com.thellex.payments.features.notifications.ui
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -35,10 +36,6 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 class NotificationsActivity : AppCompatActivity() {
-    companion object {
-        private val TAG = "TAG"
-    }
-
     private sealed class ConsumeResult {
         object Success : ConsumeResult()
         data class Failure(val userError: UserErrorEnum, val message: String? = null) : ConsumeResult()
@@ -80,6 +77,8 @@ class NotificationsActivity : AppCompatActivity() {
         binding.sortOptionsRecycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.sortOptionsRecycler.adapter = sortOptionsAdapter
 
+        binding.backButton.setOnClickListener{finish()}
+
         setupRecyclerView()
         observeNotification()
     }
@@ -114,8 +113,18 @@ class NotificationsActivity : AppCompatActivity() {
                         .thenBy { it.kind.name }
                 )
 
-                val grouped = groupNotificationsByDate(sorted)
-                notificationAdapter.submitList(grouped)
+                if (sorted.isEmpty()) {
+                    binding.sortOptionsRecycler.visibility = View.GONE
+                    binding.notificationsRecycler.visibility = View.GONE
+                    binding.emptyNotificationView.visibility = View.VISIBLE
+                } else {
+                    binding.sortOptionsRecycler.visibility = View.VISIBLE
+                    binding.notificationsRecycler.visibility = View.VISIBLE
+                    binding.emptyNotificationView.visibility = View.GONE
+
+                    val grouped = groupNotificationsByDate(sorted)
+                    notificationAdapter.submitList(grouped)
+                }
             }
         }
     }
@@ -193,5 +202,9 @@ class NotificationsActivity : AppCompatActivity() {
             }
             isSubmitting = false
         }
+    }
+
+    companion object {
+        private val TAG = "TAG"
     }
 }

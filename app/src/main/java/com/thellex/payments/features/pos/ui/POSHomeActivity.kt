@@ -37,6 +37,7 @@ import com.thellex.payments.features.kyc.ui.StartKycActivity
 import com.thellex.payments.features.notifications.ui.NotificationsActivity
 import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
 import com.thellex.payments.features.pos.fragments.WithdrawalOptionsModalFragment
+import com.thellex.payments.features.profile.ProfileActivity
 import com.thellex.payments.features.wallet.ui.TransactionSuccessActivity
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
@@ -211,6 +212,10 @@ class POSHomeActivity : AppCompatActivity() {
 
         binding.activityPosBellContainer.setOnClickListener{
             startActivity(Intent(this, NotificationsActivity::class.java))
+        }
+
+        binding.activityPosAvatarIcon.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
     }
 
