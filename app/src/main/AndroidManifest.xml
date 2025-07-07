@@ -11,15 +11,13 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-    <uses-permission android:name="android.permission.CAMERA" />
-
-    <!-- Screen support for scaling UI on all devices -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- Screen support for scaling UI on all devices -->
     <supports-screens
-            android:smallScreens="true"
-            android:normalScreens="true"
+            android:anyDensity="true"
             android:largeScreens="true"
-            android:xlargeScreens="true"
-            android:anyDensity="true" />
+            android:normalScreens="true"
+            android:smallScreens="true"
+            android:xlargeScreens="true" />
 
     <application
             android:allowBackup="true"
@@ -33,7 +31,9 @@
             android:theme="@style/Theme.Thellex"
             android:usesCleartextTraffic="true"
             tools:targetApi="31">
-
+        <activity
+                android:name=".features.profile.ProfileActivity"
+                android:exported="false" />
         <!-- All activities below have portrait locked -->
         <activity
                 android:name=".features.notifications.ui.NotificationsActivity"
@@ -115,8 +115,8 @@
         <activity
                 android:name=".features.auth.ui.AuthVerificationActivity"
                 android:exported="false"
-                android:theme="@style/Theme.Thellex"
-                android:screenOrientation="portrait" />
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.Thellex" />
         <activity
                 android:name=".features.auth.ui.LoginPinActivity"
                 android:exported="false"
@@ -141,8 +141,8 @@
         <activity
                 android:name=".features.pos.ui.POSQuickActionsActivity"
                 android:exported="false"
-                android:theme="@style/Theme.Thellex"
-                android:screenOrientation="portrait" />
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.Thellex" />
         <activity
                 android:name=".features.pos.ui.POSHomeActivity"
                 android:exported="false"
@@ -170,15 +170,16 @@
         <activity
                 android:name=".features.onboarding.OnboardingActivity"
                 android:exported="false"
-                android:theme="@style/Theme.Thellex"
-                android:screenOrientation="portrait" />
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.Thellex" />
         <activity
                 android:name=".features.dashboard.ui.MainActivity"
                 android:exported="true"
-                android:theme="@style/Theme.Thellex"
-                android:screenOrientation="portrait">
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.Thellex">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -189,4 +190,5 @@
                 android:exported="false"
                 android:foregroundServiceType="dataSync" />
     </application>
+
 </manifest>

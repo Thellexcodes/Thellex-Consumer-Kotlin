@@ -58,4 +58,6 @@
     <string name="withdraw">WITHDRAW</string>
     <string name="request">REQUEST</string>
     <string name="balance">BALANCE</string>
+    <string name="profile">PROFILE</string>
+    <string name="log_out">Log out</string>
 </resources>

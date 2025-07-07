@@ -154,9 +154,6 @@ class LoginActivity : AppCompatActivity() {
                     val code = JSONObject(errorBody ?: "").optString("message")
                     val userError = UserErrorEnum.fromCode(code)
 
-                    Log.d(TAG, "User errorEnum: $userError")
-                    Log.d(TAG, "Is CODE_ALREADY_SENT? ${userError == UserErrorEnum.CODE_ALREADY_SENT}")
-
                     if (userError == UserErrorEnum.CODE_ALREADY_SENT) {
                         val accessToken = withTimeoutOrNull(5000) {
                             userModel.token.asFlow().first { !it.isNullOrBlank() }
