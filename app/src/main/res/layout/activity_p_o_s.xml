@@ -211,7 +211,7 @@
 
                                 <TextView
                                         android:layout_marginStart="8dp"
-                                        android:text="Withdraw"
+                                        android:text="WITHDRAW"
                                         android:textColor="@android:color/white"
                                         android:textSize="12sp"
                                         android:fontFamily="@font/kumbhsans_medium"
@@ -236,7 +236,7 @@
                                         android:src="@drawable/icon_request" />
                                 <TextView
                                         android:layout_marginStart="8dp"
-                                        android:text="Request"
+                                        android:text="DEPOSIT"
                                         android:textColor="@android:color/white"
                                         android:textSize="12sp"
                                         android:fontFamily="@font/kumbhsans_medium"

@@ -14,7 +14,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_width="271dp"
+            android:layout_width="150dp"
             android:layout_height="86dp"
             app:srcCompat="@drawable/thellex_logo_white"
             android:scaleType="fitCenter" />

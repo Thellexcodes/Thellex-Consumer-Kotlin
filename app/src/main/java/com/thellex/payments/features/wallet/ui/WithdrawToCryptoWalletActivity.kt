@@ -5,8 +5,11 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -296,6 +299,8 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
             fundUid = walletAddress,
         )
 
+        setLoadingState(true)
+
         lifecycleScope.launch {
             try {
                 val response = ApiClient.getAuthenticatedPaymentApi(cachedToken.toString())
@@ -316,7 +321,38 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
                 val userError = PaymentErrorEnum.fromCode(errorMessage)
                 ErrorHandler.handle(this@WithdrawToCryptoWalletActivity, "Error", userError)
                 Log.e(TAG, "Network error during withdrawal: $errorMessage", e)
+            }finally {
+                setLoadingState(false)
             }
         }
     }
+
+    private fun setLoadingState(isLoading: Boolean) {
+        // Keep layout enabled so children are visible
+        binding.withdrawBtn.isEnabled = true
+
+        // Disable clicks & focus when loading
+        binding.withdrawBtn.isClickable = !isLoading
+        binding.withdrawBtn.isFocusable = !isLoading
+
+        // Disable input fields
+        binding.withdrawAmountEditText.isEnabled = !isLoading
+        binding.withdrawCryptoWalletEdittextWalletAddress.isEnabled = !isLoading
+
+        // Show or hide spinner
+        binding.withdrawSpinner.visibility = if (isLoading) View.VISIBLE else View.GONE
+
+        // Update button text and text color
+        binding.withdrawBtnText.text = if (isLoading) "PROCESSING" else getString(R.string.withdraw)
+        binding.withdrawBtnText.setTextColor(
+            if (isLoading) ContextCompat.getColor(this, R.color.white)
+            else ContextCompat.getColor(this, R.color.darkBlue)
+        )
+
+        // Change background drawable based on state
+        binding.withdrawBtn.setBackgroundResource(
+            if (isLoading) R.drawable.button_riple_darkblue else R.drawable.button_ripple_golden_yellow
+        )
+    }
 }
+

@@ -28,6 +28,7 @@ import com.thellex.payments.network.services.SocketService
 import com.thellex.payments.features.pos.ui.POSHomeActivity
 import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

@@ -1,5 +1,6 @@
 package com.thellex.payments.features.wallet.utils
 
+import android.content.Context
 import android.os.CountDownTimer
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -11,8 +12,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class WalletRepository private constructor() {
+class WalletRepository private constructor(private  val context: Context) {
 
     private val _walletBalance = MutableLiveData<WalletBalanceDto?>()
     val walletBalance: LiveData<WalletBalanceDto?> = _walletBalance
@@ -31,39 +33,57 @@ class WalletRepository private constructor() {
 
     suspend fun loadWalletData(
         preferences: WalletManagerPreferences,
-        tokenProvider: suspend () -> String?
+        tokenProvider: suspend () -> String?,
+        loadNow: Boolean? = false
     ) {
         currentPreferences = preferences
         currentTokenProvider = tokenProvider
 
-        val currentTime = System.currentTimeMillis()
-        val lastSaved = preferences.getWalletBalanceSaveTime()
-        val cacheValidDuration = 5 * 60 * 1000L
-        val timeSinceLastSave = currentTime - lastSaved
-        val isExpired = timeSinceLastSave > cacheValidDuration
+        val cacheValidDuration = 1 * 60 * 1000L
 
-        val cachedBalance = preferences.getWalletBalance()
-        if (!isExpired) {
-            _walletBalance.postValue(cachedBalance)
-            startCountdown(cacheValidDuration - timeSinceLastSave)
+        if (loadNow != true) {
+            val currentTime = System.currentTimeMillis()
+            val lastSaved = preferences.getWalletBalanceSaveTime()
+            val timeSinceLastSave = currentTime - lastSaved
+            val isExpired = timeSinceLastSave > cacheValidDuration
+
+            val cachedBalance = preferences.getWalletBalance()
+
+            if (!isExpired) {
+                _walletBalance.postValue(cachedBalance)
+                withContext(Dispatchers.Main) {
+                    startCountdown(cacheValidDuration - timeSinceLastSave)
+                }
+                return
+            }
+        }
+
+        val token = tokenProvider()
+        Log.e(TAG, "fetching new balance.")
+
+        if (token.isNullOrEmpty()) {
+            Log.e(TAG, "Token is null or empty. Cannot fetch balance.")
             return
         }
 
-        Log.d(TAG, "Making a new request")
-
-        val token = tokenProvider()
-
         try {
-            val api = ApiClient.getAuthenticatedWalletManagerApi(token!!)
+            val api = ApiClient.getAuthenticatedWalletManagerApi(token)
             val response = api.fetchBalance()
 
-            preferences.saveWalletBalance(response.result!!)
-            _walletBalance.postValue(response.result)
-            isLoaded = true
+            val result = response.result
+            if (result != null) {
+                preferences.saveWalletBalance(result)
+                _walletBalance.postValue(result)
+                isLoaded = true
 
-            startCountdown(cacheValidDuration)
+                withContext(Dispatchers.Main) {
+                    startCountdown(cacheValidDuration)
+                }
+            } else {
+                Log.e(TAG, "API response result is null.")
+            }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "Failed to load wallet balance", e)
         }
     }
 
@@ -99,14 +119,14 @@ class WalletRepository private constructor() {
     }
 
     companion object {
-        private const val TAG = "WalletRepo"
+        private const val TAG = "TAGG"
 
         @Volatile
         private var instance: WalletRepository? = null
 
-        fun getInstance(): WalletRepository =
+        fun getInstance(context:Context): WalletRepository =
             instance ?: synchronized(this) {
-                instance ?: WalletRepository().also { instance = it }
+                instance ?: WalletRepository(context.applicationContext).also { instance = it }
             }
     }
 }

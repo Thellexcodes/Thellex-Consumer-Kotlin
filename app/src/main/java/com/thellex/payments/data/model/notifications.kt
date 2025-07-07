@@ -3,13 +3,16 @@ package com.thellex.payments.data.model
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
-data class NotificationPayload(
-    @SerializedName("notification")
-    val notification: NotificationEntity,
+sealed class NotificationPayload
 
-    @SerializedName("transaction")
-    val transaction: ITransactionHistoryEntity
-)
+data class ITransactionNotificationPayload(
+    @SerializedName("notification") val notification: NotificationEntity,
+    @SerializedName("transaction") val transaction: ITransactionHistoryEntity
+) : NotificationPayload()
+
+data class IWalletUpdatedNotificationPayload(
+    @SerializedName("updated") val updated: Boolean
+) : NotificationPayload()
 
 data class INotificationConsumeDto(
     @SerializedName("id") val id: String,

@@ -8,39 +8,70 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.databinding.ItemAssetBinding
 import com.thellex.payments.settings.LocalValue
 import java.util.Locale
 
 class AssetAdapter(
     private var assets: MutableList<Asset>,
-    private val onItemClick: (Asset) -> Unit
+    private val onItemClick: (Asset) -> Unit,
+    private val onActivateWalletClick: (Asset) -> Unit
 ) : RecyclerView.Adapter<AssetAdapter.AssetViewHolder>() {
 
-    inner class AssetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageAssetIcon: ImageView = itemView.findViewById(R.id.imageAssetIcon)
-        val textAssetSymbol: TextView = itemView.findViewById(R.id.textAssetSymbol)
-        val textTokenAmount: TextView = itemView.findViewById(R.id.textTokenAmount)
-        val textTokenValueUsd: TextView = itemView.findViewById(R.id.textTokenValueUsd)
-        val textTokenValueInLocal: TextView = itemView.findViewById(R.id.textTokenValueLocal)
-    }
+    inner class AssetViewHolder(val binding: ItemAssetBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AssetViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_asset, parent, false)
-        return AssetViewHolder(view)
+        val binding = ItemAssetBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return AssetViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: AssetViewHolder, position: Int) {
         val asset = assets[position]
-        holder.textAssetSymbol.text = asset.symbol.uppercase(Locale.getDefault())
-        holder.textTokenAmount.text = "${asset.amount} ${asset.symbol}"
-        holder.textTokenValueUsd.text = "$ ${asset.usdValue}"
-        holder.textTokenValueInLocal.text = "\u2248 ${asset.valueInLocal} $LocalValue"
-        holder.imageAssetIcon.setImageResource(asset.iconResId)
 
+        val padding = holder.binding.clAssetItemRoot.context.resources.getDimensionPixelSize(R.dimen.padding_16dp)
 
-        holder.itemView.setOnClickListener {
-            onItemClick(asset)
+        with(holder.binding) {
+            tvAssetSymbolSecondary.text = asset.symbol.uppercase(Locale.getDefault())
+            ivAssetIcon.setImageResource(asset.iconResId)
+
+            if (Helpers.isValidEvmAddress(asset.address)) {
+                clAssetDetails.visibility = View.VISIBLE
+                tvTokenAmount.visibility = View.VISIBLE
+                tvTokenValueUsd.visibility = View.VISIBLE
+                tvTokenValueLocal.visibility = View.GONE
+                btnActivateWallet.visibility = View.GONE
+                tvAssetSymbolMain.visibility = View.GONE
+                tvAssetSymbolSecondary.visibility = View.VISIBLE
+
+                tvTokenAmount.text = "${asset.amount} ${asset.symbol}"
+                tvTokenValueUsd.text = "$ ${asset.usdValue}"
+                tvTokenValueLocal.text = "\u2248 ${asset.valueInLocal} $LocalValue"
+
+                root.setBackgroundResource(R.drawable.rounded_border)
+                clAssetItemRoot.setPadding(padding, padding, padding, padding)
+
+                root.setOnClickListener {
+                    onItemClick(asset)
+                }
+            } else {
+                clAssetDetails.visibility = View.GONE
+                tvTokenAmount.visibility = View.GONE
+                tvTokenValueUsd.visibility = View.GONE
+                tvTokenValueLocal.visibility = View.GONE
+                btnActivateWallet.visibility = View.VISIBLE
+                tvAssetSymbolMain.visibility = View.VISIBLE
+                tvAssetSymbolSecondary.visibility = View.GONE
+
+                root.setBackgroundResource(R.drawable.rounded_border_midnight)
+                clAssetItemRoot.setPadding(padding, padding, padding, padding)
+
+                root.setOnClickListener(null)
+
+                btnActivateWallet.setOnClickListener {
+                    onActivateWalletClick(asset)
+                }
+            }
         }
     }
 
@@ -58,5 +89,6 @@ data class Asset(
     val amount: String,
     val usdValue: String,
     val valueInLocal: String,
-    val iconResId: Int
+    val iconResId: Int,
+    val address: String
 )

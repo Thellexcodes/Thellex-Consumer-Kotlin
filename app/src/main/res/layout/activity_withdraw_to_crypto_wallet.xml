@@ -31,8 +31,8 @@
         <TextView
                 android:textColor="@color/white"
                 android:fontFamily="@font/kumbhsans_bold"
-                android:textSize="14dp"
-                android:text="WITHDRAW"
+                android:textSize="14sp"
+                android:text="@string/withdraw"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
@@ -385,17 +385,37 @@
 
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <LinearLayout
             android:id="@+id/withdrawBtn"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingVertical="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_ripple"
-            android:text="Withdraw"
-            android:elevation="0dp"
-            android:fontFamily="@font/kumbhsans_bold"
-            android:textColor="@color/dark_purple"
-            android:textSize="10sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:background="@drawable/button_ripple_golden_yellow"
+            android:layout_marginTop="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:enabled="true"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+            tools:layout_editor_absoluteX="20dp">
+
+        <ProgressBar
+                android:id="@+id/withdrawSpinner"
+                android:layout_width="18dp"
+                android:visibility="gone"
+                android:layout_height="18dp"
+                android:layout_marginEnd="8dp"
+                android:indeterminateTint="@color/white"
+                 />
+
+        <TextView
+                android:id="@+id/withdrawBtnText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/withdraw"
+                android:textColor="@color/darkBlue"
+                android:textSize="12sp"
+                android:fontFamily="@font/kumbhsans_bold" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

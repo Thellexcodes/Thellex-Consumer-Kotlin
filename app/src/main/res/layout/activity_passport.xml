@@ -174,7 +174,7 @@
             android:id="@+id/nextButton"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:background="@drawable/button_ripple"
+            android:background="@drawable/button_ripple_golden_yellow"
             android:text="Next"
             android:textColor="@color/dark_purple"
             android:textSize="12sp"

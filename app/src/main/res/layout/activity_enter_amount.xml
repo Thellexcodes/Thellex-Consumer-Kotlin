@@ -183,7 +183,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:background="@drawable/button_ripple"
+            android:background="@drawable/button_ripple_golden_yellow"
             android:text="Continue"
             android:elevation="0dp"
             android:fontFamily="@font/kumbhsans_bold"

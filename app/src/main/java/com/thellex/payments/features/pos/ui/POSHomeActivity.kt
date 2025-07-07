@@ -37,6 +37,7 @@ import com.thellex.payments.features.kyc.ui.StartKycActivity
 import com.thellex.payments.features.notifications.ui.NotificationsActivity
 import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
 import com.thellex.payments.features.pos.fragments.WithdrawalOptionsModalFragment
+import com.thellex.payments.features.wallet.ui.TransactionSuccessActivity
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.features.wallet.ui.WalletAssetsActivity
@@ -62,6 +63,7 @@ class POSHomeActivity : AppCompatActivity() {
 
         ActivityTracker.finishActivity(LoginActivity::class.java)
         ActivityTracker.finishActivity(AuthVerificationActivity::class.java)
+        ActivityTracker.finishActivity(TransactionSuccessActivity::class.java)
 
         setupWindowInsetsAndBars()
 
@@ -119,9 +121,10 @@ class POSHomeActivity : AppCompatActivity() {
     }
 
     private fun loadWalletData() {
-        walletManagerViewModel.loadWallet {
-            userViewModel.token.asFlow().first { !it.isNullOrBlank() }
-        }
+        walletManagerViewModel.loadWallet(
+            tokenProvider = { userViewModel.token.asFlow().first { !it.isNullOrBlank() } },
+            loadNow = false
+        )
     }
 
     private fun setupWalletBalanceObserver() {

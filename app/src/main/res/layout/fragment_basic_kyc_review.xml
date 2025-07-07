@@ -512,7 +512,7 @@
             android:id="@+id/submitBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_ripple"
+            android:background="@drawable/button_ripple_golden_yellow"
             android:text="Submit"
             android:elevation="0dp"
             android:fontFamily="@font/kumbhsans_bold"

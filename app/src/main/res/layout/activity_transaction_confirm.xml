@@ -113,7 +113,7 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/sendButton"
-                        android:background="@drawable/button_ripple"
+                        android:background="@drawable/button_ripple_golden_yellow"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"

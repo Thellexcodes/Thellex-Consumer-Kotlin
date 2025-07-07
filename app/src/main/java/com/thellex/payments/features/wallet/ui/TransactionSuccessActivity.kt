@@ -19,6 +19,7 @@ class TransactionSuccessActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityTransactionSuccessBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.finishActivity(WithdrawToCryptoWalletActivity::class.java)
 
         initView()
         handleIntent()

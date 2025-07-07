@@ -196,7 +196,7 @@
             android:id="@+id/startButton"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:background="@drawable/button_ripple"
+            android:background="@drawable/button_ripple_golden_yellow"
             android:text="Take Photo"
             android:elevation="2dp"
             android:fontFamily="@font/kumbhsans_bold"

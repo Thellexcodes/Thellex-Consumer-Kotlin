@@ -8,4 +8,5 @@
     <dimen name="default_horizontal_padding">20dp</dimen>
     <dimen name="margin_7dp">7dp</dimen>
     <dimen name="margin_2dp">2dp</dimen>
+    <dimen name="padding_16dp">16dp</dimen>
 </resources>

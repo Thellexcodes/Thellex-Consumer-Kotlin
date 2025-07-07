@@ -147,7 +147,7 @@
             android:textColor="@color/dark_purple"
             android:fontFamily="@font/kumbhsans_bold"
             android:textSize="10sp"
-            android:background="@drawable/button_ripple"
+            android:background="@drawable/button_ripple_golden_yellow"
             android:elevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
