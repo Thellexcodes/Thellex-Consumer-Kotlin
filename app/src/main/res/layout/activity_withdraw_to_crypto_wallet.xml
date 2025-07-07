@@ -9,6 +9,7 @@
         android:background="@drawable/general_gradient_background"
         tools:context=".features.wallet.ui.WithdrawToCryptoWalletActivity">
 
+
     <!-- Top App Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/activity_wallet_top_app_bar_container"
@@ -19,7 +20,7 @@
             app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-                android:id="@+id/activity_wallet_back_button"
+                android:id="@+id/backButton"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:src="@drawable/icon_back"
@@ -30,13 +31,13 @@
         <TextView
                 android:textColor="@color/white"
                 android:fontFamily="@font/kumbhsans_bold"
-                android:textSize="14dp"
-                android:text="WITHDRAW"
+                android:textSize="14sp"
+                android:text="@string/withdraw"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/activity_wallet_back_button"
+                app:layout_constraintStart_toEndOf="@+id/backButton"
                 android:id="@+id/textView4" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -64,7 +65,7 @@
                     android:fontFamily="@font/kumbhsans_regular"
                     android:paddingVertical="15dp"
                     android:textColorHint="@color/steelBlueGrey"
-                    android:textColor="@color/steelBlueGrey"
+                    android:textColor="@color/white"
                     android:background="@drawable/rounded_edittext_midnight_bg"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -72,12 +73,12 @@
                     android:paddingEnd="48dp" />
 
             <ImageView
-                    android:id="@+id/withdraw_crypto_wallet_icon_contact"
-                    android:visibility="gone"
+                    android:id="@+id/qrCodeScanner"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginEnd="12dp"
                     android:contentDescription="Contact Icon"
+                    android:src="@drawable/icon_qr_code"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/withdraw_crypto_wallet_edittext_wallet_address"
                     app:layout_constraintBottom_toBottomOf="@id/withdraw_crypto_wallet_edittext_wallet_address"
@@ -98,7 +99,7 @@
                         android:textColorHint="@color/steelBlueGrey"
                         android:textSize="12sp"
                         android:fontFamily="@font/kumbhsans_regular"
-                        android:textColor="@color/steelBlueGrey"
+                        android:textColor="@color/white"
                         android:background="@drawable/rounded_edittext_midnight_bg"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -155,7 +156,7 @@
                         android:layout_height="wrap_content"
                         android:hint="0.00"
                         android:textColor="@color/white"
-                        android:textColorHint="@color/white"
+                        android:textColorHint="@color/steelBlueGrey"
                         android:background="@drawable/rounded_edittext_midnight_bg"
                         android:inputType="numberDecimal"
                         android:fontFamily="@font/outfit_bold"
@@ -258,6 +259,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
+                android:visibility="gone"
                 android:layout_marginTop="18dp"
                 android:background="@drawable/rounded_border_midnight"
                 android:layout_height="wrap_content">
@@ -383,17 +385,37 @@
 
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <LinearLayout
             android:id="@+id/withdrawBtn"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingVertical="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_ripple"
-            android:text="Withdraw"
-            android:elevation="0dp"
-            android:fontFamily="@font/kumbhsans_bold"
-            android:textColor="@color/dark_purple"
-            android:textSize="10sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:background="@drawable/button_ripple_golden_yellow"
+            android:layout_marginTop="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:enabled="true"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+            tools:layout_editor_absoluteX="20dp">
+
+        <ProgressBar
+                android:id="@+id/withdrawSpinner"
+                android:layout_width="18dp"
+                android:visibility="gone"
+                android:layout_height="18dp"
+                android:layout_marginEnd="8dp"
+                android:indeterminateTint="@color/white"
+                 />
+
+        <TextView
+                android:id="@+id/withdrawBtnText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/withdraw"
+                android:textColor="@color/darkBlue"
+                android:textSize="12sp"
+                android:fontFamily="@font/kumbhsans_bold" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

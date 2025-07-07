@@ -9,13 +9,17 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.otpview.OTPListener
+import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.CustomToast
+import com.thellex.payments.core.utils.ErrorHandler
+import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.data.model.VerifyUserDto
 import com.thellex.payments.databinding.ActivityAuthVerificationBinding
@@ -24,11 +28,9 @@ import com.thellex.payments.features.pos.ui.POSHomeActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.time.ExperimentalTime
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
-
 
 class AuthVerificationActivity : AppCompatActivity() {
 
@@ -36,11 +38,11 @@ class AuthVerificationActivity : AppCompatActivity() {
     private lateinit var userModel: UserViewModel
     private var token: String? = null
     private var countDownTimer: CountDownTimer? = null
+    private var isSubmitting = false
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityAuthVerificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -50,12 +52,11 @@ class AuthVerificationActivity : AppCompatActivity() {
         )[UserViewModel::class.java]
 
         ActivityTracker.add(this)
-
         token = intent.getStringExtra("token")
 
         setupInsets()
         setupOtpListener()
-
+        setupVerifyButton()
         startExpirationTimer()
     }
 
@@ -74,16 +75,26 @@ class AuthVerificationActivity : AppCompatActivity() {
 
     private fun setupOtpListener() {
         binding.otpView.otpListener = object : OTPListener {
-            override fun onInteractionListener() {
-            }
+            override fun onInteractionListener() {}
             override fun onOTPComplete(otp: String) {
-                val otpInt = otp.toIntOrNull()
-                if (otpInt != null) {
-                    verifyOtp(otpInt)
-                } else {
-                    CustomToast.show(this@AuthVerificationActivity,"Warning", "Invalid OTP entered")
-                }
+                // Do nothing here – handled via button click now
             }
+        }
+    }
+
+    private fun setupVerifyButton() {
+        binding.submitButton.setOnClickListener {
+            if (isSubmitting) return@setOnClickListener
+
+            val otp = binding.otpView.otp.toString().trim()
+            val otpInt = otp.toIntOrNull()
+
+            if (otpInt == null) {
+                CustomToast.show(this@AuthVerificationActivity, "Warning", "Invalid OTP entered")
+                return@setOnClickListener
+            }
+
+            verifyOtp(otpInt)
         }
     }
 
@@ -95,16 +106,16 @@ class AuthVerificationActivity : AppCompatActivity() {
             return
         }
 
-        val nowMillis = System.currentTimeMillis()
+        val nowMillis = Instant.now().toEpochMilli()
         val millisUntilExpired = expiresAtMillis - nowMillis
 
         if (millisUntilExpired <= 0) {
             binding.authVerificationTimer.text = "00:00"
+            redirectToLogin()
             return
         }
 
         countDownTimer?.cancel()
-
         countDownTimer = object : CountDownTimer(millisUntilExpired, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)
@@ -114,8 +125,16 @@ class AuthVerificationActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 binding.authVerificationTimer.text = "00:00"
+                redirectToLogin()
             }
         }.start()
+    }
+
+
+    private fun redirectToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 
     @OptIn(ExperimentalTime::class)
@@ -123,12 +142,8 @@ class AuthVerificationActivity : AppCompatActivity() {
     private fun getExpirationMillis(): Long? {
         return try {
             val expiresAtStr = userModel.getExpiresAt() ?: return null
-
-            // Parse ISO string like "2025-07-02T22:31:08.175+00"
-            val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
-            val offsetDateTime = OffsetDateTime.parse(expiresAtStr.toString(), formatter)
-
-            offsetDateTime.toInstant().toEpochMilli()
+            val instant = Instant.parse(expiresAtStr.toString())
+            instant.toEpochMilli()
         } catch (e: Exception) {
             e.printStackTrace()
             null
@@ -140,18 +155,34 @@ class AuthVerificationActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    private fun setSubmitting(submitting: Boolean) {
+        isSubmitting = submitting
+        binding.submitButton.isEnabled = !submitting
+
+        if (submitting) {
+            binding.submitButton.text = "Verifying..."
+            binding.submitButton.setBackgroundResource(R.drawable.button_riple_darkblue)
+            binding.submitButton.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+        } else {
+            binding.submitButton.text = "Verify"
+            binding.submitButton.setBackgroundResource(R.drawable.button_ripple_golden_yellow)
+            binding.submitButton.setTextColor(ContextCompat.getColor(this, R.color.dark_purple))
+        }
+    }
+
     private fun verifyOtp(otp: Int) {
         val verifyUserRequestData = VerifyUserDto(code = otp)
 
         lifecycleScope.launch {
+            setSubmitting(true)
             try {
                 if (token.isNullOrBlank()) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(
+                        ErrorHandler.handle(
                             this@AuthVerificationActivity,
-                            "Authentication token missing. Please login again.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            "Error",
+                            UserErrorEnum.TOKEN_MISSING
+                        )
                     }
                     return@launch
                 }
@@ -161,19 +192,25 @@ class AuthVerificationActivity : AppCompatActivity() {
 
                 response.body()?.result?.let { result ->
                     withContext(Dispatchers.Main) {
-                        userModel.saveToken(token!!)
                         userModel.saveAuthResult(result)
                         navigateToQuickActions()
                     }
                 } ?: run {
                     val errorBody = response.errorBody()?.string().orEmpty()
-                    Log.e("TAG", "Error message: $errorBody")
+                    val userError = UserErrorEnum.fromCode(errorBody)
+                    withContext(Dispatchers.Main) {
+                        ErrorHandler.handle(this@AuthVerificationActivity, "Error", userError)
+                    }
                 }
 
             } catch (e: Exception) {
-                Log.e("TAG", "Error message: $e")
+                val userError = UserErrorEnum.fromCode(e.message)
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@AuthVerificationActivity, "Network Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    ErrorHandler.handle(this@AuthVerificationActivity, "Error", userError)
+                }
+            } finally {
+                withContext(Dispatchers.Main) {
+                    setSubmitting(false)
                 }
             }
         }

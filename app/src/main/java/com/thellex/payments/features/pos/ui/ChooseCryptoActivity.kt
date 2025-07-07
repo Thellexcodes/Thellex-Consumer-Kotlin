@@ -3,6 +3,7 @@ package com.thellex.payments.features.pos.ui
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,6 +16,7 @@ import com.thellex.payments.R
 import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.features.pos.adapters.CryptoAdapter
 import com.thellex.payments.data.model.TokenListDto
+import com.thellex.payments.databinding.ActivityPosChooseCryptoBinding
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
@@ -22,7 +24,7 @@ import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 
 class POSChooseCryptoActivity : AppCompatActivity() {
 
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var binding: ActivityPosChooseCryptoBinding
     private lateinit var cryptoAdapter: CryptoAdapter
     private lateinit var viewModel: UserViewModel
     private lateinit var walletManagerViewModel: WalletManagerViewModel
@@ -31,9 +33,10 @@ class POSChooseCryptoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_pos_choose_crypto)
+        binding = ActivityPosChooseCryptoBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(
                 view.paddingLeft,
@@ -41,7 +44,6 @@ class POSChooseCryptoActivity : AppCompatActivity() {
                 view.paddingRight,
                 systemBarsInsets.bottom
             )
-
             insets
         }
 
@@ -55,40 +57,50 @@ class POSChooseCryptoActivity : AppCompatActivity() {
             WalletManagerModelFactory(applicationContext)
         )[WalletManagerViewModel::class.java]
 
-        recyclerView = findViewById(R.id.pos_crypto_list_selection)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.posCryptoListSelection.layoutManager = LinearLayoutManager(this)
 
         cryptoAdapter = CryptoAdapter(cryptoList) { selectedItem ->
             val assetCode = selectedItem.assetCode
-            val intent = Intent(this, GeneratePOSAddressActivity::class.java)
-            intent.putExtra("type", PaymentType.REQUEST_CRYPTO.name)
-            intent.putExtra("assetCode", assetCode.name)
-            intent.putExtra("assetCodeChain", selectedItem.chainName)
+            val intent = Intent(this, GeneratePOSAddressActivity::class.java).apply {
+                putExtra("type", PaymentType.REQUEST_CRYPTO.name)
+                putExtra("assetCode", assetCode.name)
+                putExtra("assetCodeChain", selectedItem.chainName)
+            }
             startActivity(intent)
         }
 
-        recyclerView.adapter = cryptoAdapter
+        binding.posCryptoListSelection.adapter = cryptoAdapter
 
         val spacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
-        recyclerView.addItemDecoration(ItemSpacingDecoration(spacing))
+        binding.posCryptoListSelection.addItemDecoration(ItemSpacingDecoration(spacing))
 
         observeWalletData()
 
-        val backButton = findViewById<ImageView>(R.id.activity_wallet_back_button)
-        backButton.setOnClickListener {
+        binding.backButton.setOnClickListener {
             finish()
         }
     }
 
     private fun observeWalletData() {
         walletManagerViewModel.walletBalance.observe(this) { walletDto ->
-            val updatedCryptoList = walletDto.wallets.values.map { wallet ->
-                TokenListDto(wallet.assetCode,
-                    Helpers.getIconResIdForToken(wallet.assetCode.toString()),
-                    chainName = wallet.network.name
-                )
+            val updatedCryptoList1 = walletDto?.wallets?.values
+                ?.filter { wallet ->
+                    wallet.address.isNotEmpty() && Helpers.isValidEvmAddress(wallet.address)
+                }?.map { wallet ->
+                    TokenListDto(
+                        wallet.assetCode,
+                        Helpers.getIconResIdForToken(wallet.assetCode.toString()),
+                        chainName = wallet.network.name
+                    )
+                }
+            updatedCryptoList1?.let {
+                cryptoAdapter.updateData(it)
             }
-            cryptoAdapter.updateData(updatedCryptoList)
         }
     }
+
+    companion object {
+        private val TAG = "TAG"
+    }
 }
+

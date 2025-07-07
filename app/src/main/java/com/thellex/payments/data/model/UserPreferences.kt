@@ -87,10 +87,21 @@ object UserPreferences {
         }
     }
 
-    suspend fun addTransactionHistory(context: Context, transaction: ITransactionHistoryEntity) {
+    suspend fun addTransactionHistory(
+        context: Context,
+        transaction: ITransactionHistoryEntity
+    ) {
         updateUserEntity(context) { user ->
             val updatedList = user.transactionHistory.toMutableList()
-            updatedList.add(transaction)
+
+            // Check for duplicates
+            val exists = updatedList.any { it.blockchainTxId == transaction.blockchainTxId }
+            if (!exists) {
+                updatedList.add(transaction)
+            } else {
+                Log.w("TAG", "Transaction already exists: ${transaction.blockchainTxId}")
+            }
+
             val sortedList = updatedList.sortedByDescending { it.createdAt }
             user.copy(transactionHistory = sortedList)
         }
@@ -102,18 +113,21 @@ object UserPreferences {
         updatedTransaction: ITransactionHistoryEntity
     ) {
         updateUserEntity(context) { user ->
-            val newList = user.transactionHistory.map {
-                if (it.blockchainTxId == blockchainTxId) {
-                    updatedTransaction
-                } else {
-                    it
-                }
-            }.sortedByDescending { it.createdAt }
-            user.copy(transactionHistory = newList)
+            val transactionList = user.transactionHistory.toMutableList()
+            val index = transactionList.indexOfFirst { it.blockchainTxId == blockchainTxId }
+            Log.d("TAG", "index is $index")
+
+            if (index != -1) {
+                transactionList[index] = updatedTransaction
+            } else {
+                Log.w("TAG", "Transaction not found for update: $blockchainTxId")
+            }
+
+            val sortedList = transactionList.sortedByDescending { it.createdAt }
+            user.copy(transactionHistory = sortedList)
         }
     }
 
-    // Add notification and sort by createdAt descending
     suspend fun addNotification(context: Context, notification: NotificationEntity) {
         updateUserEntity(context) { user ->
             val updatedList = user.notifications.toMutableList()
@@ -122,5 +136,4 @@ object UserPreferences {
             user.copy(notifications = sortedList)
         }
     }
-
 }

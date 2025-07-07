@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.thellex.pos",
+  "applicationId": "com.thellex.payments",
   "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 2,
-      "versionName": "1.0",
+      "versionCode": 3,
+      "versionName": "1.0.1",
       "outputFile": "app-release.apk"
     }
   ],

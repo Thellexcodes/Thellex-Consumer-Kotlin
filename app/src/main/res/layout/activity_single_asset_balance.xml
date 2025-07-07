@@ -20,23 +20,25 @@
             app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-                android:id="@+id/single_asset_balance_back_button"
+                android:id="@+id/backButton"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:src="@drawable/icon_back"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/textView4" />
 
-        <Spinner
-                android:id="@+id/single_asset_balance_assets_country_spinner"
-                android:layout_width="40dp"
-                android:layout_height="45dp"
-                android:background="@drawable/rounded_border"
-                android:spinnerMode="dropdown"
-                android:visibility="gone"
+        <TextView
+                android:textColor="@color/white"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textSize="14sp"
+                android:text="@string/balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/single_asset_balance_back_button"
-                app:layout_constraintBottom_toBottomOf="@id/single_asset_balance_back_button" />
+                app:layout_constraintStart_toEndOf="@+id/backButton"
+                android:id="@+id/textView4" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout

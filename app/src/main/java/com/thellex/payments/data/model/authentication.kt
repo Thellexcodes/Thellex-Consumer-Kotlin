@@ -33,5 +33,6 @@ data class UserEntity(
     @SerializedName("settings") val settings: List<StoreSettingsEntity>,
     @SerializedName("bankAccounts") val bankAccounts: List<BankAccountEntity>,
     @SerializedName("currentTier") val currentTier: TierInfo? = null,
-    @SerializedName("nextTier") val nextTier: TierInfo? = null
+    @SerializedName("nextTier") val nextTier: TierInfo? = null,
+    @SerializedName("outstandingKyc") val outstandingKyc: List<String>? = emptyList()
 )

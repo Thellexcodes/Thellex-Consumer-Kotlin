@@ -36,4 +36,3 @@ class TierEnumDeserializer : JsonDeserializer<TierEnum> {
         return value?.let { TierEnum.fromValue(it) }
     }
 }
-

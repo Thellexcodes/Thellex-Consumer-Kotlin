@@ -1,7 +1,12 @@
 package com.thellex.payments.core.utils
 
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.text.InputFilter
 import android.text.Spannable
 import android.text.SpannableString
@@ -10,14 +15,20 @@ import android.util.Patterns
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.core.app.NotificationCompat
 import com.thellex.payments.R
 import com.thellex.payments.data.model.PaymentStatus
+import com.thellex.payments.features.dashboard.ui.MainActivity
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.HttpException
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -67,7 +78,6 @@ object Helpers {
         }
     }
 
-
     fun getStatusIconResId(status: String?): Int {
         return when (normalizeStatusForIcon(status)) {
             "received" -> R.drawable.icon_receive_status
@@ -85,6 +95,16 @@ object Helpers {
         } catch (e: Exception) {
             timestamp
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun formatToDeviceTimeZone(isoUtcString: String): String {
+        return try {
+            val zonedDateTime = ZonedDateTime.parse(isoUtcString)
+                .withZoneSameInstant(ZoneId.systemDefault())
+            val formatter = DateTimeFormatter.ofPattern("h:mm a")
+            zonedDateTime.format(formatter)
+        } catch (e: Exception) { "" }
     }
 
     fun mapToTransactionStatus(rawStatus: String): PaymentStatus {
@@ -203,6 +223,89 @@ object Helpers {
             if (source.toString().matches(allowedPattern.toRegex())) source else ""
         }
         editText.filters = arrayOf(emailFilter)
+    }
+
+    fun isValidEvmAddress(address: String): Boolean {
+        val regex = Regex("^0x[a-fA-F0-9]{40}$")
+        return regex.matches(address)
+    }
+
+    fun formatBalance(amount: String?): String {
+        return try {
+            val value = amount?.toDoubleOrNull() ?: 0.0
+            String.format("%.2f", value)
+        } catch (e: Exception) {
+            "0.00"
+        }
+    }
+
+    fun getFriendlyLabel(kind: String): String {
+        return when (kind) {
+            "CRYPTO_DEPOSIT_SUCCESSFUL" -> "DEPOSIT"
+            "CRYPTO_WITHDRAWAL_SUCCESSFUL" -> "WITHDRAWAL"
+            "CRYPTO_WITHDRAWAL_FAILED" -> "WITHDRAWAL FAILED"
+            "PAYMENT_RECEIVED" -> "PAYMENT RECEIVED"
+            "PAYMENT_FAILED" -> "PAYMENT FAILED"
+            "PAYMENT_PENDING" -> "PAYMENT PENDING"
+            "ORDER_CREATED" -> "ORDER CREATED"
+            "ORDER_COMPLETED" -> "ORDER COMPLETED"
+            "ORDER_CANCELLED" -> "ORDER CANCELLED"
+            "POS_SESSION_STARTED" -> "POS SESSION STARTED"
+            "POS_SESSION_ENDED" -> "POS SESSION ENDED"
+            "POS_DEVICE_CONNECTED" -> "POS CONNECTED"
+            "POS_DEVICE_DISCONNECTED" -> "POS DISCONNECTED"
+            "NEW_DEVICE_REGISTERED" -> "NEW DEVICE"
+            "SYSTEM_MAINTENANCE" -> "MAINTENANCE"
+            else -> kind.replace('_', ' ').uppercase()
+        }
+    }
+
+    fun String.truncateMiddle(startChars: Int = 4, endChars: Int = 4, delimiter: String = "....."): String {
+        if (this.length <= startChars + endChars) return this
+        return this.take(startChars) + delimiter + this.takeLast(endChars)
+    }
+
+    fun showSystemNotification(context: Context, title: String, message: String) {
+        val channelId = "my_channel_id"
+        val notificationId = 1001
+
+        // Intent to open the app when notification is tapped
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Notification Manager
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Create the NotificationChannel for Android 8.0+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "My App Notifications"
+            val descriptionText = "Shows important app updates"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(channelId, name, importance).apply {
+                description = descriptionText
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // Build the notification
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(R.drawable.thellex_logo_white)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        // Show the notification
+        notificationManager.notify(notificationId, notification)
     }
 }
 

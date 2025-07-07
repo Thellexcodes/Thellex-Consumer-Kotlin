@@ -3,6 +3,7 @@ package com.thellex.payments.data.enums
 enum class NotificationSockets(val event: String) {
     DEPOSIT_SUCCESSFUL("deposit_successful"),
     WITHDRAWAL_SUCCESSFUL("withdrawal_successful"),
+    WALLET_ADDRESS_GENERATED("wallet_address_generated"),
     TRANSACTION_FAILED("transaction_failed"),
     NEW_MESSAGE("new_message"),
     FRIEND_REQUEST("friend_request"),

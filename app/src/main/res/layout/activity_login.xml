@@ -31,7 +31,9 @@
             android:background="@drawable/login_rounded_layout"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginTop="50dp"
-            app:layout_constraintTop_toBottomOf="@+id/title">
+            app:layout_constraintTop_toBottomOf="@+id/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
                 android:id="@+id/auth_verification_tab_container"
@@ -79,7 +81,9 @@
                 android:paddingHorizontal="24dp"
                 android:paddingBottom="16dp"
                 app:layout_constraintTop_toBottomOf="@+id/auth_verification_tab_container"
-                android:layout_marginTop="42dp">
+                android:layout_marginTop="42dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
             <!-- Email Input -->
             <EditText
@@ -106,7 +110,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
-                    android:background="@drawable/button_ripple"
+                    android:background="@drawable/button_ripple_golden_yellow"
                     android:text="Next"
                     android:elevation="0dp"
                     android:fontFamily="@font/kumbhsans_bold"
@@ -153,23 +157,6 @@
                 android:orientation="vertical"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
-
-            <com.mukeshsolanki.OtpView
-                    android:id="@+id/otp_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:textAllCaps="true"
-                    android:itemBackground="@drawable/otp_item_background"
-                    android:textColor="@android:color/white"
-                    app:OtpHideLineWhenFilled="true"
-                    app:OtpItemCount="6"
-                    app:OtpItemSpacing="6dp"
-                    app:OtpState_filled="true"
-                    android:width="54dp"
-                    android:height="57dp"
-                    tools:layout_editor_absoluteY="48dp"
-                    tools:layout_editor_absoluteX="46dp" />
 
             <TextView
                     android:id="@+id/timeTextView"

@@ -21,23 +21,25 @@
             app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-                android:id="@+id/activity_wallet_back_button"
+                android:id="@+id/backButton"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:src="@drawable/icon_back"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/textView4" />
 
-        <Spinner
-                android:visibility="gone"
-                android:id="@+id/activity_wallet_assets_country_spinner"
-                android:layout_width="40dp"
-                android:layout_height="45dp"
-                android:background="@drawable/rounded_border"
-                android:spinnerMode="dropdown"
+        <TextView
+                android:textColor="@color/white"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textSize="14sp"
+                android:text="BALANCE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/activity_wallet_back_button"
-                app:layout_constraintBottom_toBottomOf="@id/activity_wallet_back_button" />
+                app:layout_constraintStart_toEndOf="@+id/backButton"
+                android:id="@+id/textView4" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -80,7 +82,7 @@
                 android:id="@+id/activity_wallet_balance_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="232.89 USD"
+                android:text="0.00 USD"
                 android:textSize="24sp"
                 android:textColor="@color/white"
                 android:fontFamily="@font/outfit_light"

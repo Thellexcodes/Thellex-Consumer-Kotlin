@@ -10,7 +10,6 @@ import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivitySingleAssetBalanceBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
-import com.thellex.payments.features.wallet.fragments.SendBottomSheetFragment
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.features.wallet.prefrences.WalletManagerPreferences
@@ -34,6 +33,10 @@ class AssetBalanceActivity : AppCompatActivity() {
         setupWindowInsets()
         setupSendButton()
         loadTransactions("usdt")
+
+        binding.backButton.setOnClickListener{
+            finish()
+        }
     }
 
     private fun setupViewModels() {
@@ -63,10 +66,6 @@ class AssetBalanceActivity : AppCompatActivity() {
     }
 
     private fun setupSendButton() {
-        binding.activitySingleAssetBalanceSendButton.setOnClickListener {
-            val bottomSheet = SendBottomSheetFragment()
-            bottomSheet.show(supportFragmentManager, bottomSheet.tag)
-        }
     }
 
     private fun loadTransactions(currencyFilter: String) {

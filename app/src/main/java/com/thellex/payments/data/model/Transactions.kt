@@ -2,7 +2,7 @@ package com.thellex.payments.data.model
 
 import com.google.gson.annotations.SerializedName
 import com.thellex.payments.settings.SupportedBlockchainEnum
-import com.thellex.payments.settings.Token
+import com.thellex.payments.settings.TokensEnum
 import kotlinx.serialization.Serializable
 
 data class Transaction(
@@ -53,14 +53,14 @@ data class BlockchainItem(
     @SerializedName("iconRes") val iconRes: Int )
 
 data class Crypto(
-    @SerializedName("blockchain") val blockchain: Token,
+    @SerializedName("blockchain") val blockchain: TokensEnum,
     @SerializedName("iconRes") val iconRes: Int
 ) {
     override fun toString(): String = blockchain.name
 }
 
 data class TokenListDto(
-    @SerializedName("token") val assetCode: Token,
+    @SerializedName("token") val assetCode: TokensEnum,
     @SerializedName("iconRes") val iconRes: Int,
     @SerializedName("chain") val chainName: String?
 ) {

@@ -5,26 +5,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class IdTypeEnum(val label: String) {
-    @SerializedName("NIN")
-    NIN("NIN"),
-
-    @SerializedName("BVN")
-    BVN("BVN"),
-
-    @SerializedName("INTERNATIONAL_PASSPORT")
-    INTERNATIONAL_PASSPORT("INTERNATIONAL_PASSPORT"),
-
-    @SerializedName("DRIVER_LICENSE")
-    DRIVER_LICENSE("DRIVER_LICENSE"),
-
-    @SerializedName("VOTER_CARD")
-    VOTER_CARD("VOTER_CARD"),
-
-    @SerializedName("NATIONAL_ID_CARD")
-    NATIONAL_ID_CARD("NATIONAL_ID_CARD"),
-
-    @SerializedName("RESIDENT_PERMIT")
-    RESIDENT_PERMIT("RESIDENT_PERMIT")
+    @SerializedName("NIN") NIN("NIN"),
+    @SerializedName("BVN") BVN("BVN"),
+    @SerializedName("INTERNATIONAL_PASSPORT") INTERNATIONAL_PASSPORT("INTERNATIONAL_PASSPORT"),
+    @SerializedName("DRIVER_LICENSE") DRIVER_LICENSE("DRIVER_LICENSE"),
+    @SerializedName("VOTER_CARD") VOTER_CARD("VOTER_CARD"),
+    @SerializedName("NATIONAL_ID_CARD") NATIONAL_ID_CARD("NATIONAL_ID_CARD"),
+    @SerializedName("RESIDENT_PERMIT") RESIDENT_PERMIT("RESIDENT_PERMIT")
 }
 
 @Serializable
@@ -56,8 +43,16 @@ data class BasicKycFormModelDto(
     @SerializedName("lga") val lga: String? = null
 )
 
+@Serializable
 data class KycResponseDto(
     @SerializedName("isVerified") val isVerified: Boolean,
     @SerializedName("currentTier") val currentTier: TierInfo,
-    @SerializedName("nextTier") val nextTier: TierInfo
+    @SerializedName("nextTier") val nextTier: TierInfo,
+    @SerializedName("outstandingKyc") val outstandingKyc: List<String> = emptyList()
+)
+
+data class VerifySelfieWithPhotoIdDto(
+    @SerializedName("selfie_image") val selfieImageBase64: String,
+    @SerializedName("photoid_image") val photoIdImageBase64: String,
+//    @SerializedName("id_type") val idType: String? = "PASSPORT"
 )

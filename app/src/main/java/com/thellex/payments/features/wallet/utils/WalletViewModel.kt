@@ -11,14 +11,18 @@ import kotlinx.coroutines.launch
 
 class WalletManagerViewModel(application: Context): AndroidViewModel(application as Application) {
 
-    private val repository = WalletRepository.getInstance()
+    private val repository = WalletRepository.getInstance(application)
     private val preferences = WalletManagerPreferences(application)
 
-    val walletBalance: LiveData<WalletBalanceDto> = repository.walletBalance
+    val walletBalance: LiveData<WalletBalanceDto?> = repository.walletBalance
 
-    fun loadWallet(tokenProvider: suspend () -> String?) {
+    fun loadWallet(tokenProvider: suspend () -> String?, loadNow: Boolean? = false) {
         viewModelScope.launch {
-            repository.loadWalletData(preferences, tokenProvider)
+            repository.loadWalletData(
+                preferences,
+                tokenProvider,
+                loadNow
+            )
         }
     }
 
@@ -26,4 +30,3 @@ class WalletManagerViewModel(application: Context): AndroidViewModel(application
         return preferences
     }
 }
-

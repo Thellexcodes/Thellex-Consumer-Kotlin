@@ -55,4 +55,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="email_address">Email Address</string>
+    <string name="withdraw">WITHDRAW</string>
+    <string name="request">REQUEST</string>
+    <string name="balance">BALANCE</string>
 </resources>

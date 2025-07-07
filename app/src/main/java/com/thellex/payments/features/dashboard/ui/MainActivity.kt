@@ -1,12 +1,17 @@
 package com.thellex.payments.features.dashboard.ui
 
+import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
@@ -14,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.Helpers.showSystemNotification
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.databinding.ActivityMainBinding
 import com.thellex.payments.features.onboarding.OnboardingActivity
@@ -22,6 +28,7 @@ import com.thellex.payments.network.services.SocketService
 import com.thellex.payments.features.pos.ui.POSHomeActivity
 import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -32,7 +39,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var userModel: UserViewModel
 
-    // Guard to show error toast only once per failure
     private var hasShownErrorToast = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             try {
-                val api = ApiClient.getAuthenticatedApi("")
+                val api = ApiClient.getAuthenticatedApi(token)
                 val response = api.checkAuthStatus()
 
                 if (response.isSuccessful) {
@@ -77,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                     val authResult = authResponse?.result
                     if (authResult != null) {
                         userModel.saveAuthResult(authResult)
-                        navigateToDashboard()  // Uncomment if you want to navigate here
+                        navigateToDashboard()
                     } else {
                         userModel.logout()
                         navigateToLogin()
@@ -94,8 +100,6 @@ class MainActivity : AppCompatActivity() {
                     val errorBody = response.errorBody()?.string()
                     val errorCode = Helpers.parseBackendErrorEnum(errorBody)
                     val errorEnum = UserErrorEnum.fromCode(errorCode)
-
-                    ErrorHandler.handle(context = this@MainActivity, "Error", error = errorEnum)
 
                     when (errorEnum) {
                         UserErrorEnum.USER_NOT_FOUND,
@@ -117,7 +121,7 @@ class MainActivity : AppCompatActivity() {
                     hasShownErrorToast = true
                     val errorMessage = Helpers.getErrorMessageFromException(e)
                     val userError = UserErrorEnum.fromCode(errorMessage)
-//                    ErrorHandler.handle(this@MainActivity, "Error", userError)
+                    ErrorHandler.handle(this@MainActivity, "Error", userError)
                 }
                 userModel.logout()
                 navigateToLogin()

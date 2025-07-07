@@ -1,11 +1,19 @@
 package com.thellex.payments.features.pos.ui
 
+import android.app.AlertDialog
+import android.content.Context
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -26,8 +34,10 @@ import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.kyc.ui.StartKycActivity
+import com.thellex.payments.features.notifications.ui.NotificationsActivity
 import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
 import com.thellex.payments.features.pos.fragments.WithdrawalOptionsModalFragment
+import com.thellex.payments.features.wallet.ui.TransactionSuccessActivity
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.features.wallet.ui.WalletAssetsActivity
@@ -43,7 +53,7 @@ class POSHomeActivity : AppCompatActivity() {
     private lateinit var walletManagerViewModel: WalletManagerViewModel
     private lateinit var transactionRecyclerView: RecyclerView
     private lateinit var transactionAdapter: POSTransactionAdapter
-    private var isBalanceVisible = false
+    private var isBalanceVisible = true
     private var currentBalance = "0.00"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,9 +61,9 @@ class POSHomeActivity : AppCompatActivity() {
         binding = ActivityPOSBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //close previous activities
         ActivityTracker.finishActivity(LoginActivity::class.java)
         ActivityTracker.finishActivity(AuthVerificationActivity::class.java)
+        ActivityTracker.finishActivity(TransactionSuccessActivity::class.java)
 
         setupWindowInsetsAndBars()
 
@@ -73,6 +83,8 @@ class POSHomeActivity : AppCompatActivity() {
         setupWalletBalanceObserver()
         loadWalletData()
         observeUserUid()
+        observeNotification()
+        setupNotification()
     }
 
     private fun setupWindowInsetsAndBars() {
@@ -98,7 +110,7 @@ class POSHomeActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        transactionRecyclerView = binding.transactionRecycler
+        transactionRecyclerView = binding.recyclerRecentTransactions
         transactionRecyclerView.layoutManager = LinearLayoutManager(this)
 
         transactionAdapter = POSTransactionAdapter(emptyList()) {}
@@ -109,9 +121,10 @@ class POSHomeActivity : AppCompatActivity() {
     }
 
     private fun loadWalletData() {
-        walletManagerViewModel.loadWallet {
-            userViewModel.token.asFlow().first { !it.isNullOrBlank() }
-        }
+        walletManagerViewModel.loadWallet(
+            tokenProvider = { userViewModel.token.asFlow().first { !it.isNullOrBlank() } },
+            loadNow = false
+        )
     }
 
     private fun setupWalletBalanceObserver() {
@@ -146,11 +159,40 @@ class POSHomeActivity : AppCompatActivity() {
         lifecycleScope.launch {
             UserPreferences.getAuthResult(applicationContext).collect { userEntity ->
                 val transactions = userEntity?.transactionHistory ?: emptyList()
-                val sortedTransactions = transactions.sortedByDescending { parseDate(it.createdAt) }
+                val sortedTransactions = transactions.sortedByDescending { it.createdAt }
                 withContext(Dispatchers.Main) {
                     transactionAdapter.updateList(sortedTransactions)
+
+                    if (sortedTransactions.isEmpty()) {
+                        binding.recyclerRecentTransactions.visibility = View.GONE
+                        binding.titleRecentTransactions.visibility = View.GONE
+                        binding.emptyTransactionsView.visibility = View.VISIBLE
+                    } else {
+                        binding.recyclerRecentTransactions.visibility = View.VISIBLE
+                        binding.titleRecentTransactions.visibility = View.VISIBLE
+                        binding.emptyTransactionsView.visibility = View.GONE
+                    }
                 }
             }
+        }
+    }
+
+    private fun observeNotification() {
+        userViewModel.authResult.observe(this) { dto ->
+            dto?.notifications?.let { notifications ->
+                val unconsumedCount = notifications.count { !it.consumed }
+
+                updateNotificationBadge(unconsumedCount)
+            }
+        }
+    }
+
+    private fun updateNotificationBadge(count: Int) {
+        if (count > 0) {
+            binding.activityPosNotificationBadge .visibility = View.VISIBLE
+            binding.activityPosNotificationBadge.text = "$count"
+        } else {
+            binding.activityPosNotificationBadge.visibility = View.GONE
         }
     }
 
@@ -165,6 +207,10 @@ class POSHomeActivity : AppCompatActivity() {
 
         binding.posViewAssetsButton.setOnClickListener {
             startActivity(Intent(this, WalletAssetsActivity::class.java))
+        }
+
+        binding.activityPosBellContainer.setOnClickListener{
+            startActivity(Intent(this, NotificationsActivity::class.java))
         }
     }
 
@@ -213,4 +259,52 @@ class POSHomeActivity : AppCompatActivity() {
         modal.show(supportFragmentManager, "WithdrawalOptionsModal")
     }
 
+    private fun setupNotification(){
+        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val hasAskedPermission = sharedPref.getBoolean("asked_notification_permission", false)
+
+        if (!hasAskedPermission) {
+            object : CountDownTimer(10_000, 1_000) {
+                override fun onTick(millisUntilFinished: Long) {}
+                override fun onFinish() {
+                    promptNotificationPermissionWithDialog()
+                }
+            }.start()
+        }
+    }
+
+    private fun promptNotificationPermissionWithDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Enable Notifications")
+            .setMessage("We’ll notify you of important account activity like transfers and payments.")
+            .setPositiveButton("Allow") { _, _ ->
+                requestNotificationPermissionIfFirstTime()
+            }
+            .setNegativeButton("Not now", null)
+            .show()
+    }
+
+    private fun requestNotificationPermissionIfFirstTime() {
+        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val hasAskedPermission = sharedPref.getBoolean("asked_notification_permission", false)
+
+        if (!hasAskedPermission) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                        100
+                    )
+                }
+            }
+
+            // Save that we've asked for permission already
+            sharedPref.edit().putBoolean("asked_notification_permission", true).apply()
+        }
+    }
 }
