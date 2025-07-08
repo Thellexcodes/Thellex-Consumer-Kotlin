@@ -22,7 +22,7 @@ class RequestOptionsModalFragment : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     interface ReceiveOptionsListener {
-        fun onFiatClick()
+        fun onFiatToCryptoClick()
         fun onCryptoClick()
         fun onBankClick()
         fun onStartKyc()
@@ -69,8 +69,8 @@ class RequestOptionsModalFragment : BottomSheetDialogFragment() {
             listener?.onCryptoClick()
         }
 
-        binding.fragmentRequestOptionsFiatToCrypto.setOnClickListener {
-            if (isKycDone) listener?.onFiatClick() else listener?.onStartKyc()
+        binding.fiatToCrypto.setOnClickListener {
+            if (isKycDone) listener?.onFiatToCryptoClick() else listener?.onStartKyc()
         }
     }
 

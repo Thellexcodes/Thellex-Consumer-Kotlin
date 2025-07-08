@@ -5,7 +5,6 @@ import android.content.Context
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -13,9 +12,6 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
@@ -25,6 +21,9 @@ import com.thellex.payments.core.decorators.ItemSpacingDecoration
 import com.thellex.payments.features.pos.adapters.POSTransactionAdapter
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivityPOSBinding
 import com.thellex.payments.features.auth.ui.AuthVerificationActivity
@@ -32,6 +31,7 @@ import com.thellex.payments.features.kyc.ui.basic.KycSuccessActivity
 import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.fiat.CryptoToFiatOnRampActivity
 import com.thellex.payments.features.kyc.ui.StartKycActivity
 import com.thellex.payments.features.notifications.ui.NotificationsActivity
 import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
@@ -60,8 +60,9 @@ class POSHomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPOSBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        setupWindowInsetsAndBars()
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.posMain.applyAdvancedSystemBarInsets()
 
         userViewModel = ViewModelProvider(
             this,
@@ -82,28 +83,6 @@ class POSHomeActivity : AppCompatActivity() {
         observeNotification()
         setupNotification()
         closeAllOtherActivities()
-    }
-
-    private fun setupWindowInsetsAndBars() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
-            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            view.setPadding(
-                view.paddingLeft,
-                systemBarsInsets.top,
-                view.paddingRight,
-                systemBarsInsets.bottom
-            )
-
-            insets
-        }
-
-        val window = window
-        WindowCompat.setDecorFitsSystemWindows(window, true)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.statusBarColor = Color.parseColor("#212C2C3A")
-        }
     }
 
     private fun setupRecyclerView() {
@@ -219,7 +198,9 @@ class POSHomeActivity : AppCompatActivity() {
         val modal = RequestOptionsModalFragment.newInstance()
 
         modal.setListener(object : RequestOptionsModalFragment.ReceiveOptionsListener {
-            override fun onFiatClick() { }
+            override fun onFiatToCryptoClick() {
+                startActivity(Intent(this@POSHomeActivity, CryptoToFiatOnRampActivity::class.java))
+            }
             override fun onCryptoClick() {
                 startActivity(Intent(this@POSHomeActivity, POSChooseCryptoActivity::class.java))
             }

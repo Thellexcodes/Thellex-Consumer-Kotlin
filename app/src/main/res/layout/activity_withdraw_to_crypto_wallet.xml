@@ -174,7 +174,7 @@
                         android:id="@+id/withdraw_spinner"
                         android:layout_width="112dp"
                         android:layout_height="46dp"
-                        android:background="@drawable/rounded_edittext_midnight_bg"
+                        android:background="@drawable/rounded_border"
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp"
                         android:clickable="true"

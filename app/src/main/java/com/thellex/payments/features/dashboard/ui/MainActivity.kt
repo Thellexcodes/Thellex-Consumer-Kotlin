@@ -19,6 +19,9 @@ import androidx.lifecycle.lifecycleScope
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.core.utils.Helpers.showSystemNotification
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.databinding.ActivityMainBinding
@@ -46,6 +49,9 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.main.applyAdvancedSystemBarInsets()
 
         userModel = ViewModelProvider(
             this,

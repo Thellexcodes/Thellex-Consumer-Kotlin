@@ -32,16 +32,9 @@ class StartKycActivity : AppCompatActivity() {
         ActivityTracker.add(this)
         ActivityTracker.finishActivity(KycSuccessActivity::class.java)
 
-        // Handle safe area insets (e.g., notch, system bars)
         applyWindowInsets()
-
-        // Initialize ViewModel
         setupViewModel()
-
-        // Setup UI interactions
         setupListeners()
-
-        // Observe user data
         observeUserLimits()
     }
 

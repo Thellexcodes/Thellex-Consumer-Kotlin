@@ -17,6 +17,7 @@ import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.ErrorHandler
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.data.model.VerifyUserDto
@@ -43,6 +44,7 @@ class AuthVerificationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthVerificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.authVerificationMain.applyAdvancedSystemBarInsets()
 
         userModel = ViewModelProvider(
             this,

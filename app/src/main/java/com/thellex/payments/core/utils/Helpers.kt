@@ -1,17 +1,21 @@
 package com.thellex.payments.core.utils
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.text.InputFilter
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.util.Patterns
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -19,6 +23,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsAnimationCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.thellex.payments.R
 import com.thellex.payments.data.model.PaymentStatus
 import com.thellex.payments.features.dashboard.ui.MainActivity
@@ -338,6 +347,79 @@ object Helpers {
         text = if (submitting) loadingText else defaultText
         setBackgroundResource(if (submitting) submittingBackgroundRes else defaultBackgroundRes)
         setTextColor(ContextCompat.getColor(context, if (submitting) submittingTextColor else defaultTextColor))
+    }
+
+    /**
+     * Applies advanced system bar insets padding to this View (top + bottom).
+     *
+     * @param extraTopPaddingDp Extra fallback padding in dp to add to top inset (default 12dp)
+     * @param extraBottomPaddingDp Extra fallback padding in dp to add to bottom inset (default 12dp)
+     * @param fixedHorizontalPaddingDp Fixed horizontal padding in dp (default 20dp)
+     */
+    fun View.applyAdvancedSystemBarInsets(
+        extraTopPaddingDp: Int = 12,
+        extraBottomPaddingDp: Int = 12,
+        fixedHorizontalPaddingDp: Int = 10,
+    ) {
+        val density = resources.displayMetrics.density
+        val extraTopPaddingPx = (extraTopPaddingDp * density).toInt()
+        val extraBottomPaddingPx = (extraBottomPaddingDp * density).toInt()
+        val fixedHorizontalPaddingPx = (fixedHorizontalPaddingDp * density).toInt()
+
+        val windowInsetsType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.navigationBars()
+
+        ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+            val systemBarsInsets = insets.getInsets(windowInsetsType)
+
+            val paddingTop = systemBarsInsets.top + extraTopPaddingPx
+            val paddingBottom = systemBarsInsets.bottom + extraBottomPaddingPx
+
+            v.setPadding(
+                fixedHorizontalPaddingPx,
+                paddingTop,
+                fixedHorizontalPaddingPx,
+                paddingBottom
+            )
+            insets
+        }
+
+        ViewCompat.setWindowInsetsAnimationCallback(this, object : WindowInsetsAnimationCompat.Callback(
+            WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
+        ) {
+            override fun onProgress(
+                insets: WindowInsetsCompat,
+                runningAnimations: List<WindowInsetsAnimationCompat>
+            ): WindowInsetsCompat {
+                val systemBarsInsets = insets.getInsets(windowInsetsType)
+
+                val paddingTop = systemBarsInsets.top + extraTopPaddingPx
+                val paddingBottom = systemBarsInsets.bottom + extraBottomPaddingPx
+
+                setPadding(
+                    fixedHorizontalPaddingPx,
+                    paddingTop,
+                    fixedHorizontalPaddingPx,
+                    paddingBottom
+                )
+                return insets
+            }
+        })
+    }
+
+
+    fun Activity.disableDecorFitsSystemWindows() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+    }
+
+    fun Activity.setTransparentStatusBarWithWhiteIcons() {
+        // Allow content to draw behind system bars
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // Use WindowInsetsControllerCompat to set icon colors
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false   // false = white status bar icons
+            isAppearanceLightNavigationBars = false  // false = white nav bar icons
+        }
     }
 }
 
