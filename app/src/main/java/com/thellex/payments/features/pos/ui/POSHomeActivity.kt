@@ -62,7 +62,7 @@ class POSHomeActivity : AppCompatActivity() {
         setContentView(binding.root)
         disableDecorFitsSystemWindows()
         setTransparentStatusBarWithWhiteIcons()
-        binding.posMain.applyAdvancedSystemBarInsets()
+        binding.posMain.applyAdvancedSystemBarInsets(fixedHorizontalPaddingDp = 0)
 
         userViewModel = ViewModelProvider(
             this,
