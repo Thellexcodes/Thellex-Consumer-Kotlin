@@ -31,7 +31,7 @@ import com.thellex.payments.features.kyc.ui.basic.KycSuccessActivity
 import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
-import com.thellex.payments.features.fiat.CryptoToFiatOnRampActivity
+import com.thellex.payments.features.fiat.FiatToCryptoOnRampActivity
 import com.thellex.payments.features.kyc.ui.StartKycActivity
 import com.thellex.payments.features.notifications.ui.NotificationsActivity
 import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
@@ -199,7 +199,7 @@ class POSHomeActivity : AppCompatActivity() {
 
         modal.setListener(object : RequestOptionsModalFragment.ReceiveOptionsListener {
             override fun onFiatToCryptoClick() {
-                startActivity(Intent(this@POSHomeActivity, CryptoToFiatOnRampActivity::class.java))
+                startActivity(Intent(this@POSHomeActivity, FiatToCryptoOnRampActivity::class.java))
             }
             override fun onCryptoClick() {
                 startActivity(Intent(this@POSHomeActivity, POSChooseCryptoActivity::class.java))

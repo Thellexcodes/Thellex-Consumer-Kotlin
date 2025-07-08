@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     kotlin("plugin.serialization")
     id("kotlin-parcelize")
-    id("com.google.gms.google-services") version "4.4.3" apply false
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -47,17 +47,20 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
+
+    implementation(libs.material.v1110)
+
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.annotation)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    implementation(libs.androidx.lifecycle.livedata.ktx.v261)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx.v261)
+
     implementation(libs.androidx.activity)
-    implementation(libs.material.v1110)
     implementation(libs.journeyapps.zxing.android.embedded)
-    implementation(libs.material.vlatestversion)
+
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
@@ -65,21 +68,21 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.logging.interceptor)
-    implementation(libs.androidx.lifecycle.livedata.ktx.v261)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx.v261)
     implementation(libs.kotlinx.datetime)
-    implementation (libs.otp.view)
-    implementation (libs.imagepicker)
-    implementation (libs.journeyapps.zxing.android.embedded)
-    implementation(libs.firebase.analytics)
 
-    implementation ("io.socket:socket.io-client:2.0.0") {
+    implementation(libs.otp.view)
+    implementation(libs.imagepicker)
+
+    implementation("io.socket:socket.io-client:2.0.0") {
         exclude(group = "org.json", module = "json")
     }
 
     implementation(platform(libs.firebase.bom))
-    implementation(libs.androidx.ui.text.android)
+    implementation(libs.firebase.analytics)
     implementation(libs.firebase.messaging.ktx)
+
+    implementation(libs.androidx.ui.text.android)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

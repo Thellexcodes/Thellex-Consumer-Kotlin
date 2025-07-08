@@ -1,17 +1,12 @@
 package com.thellex.payments.features.dashboard.ui
 
-import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
@@ -22,7 +17,6 @@ import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
-import com.thellex.payments.core.utils.Helpers.showSystemNotification
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.databinding.ActivityMainBinding
 import com.thellex.payments.features.onboarding.OnboardingActivity
@@ -31,12 +25,12 @@ import com.thellex.payments.network.services.SocketService
 import com.thellex.payments.features.pos.ui.POSHomeActivity
 import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
-import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -172,5 +166,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    companion object {
+        private val TAG = "TAG"
     }
 }
