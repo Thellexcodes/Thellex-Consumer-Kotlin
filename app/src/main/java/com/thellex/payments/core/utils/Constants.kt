@@ -7,6 +7,7 @@ object Constants {
     const val LOGIN_ENDPOINT = "$VERSIONED_BASE/user/access"
     const val VERIFY_CODE_ENDPOINT = "$VERSIONED_BASE/user/verify"
     const val AUTH_LOGIN_ENDPOINT = "$VERSIONED_BASE/user/authenticate"
+    const val UPDATE_FCM_TOKEN_ENDPOINT = "$VERSIONED_BASE/user/update-fcm-token"
 
     // Payment Endpoints
     const val WITHDRAW_CRYPTO_PAYMENT_ENDPOINT = "$VERSIONED_BASE/payments/withdraw-crypto"

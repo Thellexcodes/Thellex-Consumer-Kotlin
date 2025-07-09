@@ -6,16 +6,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
+import com.thellex.payments.databinding.ActivityCryptoToFiatOffRampBinding
 
 class CryptoToFiatOffRampActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityCryptoToFiatOffRampBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_crypto_to_fiat_off_ramp)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        binding = ActivityCryptoToFiatOffRampBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.main.applyAdvancedSystemBarInsets()
     }
 }

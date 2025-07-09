@@ -12,11 +12,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.messaging.FirebaseMessaging
 import com.otpview.OTPListener
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.ErrorHandler
+import com.thellex.payments.core.utils.FcmHelper
+import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.network.services.ApiClient
@@ -26,6 +29,7 @@ import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.pos.ui.POSHomeActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -194,6 +198,9 @@ class AuthVerificationActivity : AppCompatActivity() {
                     withContext(Dispatchers.Main) {
                         userModel.saveAuthResult(result)
                         navigateToQuickActions()
+
+                        val fcmToken = FirebaseMessaging.getInstance().token.await()
+                        FcmHelper.sendFcmTokenToBackend(userAuthToken = token!!, fcmToken = fcmToken)
                     }
                 } ?: run {
                     val errorBody = response.errorBody()?.string().orEmpty()

@@ -11,6 +11,7 @@ import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.databinding.ActivityCryptoOnRampBinding
+import com.thellex.payments.features.auth.viewModel.UserRepository
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 
@@ -18,6 +19,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCryptoOnRampBinding
     private lateinit var userViewModel: UserViewModel
+    private val userRepository by lazy { UserRepository.getInstance(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +49,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
             userDto?.nextTier?.let {
                 binding.containerNextTierInfo.visibility = View.VISIBLE
                 binding.currentTierLevel.text = it.name.value
-                binding.currentTierLimitAmount.text = "NGN ${it.transactionLimits.dailyDebitLimit.toString()}"
+                binding.currentTierLimitAmount.text = "NGN ${it.transactionLimits.dailyDebitLimit}"
             }
         }
     }

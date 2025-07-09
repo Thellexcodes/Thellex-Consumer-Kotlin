@@ -129,7 +129,6 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         }
     }
 
-
     fun updateTransaction(updatedTransaction: ITransactionHistoryEntity) {
         viewModelScope.launch {
             val currentUser = _authResult.value

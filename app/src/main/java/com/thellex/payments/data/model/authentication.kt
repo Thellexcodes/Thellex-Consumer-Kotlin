@@ -21,6 +21,11 @@ data class AccessResponse(
 )
 
 @Serializable
+data class FcmTokenDto (
+    @SerializedName("token") val token: String
+)
+
+@Serializable
 data class UserEntity(
     @SerializedName("uid") val uid: Int,
     @SerializedName("email") val email: String,

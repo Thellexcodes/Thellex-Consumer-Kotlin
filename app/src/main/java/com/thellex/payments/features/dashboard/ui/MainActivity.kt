@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         setTransparentStatusBarWithWhiteIcons()
         binding.main.applyAdvancedSystemBarInsets()
 
+
         userModel = ViewModelProvider(
             this,
             UserViewModelFactory(applicationContext)
