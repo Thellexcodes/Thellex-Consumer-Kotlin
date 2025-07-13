@@ -13,6 +13,7 @@ import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteI
 import com.thellex.payments.databinding.ActivityNotificationPermissionBinding
 import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.features.dashboard.ui.MainActivity
+import com.thellex.payments.features.pos.ui.POSHomeActivity
 
 class NotificationPermissionActivity : AppCompatActivity() {
 
@@ -21,11 +22,12 @@ class NotificationPermissionActivity : AppCompatActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted) {
-            goToNextScreen()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            setNotificationPermissionFlag(isGranted)
         } else {
-            goToNextScreen()
+            setNotificationPermissionFlag(true)
         }
+        goToNextScreen()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +41,11 @@ class NotificationPermissionActivity : AppCompatActivity() {
         binding.btnEnableNotifications.setOnClickListener {
             requestNotificationPermission()
         }
-        binding.btnClose.setOnClickListener { finish() }
+
+        binding.btnClose.setOnClickListener {
+            setNotificationPermissionFlag(false)
+            goToNextScreen()
+        }
     }
 
     private fun requestNotificationPermission() {
@@ -47,22 +53,26 @@ class NotificationPermissionActivity : AppCompatActivity() {
             val permission = android.Manifest.permission.POST_NOTIFICATIONS
             when {
                 ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
+                    setNotificationPermissionFlag(true)
                     goToNextScreen()
                 }
-
                 else -> {
                     requestPermissionLauncher.launch(permission)
                 }
             }
         } else {
+            setNotificationPermissionFlag(true)
             goToNextScreen()
         }
     }
 
-    private fun goToNextScreen() {
+    private fun setNotificationPermissionFlag(enabled: Boolean) {
         val sharedPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-        sharedPrefs.edit().putBoolean("is_first_launch", false).apply()
-        startActivity(Intent(this, MainActivity::class.java))
+        sharedPrefs.edit().putBoolean("has_enabled_notifications", enabled).apply()
+    }
+
+    private fun goToNextScreen() {
+        startActivity(Intent(this, POSHomeActivity::class.java))
         finish()
     }
 }

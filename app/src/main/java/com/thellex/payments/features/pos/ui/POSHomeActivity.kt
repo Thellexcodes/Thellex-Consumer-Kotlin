@@ -25,6 +25,7 @@ import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
+import com.thellex.payments.core.utils.Helpers.showSystemNotification
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivityPOSBinding
 import com.thellex.payments.features.auth.ui.AuthVerificationActivity
@@ -77,6 +78,12 @@ class POSHomeActivity : AppCompatActivity() {
             this,
             WalletManagerModelFactory(applicationContext)
         )[WalletManagerViewModel::class.java]
+
+//        showSystemNotification(
+//            this@POSHomeActivity,
+//            "Hello!",
+//            "Welcome."
+//        )
 
         setupRecyclerView()
         observeUserTransactions()

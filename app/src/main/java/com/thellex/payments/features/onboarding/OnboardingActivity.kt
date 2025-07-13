@@ -43,12 +43,14 @@ class OnboardingActivity : AppCompatActivity() {
         setCurrentIndicator(0)
 
         binding.nextButton.setOnClickListener {
-            navigateToNotifications()
+            navigateToLogin()
         }
     }
 
-    private fun navigateToNotifications() {
-        val intent = Intent(this, NotificationPermissionActivity::class.java)
+    private fun navigateToLogin() {
+        val sharedPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        sharedPrefs.edit().putBoolean("is_first_launch", false).apply()
+        val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
     }
 

@@ -27,6 +27,7 @@ import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.data.model.VerifyUserDto
 import com.thellex.payments.databinding.ActivityAuthVerificationBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.onboarding.NotificationPermissionActivity
 import com.thellex.payments.features.pos.ui.POSHomeActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -212,13 +213,18 @@ class AuthVerificationActivity : AppCompatActivity() {
         }
     }
 
-    private fun navigateToLoginPin() {
-        startActivity(Intent(this, LoginPinActivity::class.java))
+    private fun navigateToQuickActions() {
+        val sharedPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val hasEnabledNotifications = sharedPrefs.getBoolean("has_enabled_notifications", false)
+
+        if (!hasEnabledNotifications) {
+            // Show notification permission screen
+            startActivity(Intent(this, NotificationPermissionActivity::class.java))
+        } else {
+            // Proceed to home
+            startActivity(Intent(this, POSHomeActivity::class.java))
+        }
         finish()
     }
 
-    private fun navigateToQuickActions() {
-        startActivity(Intent(this, POSHomeActivity::class.java))
-        finish()
-    }
 }

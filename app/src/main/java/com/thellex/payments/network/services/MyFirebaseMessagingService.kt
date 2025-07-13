@@ -28,12 +28,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         Log.d(tag, "From: ${remoteMessage.from}")
 
-//        showSystemNotification(
-//            this@MyFirebaseMessagingService,
-//            "Withdraw Complete",
-//            "You've successfully withdrawn."
-//        )
-
         remoteMessage.notification?.let {
             Log.d(tag, "Notification Body: ${it.body}")
         }

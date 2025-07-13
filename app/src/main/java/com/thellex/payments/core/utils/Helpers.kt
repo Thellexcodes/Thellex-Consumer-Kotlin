@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import android.text.InputFilter
@@ -291,12 +292,12 @@ object Helpers {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Notification Manager
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Create the NotificationChannel for Android 8.0+
+        // Create NotificationChannel (Android 8.0+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "My App Notifications"
+            val name = "Notifications"
             val descriptionText = "Shows important app updates"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(channelId, name, importance).apply {
@@ -305,33 +306,20 @@ object Helpers {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Build the notification
+        // Optional: setLargeIcon for legacy support (Android < 5.0)
+        val largeIcon = BitmapFactory.decodeResource(context.resources, R.drawable.ic_thellex_logo_x)
+
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.thellex_logo_white)
+            .setSmallIcon(R.drawable.ic_thellex_logo_x)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
+            .setLargeIcon(largeIcon)
             .build()
 
-        // Show the notification
         notificationManager.notify(notificationId, notification)
-    }
-
-    fun Button.setProcessing(
-        submitting: Boolean,
-        loadingText: String = "Processing...",
-        defaultText: String = "Submit",
-        submittingBackgroundRes: Int = R.drawable.rounded_border_button_darkblue,
-        defaultBackgroundRes: Int = R.drawable.rounded_border_button_golden,
-        submittingTextColor: Int = R.color.white,
-        defaultTextColor: Int = R.color.darkBlue
-    ) {
-        isEnabled = !submitting
-        text = if (submitting) loadingText else defaultText
-        setBackgroundResource(if (submitting) submittingBackgroundRes else defaultBackgroundRes)
-        setTextColor(ContextCompat.getColor(context, if (submitting) submittingTextColor else defaultTextColor))
     }
 
     fun Button.setSubmitting(
