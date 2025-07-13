@@ -60,4 +60,5 @@
     <string name="balance">BALANCE</string>
     <string name="profile">PROFILE</string>
     <string name="log_out">Log out</string>
+    <string name="close">Close</string>
 </resources>

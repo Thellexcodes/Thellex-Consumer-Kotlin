@@ -1,5 +1,6 @@
 package com.thellex.payments.features.pos.ui
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import com.thellex.payments.features.auth.viewModel.UserViewModel
@@ -31,9 +32,12 @@ import com.thellex.payments.features.kyc.ui.basic.KycSuccessActivity
 import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.dashboard.ui.MainActivity
 import com.thellex.payments.features.fiat.FiatToCryptoOnRampActivity
 import com.thellex.payments.features.kyc.ui.StartKycActivity
 import com.thellex.payments.features.notifications.ui.NotificationsActivity
+import com.thellex.payments.features.onboarding.LauncherActivity
+import com.thellex.payments.features.onboarding.OnboardingActivity
 import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
 import com.thellex.payments.features.pos.fragments.WithdrawalOptionsModalFragment
 import com.thellex.payments.features.profile.ProfileActivity
@@ -81,7 +85,6 @@ class POSHomeActivity : AppCompatActivity() {
         loadWalletData()
         observeUserUid()
         observeNotification()
-        setupNotification()
         closeAllOtherActivities()
     }
 
@@ -241,56 +244,59 @@ class POSHomeActivity : AppCompatActivity() {
         modal.show(supportFragmentManager, "WithdrawalOptionsModal")
     }
 
-    private fun setupNotification(){
-        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val hasAskedPermission = sharedPref.getBoolean("asked_notification_permission", false)
+//    private fun setupNotification(){
+//        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+//        val hasAskedPermission = sharedPref.getBoolean("asked_notification_permission", false)
+//
+//        if (!hasAskedPermission) {
+//            object : CountDownTimer(10_000, 1_000) {
+//                override fun onTick(millisUntilFinished: Long) {}
+//                override fun onFinish() {
+//                    promptNotificationPermissionWithDialog()
+//                }
+//            }.start()
+//        }
+//    }
 
-        if (!hasAskedPermission) {
-            object : CountDownTimer(10_000, 1_000) {
-                override fun onTick(millisUntilFinished: Long) {}
-                override fun onFinish() {
-                    promptNotificationPermissionWithDialog()
-                }
-            }.start()
-        }
-    }
+//    private fun promptNotificationPermissionWithDialog() {
+//        AlertDialog.Builder(this)
+//            .setTitle("Enable Notifications")
+//            .setMessage("We’ll notify you of important account activity like transfers and payments.")
+//            .setPositiveButton("Allow") { _, _ ->
+//                requestNotificationPermissionIfFirstTime()
+//            }
+//            .setNegativeButton("Not now", null)
+//            .show()
+//    }
 
-    private fun promptNotificationPermissionWithDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Enable Notifications")
-            .setMessage("We’ll notify you of important account activity like transfers and payments.")
-            .setPositiveButton("Allow") { _, _ ->
-                requestNotificationPermissionIfFirstTime()
-            }
-            .setNegativeButton("Not now", null)
-            .show()
-    }
-
-    private fun requestNotificationPermissionIfFirstTime() {
-        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val hasAskedPermission = sharedPref.getBoolean("asked_notification_permission", false)
-
-        if (!hasAskedPermission) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (ContextCompat.checkSelfPermission(
-                        this,
-                        android.Manifest.permission.POST_NOTIFICATIONS
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                        100
-                    )
-                }
-            }
-
-            // Save that we've asked for permission already
-            sharedPref.edit().putBoolean("asked_notification_permission", true).apply()
-        }
-    }
+//    private fun requestNotificationPermissionIfFirstTime() {
+//        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+//        val hasAskedPermission = sharedPref.getBoolean("asked_notification_permission", false)
+//
+//        if (!hasAskedPermission) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                if (ContextCompat.checkSelfPermission(
+//                        this,
+//                        android.Manifest.permission.POST_NOTIFICATIONS
+//                    ) != PackageManager.PERMISSION_GRANTED
+//                ) {
+//                    ActivityCompat.requestPermissions(
+//                        this,
+//                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+//                        100
+//                    )
+//                }
+//            }
+//
+//            // Save that we've asked for permission already
+//            sharedPref.edit().putBoolean("asked_notification_permission", true).apply()
+//        }
+//    }
 
     private fun closeAllOtherActivities() {
+        ActivityTracker.finishActivity(MainActivity::class.java)
+        ActivityTracker.finishActivity(LauncherActivity::class.java)
+        ActivityTracker.finishActivity(OnboardingActivity::class.java)
         ActivityTracker.finishActivity(LoginActivity::class.java)
         ActivityTracker.finishActivity(AuthVerificationActivity::class.java)
         ActivityTracker.finishActivity(TransactionSuccessActivity::class.java)

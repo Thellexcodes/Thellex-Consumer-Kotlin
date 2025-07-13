@@ -8,8 +8,6 @@
         android:background="@drawable/general_gradient_background"
         tools:context=".features.auth.ui.AuthVerificationActivity">
 
-
-
     <!-- Top Section -->
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/auth_verification_header_section"

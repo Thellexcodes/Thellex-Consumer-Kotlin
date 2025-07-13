@@ -62,7 +62,7 @@ class SocketService : Service() {
             .setCategory(Notification.CATEGORY_SERVICE) // mark as service
             .build()
 
-        startForeground(1, notification)
+//        startForeground(1, notification)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

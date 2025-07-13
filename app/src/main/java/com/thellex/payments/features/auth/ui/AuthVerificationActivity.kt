@@ -19,8 +19,9 @@ import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.core.utils.FcmHelper
-import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.data.model.VerifyUserDto
@@ -48,6 +49,8 @@ class AuthVerificationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthVerificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
         binding.authVerificationMain.applyAdvancedSystemBarInsets()
 
         userModel = ViewModelProvider(
@@ -58,23 +61,9 @@ class AuthVerificationActivity : AppCompatActivity() {
         ActivityTracker.add(this)
         token = intent.getStringExtra("token")
 
-        setupInsets()
         setupOtpListener()
         setupVerifyButton()
         startExpirationTimer()
-    }
-
-    private fun setupInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(
-                view.paddingLeft,
-                systemBarsInsets.top,
-                view.paddingRight,
-                systemBarsInsets.bottom
-            )
-            insets
-        }
     }
 
     private fun setupOtpListener() {
@@ -191,6 +180,8 @@ class AuthVerificationActivity : AppCompatActivity() {
                     return@launch
                 }
 
+                val fcmToken = FirebaseMessaging.getInstance().token.await()
+                FcmHelper.sendFcmTokenToBackend(userAuthToken = token!!, fcmToken = fcmToken)
                 val api = ApiClient.getAuthenticatedApi(token!!)
                 val response = api.verifyCode(verifyUserRequestData)
 
@@ -199,8 +190,6 @@ class AuthVerificationActivity : AppCompatActivity() {
                         userModel.saveAuthResult(result)
                         navigateToQuickActions()
 
-                        val fcmToken = FirebaseMessaging.getInstance().token.await()
-                        FcmHelper.sendFcmTokenToBackend(userAuthToken = token!!, fcmToken = fcmToken)
                     }
                 } ?: run {
                     val errorBody = response.errorBody()?.string().orEmpty()

@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
@@ -19,9 +18,7 @@ import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.databinding.ActivityMainBinding
-import com.thellex.payments.features.onboarding.OnboardingActivity
 import com.thellex.payments.network.services.ApiClient
-import com.thellex.payments.network.services.SocketService
 import com.thellex.payments.features.pos.ui.POSHomeActivity
 import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
@@ -47,7 +44,6 @@ class MainActivity : AppCompatActivity() {
         setTransparentStatusBarWithWhiteIcons()
         binding.main.applyAdvancedSystemBarInsets()
 
-
         userModel = ViewModelProvider(
             this,
             UserViewModelFactory(applicationContext)
@@ -57,11 +53,6 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         checkAuthStatus()
-
-        userModel.authResult.observe(this) { authResult ->
-            val alertID = authResult?.alertID ?: "default-id"
-            startSocketServiceWithAlertId(alertID)
-        }
     }
 
     private fun checkAuthStatus() {
@@ -128,21 +119,6 @@ class MainActivity : AppCompatActivity() {
                 navigateToLogin()
             }
         }
-    }
-
-    private fun startSocketServiceWithAlertId(alertID: String) {
-        lifecycleScope.launch {
-            val serviceIntent = Intent(this@MainActivity, SocketService::class.java).apply {
-                putExtra("alertID", alertID)
-            }
-            ContextCompat.startForegroundService(this@MainActivity, serviceIntent)
-        }
-    }
-
-    private fun navigateToOnboarding() {
-        val intent = Intent(this, OnboardingActivity::class.java)
-        startActivity(intent)
-        finish()
     }
 
     private suspend fun navigateToDashboard() = withContext(Dispatchers.Main) {

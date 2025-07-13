@@ -5,6 +5,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.thellex.payments.core.utils.FcmHelper
 import com.thellex.payments.core.utils.FcmHelper.sendFcmTokenToBackend
+import com.thellex.payments.core.utils.Helpers.showSystemNotification
 import com.thellex.payments.features.auth.viewModel.UserRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +27,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         super.onMessageReceived(remoteMessage)
 
         Log.d(tag, "From: ${remoteMessage.from}")
+
+//        showSystemNotification(
+//            this@MyFirebaseMessagingService,
+//            "Withdraw Complete",
+//            "You've successfully withdrawn."
+//        )
 
         remoteMessage.notification?.let {
             Log.d(tag, "Notification Body: ${it.body}")
