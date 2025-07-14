@@ -18,7 +18,7 @@ import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.kyc.adapters.KycRequirementsAdapter
 
-class BasicKycRequirements : AppCompatActivity() {
+class BasicKycRequirementsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityKycOverviewBinding
     private lateinit var userViewModel: UserViewModel
@@ -73,7 +73,7 @@ class BasicKycRequirements : AppCompatActivity() {
 
     private fun setupRequirementsRecyclerView(requirements: List<String>) {
         binding.rvRequirements.apply {
-            layoutManager = LinearLayoutManager(this@BasicKycRequirements)
+            layoutManager = LinearLayoutManager(this@BasicKycRequirementsActivity)
             adapter = KycRequirementsAdapter(requirements)
         }
     }

@@ -8,12 +8,14 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.thellex.payments.features.fiat.ManageFiatAccountActivity
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.settings.PaymentType
 
 class EnterTransactionAmountActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_request_amount)
+        ActivityTracker.add(this)
 
         val merchant_withdraw_request_button = findViewById<LinearLayout>(R.id.merchant_withdraw_request_button)
         val blacklistedAssetWarningLayout = findViewById<LinearLayout>(R.id.request_amount_blacklisted_asset_warning)

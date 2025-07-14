@@ -23,12 +23,12 @@ class KycSuccessActivity : AppCompatActivity() {
 
     // --- Lifecycle ---
     override fun onCreate(savedInstanceState: Bundle?) {
+        ActivityTracker.add(this)
         super.onCreate(savedInstanceState)
         setupViewBinding()
         setupViewModel()
         observeUser()
         setupListeners()
-        ActivityTracker.add(this)
         closeAllOtherActivities()
     }
 

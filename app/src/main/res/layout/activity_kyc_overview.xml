@@ -9,7 +9,7 @@
         android:paddingTop="20dp"
         android:paddingHorizontal="20dp"
         android:background="@drawable/general_gradient_background"
-        tools:context=".features.kyc.ui.basic.BasicKycRequirements">
+        tools:context=".features.kyc.ui.basic.BasicKycRequirementsActivity">
 
     <ImageView
             android:id="@+id/activity_kyc_overview_iv_back_icon"

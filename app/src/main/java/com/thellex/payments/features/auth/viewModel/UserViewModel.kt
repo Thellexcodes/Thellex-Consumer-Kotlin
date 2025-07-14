@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.data.model.INotificationConsumeDto
 import com.thellex.payments.data.model.ITransactionHistoryEntity
 import com.thellex.payments.data.model.KycResponseDto
@@ -61,6 +62,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
             repository.logout()
             _authResult.postValue(null)
         }
+        ActivityTracker.finishAll()
     }
 
     fun getToken(): String? {

@@ -26,6 +26,7 @@ import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.data.model.LoginRequestDto
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.profile.ProfileActivity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -43,6 +44,7 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ActivityTracker.add(this)
+        ActivityTracker.finishActivity(ProfileActivity::class.java)
 
         userModel = ViewModelProvider(
             this,

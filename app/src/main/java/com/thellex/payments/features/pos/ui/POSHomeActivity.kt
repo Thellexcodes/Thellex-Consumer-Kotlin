@@ -65,6 +65,7 @@ class POSHomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPOSBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
         disableDecorFitsSystemWindows()
         setTransparentStatusBarWithWhiteIcons()
         binding.posMain.applyAdvancedSystemBarInsets(fixedHorizontalPaddingDp = 0)
@@ -250,55 +251,6 @@ class POSHomeActivity : AppCompatActivity() {
 
         modal.show(supportFragmentManager, "WithdrawalOptionsModal")
     }
-
-//    private fun setupNotification(){
-//        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-//        val hasAskedPermission = sharedPref.getBoolean("asked_notification_permission", false)
-//
-//        if (!hasAskedPermission) {
-//            object : CountDownTimer(10_000, 1_000) {
-//                override fun onTick(millisUntilFinished: Long) {}
-//                override fun onFinish() {
-//                    promptNotificationPermissionWithDialog()
-//                }
-//            }.start()
-//        }
-//    }
-
-//    private fun promptNotificationPermissionWithDialog() {
-//        AlertDialog.Builder(this)
-//            .setTitle("Enable Notifications")
-//            .setMessage("We’ll notify you of important account activity like transfers and payments.")
-//            .setPositiveButton("Allow") { _, _ ->
-//                requestNotificationPermissionIfFirstTime()
-//            }
-//            .setNegativeButton("Not now", null)
-//            .show()
-//    }
-
-//    private fun requestNotificationPermissionIfFirstTime() {
-//        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-//        val hasAskedPermission = sharedPref.getBoolean("asked_notification_permission", false)
-//
-//        if (!hasAskedPermission) {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                if (ContextCompat.checkSelfPermission(
-//                        this,
-//                        android.Manifest.permission.POST_NOTIFICATIONS
-//                    ) != PackageManager.PERMISSION_GRANTED
-//                ) {
-//                    ActivityCompat.requestPermissions(
-//                        this,
-//                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-//                        100
-//                    )
-//                }
-//            }
-//
-//            // Save that we've asked for permission already
-//            sharedPref.edit().putBoolean("asked_notification_permission", true).apply()
-//        }
-//    }
 
     private fun closeAllOtherActivities() {
         ActivityTracker.finishActivity(MainActivity::class.java)

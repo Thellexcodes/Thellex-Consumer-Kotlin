@@ -13,6 +13,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.thellex.payments.core.decorators.ItemSpacingDecoration
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.data.enums.UserErrorEnum
@@ -55,6 +56,7 @@ class NotificationsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityNotificationsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
 
         userViewModel = ViewModelProvider(
             this,

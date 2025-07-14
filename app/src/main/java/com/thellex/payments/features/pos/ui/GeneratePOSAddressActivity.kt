@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.features.pos.adapters.CryptoSpinnerAdapter
 import com.thellex.payments.data.model.BlockchainItem
 import com.thellex.payments.settings.PaymentType
@@ -46,6 +47,7 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPosAddressGeneratorBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
 
         assetCode = intent.getStringExtra("assetCode") ?: ""
         assetCodeChainName = intent.getStringExtra("assetCodeChain") ?: ""

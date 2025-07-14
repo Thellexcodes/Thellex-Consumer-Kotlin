@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
@@ -25,6 +26,7 @@ class ProfileActivity : AppCompatActivity() {
 
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
         disableDecorFitsSystemWindows()
         setTransparentStatusBarWithWhiteIcons()
         binding.profileMain.applyAdvancedSystemBarInsets()
@@ -59,9 +61,10 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun onLogout() {
+        ActivityTracker.remove(this)
         userViewModel.logout()
-         finish()
         //TODO: Prompt user to logout
+        ActivityTracker.finishAll()
         startActivity(Intent(this, LoginActivity::class.java))
     }
 }

@@ -73,10 +73,6 @@ dependencies {
     implementation(libs.otp.view)
     implementation(libs.imagepicker)
 
-    implementation("io.socket:socket.io-client:2.0.0") {
-        exclude(group = "org.json", module = "json")
-    }
-
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.messaging.ktx)

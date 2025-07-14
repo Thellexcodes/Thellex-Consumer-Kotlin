@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.core.decorators.ItemSpacingDecoration
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.features.pos.adapters.CryptoAdapter
 import com.thellex.payments.data.model.TokenListDto
@@ -35,6 +36,7 @@ class POSChooseCryptoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPosChooseCryptoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())

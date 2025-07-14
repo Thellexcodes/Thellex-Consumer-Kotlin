@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
 import com.thellex.payments.core.decorators.ItemSpacingDecoration
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.formatDecimal
 import com.thellex.payments.databinding.ActivityWalletAssetsBinding
@@ -36,6 +37,7 @@ class WalletAssetsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityWalletAssetsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
 
         setupViewModels()
         walletPreferences = walletManagerViewModel.getWalletPreferences()

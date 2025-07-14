@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
 
 class SelectCryptoCurrencyActivity : AppCompatActivity() {
     private lateinit var paymentCard1: View
@@ -14,6 +15,7 @@ class SelectCryptoCurrencyActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_payment_method)
+        ActivityTracker.add(this)
 
         // Initialize views
         paymentCard1 = findViewById(R.id.paymentCard1)

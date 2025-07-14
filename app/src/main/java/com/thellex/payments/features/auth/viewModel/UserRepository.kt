@@ -2,7 +2,6 @@ package com.thellex.payments.features.auth.viewModel
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.google.firebase.messaging.FirebaseMessaging
 import com.thellex.payments.data.model.UserEntity
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.features.wallet.prefrences.WalletManagerPreferences
@@ -50,6 +49,5 @@ class UserRepository private constructor(private val context: Context) {
         UserPreferences.clearToken(context)
         UserPreferences.clearAuthResult(context)
         walletPreferences.clearWalletCache()
-        FirebaseMessaging.getInstance().deleteToken()
     }
 }

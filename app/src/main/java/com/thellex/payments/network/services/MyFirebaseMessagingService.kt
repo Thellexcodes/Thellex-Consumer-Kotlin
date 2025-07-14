@@ -46,7 +46,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 val userAuthToken = userRepository.getToken()
                     .first { !it.isNullOrBlank() }
 
-                Log.d(tag, "AuthToken is $userAuthToken")
                 sendFcmTokenToBackend(userAuthToken = userAuthToken!!, fcmToken = fcmToken)
 
             } catch (e: Exception) {

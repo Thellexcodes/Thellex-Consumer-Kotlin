@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
         disableDecorFitsSystemWindows()
         setTransparentStatusBarWithWhiteIcons()
         binding.main.applyAdvancedSystemBarInsets()
