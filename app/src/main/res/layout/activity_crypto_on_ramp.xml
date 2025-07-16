@@ -55,6 +55,7 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="gone"
                 android:id="@+id/containerNextTierInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -151,7 +152,6 @@
                 android:id="@+id/input_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="26dp"
                 android:orientation="vertical"
                 app:layout_constraintTop_toBottomOf="@id/containerNextTierInfo">
 
@@ -164,6 +164,29 @@
                     android:textSize="14sp"
                     android:textColor="@color/white"
                     android:fontFamily="@font/kumbhsans_regular" />
+
+            <LinearLayout
+                    android:layout_marginTop="18dp"
+                    android:background="@drawable/rounded_border"
+                    android:orientation="horizontal"
+                    android:paddingVertical="11dp"
+                    android:paddingHorizontal="15dp"
+                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                        <ImageView
+                                android:src="@drawable/icon_info_circle"
+                                android:layout_width="21dp"
+                                android:layout_height="21dp"/>
+                        <TextView
+                                android:textSize="10sp"
+                                android:fontFamily="@font/kumbhsans_regular"
+                                android:layout_marginLeft="@dimen/margin_7dp"
+                                android:textColor="@color/white"
+                                android:text="Only send funds from a bank account that matches your verified name on Thellex."
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+            </LinearLayout>
 
             <!-- CRYPTO INPUT -->
             <androidx.constraintlayout.widget.ConstraintLayout

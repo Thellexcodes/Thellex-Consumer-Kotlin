@@ -34,7 +34,9 @@ import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.dashboard.ui.MainActivity
+import com.thellex.payments.features.fiat.FiatDepositActivity
 import com.thellex.payments.features.fiat.FiatToCryptoOnRampActivity
+import com.thellex.payments.features.fiat.FiatWithdrawActivity
 import com.thellex.payments.features.kyc.ui.StartKycActivity
 import com.thellex.payments.features.notifications.ui.NotificationsActivity
 import com.thellex.payments.features.onboarding.LauncherActivity
@@ -176,7 +178,7 @@ class POSHomeActivity : AppCompatActivity() {
 
     private fun updateNotificationBadge(count: Int) {
         if (count > 0) {
-            binding.activityPosNotificationBadge .visibility = View.VISIBLE
+            binding.activityPosNotificationBadge.visibility = View.VISIBLE
             binding.activityPosNotificationBadge.text = "$count"
         } else {
             binding.activityPosNotificationBadge.visibility = View.GONE
@@ -209,13 +211,17 @@ class POSHomeActivity : AppCompatActivity() {
         val modal = RequestOptionsModalFragment.newInstance()
 
         modal.setListener(object : RequestOptionsModalFragment.ReceiveOptionsListener {
-            override fun onFiatToCryptoClick() {
-                startActivity(Intent(this@POSHomeActivity, FiatToCryptoOnRampActivity::class.java))
-            }
-            override fun onCryptoClick() {
+            override fun onChainDepositClick() {
                 startActivity(Intent(this@POSHomeActivity, POSChooseCryptoActivity::class.java))
             }
-            override fun onBankClick() { }
+            override fun onCryptoToFiatOnRampClick() {
+                startActivity(Intent(this@POSHomeActivity, FiatToCryptoOnRampActivity::class.java))
+            }
+
+            override fun onFiatDepositClick() {
+                startActivity(Intent(this@POSHomeActivity, FiatDepositActivity::class.java))
+            }
+
             override fun onStartKyc() {
                 modal.dismiss()
                 startActivity(Intent(this@POSHomeActivity, StartKycActivity::class.java))
@@ -229,17 +235,15 @@ class POSHomeActivity : AppCompatActivity() {
         val modal = WithdrawalOptionsModalFragment.newInstance()
 
         modal.setListener(object : WithdrawalOptionsModalFragment.WithdrawalOptionsListener {
-            override fun onWithdrawToFiat() {
-                startActivity(Intent(this@POSHomeActivity, EnterTransactionAmountActivity::class.java).apply {
-                    putExtra("type", PaymentType.WITHDRAW_FIAT)
-                })
+            override fun onCryptoToFiatOffRamp() {
+                startActivity(Intent(this@POSHomeActivity, EnterTransactionAmountActivity::class.java))
             }
 
             override fun onWithdrawToBank() {
-//                startActivity(Intent(this@POSHomeActivity, WithdrawToBankActivity::class.java))
+                startActivity(Intent(this@POSHomeActivity, FiatWithdrawActivity::class.java))
             }
 
-            override fun onWithdrawToCryptoWallet() {
+            override fun onChainWithdraw() {
                 startActivity(Intent(this@POSHomeActivity, WithdrawToCryptoWalletActivity::class.java))
             }
 

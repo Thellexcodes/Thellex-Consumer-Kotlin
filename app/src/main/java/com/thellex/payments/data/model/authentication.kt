@@ -35,10 +35,12 @@ data class UserEntity(
     @SerializedName("kyc") val kyc: KycInfoEntity? = null,
     @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryEntity>,
     @SerializedName("notifications") val notifications: List<NotificationEntity>,
-    @SerializedName("settings") val settings: List<StoreSettingsEntity>,
-    @SerializedName("bankAccounts") val bankAccounts: List<BankAccountEntity>,
+    @SerializedName("settings") val settings: List<IStoreSettingsEntityDto>,
+    @SerializedName("bankAccounts") val bankAccounts: List<IBankAccountDto>,
+    @SerializedName("fiatCryptoRampTransactions") val fiatCryptoRampTransactions: IFiatCryptoRampTransactionsDto,
     @SerializedName("currentTier") val currentTier: TierInfo? = null,
     @SerializedName("nextTier") val nextTier: TierInfo? = null,
     @SerializedName("remainingTiers") val remainingTiers: List<TierInfo> = emptyList(),
-    @SerializedName("outstandingKyc") val outstandingKyc: List<String> = emptyList()
+    @SerializedName("outstandingKyc") val outstandingKyc: List<String> = emptyList(),
+    @SerializedName("transactionSettings") val transactionSettings: ITransactionSettingsDto
 )

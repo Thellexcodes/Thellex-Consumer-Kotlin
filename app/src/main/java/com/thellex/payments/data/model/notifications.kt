@@ -28,7 +28,6 @@ data class NotificationEntity(
     @SerializedName("amount") val amount: String,
     @SerializedName("txnID") val txnID: String,
     @SerializedName("kind") val kind: NotificationKindEnum,
-    @SerializedName("walletID") val walletID: String,
     @SerializedName("createdAt") val createdAt: String,
 )
 

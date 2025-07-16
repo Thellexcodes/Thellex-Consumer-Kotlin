@@ -5,6 +5,8 @@ import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -347,7 +349,7 @@ object Helpers {
     fun View.applyAdvancedSystemBarInsets(
         extraTopPaddingDp: Int = 12,
         extraBottomPaddingDp: Int = 12,
-        fixedHorizontalPaddingDp: Int = 10,
+        fixedHorizontalPaddingDp: Int = 12,
     ) {
         val density = resources.displayMetrics.density
         val extraTopPaddingPx = (extraTopPaddingDp * density).toInt()
@@ -407,6 +409,17 @@ object Helpers {
         WindowInsetsControllerCompat(window, window.decorView).apply {
             isAppearanceLightStatusBars = false   // false = white status bar icons
             isAppearanceLightNavigationBars = false  // false = white nav bar icons
+        }
+    }
+
+    fun Context.copyToClipboard(label: String, text: String) {
+        if (text.isNotEmpty()) {
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText(label, text)
+            clipboard.setPrimaryClip(clip)
+            CustomToast.show(this, label, "$label copied to clipboard")
+        } else {
+            CustomToast.show(this, "Empty", "Nothing to copy")
         }
     }
 }

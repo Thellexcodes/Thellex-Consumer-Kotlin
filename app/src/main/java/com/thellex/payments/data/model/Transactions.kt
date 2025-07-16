@@ -18,20 +18,19 @@ data class Transaction(
 data class ITransactionHistoryEntity(
     @SerializedName("event") val event: String,
     @SerializedName("transactionId") val transactionId: String,
-    @SerializedName("type") val type: String,
+    @SerializedName("transactionDirection") val transactionDirection: String,
+    @SerializedName("transactionType") val transactionType: String,
     @SerializedName("assetCode") val assetCode: String,
     @SerializedName("amount") val amount: String,
     @SerializedName("fee") val fee: String,
     @SerializedName("feeLevel") val feeLevel: String,
     @SerializedName("blockchainTxId") val blockchainTxId: String,
     @SerializedName("reason") val reason: String,
-    @SerializedName("walletId") val walletId: String,
-    @SerializedName("walletName") val walletName: String,
     @SerializedName("paymentStatus") val paymentStatus: String,
     @SerializedName("sourceAddress") val sourceAddress: String,
     @SerializedName("destinationAddress") val destinationAddress: String,
     @SerializedName("paymentNetwork") val paymentNetwork: String,
-    @SerializedName("createdAt") val createdAt: String,
+    @SerializedName("createdAt") val createdAt: String
 )
 
  enum class TransactionType {

@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <supports-screens
             android:anyDensity="true"
             android:largeScreens="true"
@@ -30,9 +31,14 @@
             android:usesCleartextTraffic="true"
             tools:targetApi="31">
         <activity
-                android:name=".features.onboarding.NotificationPermissionActivity"
+                android:name=".features.fiat.FiatWithdrawActivity"
                 android:exported="false" />
-        <!-- Launcher activity -->
+        <activity
+                android:name=".features.fiat.FiatDepositActivity"
+                android:exported="false" />
+        <activity
+                android:name=".features.onboarding.NotificationPermissionActivity"
+                android:exported="false" /> <!-- Launcher activity -->
         <activity
                 android:name=".features.onboarding.LauncherActivity"
                 android:exported="true">

@@ -27,7 +27,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         binding = ActivityCryptoOnRampBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ActivityTracker.add(this)
-        ActivityTracker.finishActivity(FiatToCryptoRequestAccountInfoActivity::class.java)
         disableDecorFitsSystemWindows()
         setTransparentStatusBarWithWhiteIcons()
         binding.layoutCryptoToFiat.applyAdvancedSystemBarInsets()
@@ -56,7 +55,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
 
     private fun setupUiListener(){
         binding.nextButton.setOnClickListener{
-            startActivity(Intent(this, FiatToCryptoRequestAccountInfoActivity::class.java))
         }
     }
     companion object {

@@ -20,7 +20,7 @@ data class CreateRequestPaymentDto(
 )
 
 @Serializable
-data class BankAccountEntity(
+data class IBankAccountDto(
     @SerializedName("bankName") val bankName: String,
     @SerializedName("accountName") val accountName: String,
     @SerializedName("accountNumber") val accountNumber: String,
