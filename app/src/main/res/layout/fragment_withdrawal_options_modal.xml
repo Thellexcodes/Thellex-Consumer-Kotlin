@@ -127,10 +127,10 @@
                         android:id="@+id/text_fiat_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Crypto-to-Fiat Withdrawal"
+                        android:text="Withdraw Crypto to Fiat"
                         android:textColor="@color/white"
                         android:fontFamily="@font/kumbhsans_semibold"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -138,11 +138,11 @@
                         android:id="@+id/text_fiat_desc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Withdraw crypto to your local fiat account (e.g., Naira)."
+                        android:text="Easily convert and withdraw your cryptocurrency into your local currency account."
                         android:textColor="@color/white"
                         android:fontFamily="@font/kumbhsans_regular"
-                        android:textSize="11sp"
-                        android:layout_marginTop="4dp"
+                        android:textSize="12sp"
+                        android:layout_marginTop="6dp"
                         app:layout_constraintTop_toBottomOf="@id/text_fiat_title"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -162,6 +162,7 @@
 
         <!-- Withdraw to Bank (Moved to Bottom) -->
         <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="gone"
                 android:id="@+id/fiatWithdraw"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

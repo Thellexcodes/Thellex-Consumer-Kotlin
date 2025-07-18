@@ -120,7 +120,7 @@
                                         android:id="@+id/textCurrencyFiat3"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Convert to Crypto"
+                                        android:text="Fiat to Crypto Conversion"
                                         android:textColor="@color/white"
                                         android:fontFamily="@font/kumbhsans_semibold"
                                         android:textSize="14sp"
@@ -133,11 +133,12 @@
                                         android:textSize="11sp"
                                         android:fontFamily="@font/kumbhsans_regular"
                                         android:textColor="@color/white"
-                                        android:text="Convert fiat currency to crypto."
+                                        android:text="Easily convert your local currency into cryptocurrencies instantly and securely."
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         app:layout_constraintTop_toBottomOf="@id/textCurrencyFiat3"
                                         app:layout_constraintStart_toStartOf="parent" />
+
 
                                 <TextView
                                         android:id="@+id/badgeKycConvertFiat"
@@ -162,6 +163,7 @@
 
                 <!-- Option 1: Nigerian Naira (Bank Deposit) moved to bottom -->
                 <androidx.constraintlayout.widget.ConstraintLayout
+                        android:visibility="gone"
                         android:id="@+id/fiatDeposit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

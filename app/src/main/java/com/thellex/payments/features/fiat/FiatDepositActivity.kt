@@ -43,19 +43,19 @@ class FiatDepositActivity : AppCompatActivity() {
         binding.buttonBack.setOnClickListener { finish() }
 
         userViewModel.authResult.observe(this) { userDto ->
-            val accountDetails = userDto?.bankAccounts?.getOrNull(0)
-            binding.accountNumber.text = accountDetails?.accountNumber
-            binding.accountName.text = accountDetails?.accountName
-            binding.bankName.text = accountDetails?.bankName
-
-            binding.copyAccountDetails.setOnClickListener {
-                val accountNumber = accountDetails?.accountNumber
-                if (!accountNumber.isNullOrEmpty()) {
-                    copyToClipboard("Account Number", accountNumber)
-                } else {
-                    CustomToast.show(this, "Empty", "No account number to copy")
-                }
-            }
+//            val accountDetails = userDto?.bankAccounts?.getOrNull(0)
+//            binding.accountNumber.text = accountDetails?.accountNumber
+//            binding.accountName.text = accountDetails?.accountName
+//            binding.bankName.text = accountDetails?.bankName
+//
+//            binding.copyAccountDetails.setOnClickListener {
+//                val accountNumber = accountDetails?.accountNumber
+//                if (!accountNumber.isNullOrEmpty()) {
+//                    copyToClipboard("Account Number", accountNumber)
+//                } else {
+//                    CustomToast.show(this, "Empty", "No account number to copy")
+//                }
+//            }
         }
 
     }
