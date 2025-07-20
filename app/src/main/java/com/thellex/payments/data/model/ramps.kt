@@ -33,11 +33,11 @@ data class RecipientInfo(
 
 @Serializable
 data class BankInfo(
-    @SerializedName("bankName") val bankName: String,
-    @SerializedName("accountNumber") val accountNumber: String,
-    @SerializedName("accountName") val accountName: String,
     @SerializedName("accountHolder") val accountHolder: String,
-    @SerializedName("networkId") val networkId: String,
-    @SerializedName("accountBank") val accountBank: String,
-    @SerializedName("networkName") val networkName: String
+    @SerializedName("accountNumber") val accountNumber: String,
+    @SerializedName("bankName") val bankName: String,
+    @SerializedName("accountName") val accountName: String? = null,
+    @SerializedName("networkId") val networkId: String? = null,
+    @SerializedName("accountBank") val accountBank: String? = null,
+    @SerializedName("networkName") val networkName: String? = null
 )

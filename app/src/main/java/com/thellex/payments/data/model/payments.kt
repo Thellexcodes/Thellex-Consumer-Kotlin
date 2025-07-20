@@ -1,6 +1,7 @@
 package com.thellex.payments.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.thellex.payments.settings.FiatEnum
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.settings.SupportedBlockchainEnum
 import com.thellex.payments.settings.TokensEnum
@@ -135,4 +136,19 @@ data class FiatToCryptoOnRampRequestDto(
     @SerializedName("network") val network: String,
     @SerializedName("destinationAddress") val destinationAddress: String
 )
+
+data class CryptoToFiatOffRampRequestDto(
+    @SerializedName("assetCode") val assetCode: TokensEnum,
+    @SerializedName("network") val network: SupportedBlockchainEnum,
+    @SerializedName("userAmount") val userAmount: Double,
+    @SerializedName("fiatCode") val fiatCode: FiatEnum,
+    @SerializedName("country") val country: String,
+    @SerializedName("paymentMethod") val paymentMethod: String? = null,
+    @SerializedName("paymentReason") val paymentReason: String,
+    @SerializedName("sourceAddress") val sourceAddress: String,
+    @SerializedName("bankInfo") val bankInfo: BankInfo
+)
+
+
+
 

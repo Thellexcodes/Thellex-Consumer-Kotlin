@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.Gson
 import com.thellex.payments.databinding.FragmentTokenSelectionBinding
-import com.thellex.payments.features.fiat.FiatToCryptoOnRampActivity
 import com.thellex.payments.features.wallet.model.WalletBalanceDto
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
@@ -25,14 +24,14 @@ class TokenSelectionBottomSheet : BottomSheetDialogFragment() {
     private var _binding: FragmentTokenSelectionBinding? = null
     private val binding get() = _binding!!
     private val gson = Gson()
-    private val adapter = FiatOnRampTokenAdapter { token ->
-        (requireActivity() as FiatToCryptoOnRampActivity).updateFiatSpinner(token)
-        dismiss()
-    }
+    private lateinit var adapter: FiatOnRampTokenAdapter
     private var searchJob: Job? = null
 
     companion object {
         const val TAG = "TokenSelectionBottomSheet"
+        const val RESULT_KEY = "token_selection_result"
+        const val TOKEN_KEY = "selected_token"
+
         fun newInstance(walletBalance: WalletBalanceDto): TokenSelectionBottomSheet {
             val fragment = TokenSelectionBottomSheet()
             val json = Gson().toJson(walletBalance.wallets)
@@ -54,7 +53,14 @@ class TokenSelectionBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Deserialize wallet map
+        adapter = FiatOnRampTokenAdapter { token ->
+            val result = Bundle().apply {
+                putString(TOKEN_KEY, gson.toJson(token))
+            }
+            parentFragmentManager.setFragmentResult(RESULT_KEY, result)
+            dismiss()
+        }
+
         val walletBalanceJson = arguments?.getString("wallet_balance_json")
         val wallets: Map<String, WalletDto> = try {
             walletBalanceJson?.let {
@@ -74,21 +80,19 @@ class TokenSelectionBottomSheet : BottomSheetDialogFragment() {
 
         val tokens = wallets.values.toList()
 
-        // Setup RecyclerView
         binding.recyclerviewTokens.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = this@TokenSelectionBottomSheet.adapter
         }
         adapter.submitList(tokens)
 
-        // Setup search input
         binding.edittextSearchToken.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 searchJob?.cancel()
                 searchJob = MainScope().launch {
-                    delay(300) // Debounce for 300ms
+                    delay(300)
                     val query = s.toString().trim()
                     val filteredTokens = if (query.isEmpty()) {
                         tokens
@@ -98,11 +102,8 @@ class TokenSelectionBottomSheet : BottomSheetDialogFragment() {
                         }
                     }
                     adapter.submitList(filteredTokens)
-                    binding.recyclerviewTokens.visibility = if (filteredTokens.isEmpty()) {
-                        View.GONE
-                    } else {
-                        View.VISIBLE
-                    }
+                    binding.recyclerviewTokens.visibility =
+                        if (filteredTokens.isEmpty()) View.GONE else View.VISIBLE
                 }
             }
         })
@@ -113,6 +114,7 @@ class TokenSelectionBottomSheet : BottomSheetDialogFragment() {
         _binding = null
     }
 }
+
 
 //
 //class TokensEnumDeserializer : JsonDeserializer<TokensEnum> {

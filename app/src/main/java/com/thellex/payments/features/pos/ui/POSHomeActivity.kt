@@ -17,16 +17,16 @@ import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
-import com.thellex.payments.core.utils.Helpers.showSystemNotification
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivityPOSBinding
 import com.thellex.payments.features.auth.ui.AuthVerificationActivity
 import com.thellex.payments.features.kyc.ui.basic.KycSuccessActivity
 import com.thellex.payments.features.auth.ui.LoginActivity
-import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.dashboard.ui.MainActivity
+import com.thellex.payments.features.fiat.CryptoToFiatOffRampActivity
 import com.thellex.payments.features.fiat.FiatDepositActivity
+import com.thellex.payments.features.fiat.FiatRampTransactionsActivity
 import com.thellex.payments.features.fiat.FiatToCryptoOnRampActivity
 import com.thellex.payments.features.fiat.FiatWithdrawActivity
 import com.thellex.payments.features.kyc.ui.StartKycActivity
@@ -227,7 +227,7 @@ class POSHomeActivity : AppCompatActivity() {
 
         modal.setListener(object : WithdrawalOptionsModalFragment.WithdrawalOptionsListener {
             override fun onCryptoToFiatOffRamp() {
-                startActivity(Intent(this@POSHomeActivity, EnterTransactionAmountActivity::class.java))
+                startActivity(Intent(this@POSHomeActivity, CryptoToFiatOffRampActivity::class.java))
             }
 
             override fun onWithdrawToBank() {
@@ -255,5 +255,6 @@ class POSHomeActivity : AppCompatActivity() {
         ActivityTracker.finishActivity(AuthVerificationActivity::class.java)
         ActivityTracker.finishActivity(TransactionSuccessActivity::class.java)
         ActivityTracker.finishActivity(KycSuccessActivity::class.java)
+        ActivityTracker.finishActivity(FiatRampTransactionsActivity::class.java)
     }
 }

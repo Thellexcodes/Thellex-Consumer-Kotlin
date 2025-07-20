@@ -23,15 +23,32 @@ data class WalletDto(
     @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryEntity>
 )
 
-@Serializable
-data class FiatRate(
-    @SerialName("fiatCode") val fiatCode: String,
-    @SerialName("rate") val rate: Double
+data class IRateDto(
+    @SerializedName("buy")
+    val buy: Double,
+
+    @SerializedName("sell")
+    val sell: Double,
+
+    @SerializedName("fee")
+    val fee: Double,
+
+    @SerializedName("feeDivisor")
+    val feeDivisor: Double
 )
 
-@Serializable
-data class RatesResponseDto(
-    @SerialName("rates") val rates: FiatRate,
-    @SerialName("fee") val fee: Double,
-    @SerialName("expiresAt") val expiresAt: String
+data class IRatesDto(
+    @SerializedName("fiatCode")
+    val fiatCode: String,
+
+    @SerializedName("rate")
+    val rate: IRateDto
+)
+
+data class IRatesResponseDto(
+    @SerializedName("rates")
+    val rates: List<IRatesDto>,
+
+    @SerializedName("expiresAt")
+    val expiresAt: String
 )

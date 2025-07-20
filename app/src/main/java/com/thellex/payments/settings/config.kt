@@ -15,6 +15,17 @@ enum class TokensEnum {
     usdc, usdt, xlm, btc
 }
 
+enum class FiatEnum(val code: String) {
+    NGN("ngn"),
+    GHC("ghc");
+
+    companion object {
+        fun fromCode(code: String): FiatEnum? {
+            return entries.find { it.code.equals(code, ignoreCase = true) }
+        }
+    }
+}
+
 //--- Payment Only ---
 val LocalValue = "NGN"
 

@@ -25,6 +25,7 @@ object Constants {
     //Trades
     const val WALLET_MANAGER_RATES_ENDPOINT = "$VERSIONED_BASE/payments/rates?fiatCode=ngn"
     const val FIAT_TO_CRYPTO_ONRAMP_ENDPOINT = "${VERSIONED_BASE}/payments/fiat-to-crypto/onramp"
+    const val CRYPTO_TO_FIAT_OFFRAMP_ENDPOINT = "${VERSIONED_BASE}/payments/crypto-to-fiat/offramp"
 
     val BASE_URL: String
         get() = if (isEmulator()) {

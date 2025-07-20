@@ -65,15 +65,8 @@
                 android:name=".features.fiat.CryptoToFiatOffRampActivity"
                 android:exported="false" />
         <activity
-                android:name=".features.fiat.FiatToCryptoRequestAccountInfoActivity"
-                android:exported="false" />
-        <activity
                 android:name=".features.fiat.FiatToCryptoOnRampActivity"
                 android:exported="false" />
-        <activity
-                android:name=".features.fiat.ManageFiatAccountActivity"
-                android:exported="false"
-                android:screenOrientation="portrait" /> <!-- Profile -->
         <activity
                 android:name=".features.profile.ProfileActivity"
                 android:exported="false" /> <!-- Notifications -->
@@ -147,10 +140,6 @@
                 android:exported="false"
                 android:label="@string/title_activity_login"
                 android:screenOrientation="portrait" /> <!-- POS -->
-        <activity
-                android:name=".features.pos.ui.EnterTransactionAmountActivity"
-                android:exported="false"
-                android:screenOrientation="portrait" />
         <activity
                 android:name=".features.pos.ui.POSWithdrawalSummaryActivity"
                 android:exported="false"

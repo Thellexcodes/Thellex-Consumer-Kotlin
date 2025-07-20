@@ -45,7 +45,7 @@ class FiatRampTransactionsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFiatRampTransactionsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        ActivityTracker.add(this)
         // System bar setup
         disableDecorFitsSystemWindows()
         setTransparentStatusBarWithWhiteIcons()

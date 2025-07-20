@@ -59,7 +59,6 @@ class WalletRepository private constructor(private  val context: Context) {
         }
 
         val token = tokenProvider()
-        Log.e(TAG, "fetching new balance.")
 
         if (token.isNullOrEmpty()) {
             Log.e(TAG, "Token is null or empty. Cannot fetch balance.")
@@ -94,11 +93,11 @@ class WalletRepository private constructor(private  val context: Context) {
             override fun onTick(millisUntilFinished: Long) {
                 val seconds = millisUntilFinished / 1000
                 _secondsLeft.postValue(seconds)
-                Log.d(TAG, "Time left: $seconds seconds")
+//                Log.d(TAG, "Time left: $seconds seconds")
             }
 
             override fun onFinish() {
-                Log.d(TAG, "Cache expired.")
+//                Log.d(TAG, "Cache expired.")
                 isLoaded = false
 
                 val prefs = currentPreferences
