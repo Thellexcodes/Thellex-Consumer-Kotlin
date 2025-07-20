@@ -2,6 +2,7 @@ package com.thellex.payments.features.kyc.ui.basic
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
@@ -126,13 +127,13 @@ class BasicKycAttestationActivity : AppCompatActivity() {
                     val requestDto = BasicKycFormModelDto(
                         idType = IdTypeEnum.NIN.name,
                         additionalIdType = IdTypeEnum.BVN.name,
-                        firstName = formData.firstName.orEmpty(),
+                        firstName = formData.firstName,
                         middleName = formData.middleName,
-                        lastName = formData.lastName.orEmpty(),
-                        phoneNumber = formData.phoneNumber.orEmpty(),
-                        dob = formData.dob.orEmpty(),
-                        bvn = formData.bvn.orEmpty(),
-                        nin = formData.nin.orEmpty(),
+                        lastName = formData.lastName,
+                        phoneNumber = formData.phoneNumber,
+                        dob = formData.dob,
+                        bvn = formData.bvn,
+                        nin = formData.nin,
                         houseNumber = formData.houseNumber,
                         streetName = formData.streetName,
                         state = formData.state,

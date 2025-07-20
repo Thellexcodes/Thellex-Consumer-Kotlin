@@ -37,7 +37,7 @@ data class UserEntity(
     @SerializedName("notifications") val notifications: List<NotificationEntity>,
     @SerializedName("settings") val settings: List<IStoreSettingsEntityDto>,
     @SerializedName("bankAccounts") val bankAccounts: List<IBankAccountDto>,
-    @SerializedName("fiatCryptoRampTransactions") val fiatCryptoRampTransactions: IFiatCryptoRampTransactionsDto,
+    @SerializedName("fiatCryptoRampTransactions") val fiatCryptoRampTransactions: List<IFiatCryptoRampTransactionsDto> = emptyList(),
     @SerializedName("currentTier") val currentTier: TierInfo? = null,
     @SerializedName("nextTier") val nextTier: TierInfo? = null,
     @SerializedName("remainingTiers") val remainingTiers: List<TierInfo> = emptyList(),

@@ -9,12 +9,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.INotificationConsumeDto
 import com.thellex.payments.data.model.ITransactionHistoryEntity
 import com.thellex.payments.data.model.KycResponseDto
-import com.thellex.payments.data.model.Transaction
 import com.thellex.payments.data.model.UserEntity
-import com.thellex.payments.data.model.UserPreferences
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
@@ -142,6 +141,21 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 saveAuthResult(updatedUser)
             } else {
                 Log.w("TAG", "Cannot update transaction - user is null")
+            }
+        }
+    }
+
+    fun addFiatCryptoRampTransaction(newTransaction: IFiatCryptoRampTransactionsDto) {
+        viewModelScope.launch {
+            val currentUser = _authResult.value
+            if (currentUser != null) {
+                val updatedList = currentUser.fiatCryptoRampTransactions.toMutableList().apply {
+                    add(newTransaction)
+                }
+                val updatedUser = currentUser.copy(fiatCryptoRampTransactions = updatedList)
+                saveAuthResult(updatedUser)
+            } else {
+                Log.w("UserViewModel", "Cannot add fiatCryptoRampTransaction - user is null")
             }
         }
     }

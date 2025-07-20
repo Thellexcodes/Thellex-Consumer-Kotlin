@@ -1,0 +1,37 @@
+<!-- res/layout/top_app_bar.xml -->
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/top_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp">
+
+    <!-- Back Button -->
+    <ImageView
+            android:id="@+id/button_back"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/icon_back"
+            android:contentDescription="Back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Title -->
+    <TextView
+            android:id="@+id/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BUY CRYPTO"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:fontFamily="@font/kumbhsans_bold"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/button_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -44,7 +44,7 @@ data class PosTransaction(
     @SerializedName("description") val description: String,
     @SerializedName("time") val time: String,
     @SerializedName("amountWithSymbol") val amountWithSymbol: String,
-    @SerializedName("status") val status:  PaymentStatus
+    @SerializedName("status") val status:  PaymentStatusEnum
 )
 
 data class BlockchainItem(

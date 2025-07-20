@@ -29,7 +29,7 @@ data class IBankAccountDto(
     @SerializedName("isPrimary") val isPrimary: Boolean
 )
 
-enum class PaymentStatus(val value: String) {
+enum class PaymentStatusEnum(val value: String) {
     None("None"),
     Complete("COMPLETE"),
     Confirmed("confirmed"),
@@ -45,11 +45,30 @@ enum class PaymentStatus(val value: String) {
     Rejected("Rejected");
 
     companion object {
-        fun fromValue(value: String): PaymentStatus? = entries.find { it.value.equals(value, ignoreCase = true) }
+        fun fromValue(value: String): PaymentStatusEnum? = entries.find { it.value.equals(value, ignoreCase = true) }
     }
 }
 
-enum class WalletWebhookEvent(val value: String) {
+enum class TransactionTypeEnum(val value: String) {
+    CRYPTO_DEPOSIT("crypto_deposit"),
+    CRYPTO_WITHDRAWAL("crypto_withdrawal"),
+
+    FIAT_TO_CRYPTO_DEPOSIT("fiat_to_crypto_deposit"),
+    FIAT_TO_CRYPTO_WITHDRAWAL("fiat_to_crypto_withdrawal"),
+
+    CRYPTO_TO_FIAT_DEPOSIT("crypto_to_fiat_deposit"),
+    CRYPTO_TO_FIAT_WITHDRAWAL("crypto_to_fiat_withdrawal"),
+
+    FIAT_TO_FIAT_DEPOSIT("fiat_to_fiat_deposit"),
+    FIAT_TO_FIAT_WITHDRAWAL("fiat_to_fiat_withdrawal");
+
+    companion object {
+        fun fromValue(value: String): TransactionTypeEnum? =
+            values().find { it.value.equals(value, ignoreCase = true) }
+    }
+}
+
+enum class WalletWebhookEventEnum(val value: String) {
     // Errors
     INVALID_USER("INVALID_USER"),
     INVALID_CURRENCY("INVALID_CURRENCY"),
@@ -101,9 +120,19 @@ enum class WalletWebhookEvent(val value: String) {
     BUY_TRANSACTION_FAILED("BUY_TRANSACTION_FAILED");
 
     companion object {
-        fun fromValue(value: String?): WalletWebhookEvent? {
+        fun fromValue(value: String?): WalletWebhookEventEnum? {
             return entries.firstOrNull { it.value.equals(value, ignoreCase = true) }
         }
     }
 }
+
+data class FiatToCryptoOnRampRequestDto(
+    @SerializedName("userAmount") val userAmount: Double,
+    @SerializedName("fiatCode") val fiatCode: String,
+    @SerializedName("assetCode") val assetCode: String,
+    @SerializedName("country") val country: String,
+    @SerializedName("paymentReason") val paymentReason: String,
+    @SerializedName("network") val network: String,
+    @SerializedName("destinationAddress") val destinationAddress: String
+)
 

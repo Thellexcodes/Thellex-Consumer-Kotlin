@@ -1,18 +1,10 @@
 package com.thellex.payments.features.pos.ui
 
-import android.app.Activity
-import android.app.AlertDialog
-import android.content.Context
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
@@ -170,7 +162,6 @@ class POSHomeActivity : AppCompatActivity() {
         userViewModel.authResult.observe(this) { dto ->
             dto?.notifications?.let { notifications ->
                 val unconsumedCount = notifications.count { !it.consumed }
-
                 updateNotificationBadge(unconsumedCount)
             }
         }

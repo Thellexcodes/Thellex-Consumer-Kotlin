@@ -22,6 +22,10 @@ object Constants {
     //Notification Endpoints
     const val NOTIFICATION_CONSUME_ENDPOINT = "$VERSIONED_BASE/notifications/{id}/consume"
 
+    //Trades
+    const val WALLET_MANAGER_RATES_ENDPOINT = "$VERSIONED_BASE/payments/rates?fiatCode=ngn"
+    const val FIAT_TO_CRYPTO_ONRAMP_ENDPOINT = "${VERSIONED_BASE}/payments/fiat-to-crypto/onramp"
+
     val BASE_URL: String
         get() = if (isEmulator()) {
             "https://goat-touched-mite.ngrok-free.app/" // For Android Emulator
@@ -36,3 +40,8 @@ object Constants {
                 || android.os.Build.MODEL.contains("Android SDK built for x86")
     }
 }
+
+val reasonList = listOf(
+    "Gift", "Bills", "Groceries", "Travel", "Health",
+    "Entertainment", "Housing", "School Fees"
+)

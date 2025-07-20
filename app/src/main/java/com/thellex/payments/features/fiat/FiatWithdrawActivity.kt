@@ -3,6 +3,7 @@ package com.thellex.payments.features.fiat
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,7 @@ import com.thellex.payments.databinding.DialogBankSelectionBinding
 import com.thellex.payments.databinding.DialogReasonSelectionBinding
 import com.thellex.payments.features.fiat.adapters.BankAdapter
 import com.thellex.payments.features.fiat.adapters.ReasonSelectionAdapter
+import com.thellex.payments.features.wallet.model.WalletDto
 
 class FiatWithdrawActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFiatWithdrawBinding

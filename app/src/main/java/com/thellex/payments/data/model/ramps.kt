@@ -6,17 +6,21 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class IFiatCryptoRampTransactionsDto(
     @SerializedName("expiresAt") val expiresAt: String,
-    @SerializedName("netFiatAmount") val netFiatAmount: Int,
-    @SerializedName("netCryptoAmount") val netCryptoAmount: Int,
+    @SerializedName("netFiatAmount") val netFiatAmount: Double,
+    @SerializedName("netCryptoAmount") val netCryptoAmount: Double,
     @SerializedName("feeLabel") val feeLabel: String,
-    @SerializedName("serviceFeeAmountLocal") val serviceFeeAmountLocal: Int,
-    @SerializedName("serviceFeeAmountUSD") val serviceFeeAmountUSD: Int,
-    @SerializedName("rate") val rate: Int,
-    @SerializedName("grossCrypto") val grossCrypto: Int,
-    @SerializedName("grossFiat") val grossFiat: Int,
+    @SerializedName("serviceFeeAmountLocal") val serviceFeeAmountLocal: Double,
+    @SerializedName("serviceFeeAmountUSD") val serviceFeeAmountUSD: Double,
+    @SerializedName("rate") val rate: Double,
+    @SerializedName("grossCrypto") val grossCrypto: Double,
+    @SerializedName("grossFiat") val grossFiat: Double,
     @SerializedName("recipientInfo") val recipientInfo: RecipientInfo,
     @SerializedName("bankInfo") val bankInfo: BankInfo,
-    @SerializedName("blockchainTxId") val blockchainTxId: String? = null
+    @SerializedName("blockchainTxId") val blockchainTxId: String? = null,
+    @SerializedName("seen") val seen: Boolean,
+    @SerializedName("paymentStatus") val paymentStatus: PaymentStatusEnum,
+    @SerializedName("transactionType") val transactionType: TransactionTypeEnum,
+    @SerializedName("createdAt") val createdAt: String
 )
 
 @Serializable

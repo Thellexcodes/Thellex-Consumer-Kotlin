@@ -31,6 +31,9 @@
             android:usesCleartextTraffic="true"
             tools:targetApi="31">
         <activity
+                android:name=".features.fiat.FiatRampTransactionsActivity"
+                android:exported="false" />
+        <activity
                 android:name=".features.fiat.FiatWithdrawActivity"
                 android:exported="false" />
         <activity
@@ -186,7 +189,7 @@
                 android:screenOrientation="fullSensor"
                 tools:replace="screenOrientation" /> <!-- Firebase service -->
         <service
-                android:name=".network.services.MyFirebaseMessagingService"
+                android:name=".network.services.FirebaseManager"
                 android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

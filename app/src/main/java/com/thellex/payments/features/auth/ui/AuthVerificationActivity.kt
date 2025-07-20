@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -199,10 +200,10 @@ class AuthVerificationActivity : AppCompatActivity() {
                         ErrorHandler.handle(this@AuthVerificationActivity, "Error", userError)
                     }
                 }
-
-            } catch (e: Exception) {
+            }catch (e: Exception) {
                 val userError = UserErrorEnum.fromCode(e.message)
                 withContext(Dispatchers.Main) {
+                    Log.e(TAG, "Error occurred during verification", e)
                     ErrorHandler.handle(this@AuthVerificationActivity, "Error", userError)
                 }
             } finally {
@@ -218,13 +219,14 @@ class AuthVerificationActivity : AppCompatActivity() {
         val hasEnabledNotifications = sharedPrefs.getBoolean("has_enabled_notifications", false)
 
         if (!hasEnabledNotifications) {
-            // Show notification permission screen
             startActivity(Intent(this, NotificationPermissionActivity::class.java))
         } else {
-            // Proceed to home
             startActivity(Intent(this, POSHomeActivity::class.java))
         }
         finish()
     }
 
+    companion object {
+        private val TAG = "TAGY"
+    }
 }

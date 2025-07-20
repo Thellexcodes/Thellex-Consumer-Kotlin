@@ -1,0 +1,154 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp">
+
+    <!-- Left icon container -->
+    <FrameLayout
+            android:id="@+id/transaction_icon_container"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+                android:id="@+id/transaction_type_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_usdt" />
+
+        <ImageView
+                android:id="@+id/transaction_status_icon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="bottom|end"
+                android:src="@drawable/icon_send_status" />
+    </FrameLayout>
+
+    <!-- Middle details -->
+    <LinearLayout
+            android:id="@+id/transaction_details"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="12dp"
+            app:layout_constraintStart_toEndOf="@id/transaction_icon_container"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/transaction_amount_container">
+
+        <TextView
+                android:id="@+id/transaction_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Buy USDC"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:fontFamily="@font/kumbhsans_regular" />
+
+        <TextView
+                android:id="@+id/transaction_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Yesterday, 5:12 PM"
+                android:textColor="#AAAAAA"
+                android:textSize="10sp"
+                android:fontFamily="@font/kumbhsans_regular" />
+    </LinearLayout>
+
+    <!-- Right container -->
+    <LinearLayout
+            android:id="@+id/transaction_amount_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:minWidth="120dp">
+
+        <!-- Amounts -->
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end|center_vertical">
+
+            <TextView
+                    android:id="@+id/transaction_fiat_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5000 NGN"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:fontFamily="@font/kumbhsans_bold" />
+
+            <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:src="@drawable/icon_move_right" />
+
+            <TextView
+                    android:id="@+id/transaction_crypto_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="8.50 USDT"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:fontFamily="@font/kumbhsans_bold" />
+        </LinearLayout>
+
+        <!-- Expiry and status -->
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="6dp"
+                android:gravity="end|center_vertical">
+
+            <TextView
+                    android:id="@+id/transaction_expiry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="EXPIRES IN 0:00"
+                    android:textSize="8sp"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="4dp"
+                    android:layout_marginEnd="10dp"
+                    android:textColor="@color/white"
+                    android:background="@drawable/rounded_border"
+                    android:fontFamily="@font/kumbhsans_bold" />
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                <ImageView
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:src="@drawable/icon_lamp" />
+
+                <TextView
+                        android:id="@+id/transaction_status_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="Completed"
+                        android:textColor="#AAAAAA"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_light" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

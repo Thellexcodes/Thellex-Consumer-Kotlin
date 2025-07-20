@@ -10,17 +10,16 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.os.Build
 import android.text.InputFilter
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -32,7 +31,8 @@ import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.thellex.payments.R
-import com.thellex.payments.data.model.PaymentStatus
+import com.thellex.payments.data.model.PaymentStatusEnum
+import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.features.dashboard.ui.MainActivity
 import org.json.JSONException
 import org.json.JSONObject
@@ -40,13 +40,17 @@ import retrofit2.HttpException
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.regex.Pattern
+import kotlin.time.Duration
 
 object Helpers {
     public fun getNavigationBarHeight(context: Context): Int {
@@ -74,6 +78,23 @@ object Helpers {
             "usdc" -> R.drawable.icon_usdc
             "xlm" -> R.drawable.icon_stellar
             else -> R.drawable.icon_txn
+        }
+    }
+
+    fun getStatusColor(context: Context, status: PaymentStatusEnum): Int {
+        return when (status) {
+            PaymentStatusEnum.Complete -> ContextCompat.getColor(context, R.color.green)
+            PaymentStatusEnum.None -> ContextCompat.getColor(context, R.color.darkBlue)
+            PaymentStatusEnum.Confirmed -> ContextCompat.getColor(context, R.color.blue)
+            PaymentStatusEnum.Accepted -> ContextCompat.getColor(context, R.color.green)
+            PaymentStatusEnum.Done -> ContextCompat.getColor(context, R.color.green)
+            PaymentStatusEnum.Processing -> ContextCompat.getColor(context, R.color.orange)
+            PaymentStatusEnum.Outbound -> ContextCompat.getColor(context, R.color.purple)
+            PaymentStatusEnum.Inbound -> ContextCompat.getColor(context, R.color.darkBlue)
+            PaymentStatusEnum.PendingRiskScreening -> ContextCompat.getColor(context, R.color.darkBlue)
+            PaymentStatusEnum.Queued -> ContextCompat.getColor(context, R.color.darkBlue)
+            PaymentStatusEnum.Sent -> ContextCompat.getColor(context, R.color.green)
+            PaymentStatusEnum.Rejected -> ContextCompat.getColor(context, R.color.pinkRed)
         }
     }
 
@@ -121,13 +142,13 @@ object Helpers {
         } catch (e: Exception) { "" }
     }
 
-    fun mapToTransactionStatus(rawStatus: String): PaymentStatus {
+    fun mapToTransactionStatus(rawStatus: String): PaymentStatusEnum {
         return when (rawStatus.trim().lowercase(Locale.getDefault())) {
-            "accepted" -> PaymentStatus.Complete
-            "done" -> PaymentStatus.Complete
-            "rejected" -> PaymentStatus.Rejected
-            "pending" -> PaymentStatus.Processing
-            else -> PaymentStatus.Processing
+            "accepted" -> PaymentStatusEnum.Complete
+            "done" -> PaymentStatusEnum.Complete
+            "rejected" -> PaymentStatusEnum.Rejected
+            "pending" -> PaymentStatusEnum.Processing
+            else -> PaymentStatusEnum.Processing
         }
     }
 
@@ -349,7 +370,7 @@ object Helpers {
     fun View.applyAdvancedSystemBarInsets(
         extraTopPaddingDp: Int = 12,
         extraBottomPaddingDp: Int = 12,
-        fixedHorizontalPaddingDp: Int = 12,
+        fixedHorizontalPaddingDp: Int = 15,
     ) {
         val density = resources.displayMetrics.density
         val extraTopPaddingPx = (extraTopPaddingDp * density).toInt()
@@ -421,6 +442,49 @@ object Helpers {
         } else {
             CustomToast.show(this, "Empty", "Nothing to copy")
         }
+    }
+
+    // Reusable Top App Bar Setup
+    fun setupTopAppBar(
+        activity: Activity,
+        rootView: View,
+        title: String,
+        onBackClick: (() -> Unit)? = null
+    ): TopAppBarController {
+        val titleTextView = rootView.findViewById<TextView>(R.id.text_title)
+        val backButton = rootView.findViewById<ImageView>(R.id.button_back)
+
+        titleTextView.text = title
+        backButton.setOnClickListener {
+            onBackClick?.invoke() ?: activity.finish()
+        }
+
+        return TopAppBarController(titleTextView)
+    }
+
+    class TopAppBarController(private val titleTextView: TextView) {
+        fun updateTitle(newTitle: String) {
+            titleTextView.text = newTitle
+        }
+    }
+
+    fun getTransactionAction(transactionType: TransactionTypeEnum): String {
+        return when (transactionType) {
+            TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT -> "BUY"
+            TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> "SELL"
+            else -> transactionType.name
+                .replace("_", " ")
+                .lowercase()
+                .replaceFirstChar { it.uppercase() }
+        }
+    }
+
+    fun formatToTwoDecimalPlaces(value: Double?): String {
+        return if (value != null) String.format("%.2f", value) else "0.00"
+    }
+
+    fun Double?.toTwoDecimalString(): String {
+        return if (this != null) String.format("%.2f", this) else "0.00"
     }
 }
 

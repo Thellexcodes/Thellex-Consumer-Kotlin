@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder
 import com.thellex.payments.core.utils.Constants
 import com.thellex.payments.data.enums.TierEnum
 import com.thellex.payments.data.model.NotificationKindEnum
+import com.thellex.payments.data.model.PaymentStatusEnum
+import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.settings.SupportedBlockchainEnum
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -49,6 +51,8 @@ object ApiClient {
             .registerTypeAdapter(NotificationKindEnum::class.java, NotificationKindEnumDeserializer())
             .registerTypeAdapter(TierEnum::class.java, TierEnumDeserializer())
             .registerTypeAdapter(SupportedBlockchainEnum::class.java, SupportedBlockchainDeserializer())
+            .registerTypeAdapter(PaymentStatusEnum::class.java, PaymentStatusDeserializer())
+            .registerTypeAdapter(TransactionTypeEnum::class.java, TransactionTypeDeserializer())
             .registerTypeAdapter(Instant::class.java, InstantDeserializer())
             .create()
 

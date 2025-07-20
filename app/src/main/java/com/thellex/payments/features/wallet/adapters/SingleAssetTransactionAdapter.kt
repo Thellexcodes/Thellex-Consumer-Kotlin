@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
 import com.thellex.payments.data.model.ITransactionHistoryEntity
-import com.thellex.payments.data.model.WalletWebhookEvent
+import com.thellex.payments.data.model.WalletWebhookEventEnum
 
 
 class SingleAssetTransactionAdapter(
@@ -28,8 +28,8 @@ class SingleAssetTransactionAdapter(
 
         fun bind(transaction: ITransactionHistoryEntity) {
             val context = itemView.context
-            val eventEnum = WalletWebhookEvent.fromValue(transaction.event)
-            val isWithdraw = eventEnum == WalletWebhookEvent.WITHDRAW_SUCCESSFUL
+            val eventEnum = WalletWebhookEventEnum.fromValue(transaction.event)
+            val isWithdraw = eventEnum == WalletWebhookEventEnum.WITHDRAW_SUCCESSFUL
 
             tvStatusLabel.text = if (isWithdraw) "Withdraw" else "Deposit"
             val withdrawColor = ContextCompat.getColor(context, R.color.pinkRed)
@@ -61,6 +61,4 @@ class SingleAssetTransactionAdapter(
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
         holder.bind(filteredTransactions[position])
     }
-
-
 }

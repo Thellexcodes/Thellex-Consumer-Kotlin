@@ -27,7 +27,7 @@ data class BasicKycFormModelData(
 
     @SerialName("phoneNumber")
     @SerializedName("phoneNumber")
-    var phoneNumber: String? = "",
+    var phoneNumber: String = "",
 
     @SerialName("dob")
     @SerializedName("dob")

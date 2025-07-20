@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.e("TAG", "Error message", e)
+                Log.e(TAG, "Error message", e)
                 if (!hasShownErrorToast) {
                     hasShownErrorToast = true
                     val errorMessage = Helpers.getErrorMessageFromException(e)
@@ -148,6 +148,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val TAG = "TAG"
+        private val TAG = "TAGY"
     }
 }

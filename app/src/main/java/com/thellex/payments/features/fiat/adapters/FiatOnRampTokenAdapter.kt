@@ -1,11 +1,12 @@
 package com.thellex.payments.features.fiat.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.compose.ui.text.toUpperCase
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.thellex.payments.core.utils.Helpers.getIconResIdForToken
 import com.thellex.payments.databinding.ItemTokenBinding
 import com.thellex.payments.features.wallet.model.WalletDto
 import java.util.Locale
@@ -17,7 +18,6 @@ class FiatOnRampTokenAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TokenViewHolder {
         val binding = ItemTokenBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        // Add bottom margin programmatically (12dp)
         val params = binding.root.layoutParams as ViewGroup.MarginLayoutParams
         val spacing = (parent.context.resources.displayMetrics.density * 12).toInt() // 12dp to px
         params.bottomMargin = spacing
@@ -33,6 +33,8 @@ class FiatOnRampTokenAdapter(
     inner class TokenViewHolder(private val binding: ItemTokenBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(token: WalletDto) {
             binding.tokenName.text = token.assetCode.toString().uppercase(Locale.getDefault())
+            binding.tokenIcon.setImageResource(getIconResIdForToken(token.assetCode.toString()))
+
             binding.root.setOnClickListener {
                 onTokenSelected(token)
             }
@@ -47,5 +49,9 @@ class FiatOnRampTokenAdapter(
         override fun areContentsTheSame(oldItem: WalletDto, newItem: WalletDto): Boolean {
             return oldItem == newItem
         }
+    }
+
+    companion object {
+        private val TAG = "TAGY"
     }
 }

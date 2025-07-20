@@ -103,11 +103,6 @@ class TokenSelectionBottomSheet : BottomSheetDialogFragment() {
                     } else {
                         View.VISIBLE
                     }
-//                    binding.textNoResults.visibility = if (filteredTokens.isEmpty()) {
-//                        View.VISIBLE
-//                    } else {
-//                        View.GONE
-//                    }
                 }
             }
         })

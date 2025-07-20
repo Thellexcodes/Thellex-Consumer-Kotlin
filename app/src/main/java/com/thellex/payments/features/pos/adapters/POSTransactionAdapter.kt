@@ -15,7 +15,7 @@ import com.thellex.payments.core.utils.Helpers.getIconResIdForToken
 import com.thellex.payments.core.utils.Helpers.getStatusIconResId
 import com.thellex.payments.core.utils.Helpers.mapToTransactionStatus
 import com.thellex.payments.data.model.ITransactionHistoryEntity
-import com.thellex.payments.data.model.PaymentStatus
+import com.thellex.payments.data.model.PaymentStatusEnum
 import java.util.Locale
 
 class POSTransactionAdapter(
@@ -56,13 +56,11 @@ class POSTransactionAdapter(
         holder.amount.text = item.amountWithSymbol
         holder.status.text = item.status.toString()
 
-        // Set green color if status is Complete
-        if (item.status == PaymentStatus.Complete) {
+        if (item.status == PaymentStatusEnum.Complete) {
             holder.status.setTextColor(
                 ContextCompat.getColor(holder.status.context, R.color.green)
             )
         } else {
-            // Reset to default color (black or whatever your default is)
             holder.status.setTextColor(
                 ContextCompat.getColor(holder.status.context, R.color.white)
             )
