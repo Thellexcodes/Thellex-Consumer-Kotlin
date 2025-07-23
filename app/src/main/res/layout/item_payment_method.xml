@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_border"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp">
+
+    <TextView
+            android:id="@+id/accountName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ALEXANDER ORJI"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="14sp" />
+
+    <TextView
+            android:id="@+id/bankName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zenith Bank"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
+    <TextView
+            android:id="@+id/accountNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="24027320839"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
+    <!-- Selected indicator -->
+    <ImageView
+            android:id="@+id/selectedDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:src="@drawable/icon_golden_yellow_dot"
+            android:layout_gravity="end"
+            android:layout_marginTop="8dp"
+            android:visibility="visible"/>
+
+</LinearLayout>

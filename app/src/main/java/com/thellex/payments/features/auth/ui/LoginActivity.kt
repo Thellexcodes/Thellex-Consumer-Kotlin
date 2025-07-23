@@ -88,7 +88,6 @@ class LoginActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
     }
-
     private fun setupSubmitAction() {
         binding.nextButton.setOnClickListener {
             if (isSubmitting) return@setOnClickListener

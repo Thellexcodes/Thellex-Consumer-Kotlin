@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.data.model.IBankAccountDto
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.INotificationConsumeDto
 import com.thellex.payments.data.model.ITransactionHistoryEntity
@@ -159,6 +160,22 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
             }
         }
     }
+
+    fun addBankAccountToUser(newBankAccount: IBankAccountDto) {
+        viewModelScope.launch {
+            val currentUser = _authResult.value
+            if (currentUser != null) {
+                val updatedBankAccounts = currentUser.bankAccounts.toMutableList().apply {
+                    add(newBankAccount)
+                }
+                val updatedUser = currentUser.copy(bankAccounts = updatedBankAccounts)
+                saveAuthResult(updatedUser)
+            } else {
+                Log.w("UserViewModel", "Cannot add bank account - user is null")
+            }
+        }
+    }
+
 
     @OptIn(ExperimentalTime::class)
     fun getExpiresAt(): Instant? {

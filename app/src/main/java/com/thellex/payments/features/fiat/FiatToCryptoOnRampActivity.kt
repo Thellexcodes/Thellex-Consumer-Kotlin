@@ -158,7 +158,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
 
                     val response = ApiClient.getAuthenticatedPaymentApi(authToken!!).fiatToCryptoOnRamp(onRampRequest)
 
-                    response.result?.let { result ->
+                    response.body()?.result?.let { result ->
                         Log.d(TAG, "Response from fiatToCryptoOnRamp: $result")
                         userViewModel.addFiatCryptoRampTransaction(result)
 

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="@drawable/general_gradient_background"
+        android:layout_height="match_parent">
+
+    <!-- Top App Bar -->
+    <include
+            android:id="@+id/top_app_bar"
+            layout="@layout/top_app_bar" />
+
+    <LinearLayout
+            app:layout_constraintTop_toBottomOf="@id/top_app_bar"
+            android:orientation="vertical"
+            android:layout_marginTop="26dp"
+            android:id="@+id/bank_selection_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/bank_selector_layout"
+                android:background="@drawable/rounded_border_midnight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                        android:id="@+id/select_bank_label"
+                        android:textSize="12dp"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        android:textColor="@color/steelBlueGrey"
+                        android:text="Select Bank"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                        android:id="@+id/select_bank_dropdown_icon"
+                        android:src="@drawable/icon_arrow_down"
+                        android:layout_width="@dimen/dp_16"
+                        android:layout_height="@dimen/dp_16"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <EditText
+                android:id="@+id/text_account_number_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Account Number"
+                android:textColorHint="@color/steelBlueGrey"
+                android:textSize="12sp"
+                android:layout_marginTop="@dimen/dp_15"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textColor="@color/white"
+                android:background="@drawable/rounded_edittext_midnight_bg"
+                android:paddingVertical="15dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="48dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:clickable="true"
+                android:inputType="number"
+                android:cursorVisible="true" />
+
+        <TextView
+                android:fontFamily="@font/outfit_light"
+                android:textSize="@dimen/dp_12"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/steelBlueGrey"
+                android:text="Account Holder Name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <!-- Add New Account Button -->
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/add_new_account_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:paddingHorizontal="20dp"
+            android:text="ADD"
+            android:textAllCaps="true"
+            android:textColor="@color/dark_purple"
+            android:textSize="10sp"
+            android:fontFamily="@font/kumbhsans_bold"
+            android:background="@drawable/button_ripple_golden_yellow"
+            android:elevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

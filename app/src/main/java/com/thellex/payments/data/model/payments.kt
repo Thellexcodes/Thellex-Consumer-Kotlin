@@ -20,14 +20,19 @@ data class CreateRequestPaymentDto(
     @SerializedName("fund_uid2") val fundUid2: String? = null
 )
 
-@Serializable
+@Serializable()
 data class IBankAccountDto(
     @SerializedName("bankName") val bankName: String,
     @SerializedName("accountName") val accountName: String,
     @SerializedName("accountNumber") val accountNumber: String,
-    @SerializedName("swiftCode") val swiftCode: String,
-    @SerializedName("iban") val iban: String,
-    @SerializedName("isPrimary") val isPrimary: Boolean
+    @SerializedName("swiftCode") val swiftCode: String? = null,
+    @SerializedName("iban") val iban: String? = null,
+    @SerializedName("isPrimary") val isPrimary: Boolean,
+    @SerializedName("external_createdAt") val externalCreatedAt: String,
+    @SerializedName("require_consent") val requireConsent: Boolean,
+    @SerializedName("consent_url") val consentUrl: String? = null,
+    @SerializedName("reference") val reference: String? = null,
+    @SerializedName("eur") val eur: String? = null
 )
 
 enum class PaymentStatusEnum(val value: String) {
@@ -146,7 +151,16 @@ data class CryptoToFiatOffRampRequestDto(
     @SerializedName("paymentMethod") val paymentMethod: String? = null,
     @SerializedName("paymentReason") val paymentReason: String,
     @SerializedName("sourceAddress") val sourceAddress: String,
-    @SerializedName("bankInfo") val bankInfo: BankInfo
+    @SerializedName("bankInfo") val bankInfo: IBankInfoRequestDto
+)
+
+data class CreateBankAccountDto(
+    @SerializedName("bankName") val bankName: String,
+    @SerializedName("accountNumber") val accountNumber: Number,
+    @SerializedName("bankCode") val bankCode: String,
+    @SerializedName("accountName") val accountName: String? = null,
+    @SerializedName("swiftCode") val swiftCode: String? = null,
+    @SerializedName("iban") val iban: String? = null,
 )
 
 

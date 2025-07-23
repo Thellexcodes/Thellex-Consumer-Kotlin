@@ -4,6 +4,7 @@ plugins {
     kotlin("plugin.serialization")
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
+    id("kotlin-kapt")
 }
 
 android {
@@ -82,4 +83,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    kapt("com.github.bumptech.glide:compiler:4.15.1")
 }

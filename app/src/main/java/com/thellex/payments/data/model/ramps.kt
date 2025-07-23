@@ -15,7 +15,7 @@ data class IFiatCryptoRampTransactionsDto(
     @SerializedName("grossCrypto") val grossCrypto: Double,
     @SerializedName("grossFiat") val grossFiat: Double,
     @SerializedName("recipientInfo") val recipientInfo: RecipientInfo,
-    @SerializedName("bankInfo") val bankInfo: BankInfo,
+    @SerializedName("bankInfo") val bankInfo: IBankInfoRequestDto,
     @SerializedName("blockchainTxId") val blockchainTxId: String? = null,
     @SerializedName("seen") val seen: Boolean,
     @SerializedName("paymentStatus") val paymentStatus: PaymentStatusEnum,
@@ -32,7 +32,7 @@ data class RecipientInfo(
 )
 
 @Serializable
-data class BankInfo(
+data class IBankInfoRequestDto(
     @SerializedName("accountHolder") val accountHolder: String,
     @SerializedName("accountNumber") val accountNumber: String,
     @SerializedName("bankName") val bankName: String,

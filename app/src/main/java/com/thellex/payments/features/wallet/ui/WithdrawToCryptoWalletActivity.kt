@@ -299,29 +299,50 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
         setLoadingState(true)
 
         lifecycleScope.launch {
+            setLoadingState(true)
+
             try {
                 val response = ApiClient.getAuthenticatedPaymentApi(cachedToken.toString())
                     .withdrawCrypto(requestDto)
 
-                if (response.result != null) {
-                    CustomToast.show(this@WithdrawToCryptoWalletActivity, "Success", "Withdrawal submitted")
-                    Log.i(TAG, "Withdrawal successful: ${response.result}")
-                    userModel.addTransaction(response.result)
-                    val intent = Intent(this@WithdrawToCryptoWalletActivity, TransactionSuccessActivity::class.java).apply {
-                        putExtra("destinationAddress", response.result.destinationAddress)
-                        putExtra("recipientAmount", "${response.result.amount} ${response.result.assetCode.uppercase()}")
+                val result = response.body()?.result
+
+                if (response.isSuccessful && result != null) {
+                    userModel.addTransaction(result)
+
+                    CustomToast.show(
+                        this@WithdrawToCryptoWalletActivity,
+                        "Success",
+                        "Withdrawal submitted"
+                    )
+
+                    Log.i(TAG, "Withdrawal successful: $result")
+
+                    val intent = Intent(
+                        this@WithdrawToCryptoWalletActivity,
+                        TransactionSuccessActivity::class.java
+                    ).apply {
+                        putExtra("destinationAddress", result.destinationAddress)
+                        putExtra("recipientAmount", "${result.amount} ${result.assetCode.uppercase()}")
                     }
+
                     startActivity(intent)
+                } else {
+                    val errorMsg = response.errorBody()?.string() ?: "Something went wrong"
+                    Log.e(TAG, "Withdrawal failed: $errorMsg")
+                    ErrorHandler.handle(this@WithdrawToCryptoWalletActivity, "Failed", PaymentErrorEnum.fromCode(errorMsg))
                 }
             } catch (e: Exception) {
                 val errorMessage = Helpers.getErrorMessageFromException(e)
                 val userError = PaymentErrorEnum.fromCode(errorMessage)
+
                 ErrorHandler.handle(this@WithdrawToCryptoWalletActivity, "Error", userError)
                 Log.e(TAG, "Network error during withdrawal: $errorMessage", e)
-            }finally {
+            } finally {
                 setLoadingState(false)
             }
         }
+
     }
 
     private fun setLoadingState(isLoading: Boolean) {

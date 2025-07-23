@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -27,49 +26,41 @@ import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.getIconResIdForToken
-import com.thellex.payments.core.utils.Helpers.setSubmitting
+import com.thellex.payments.core.utils.Helpers.setLoading
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.core.utils.reasonList
-import com.thellex.payments.data.model.BankInfo
-import com.thellex.payments.data.model.CryptoToFiatOffRampRequestDto
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.PaymentStatusEnum
+import com.thellex.payments.data.viewModels.rates.RateViewModel
 import com.thellex.payments.databinding.ActivityCryptoToFiatOffRampBinding
 import com.thellex.payments.databinding.DialogReasonSelectionBinding
-import com.thellex.payments.features.auth.viewModel.UserRepository
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.fiat.adapters.ReasonSelectionAdapter
 import com.thellex.payments.features.fiat.adapters.TokenSelectionBottomSheet
-import com.thellex.payments.features.wallet.model.IRateDto
+import com.thellex.payments.features.fiat.model.CryptoToFiatViewModel
 import com.thellex.payments.features.wallet.model.WalletDto
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
-import com.thellex.payments.network.services.ApiClient
-import com.thellex.payments.settings.FiatEnum
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.math.RoundingMode
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.format.DateTimeParseException
 import java.util.Locale
-import java.util.TimeZone
 
 class CryptoToFiatOffRampActivity : AppCompatActivity() {
     private lateinit var topBar: Helpers.TopAppBarController
     private lateinit var binding: ActivityCryptoToFiatOffRampBinding
     private var selectedToken: WalletDto? = null
-    private var currentRate: IRateDto? = null // Store single rate for selected token
-    private var ratesExpiryTime: Long? = null
     private var ratesRefreshHandler: Handler? = null
-    private var refreshRunnable: Runnable? = null
     private val minimumAmountInFiat = 5000.0
     private lateinit var userViewModel: UserViewModel
-    private val userRepository by lazy { UserRepository.getInstance(applicationContext) }
     private lateinit var walletManagerViewModel: WalletManagerViewModel
-    private var fee: Double = 0.0
-    private var fiatCode: String = "NGN" // Default fiat code
+    private var fiatCode: String = "NGN"
+    private lateinit var cryptoToFiatViewModel: CryptoToFiatViewModel
+    private lateinit var rateViewModel: RateViewModel
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,63 +78,98 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
             title = "SELL CRYPTO"
         )
 
+        // Disable nextButton by default until rates are fetched
+        binding.nextButton.isEnabled = false
+
         setupViewModel()
         setupUiListener()
         setupAmountInputListeners()
         setDefaultToken()
         observeUser()
+        restoreSavedData()
+        observeRates()
+
+        // Set fragment result listener once
+        supportFragmentManager.setFragmentResultListener(
+            TokenSelectionBottomSheet.RESULT_KEY,
+            this
+        ) { _, bundle ->
+            bundle.getString(TokenSelectionBottomSheet.TOKEN_KEY)?.let { json ->
+                selectedToken = Gson().fromJson(json, WalletDto::class.java)
+                selectedToken?.let { updateTokenSpinner(it) }
+            }
+        }
     }
 
-    private fun fetchRatesAndScheduleRefresh() {
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun restoreSavedData() {
+        // Restore payment reason
+        cryptoToFiatViewModel.paymentReason.value?.let { reason ->
+            binding.edittextPaymentReason.setText(reason)
+        }
+
+        // Restore fiat code
+        cryptoToFiatViewModel.fiatCode.value?.let { code ->
+            fiatCode = code
+        }
+
+        // Restore fiat amount and recalculate UI if valid
+        cryptoToFiatViewModel.fiatAmount.value?.let { amount ->
+            if (amount > minimumAmountInFiat) {
+                binding.edittextFiatAmount.setText(
+                    amount.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toPlainString()
+                )
+                calculateAndDisplayPrice(cryptoChanged = false)
+            }
+        }
+
+        // Restore rate and fee
+        cryptoToFiatViewModel.currentRate.value?.let { rate ->
+            cryptoToFiatViewModel.fee.value?.let { fee ->
+                binding.textPriceValue.text = "${fee}%"
+                binding.nextButton.setLoading(false) // Enable button if rate is restored
+                calculateAndDisplayPrice()
+            }
+        }
+
+        // Restore token-related data (sourceAddress, assetCode, network)
+        cryptoToFiatViewModel.sourceAddress.value?.let { address ->
+            if (selectedToken?.address == address) {
+                // Token still matches, no need to update
+                return@let
+            }
+            // Reselect token if it matches wallet data
+            walletManagerViewModel.walletBalance.value?.wallets?.values?.find { it.address == address }
+                ?.let { updateTokenSpinner(it) }
+        }
+
+        cryptoToFiatViewModel.fee.observe(this) { fee ->
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun observeRates() {
         lifecycleScope.launch {
-            try {
-                val authToken = userRepository.getToken().first()
-                val response = ApiClient.getAuthenticatedPaymentApi(authToken!!).getRates()
-                response.result?.let { result ->
-                    currentRate = result.rates.find { it.fiatCode == fiatCode }?.rate
-                    fee = currentRate?.fee?.div(currentRate?.feeDivisor ?: 100.0) ?: 0.0
-                    ratesExpiryTime = parseExpiresAt(result.expiresAt)
-                    binding.textPriceValue.text = "${currentRate?.fee?.div(currentRate?.feeDivisor!!)}%"
+            rateViewModel.rates.collectLatest { rates ->
+                if (rates.isNotEmpty()) {
+                    Log.d("Rate", "this is rate $rates")
+                    cryptoToFiatViewModel.updateRate(rates)
+                    binding.textPriceValue.text = "${cryptoToFiatViewModel.fee.value ?: 0.0}%"
+                    binding.nextButton.setLoading(false) // Enable button when rates are available
                     calculateAndDisplayPrice()
-                    scheduleRatesRefresh(ratesExpiryTime ?: (System.currentTimeMillis() + 60000))
-                } ?: run {
+                } else {
                     updateDefaultPriceText()
-                    Toast.makeText(this@CryptoToFiatOffRampActivity, "No rates available", Toast.LENGTH_SHORT).show()
+                    binding.nextButton.setLoading(true) // Disable button if no rates
+                    cryptoToFiatViewModel.updateRate(emptyList()) // Clear rate if none available
                 }
-            } catch (e: Exception) {
-                Toast.makeText(this@CryptoToFiatOffRampActivity, "Error fetching rates", Toast.LENGTH_SHORT).show()
-                updateDefaultPriceText()
             }
         }
     }
 
     @SuppressLint("SetTextI18n")
     private fun updateDefaultPriceText() {
-//        val tokenSymbol = selectedToken?.assetCode?.name?.uppercase(Locale.getDefault()) ?: "TOKEN"
-    }
-
-    private fun scheduleRatesRefresh(expiresAt: Long) {
-        val now = System.currentTimeMillis()
-        val delayMillis = (expiresAt - now - 5000).coerceAtLeast(1000)
-
-        if (ratesRefreshHandler == null) {
-            ratesRefreshHandler = Handler(Looper.getMainLooper())
-        }
-
-        refreshRunnable?.let { ratesRefreshHandler?.removeCallbacks(it) }
-        refreshRunnable = Runnable { fetchRatesAndScheduleRefresh() }
-        ratesRefreshHandler?.postDelayed(refreshRunnable!!, delayMillis)
-    }
-
-    private fun parseExpiresAt(expiresAt: String): Long {
-        return try {
-            val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-            format.timeZone = TimeZone.getTimeZone("UTC")
-            format.parse(expiresAt)?.time ?: System.currentTimeMillis() + 60000
-        } catch (e: Exception) {
-//            Log.e(TAG, "Error parsing expiresAt: ${e.message}", e)
-            System.currentTimeMillis() + 60000 // Fallback: 1 minute
-        }
+        val tokenSymbol = selectedToken?.assetCode?.name?.uppercase(Locale.getDefault()) ?: "TOKEN"
+        binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
     }
 
     private fun setupAmountInputListeners() {
@@ -187,6 +213,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                     isUpdating = false
                 }
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
 
@@ -200,20 +227,22 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
             binding.textCryptoWalletName.text = "${token.assetCode.name.uppercase(Locale.getDefault())} WALLET"
             binding.cryptoIcon.setImageResource(getIconResIdForToken(token.assetCode.toString()))
             val formattedBalance = token.totalBalance.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toPlainString()
-            binding.textCryptoBalance.text = "${formattedBalance} ${token.assetCode.name.uppercase(Locale.getDefault())}"
+            binding.textCryptoBalance.text = "$formattedBalance ${token.assetCode.name.uppercase(Locale.getDefault())}"
+        } ?: run {
+            binding.textCryptoWalletName.text = "No Wallet Selected"
+            binding.cryptoIcon.setImageResource(Helpers.getIconResIdForToken(""))
+            binding.textCryptoBalance.text = "0.00"
         }
     }
 
     fun updateTokenSpinner(token: WalletDto) {
         selectedToken = token
-//        binding.textFiatTicker.text = token.assetCode.name.uppercase(Locale.getDefault())
-//        binding.assetIcon.setImageResource(getIconResIdForToken(token.assetCode.toString()))
-//        binding.fiatSpinner.invalidate()
+        binding.textCryptoCurrency.text = token.assetCode.name.uppercase(Locale.getDefault())
+        binding.assetIcon.setImageResource(getIconResIdForToken(token.assetCode.toString()))
         binding.edittextFiatAmount.setText("")
         binding.edittextCryptoAmount.setText("")
         updateWalletInfo()
         updateDefaultPriceText()
-        fetchRatesAndScheduleRefresh()
     }
 
     private fun setDefaultToken() {
@@ -229,19 +258,29 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
     }
 
     private fun calculateFiatFromCrypto(cryptoAmount: Double): Double {
-        return (cryptoAmount * (currentRate?.sell ?: 0.0)) + fee
+        // Fiat = (Crypto * Buy Rate) * (1 - Fee Percentage)
+        val rate = cryptoToFiatViewModel.currentRate.value?.buy ?: 0.0
+        val feePercentage = cryptoToFiatViewModel.fee.value?.div(100.0) ?: 0.0
+        return if (cryptoAmount <= 0.0 || rate <= 0.0) 0.0 else (cryptoAmount * rate) * (1.0 - feePercentage)
     }
 
     private fun calculateCryptoFromFiat(fiatAmount: Double): Double {
-        return if (fiatAmount <= fee) 0.0 else (fiatAmount - fee) / (currentRate?.sell ?: 1.0)
+        // Crypto = Fiat / (Buy Rate * (1 - Fee Percentage))
+        val rate = cryptoToFiatViewModel.currentRate.value?.buy ?: 1.0
+        val feePercentage = cryptoToFiatViewModel.fee.value?.div(100.0) ?: 0.0
+        return if (fiatAmount <= 0.0 || rate <= 0.0 || (1.0 - feePercentage) <= 0.0) 0.0 else fiatAmount / (rate * (1.0 - feePercentage))
     }
 
+    @SuppressLint("SetTextI18n")
     private fun calculateAndDisplayPrice(cryptoChanged: Boolean = false) {
-        val fiatText = binding.edittextFiatAmount.text.toString()
-        val cryptoText = binding.edittextCryptoAmount.text.toString()
+        val fiatText = binding.edittextFiatAmount.text.toString().trim()
+        val cryptoText = binding.edittextCryptoAmount.text.toString().trim()
+        val tokenSymbol = selectedToken?.assetCode?.name?.uppercase(Locale.getDefault()) ?: "TOKEN"
 
         if (fiatText.isEmpty() && cryptoText.isEmpty()) {
-//            binding.textPriceValue.text = "≅ 0.00 $fiatCode"
+            binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
+            binding.edittextFiatAmount.setText("")
+            binding.edittextCryptoAmount.setText("")
             return
         }
 
@@ -250,8 +289,8 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                 // Fiat input changed
                 val fiatAmount = fiatText.toDoubleOrNull() ?: 0.0
                 if (fiatAmount <= minimumAmountInFiat) {
+                    binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
                     if (!binding.edittextCryptoAmount.hasFocus()) binding.edittextCryptoAmount.setText("")
-//                    binding.textPriceValue.text = "≅ 0.00 $fiatCode"
                     return
                 }
                 val cryptoAmount = calculateCryptoFromFiat(fiatAmount)
@@ -260,26 +299,30 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                     binding.edittextCryptoAmount.setText(formattedCrypto)
                     binding.edittextCryptoAmount.setSelection(formattedCrypto.length)
                 }
-//                binding.textPriceValue.text = "≅ ${fiatAmount.toBigDecimal().setScale(2, RoundingMode.HALF_UP)} $fiatCode"
+                binding.textPriceValue.text = "≅ ${fiatAmount.toBigDecimal().setScale(2, RoundingMode.HALF_UP)} $fiatCode"
             } else {
                 // Crypto input changed
                 val cryptoAmount = cryptoText.toDoubleOrNull() ?: 0.0
-                if (cryptoAmount == 0.0) {
+                if (cryptoAmount <= 0.0) {
+                    binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
                     if (!binding.edittextFiatAmount.hasFocus()) binding.edittextFiatAmount.setText("")
-//                    binding.textPriceValue.text = "≅ 0.00 $fiatCode"
                     return
                 }
                 val fiatAmount = calculateFiatFromCrypto(cryptoAmount)
+                if (fiatAmount <= minimumAmountInFiat) {
+                    binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
+                    if (!binding.edittextFiatAmount.hasFocus()) binding.edittextFiatAmount.setText("")
+                    return
+                }
                 val formattedFiat = fiatAmount.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toPlainString()
                 if (!binding.edittextFiatAmount.hasFocus()) {
                     binding.edittextFiatAmount.setText(formattedFiat)
                     binding.edittextFiatAmount.setSelection(formattedFiat.length)
                 }
-//                binding.textPriceValue.text = "≅ ${fiatAmount.toBigDecimal().setScale(2, RoundingMode.HALF_UP)} $fiatCode/$tokenSymbol"
+                binding.textPriceValue.text = "≅ $formattedFiat $fiatCode"
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Calculation error: ${e.message}", e)
-//            binding.textPriceValue.text = "≅ 0.00 $tokenSymbol/$fiatCode"
+            binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
             Toast.makeText(this, "Invalid input", Toast.LENGTH_SHORT).show()
         }
     }
@@ -291,91 +334,57 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                     val fiatAmountStr = binding.edittextFiatAmount.text.toString().trim()
                     val reason = binding.edittextPaymentReason.text.toString().trim()
 
-                    // Validate reason early
                     if (reason.isEmpty()) {
                         CustomToast.show(this@CryptoToFiatOffRampActivity, "Warning", "Please select a reason")
                         return@launch
                     }
 
-                    // Validate fiat amount early and safely
                     val fiatAmount = fiatAmountStr.toDoubleOrNull()
                     if (fiatAmount == null || fiatAmount <= 0) {
                         CustomToast.show(this@CryptoToFiatOffRampActivity, "Warning", "Please enter a valid amount")
                         return@launch
                     }
 
-                    // Validate required token fields safely
                     val selectedToken = selectedToken
                     if (selectedToken == null || selectedToken.address.isEmpty()) {
                         CustomToast.show(this@CryptoToFiatOffRampActivity, "Error", "No wallet address available")
                         return@launch
                     }
 
-                    binding.nextButton.setSubmitting(true, loadingText = "Requesting")
-
-                    val authToken = userRepository.getToken().first()
-
-                    val offRampRequest = CryptoToFiatOffRampRequestDto(
-                        userAmount = fiatAmount,
-                        fiatCode = FiatEnum.NGN,
-                        assetCode = selectedToken.assetCode,
-                        country = "ng",
-                        paymentReason = reason.lowercase(),
-                        network = selectedToken.network,
-                        bankInfo = BankInfo(
-                            accountHolder = "Samuel",
-                            accountNumber = "2222",
-                            bankName = "Thellex"
-                        ),
-                        sourceAddress = selectedToken.address
-                    )
-
-                    Log.d("TAG", "this is there reques pay laod, $offRampRequest")
-
-                    val response = ApiClient.getAuthenticatedPaymentApi(authToken!!).cryptoToFiatOffRamp(offRampRequest)
-
-                    response.result?.let { result ->
-                        Log.d(TAG, "Response from fiatToCryptoOnRamp: $result")
-                        userViewModel.addFiatCryptoRampTransaction(result)
-
-                        val intent = Intent(this@CryptoToFiatOffRampActivity, FiatDepositActivity::class.java).apply {
-                            putExtra("fiatCryptoRampResultJson", Gson().toJson(result))
-                        }
-                        startActivity(intent)
-                    } ?: run {
-                        Log.w(TAG, "No result in response: $response")
-                        CustomToast.show(this@CryptoToFiatOffRampActivity, "Error", "Unexpected response")
+                    if (cryptoToFiatViewModel.currentRate.value == null) {
+                        CustomToast.show(this@CryptoToFiatOffRampActivity, "Error", "Rates not available")
+                        return@launch
                     }
 
+                    binding.nextButton.setLoading(true) // Set loading state during navigation
+
+                    // Save data to ViewModel
+                    cryptoToFiatViewModel.setOffRampData(
+                        paymentReason = reason.lowercase(),
+                        network = selectedToken.network.name,
+                        sourceAddress = selectedToken.address,
+                        assetCode = selectedToken.assetCode.toString(),
+                        country = userViewModel.authResult.value?.kyc?.country ?: "ng",
+                        fiatCode = fiatCode,
+                        fiatAmount = fiatAmount,
+                    )
+
+                    val intent = Intent(this@CryptoToFiatOffRampActivity, PaymentMethodActivity::class.java)
+                    startActivity(intent)
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error in fiatToCryptoOnRamp: ${e.message}", e)
-                    Toast.makeText(this@CryptoToFiatOffRampActivity, "Request failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@CryptoToFiatOffRampActivity, "Error starting payment method", Toast.LENGTH_SHORT).show()
                 } finally {
-                    binding.nextButton.setSubmitting(false)
+                    binding.nextButton.setLoading(false) // Restore default state
                 }
             }
         }
 
         binding.cryptoCurrencySelector.setOnClickListener {
             val walletBalance = walletManagerViewModel.walletBalance.value
-
             if (walletBalance == null) {
                 Toast.makeText(this, "No wallet data available", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
-            // Set the result listener once
-            supportFragmentManager.setFragmentResultListener(
-                TokenSelectionBottomSheet.RESULT_KEY,
-                this
-            ) { _, bundle ->
-                bundle.getString(TokenSelectionBottomSheet.TOKEN_KEY)?.let { json ->
-                    selectedToken = Gson().fromJson(json, WalletDto::class.java)
-                    binding.textCryptoCurrency.text = selectedToken?.assetCode?.name?.uppercase()
-                    binding.assetIcon.setImageResource(getIconResIdForToken(selectedToken?.assetCode.toString()))
-                }
-            }
-
             TokenSelectionBottomSheet.newInstance(walletBalance)
                 .show(supportFragmentManager, TokenSelectionBottomSheet.TAG)
         }
@@ -391,30 +400,44 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
             this,
             WalletManagerModelFactory(applicationContext)
         )[WalletManagerViewModel::class.java]
+
+        cryptoToFiatViewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        )[CryptoToFiatViewModel::class.java]
+
+        rateViewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        )[RateViewModel::class.java]
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun observeUser() {
         userViewModel.authResult.observe(this) { userDto ->
-            updatePendingTransactionsUI(userDto?.fiatCryptoRampTransactions!!)
+            if (userDto?.bankAccounts.isNullOrEmpty()) {
+                val intent = Intent(this, PaymentMethodActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            updatePendingTransactionsUI(userDto?.fiatCryptoRampTransactions)
         }
     }
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun updatePendingTransactionsUI(transactions: List<IFiatCryptoRampTransactionsDto>) {
+    private fun updatePendingTransactionsUI(transactions: List<IFiatCryptoRampTransactionsDto>?) {
         val now = Instant.now()
+        val transactionList = transactions ?: emptyList()
 
-        if (transactions.isEmpty()) {
-            // No transactions at all
+        if (transactionList.isEmpty()) {
             binding.layoutPendingTransactionsWrapper.visibility = View.VISIBLE
             binding.textPendingTransactionsCount.text = "Ramp Transaction History"
             binding.iconPendingClock.visibility = View.GONE
             return
         }
 
-        // Filter pending transactions that have not expired yet
-        val pendingTransactions = transactions.filter {
+        val pendingTransactions = transactionList.filter {
             try {
                 val expiresInstant = Instant.parse(it.expiresAt)
                 !it.seen && it.paymentStatus != PaymentStatusEnum.Complete && expiresInstant.isAfter(now)
@@ -423,15 +446,12 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
             }
         }
 
+        binding.layoutPendingTransactionsWrapper.visibility = View.VISIBLE
         if (pendingTransactions.isNotEmpty()) {
-            // Show count of pending transactions (not expired)
             val count = pendingTransactions.size
-            binding.layoutPendingTransactionsWrapper.visibility = View.VISIBLE
             binding.textPendingTransactionsCount.text = if (count == 1) "1 PENDING TRANSACTION" else "$count PENDING TRANSACTIONS"
             binding.iconPendingClock.visibility = View.VISIBLE
         } else {
-            // Either all transactions are completed or expired -> show transaction history text
-            binding.layoutPendingTransactionsWrapper.visibility = View.VISIBLE
             binding.textPendingTransactionsCount.text = "Ramp Transaction History"
             binding.iconPendingClock.visibility = View.GONE
         }
@@ -456,11 +476,12 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        refreshRunnable?.let { ratesRefreshHandler?.removeCallbacks(it) }
+        ratesRefreshHandler?.removeCallbacksAndMessages(null)
         ratesRefreshHandler = null
     }
 
     companion object {
         private const val TAG = "TAGY"
     }
+
 }

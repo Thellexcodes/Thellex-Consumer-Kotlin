@@ -27,6 +27,10 @@ object Constants {
     const val FIAT_TO_CRYPTO_ONRAMP_ENDPOINT = "${VERSIONED_BASE}/payments/fiat-to-crypto/onramp"
     const val CRYPTO_TO_FIAT_OFFRAMP_ENDPOINT = "${VERSIONED_BASE}/payments/crypto-to-fiat/offramp"
 
+    //Banking
+    const val ADD_BANK_ACCOUNT_ENDPOINT = "${VERSIONED_BASE}/settings/bank-account/add"
+
+
     val BASE_URL: String
         get() = if (isEmulator()) {
             "https://goat-touched-mite.ngrok-free.app/" // For Android Emulator

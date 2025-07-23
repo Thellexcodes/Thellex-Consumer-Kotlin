@@ -74,12 +74,6 @@ class POSHomeActivity : AppCompatActivity() {
             WalletManagerModelFactory(applicationContext)
         )[WalletManagerViewModel::class.java]
 
-//        showSystemNotification(
-//            this@POSHomeActivity,
-//            "Hello!",
-//            "Welcome."
-//        )
-
         setupRecyclerView()
         observeUserTransactions()
         setupClickListeners()

@@ -177,7 +177,7 @@
                         android:fontFamily="@font/kumbhsans_regular"
                         android:layout_marginLeft="@dimen/margin_7dp"
                         android:textColor="@color/white"
-                        android:text="Only send funds from a bank account that matches your verified name on Thellex."
+                        android:text="Funds are only sent to a bank account that matches your verified name on Thelle."
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
             </LinearLayout>

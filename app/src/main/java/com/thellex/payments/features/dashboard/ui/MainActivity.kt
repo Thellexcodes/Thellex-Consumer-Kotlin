@@ -3,9 +3,11 @@ package com.thellex.payments.features.dashboard.ui
 import android.app.Dialog
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
@@ -18,6 +20,7 @@ import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.UserErrorEnum
+import com.thellex.payments.data.viewModels.rates.RateViewModel
 import com.thellex.payments.databinding.ActivityMainBinding
 import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.features.pos.ui.POSHomeActivity
@@ -29,10 +32,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 
-
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var userModel: UserViewModel
+    private lateinit var rateViewModel: RateViewModel
 
     private var hasShownErrorToast = false
 
@@ -50,13 +53,21 @@ class MainActivity : AppCompatActivity() {
             this,
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
+
+        rateViewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        )[RateViewModel::class.java]
+
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onStart() {
         super.onStart()
         checkAuthStatus()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun checkAuthStatus() {
         lifecycleScope.launch {
             val token = withTimeoutOrNull(5000) {
@@ -67,6 +78,8 @@ class MainActivity : AppCompatActivity() {
                 navigateToLogin()
                 return@launch
             }
+
+            rateViewModel.startPolling()
 
             try {
                 val api = ApiClient.getAuthenticatedApi(token)

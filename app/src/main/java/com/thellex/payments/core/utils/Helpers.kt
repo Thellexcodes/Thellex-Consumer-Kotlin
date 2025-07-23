@@ -360,6 +360,15 @@ object Helpers {
         setTextColor(ContextCompat.getColor(context, if (submitting) submittingTextColor else defaultTextColor))
     }
 
+    fun Button.setLoading(
+        isLoading: Boolean,
+        loadingBackgroundRes: Int = R.drawable.rounded_border_button_darkblue,
+        defaultBackgroundRes: Int = R.drawable.rounded_border_button_golden
+    ) {
+        isEnabled = !isLoading
+        setBackgroundResource(if (isLoading) loadingBackgroundRes else defaultBackgroundRes)
+    }
+
     /**
      * Applies advanced system bar insets padding to this View (top + bottom).
      *
@@ -486,5 +495,7 @@ object Helpers {
     fun Double?.toTwoDecimalString(): String {
         return if (this != null) String.format("%.2f", this) else "0.00"
     }
+
+    fun String.capitalizeFirst(): String = replaceFirstChar { it.uppercase() }
 }
 
