@@ -26,6 +26,7 @@ import com.thellex.payments.databinding.ActivityRampSummaryBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.fiat.model.CryptoToFiatViewModel
+import com.thellex.payments.features.pos.ui.POSHomeActivity
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.network.services.ApiClient
@@ -163,15 +164,12 @@ class RampSummaryActivity : AppCompatActivity() {
 
             try {
                 val response = ApiClient.getAuthenticatedPaymentApi(token).cryptoToFiatOffRamp(request)
-
-                if (response.isSuccessful) {
-                    CustomToast.show(this@RampSummaryActivity, "Success", "Transaction submitted successfully.")
-                    cryptoToFiatViewModel.clearData()
-                    startActivity(Intent(this@RampSummaryActivity, CryptoToFiatOffRampActivity::class.java))
-                    finish()
-                } else {
-                    Log.e("RampSummaryActivity", "Request failed: ${response.code()} - ${response.message()}")
-                    CustomToast.show(this@RampSummaryActivity, "Transaction Failed", response.message())
+                response.body()?.result?.let { result ->
+                    userViewModel.addFiatCryptoRampTransaction(result)
+                    val intent = Intent(this@RampSummaryActivity, POSHomeActivity::class.java)
+                    startActivity(intent)
+                } ?: run {
+                    CustomToast.show(this@RampSummaryActivity, "Error", "Unexpected response")
                 }
             } catch (e: Exception) {
                 Log.e("RampSummaryActivity", "Exception occurred: ${e.message}", e)
@@ -188,12 +186,11 @@ class RampSummaryActivity : AppCompatActivity() {
         val country = cryptoToFiatViewModel.country.value
         val fiatCode = cryptoToFiatViewModel.fiatCode.value
         val fiatAmount = cryptoToFiatViewModel.fiatAmount.value
-        val currentRate = cryptoToFiatViewModel.currentRate.value
         val bankInfo = cryptoToFiatViewModel.bankInfo.value
 
         if (reason.isNullOrBlank() || network.isNullOrBlank() || sourceAddress.isNullOrBlank() ||
             assetCode.isNullOrBlank() || country.isNullOrBlank() || fiatCode.isNullOrBlank() ||
-            fiatAmount == null || currentRate == null || bankInfo == null
+            fiatAmount == null || bankInfo == null
         ) {
             CustomToast.show(this, "Missing Data", "Please complete all fields.")
             return null

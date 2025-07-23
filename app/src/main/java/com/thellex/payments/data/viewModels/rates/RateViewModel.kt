@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
@@ -78,8 +79,8 @@ class RateViewModel(application: Application) : AndroidViewModel(application) {
         pollJob = viewModelScope.launch {
             Log.d("RateViewModel", "Starting rate polling")
             while (isActive) {
-                val authToken = userRepository.getToken().first()
-                if (authToken == null) {
+                val authToken = userRepository.getToken().firstOrNull()
+                if (authToken.isNullOrBlank()) {
                     Log.w("RateViewModel", "No auth token, retrying in ${intervalFallbackMs}ms")
                     delay(intervalFallbackMs)
                     continue
@@ -88,27 +89,43 @@ class RateViewModel(application: Application) : AndroidViewModel(application) {
                 try {
                     Log.d("RateViewModel", "Fetching rates with token: [REDACTED]")
                     val response = ApiClient.getAuthenticatedPaymentApi(authToken).getRates()
-                    response.result?.let { result ->
-                        _rates.value = result.rates
-                        cacheRates(result.rates) // Cache new rates
-                        Log.d("RateViewModel", "Fetched rates: ${result.rates}")
-                        val expiresStr = result.expiresAt ?: "1970-01-01T00:00:00Z"
-                        val expiresMs = try {
-                            ZonedDateTime.parse(expiresStr, dateFmt).toInstant().toEpochMilli()
-                        } catch (e: Exception) {
-                            Log.e("RateViewModel", "Invalid expiresAt format: $expiresStr, using fallback")
-                            System.currentTimeMillis() + intervalFallbackMs
-                        }
-                        val delayMs = (expiresMs - System.currentTimeMillis() - 5_000L)
-                            .coerceAtLeast(5_000L)
-                        Log.d("RateViewModel", "Scheduling next poll in ${delayMs}ms")
-                        delay(delayMs)
-                    } ?: run {
-                        Log.w("RateViewModel", "No rates in response, retrying in ${intervalFallbackMs}ms")
+                    val result = response.result
+
+                    if (result?.rates.isNullOrEmpty()) {
+                        Log.w("RateViewModel", "Rates are null or empty, retrying in ${intervalFallbackMs}ms")
                         delay(intervalFallbackMs)
+                        continue
                     }
+
+                    // Cache the rates safely
+                    try {
+                        _rates.value = result!!.rates
+                        cacheRates(result.rates)
+                        Log.d("RateViewModel", "Fetched and cached rates: ${result.rates}")
+                    } catch (e: Exception) {
+                        Log.e("RateViewModel", "Error caching rates: ${e.message}", e)
+                    }
+
+                    // Calculate delay from expiresAt
+                    val expiresStr = result?.expiresAt
+                    val delayMs = if (!expiresStr.isNullOrBlank()) {
+                        try {
+                            val expiresMs = ZonedDateTime.parse(expiresStr, dateFmt).toInstant().toEpochMilli()
+                            (expiresMs - System.currentTimeMillis() - 5_000L).coerceAtLeast(5_000L)
+                        } catch (e: Exception) {
+                            Log.e("RateViewModel", "Invalid expiresAt format: $expiresStr", e)
+                            intervalFallbackMs
+                        }
+                    } else {
+                        Log.w("RateViewModel", "No expiresAt provided, using fallback delay")
+                        intervalFallbackMs
+                    }
+
+                    Log.d("RateViewModel", "Scheduling next poll in ${delayMs}ms")
+                    delay(delayMs)
+
                 } catch (e: Exception) {
-                    Log.e("RateViewModel", "Error fetching rates: $e")
+                    Log.e("RateViewModel", "Error fetching rates: ${e.message}", e)
                     delay(intervalFallbackMs)
                 }
             }

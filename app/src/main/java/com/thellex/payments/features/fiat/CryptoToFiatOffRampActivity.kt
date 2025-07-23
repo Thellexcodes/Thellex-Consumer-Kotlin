@@ -152,7 +152,6 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         lifecycleScope.launch {
             rateViewModel.rates.collectLatest { rates ->
                 if (rates.isNotEmpty()) {
-                    Log.d("Rate", "this is rate $rates")
                     cryptoToFiatViewModel.updateRate(rates)
                     binding.textPriceValue.text = "${cryptoToFiatViewModel.fee.value ?: 0.0}%"
                     binding.nextButton.setLoading(false) // Enable button when rates are available
