@@ -33,7 +33,7 @@ data class UserEntity(
     @SerializedName("suspended") val suspended: Boolean,
     @SerializedName("alertID") val alertID: String,
     @SerializedName("kyc") val kyc: KycInfoEntity? = null,
-    @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryEntity>,
+    @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryDto>,
     @SerializedName("notifications") val notifications: List<NotificationEntity>,
     @SerializedName("settings") val settings: List<IStoreSettingsEntityDto>,
     @SerializedName("bankAccounts") val bankAccounts: List<IBankAccountDto>,

@@ -17,6 +17,7 @@ import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.capitalizeFirst
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setSubmitting
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.model.CryptoToFiatOffRampRequestDto
 import com.thellex.payments.data.model.IBankAccountDto
@@ -146,24 +147,32 @@ class RampSummaryActivity : AppCompatActivity() {
     }
 
     private fun makeOffRampRequest() {
+        binding.buttonConfirm.setSubmitting(true)
+        binding.buttonCancel.isEnabled = false
+
         lifecycleScope.launch {
-            val token = try {
-                withTimeoutOrNull(5000) {
-                    userViewModel.token.asFlow().first { !it.isNullOrBlank() }
-                }
-            } catch (e: Exception) {
-                null
-            }
-
-            if (token.isNullOrBlank()) {
-                CustomToast.show(this@RampSummaryActivity, "Authentication Error", "Token not available.")
-                return@launch
-            }
-
-            val request = buildOffRampRequest() ?: return@launch
-
             try {
+                val token = try {
+                    withTimeoutOrNull(5000) {
+                        userViewModel.token.asFlow().first { !it.isNullOrBlank() }
+                    }
+                } catch (e: Exception) {
+                    null
+                }
+
+                if (token.isNullOrBlank()) {
+                    CustomToast.show(this@RampSummaryActivity, "Authentication Error", "Token not available.")
+                    return@launch
+                }
+
+                val request = buildOffRampRequest()
+                if (request == null) {
+                    CustomToast.show(this@RampSummaryActivity, "Error", "Invalid request")
+                    return@launch
+                }
+
                 val response = ApiClient.getAuthenticatedPaymentApi(token).cryptoToFiatOffRamp(request)
+
                 response.body()?.result?.let { result ->
                     userViewModel.addFiatCryptoRampTransaction(result)
                     val intent = Intent(this@RampSummaryActivity, POSHomeActivity::class.java)
@@ -174,6 +183,9 @@ class RampSummaryActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.e("RampSummaryActivity", "Exception occurred: ${e.message}", e)
                 CustomToast.show(this@RampSummaryActivity, "Error", "An unexpected error occurred.")
+            } finally {
+                binding.buttonConfirm.setSubmitting(false)
+                binding.buttonCancel.isEnabled = true
             }
         }
     }

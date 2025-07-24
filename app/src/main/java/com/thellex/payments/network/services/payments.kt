@@ -8,7 +8,7 @@ import com.thellex.payments.data.model.CryptoToFiatOffRampRequestDto
 import com.thellex.payments.data.model.FiatToCryptoOnRampRequestDto
 import com.thellex.payments.data.model.IBankAccountDto
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
-import com.thellex.payments.data.model.ITransactionHistoryEntity
+import com.thellex.payments.data.model.ITransactionHistoryDto
 import com.thellex.payments.features.wallet.model.IRatesResponseDto
 import retrofit2.Response
 import retrofit2.http.Body
@@ -17,7 +17,7 @@ import retrofit2.http.POST
 
 interface PaymentRequestService {
     @POST(Constants.WITHDRAW_CRYPTO_PAYMENT_ENDPOINT)
-    suspend fun withdrawCrypto(@Body request: CreateRequestPaymentDto): Response<ApiResponse<ITransactionHistoryEntity>>
+    suspend fun withdrawCrypto(@Body request: CreateRequestPaymentDto): Response<ApiResponse<ITransactionHistoryDto>>
 
     @GET(Constants.WALLET_MANAGER_RATES_ENDPOINT)
     suspend fun getRates(): ApiResponse<IRatesResponseDto>

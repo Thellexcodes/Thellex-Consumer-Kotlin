@@ -7,7 +7,7 @@ sealed class NotificationPayload
 
 data class ITransactionNotificationPayload(
     @SerializedName("notification") val notification: NotificationEntity,
-    @SerializedName("transaction") val transaction: ITransactionHistoryEntity
+    @SerializedName("transaction") val transaction: ITransactionHistoryDto
 ) : NotificationPayload()
 
 data class IWalletUpdatedNotificationPayload(
@@ -21,6 +21,7 @@ data class INotificationConsumeDto(
 
 @Serializable
 data class NotificationEntity(
+    @SerializedName("id") val id: String,
     @SerializedName("title") val title: String,
     @SerializedName("message") val message: String,
     @SerializedName("consumed") val consumed: Boolean,

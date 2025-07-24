@@ -9,131 +9,105 @@ import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-private val Context.dataStore by preferencesDataStore(name = "user_prefs")
-
 object UserPreferences {
+    private const val PREFS_NAME = "user_prefs"
+    private val userFlow = MutableSharedFlow<UserEntity?>(replay = 1)
 
-    private val TOKEN_KEY = stringPreferencesKey("auth_token")
-    private val AUTH_RESULT_KEY = stringPreferencesKey("auth_result")
-
-    private val gson = Gson()
-
-    fun getToken(context: Context): Flow<String?> =
-        context.dataStore.data.map { it[TOKEN_KEY] }
-
-    suspend fun saveToken(context: Context, token: String) {
-        context.dataStore.edit { prefs -> prefs[TOKEN_KEY] = token }
+    fun saveToken(context: Context, token: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString("token", token)
+            .apply()
     }
 
-    suspend fun clearToken(context: Context) {
-        context.dataStore.edit { prefs -> prefs.remove(TOKEN_KEY) }
+    fun clearToken(context: Context) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .remove("token")
+            .apply()
     }
 
-    fun getAuthResult(context: Context): Flow<UserEntity?> =
-        context.dataStore.data.map { prefs ->
-            prefs[AUTH_RESULT_KEY]?.let {
-                try {
-                    gson.fromJson(it, UserEntity::class.java)
-                } catch (e: Exception) {
-                    null
+    fun getToken(context: Context): Flow<String?> = flow {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        emit(prefs.getString("token", null))
+    }
+
+    fun saveAuthResult(context: Context, user: UserEntity?) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit()
+            .putString("user", if (user != null) Gson().toJson(user) else null)
+            .apply()
+        userFlow.tryEmit(user)
+    }
+
+    fun clearAuthResult(context: Context) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .remove("user")
+            .apply()
+        userFlow.tryEmit(null)
+    }
+
+    fun getAuthResult(context: Context): Flow<UserEntity?> = flow {
+        emit(getAuthResultSync(context))
+        emitAll(userFlow)
+    }
+
+    private fun getAuthResultSync(context: Context): UserEntity? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val json = prefs.getString("user", null)
+        return try {
+            if (json != null) Gson().fromJson(json, UserEntity::class.java) else null
+        } catch (e: Exception) {
+            Log.e("UserPreferences", "Error parsing user: ${e.message}")
+            null
+        }
+    }
+
+    fun addTransactionHistory(context: Context, transaction: ITransactionHistoryDto) {
+        val currentUser = getAuthResultSync(context)
+        if (currentUser != null) {
+            val updatedList = currentUser.transactionHistory.toMutableList().apply {
+                if (none { it.transactionId == transaction.transactionId }) {
+                    add(transaction)
                 }
-            }
-        }
-
-    fun saveAuthResultAsync(appContext: Context, result: UserEntity) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val json = gson.toJson(result)
-//                Log.d("UserPreferencesS", "Serialized UserEntity: $json")
-
-                appContext.dataStore.edit { prefs ->
-                    prefs[AUTH_RESULT_KEY] = json
-                    Log.d("UserPreferencesS", "UserEntity saved successfully.")
-                }
-            } catch (e: Exception) {
-                Log.e("UserPreferencesS", "Failed to save UserEntity: ${e.message}", e)
-            }
+            }.sortedByDescending { it.createdAt }
+            val updatedUser = currentUser.copy(transactionHistory = updatedList)
+            saveAuthResult(context, updatedUser)
         }
     }
 
-    suspend fun clearAuthResult(context: Context) {
-        Log.d("UserPreferencesS", "Clearing auth result")
-        context.dataStore.edit { prefs ->
-            prefs.remove(AUTH_RESULT_KEY)
-            Log.d("UserPreferencesS", "Auth result cleared")
+    fun updateTransactionById(context: Context, transactionId: String, transaction: ITransactionHistoryDto) {
+        val currentUser = getAuthResultSync(context)
+        if (currentUser != null) {
+            val updatedList = currentUser.transactionHistory.map {
+                if (it.transactionId == transactionId) transaction else it
+            }.sortedByDescending { it.createdAt }
+            val updatedUser = currentUser.copy(transactionHistory = updatedList)
+            saveAuthResult(context, updatedUser)
         }
     }
 
-    private suspend fun updateUserEntity(context: Context, updateBlock: (UserEntity) -> UserEntity) {
-        context.dataStore.edit { prefs ->
-            val currentJson = prefs[AUTH_RESULT_KEY]
-            val currentUser = currentJson?.let {
-                try {
-                    gson.fromJson(it, UserEntity::class.java)
-                } catch (e: Exception) {
-                    null
-                }
+    fun addNotification(context: Context, notification: NotificationEntity) {
+        val currentUser = getAuthResultSync(context)
+        if (currentUser != null) {
+            val updatedList = currentUser.notifications.toMutableList().apply {
+                add(notification)
             }
-
-            val updatedUser = currentUser?.let(updateBlock)
-            if (updatedUser != null) {
-                val newJson = gson.toJson(updatedUser)
-                prefs[AUTH_RESULT_KEY] = newJson
-            } else {
-            }
+            val updatedUser = currentUser.copy(notifications = updatedList)
+            saveAuthResult(context, updatedUser)
         }
     }
 
-    suspend fun addTransactionHistory(
-        context: Context,
-        transaction: ITransactionHistoryEntity
-    ) {
-        updateUserEntity(context) { user ->
-            val updatedList = user.transactionHistory.toMutableList()
-
-            // Check for duplicates
-            val exists = updatedList.any { it.blockchainTxId == transaction.blockchainTxId }
-            if (!exists) {
-                updatedList.add(transaction)
-            } else {
-                Log.w("TAG", "Transaction already exists: ${transaction.blockchainTxId}")
-            }
-
-            val sortedList = updatedList.sortedByDescending { it.createdAt }
-            user.copy(transactionHistory = sortedList)
-        }
+    fun getTransactionById(context: Context, transactionId: String): ITransactionHistoryDto? {
+        val currentUser = getAuthResultSync(context)
+        return currentUser?.transactionHistory?.find { it.transactionId == transactionId }
     }
-
-    suspend fun updateTransactionById(
-        context: Context,
-        blockchainTxId: String,
-        updatedTransaction: ITransactionHistoryEntity
-    ) {
-        updateUserEntity(context) { user ->
-            val transactionList = user.transactionHistory.toMutableList()
-            val index = transactionList.indexOfFirst { it.blockchainTxId == blockchainTxId }
-            Log.d("TAG", "index is $index")
-
-            if (index != -1) {
-                transactionList[index] = updatedTransaction
-            } else {
-                Log.w("TAG", "Transaction not found for update: $blockchainTxId")
-            }
-
-            val sortedList = transactionList.sortedByDescending { it.createdAt }
-            user.copy(transactionHistory = sortedList)
-        }
-    }
-
-    suspend fun addNotification(context: Context, notification: NotificationEntity) {
-        updateUserEntity(context) { user ->
-            val updatedList = user.notifications.toMutableList()
-            updatedList.add(notification)
-            val sortedList = updatedList.sortedByDescending { it.createdAt }
-            user.copy(notifications = sortedList)
-        }
-    }
-}
+}private val Context.dataStore by preferencesDataStore(name = "user_prefs")

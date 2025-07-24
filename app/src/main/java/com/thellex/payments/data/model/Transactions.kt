@@ -14,8 +14,9 @@ data class Transaction(
     @SerializedName("iconResId") val iconResId: Int
 )
 
-@Serializable
-data class ITransactionHistoryEntity(
+@Serializable()
+data class ITransactionHistoryDto(
+    @SerializedName("id") val id: String,
     @SerializedName("event") val event: String,
     @SerializedName("transactionId") val transactionId: String,
     @SerializedName("transactionDirection") val transactionDirection: String,
@@ -33,6 +34,7 @@ data class ITransactionHistoryEntity(
     @SerializedName("createdAt") val createdAt: String
 )
 
+
  enum class TransactionType {
     @SerializedName("DEPOSIT") DEPOSIT,
     @SerializedName("WITHDRAW") WITHDRAW,
@@ -44,7 +46,7 @@ data class PosTransaction(
     @SerializedName("description") val description: String,
     @SerializedName("time") val time: String,
     @SerializedName("amountWithSymbol") val amountWithSymbol: String,
-    @SerializedName("status") val status:  PaymentStatusEnum
+    @SerializedName("paymentStatus") val paymentStatus:  PaymentStatusEnum
 )
 
 data class BlockchainItem(

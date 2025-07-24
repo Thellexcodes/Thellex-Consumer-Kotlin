@@ -87,9 +87,9 @@ class NotificationsActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         notificationAdapter = NotificationAdapter { notification ->
-            notification.txnID.let { txnID ->
-                makeConsumeRequest(txnID) {
-                    Log.d("TAG", "Notification consumed: $txnID")
+            notification.id.let { id ->
+                makeConsumeRequest(id) {
+                    Log.d("TAG", "Notification consumed: $id")
                 }
             }
         }
@@ -167,6 +167,7 @@ class NotificationsActivity : AppCompatActivity() {
             if (response.isSuccessful) {
                 val body = response.body()?.result
                 if (body != null) {
+                    Log.d("Notifications", "response is ${response.body()!!.result}")
                     userViewModel.updateNotificationConsumed(body)
                     ConsumeResult.Success
                 } else {
@@ -184,12 +185,12 @@ class NotificationsActivity : AppCompatActivity() {
         }
     }
 
-    private fun makeConsumeRequest(txnID: String, onSuccess: (() -> Unit)? = null) {
+    private fun makeConsumeRequest(id: String, onSuccess: (() -> Unit)? = null) {
         if (isSubmitting) return
         isSubmitting = true
 
         lifecycleScope.launch {
-            val result = withContext(Dispatchers.IO) { consumeNotification(txnID) }
+            val result = withContext(Dispatchers.IO) { consumeNotification(id) }
             when (result) {
                 is ConsumeResult.Success -> {
                     onSuccess?.invoke()

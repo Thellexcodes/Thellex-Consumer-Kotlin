@@ -373,7 +373,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                 } catch (e: Exception) {
                     Toast.makeText(this@CryptoToFiatOffRampActivity, "Error starting payment method", Toast.LENGTH_SHORT).show()
                 } finally {
-                    binding.nextButton.setLoading(false) // Restore default state
+                    binding.nextButton.setLoading(false)
                 }
             }
         }

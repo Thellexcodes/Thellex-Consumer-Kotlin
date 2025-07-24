@@ -418,7 +418,7 @@
                                 android:layout_height="22dp">
 
                             <ImageView
-                                    android:layout_width="26dp"
+                                    android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:src="@drawable/icon_usdc"
                                     android:scaleType="centerCrop"

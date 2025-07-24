@@ -145,6 +145,7 @@ object Helpers {
     fun mapToTransactionStatus(rawStatus: String): PaymentStatusEnum {
         return when (rawStatus.trim().lowercase(Locale.getDefault())) {
             "accepted" -> PaymentStatusEnum.Complete
+            "complete" -> PaymentStatusEnum.Complete
             "done" -> PaymentStatusEnum.Complete
             "rejected" -> PaymentStatusEnum.Rejected
             "pending" -> PaymentStatusEnum.Processing
@@ -166,7 +167,7 @@ object Helpers {
         return BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString()
     }
 
-    fun formatAmountWithSymbol(amountStr: String, symbol: String? = null, decimals: Int = 4): String {
+    fun formatAmountWithSymbol(amountStr: String, symbol: String? = null, decimals: Int = 2): String {
         val amount = amountStr.toDoubleOrNull() ?: 0.0
         val symbolToUse = symbol ?: ""
         val formattedAmount = "%.${decimals}f".format(amount)

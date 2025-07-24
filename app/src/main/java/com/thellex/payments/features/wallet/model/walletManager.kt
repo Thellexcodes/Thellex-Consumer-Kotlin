@@ -1,7 +1,7 @@
 package com.thellex.payments.features.wallet.model
 
 import com.google.gson.annotations.SerializedName
-import com.thellex.payments.data.model.ITransactionHistoryEntity
+import com.thellex.payments.data.model.ITransactionHistoryDto
 import com.thellex.payments.settings.SupportedBlockchainEnum
 import com.thellex.payments.settings.TokensEnum
 import kotlinx.serialization.SerialName
@@ -20,7 +20,7 @@ data class WalletDto(
     @SerializedName("network") val network: SupportedBlockchainEnum,
     @SerializedName("address") val address: String,
     @SerializedName("assetCode") val assetCode: TokensEnum,
-    @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryEntity>
+    @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryDto>
 )
 
 data class IRateDto(
