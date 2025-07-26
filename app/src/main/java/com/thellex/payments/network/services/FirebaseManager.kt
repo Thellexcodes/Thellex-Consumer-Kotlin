@@ -9,10 +9,12 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.thellex.payments.core.utils.FcmHelper.sendFcmTokenToBackend
+import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.data.enums.NotificationEventsEnum
 import com.thellex.payments.data.model.ITransactionHistoryDto
 import com.thellex.payments.data.model.NotificationEntity
 import com.thellex.payments.data.model.UserPreferences
+import com.thellex.payments.data.model.WalletWebhookEventEnum
 import com.thellex.payments.features.auth.viewModel.UserRepository
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -60,11 +62,22 @@ class FirebaseManager : FirebaseMessagingService() {
             val transactionJson = remoteMessage.data["transaction"]
             val notificationJson = remoteMessage.data["notification"]
 
+            Log.d(tag, "transaction is $transactionJson")
+
             if (!event.isNullOrEmpty()) {
                 try {
-                    val eventEnum = NotificationEventsEnum.fromValue(event)
+                    val eventEnum = Helpers.firstMatchingEnum(
+                        event,
+                        NotificationEventsEnum::fromValue,
+                        WalletWebhookEventEnum::fromValue,
+                    )
+
+                    Log.d(tag, "event is $eventEnum")
+
                     if (eventEnum != null) {
                         when (eventEnum) {
+                            WalletWebhookEventEnum.DEPOSIT_SUCCESSFUL,
+                            WalletWebhookEventEnum.WITHDRAW_SUCCESSFUL,
                             NotificationEventsEnum.FIAT_TO_CRYPTO_DEPOSIT,
                             NotificationEventsEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> {
                                 runIO {
@@ -87,26 +100,26 @@ class FirebaseManager : FirebaseMessagingService() {
                                     }
 
                                     transaction?.let {
-                                        val existing = UserPreferences.getTransactionById(applicationContext, it.transactionId)
+                                        val existing = UserPreferences.getTransactionById(applicationContext, it.id)
                                         if (existing == null) {
-                                            userViewModel.addTransaction(it)
-                                            Log.d(tag, "Added new transaction for event: ${eventEnum.event}")
+                                            UserPreferences.addTransactionHistory(applicationContext, it)
+                                            Log.d(tag, "Added new transaction for event: ${eventEnum.name}")
                                         } else {
-                                            userViewModel.updateTransaction(it)
-                                            Log.d(tag, "Updated transaction for event: ${eventEnum.event}")
+                                            Log.d(tag, "Updated transaction for event: ${eventEnum.name}")
+                                            UserPreferences.updateTransactionById(applicationContext, it.id, it)
                                         }
                                     }
 
                                     notification?.let {
                                         UserPreferences.addNotification(applicationContext, it)
-                                        Log.d(tag, "Saved notification for event: ${eventEnum.event}")
+                                        Log.d(tag, "Saved notification for event: ${eventEnum.name}")
                                     }
 
-                                    Log.d(tag, "Processed event: ${eventEnum.event}")
+                                    Log.d(tag, "Processed event: ${eventEnum.name}")
                                 }
                             }
                             else -> {
-                                Log.w(tag, "Unhandled event: ${eventEnum.event}")
+                                Log.w(tag, "Unhandled event: ${eventEnum.name}")
                             }
                         }
                     } else {

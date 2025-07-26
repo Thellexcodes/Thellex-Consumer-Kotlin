@@ -127,7 +127,9 @@ enum class WalletWebhookEventEnum(val value: String) {
 
     companion object {
         fun fromValue(value: String?): WalletWebhookEventEnum? {
-            return entries.firstOrNull { it.value.equals(value, ignoreCase = true) }
+            if (value.isNullOrBlank()) return null
+            val normalizedValue = value.replace(".", "_").uppercase()
+            return entries.firstOrNull { it.value == normalizedValue }
         }
     }
 }

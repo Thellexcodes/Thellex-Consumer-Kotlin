@@ -498,5 +498,23 @@ object Helpers {
     }
 
     fun String.capitalizeFirst(): String = replaceFirstChar { it.uppercase() }
+
+    fun <T> firstMatchingEnum(event: String?, vararg resolvers: (String) -> T?): T? {
+        if (event.isNullOrBlank()) {
+            println("Error: Event string is null or blank")
+            return null
+        }
+        for (resolver in resolvers) {
+            val result = resolver(event)
+            if (result != null) {
+                println("Resolved event '$event' to $result")
+                return result
+            } else {
+                println("Resolver $resolver returned null for event '$event'")
+            }
+        }
+        println("No resolver matched event '$event'")
+        return null
+    }
 }
 

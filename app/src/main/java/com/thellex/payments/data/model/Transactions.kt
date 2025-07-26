@@ -34,7 +34,6 @@ data class ITransactionHistoryDto(
     @SerializedName("createdAt") val createdAt: String
 )
 
-
  enum class TransactionType {
     @SerializedName("DEPOSIT") DEPOSIT,
     @SerializedName("WITHDRAW") WITHDRAW,

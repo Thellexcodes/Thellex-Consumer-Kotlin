@@ -199,7 +199,6 @@ class NotificationsActivity : AppCompatActivity() {
                     CustomToast.show(this@NotificationsActivity, "Authentication Error", "Login to proceed")
                 }
                 is ConsumeResult.Failure -> {
-                    Log.e(TAG, "Consume failed: ${result.message}")
                     ErrorHandler.handle(this@NotificationsActivity, "Error", result.userError)
                 }
             }

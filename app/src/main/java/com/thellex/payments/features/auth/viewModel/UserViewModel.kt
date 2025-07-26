@@ -120,7 +120,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 val currentUser = _authResult.value
                 if (currentUser != null) {
                     val updatedList = currentUser.notifications.map {
-                        if (it.id == result.id) it.copy(consumed = result.consumed) else it
+                        if (it.id == result.id) it.copy(consumed = result.consumed, kind = result.kind) else it
                     }
                     val updatedUser = currentUser.copy(notifications = updatedList)
                     Log.d(TAG, "update notification $updatedList, from payload: $result")

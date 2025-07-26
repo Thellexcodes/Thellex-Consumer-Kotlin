@@ -88,7 +88,7 @@ object UserPreferences {
         val currentUser = getAuthResultSync(context)
         if (currentUser != null) {
             val updatedList = currentUser.transactionHistory.map {
-                if (it.transactionId == transactionId) transaction else it
+                if (it.id == transactionId) transaction else it
             }.sortedByDescending { it.createdAt }
             val updatedUser = currentUser.copy(transactionHistory = updatedList)
             saveAuthResult(context, updatedUser)
@@ -108,6 +108,6 @@ object UserPreferences {
 
     fun getTransactionById(context: Context, transactionId: String): ITransactionHistoryDto? {
         val currentUser = getAuthResultSync(context)
-        return currentUser?.transactionHistory?.find { it.transactionId == transactionId }
+        return currentUser?.transactionHistory?.find { it.id == transactionId }
     }
 }private val Context.dataStore by preferencesDataStore(name = "user_prefs")

@@ -49,6 +49,7 @@ class NotificationAdapter(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is DateViewHolder) holder.bind(items[position] as String)
         else if (holder is NotificationViewHolder) holder.bind(items[position] as NotificationEntity)
