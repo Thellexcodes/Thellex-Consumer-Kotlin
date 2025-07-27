@@ -1,8 +1,10 @@
 [versions]
 agp = "8.8.2"
+ccp = "2.9.3"
 converterGson = "2.9.0"
 datastorePreferences = "1.1.7"
 firebaseBomVersion = "33.16.0"
+glide = "4.15.1"
 googleMaterial = "<latest_version>"
 imagepicker = "2.1"
 kotlin = "1.9.24"
@@ -19,6 +21,7 @@ lifecycleViewmodelKtxVersion = "2.6.1"
 loggingInterceptor = "4.11.0"
 material = "1.10.0"
 constraintlayout = "2.1.4"
+materialdatetimepicker = "4.2.3"
 materialVersion = "1.11.0"
 navigationFragmentKtx = "2.6.0"
 navigationUiKtx = "2.6.0"
@@ -39,6 +42,7 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 androidx-lifecycle-livedata-ktx-v261 = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtxVersion" }
 androidx-lifecycle-viewmodel-ktx-v261 = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtxVersion" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 imagepicker = { module = "com.github.dhaval2404:imagepicker", version.ref = "imagepicker" }
 journeyapps-zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbeddedVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -60,6 +64,7 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-ui-text-android = { group = "androidx.compose.ui", name = "ui-text-android", version.ref = "uiTextAndroid" }
 material-v1110 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 material-vlatestversion = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
+materialdatetimepicker = { module = "com.wdullaer:materialdatetimepicker", version.ref = "materialdatetimepicker" }
 otp-view = { module = "com.github.appsfeature:otp-view", version.ref = "otpView" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }

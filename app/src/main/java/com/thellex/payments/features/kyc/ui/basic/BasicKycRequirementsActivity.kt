@@ -11,7 +11,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.highlightCurrency
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.BasicKycRequirementsEnum
 import com.thellex.payments.databinding.ActivityKycOverviewBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
@@ -19,7 +23,7 @@ import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.kyc.adapters.KycRequirementsAdapter
 
 class BasicKycRequirementsActivity : AppCompatActivity() {
-
+    private lateinit var topBar: Helpers.TopAppBarController
     private lateinit var binding: ActivityKycOverviewBinding
     private lateinit var userViewModel: UserViewModel
 
@@ -27,21 +31,20 @@ class BasicKycRequirementsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityKycOverviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ActivityTracker.add(this)
+//        ActivityTracker.add(this)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.activityKycOverviewLayoutMain.applyAdvancedSystemBarInsets()
 
-        setupWindowInsets()
+        topBar = Helpers.setupTopAppBar(
+            activity = this,
+            rootView = findViewById(R.id.inKycOverviewTopAppBar),
+            title = ""
+        )
+
         setupViewModel()
         observeUserLimits()
         setupStartKycButton()
-        val kycType = intent.getStringExtra("KYC_TYPE")
-    }
-
-    private fun setupWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.activityKycOverviewLayoutMain) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
     }
 
     private fun setupViewModel() {
