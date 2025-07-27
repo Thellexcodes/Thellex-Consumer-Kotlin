@@ -15,6 +15,7 @@ import java.util.Locale
 
 class AssetAdapter(
     private var assets: MutableList<Asset>,
+    private var isBalanceVisible: Boolean,
     private val onItemClick: (Asset) -> Unit,
     private val onActivateWalletClick: (Asset) -> Unit
 ) : RecyclerView.Adapter<AssetAdapter.AssetViewHolder>() {
@@ -28,7 +29,6 @@ class AssetAdapter(
 
     override fun onBindViewHolder(holder: AssetViewHolder, position: Int) {
         val asset = assets[position]
-
         val padding = holder.binding.clAssetItemRoot.context.resources.getDimensionPixelSize(R.dimen.padding_16dp)
 
         with(holder.binding) {
@@ -44,9 +44,9 @@ class AssetAdapter(
                 tvAssetSymbolMain.visibility = View.GONE
                 tvAssetSymbolSecondary.visibility = View.VISIBLE
 
-                tvTokenAmount.text = "${asset.amount} ${asset.symbol}"
-                tvTokenValueUsd.text = "$ ${asset.usdValue}"
-                tvTokenValueLocal.text = "\u2248 ${asset.valueInLocal} $LocalValue"
+                tvTokenAmount.text = if (isBalanceVisible) "${asset.amount} ${asset.symbol}" else "****"
+                tvTokenValueUsd.text = if (isBalanceVisible) "$ ${asset.usdValue}" else "****"
+                tvTokenValueLocal.text = if (isBalanceVisible) "\u2248 ${asset.valueInLocal} $LocalValue" else "****"
 
                 root.setBackgroundResource(R.drawable.rounded_border)
                 clAssetItemRoot.setPadding(padding, padding, padding, padding)
@@ -67,7 +67,6 @@ class AssetAdapter(
                 clAssetItemRoot.setPadding(padding, padding, padding, padding)
 
                 root.setOnClickListener(null)
-
                 btnActivateWallet.setOnClickListener {
                     onActivateWalletClick(asset)
                 }
@@ -80,6 +79,11 @@ class AssetAdapter(
     fun updateData(newAssets: List<Asset>) {
         assets.clear()
         assets.addAll(newAssets)
+        notifyDataSetChanged()
+    }
+
+    fun setBalanceVisibility(visible: Boolean) {
+        isBalanceVisible = visible
         notifyDataSetChanged()
     }
 }

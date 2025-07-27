@@ -36,7 +36,7 @@ class NetworkTokenSelectionTopSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val recyclerView = binding.tokenRecyclerView
+        val recyclerView = binding.recyclerNetworkList
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // ✅ Filter using enum directly

@@ -1,4 +1,5 @@
 <resources>
+    <!-- Margins and Paddings (dp) -->
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
@@ -10,6 +11,7 @@
     <dimen name="margin_2dp">2dp</dimen>
     <dimen name="padding_16dp">16dp</dimen>
 
+    <!-- General Layout Dimensions (dp) -->
     <dimen name="dp_1">1dp</dimen>
     <dimen name="dp_2">2dp</dimen>
     <dimen name="dp_3">3dp</dimen>
@@ -80,4 +82,25 @@
     <dimen name="dp_68">68dp</dimen>
     <dimen name="dp_69">69dp</dimen>
     <dimen name="dp_70">70dp</dimen>
+    <dimen name="dp_323">323dp</dimen>
+
+    <!-- Text Sizes (sp) -->
+    <dimen name="sp_8">8sp</dimen>
+    <dimen name="sp_9">9sp</dimen>
+    <dimen name="sp_10">10sp</dimen>
+    <dimen name="sp_11">11sp</dimen>
+    <dimen name="sp_12">12sp</dimen>
+    <dimen name="sp_13">13sp</dimen>
+    <dimen name="sp_14">14sp</dimen>
+    <dimen name="sp_15">15sp</dimen>
+    <dimen name="sp_16">16sp</dimen>
+    <dimen name="sp_18">18sp</dimen>
+    <dimen name="sp_20">20sp</dimen>
+    <dimen name="sp_22">22sp</dimen>
+    <dimen name="sp_24">24sp</dimen>
+    <dimen name="sp_26">26sp</dimen>
+    <dimen name="sp_28">28sp</dimen>
+    <dimen name="sp_30">30sp</dimen>
+
+    <dimen name="border_radius">12dp</dimen>
 </resources>

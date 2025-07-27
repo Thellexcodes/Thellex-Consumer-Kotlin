@@ -235,7 +235,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     } else {
         // Either all transactions are completed or expired -> show transaction history text
         binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
-        binding.textPendingTransactionsCount.text = "Ramp Transaction History"
+        binding.textPendingTransactionsCount.text = "Funding & Spending History"
         binding.iconPendingClock.visibility = View.GONE
     }
 

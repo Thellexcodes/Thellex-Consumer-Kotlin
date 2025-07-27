@@ -1,6 +1,5 @@
 package com.thellex.payments.features.fiat.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -11,9 +10,9 @@ import com.thellex.payments.databinding.ItemTokenBinding
 import com.thellex.payments.features.wallet.model.WalletDto
 import java.util.Locale
 
-class FiatOnRampTokenAdapter(
+class TokenAdapter(
     private val onTokenSelected: (WalletDto) -> Unit
-) : ListAdapter<WalletDto, FiatOnRampTokenAdapter.TokenViewHolder>(DiffCallback()) {
+) : ListAdapter<WalletDto, TokenAdapter.TokenViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TokenViewHolder {
         val binding = ItemTokenBinding.inflate(LayoutInflater.from(parent.context), parent, false)

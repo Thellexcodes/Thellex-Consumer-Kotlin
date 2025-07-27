@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
@@ -61,7 +60,6 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
     private lateinit var cryptoToFiatViewModel: CryptoToFiatViewModel
     private lateinit var rateViewModel: RateViewModel
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +73,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         topBar = Helpers.setupTopAppBar(
             activity = this,
             rootView = findViewById(R.id.include_top_app_bar),
-            title = "SELL CRYPTO"
+            title = "SPEND YOUR CRYPTO"
         )
 
         // Disable nextButton by default until rates are fetched
@@ -451,7 +449,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
             binding.textPendingTransactionsCount.text = if (count == 1) "1 PENDING TRANSACTION" else "$count PENDING TRANSACTIONS"
             binding.iconPendingClock.visibility = View.VISIBLE
         } else {
-            binding.textPendingTransactionsCount.text = "Ramp Transaction History"
+            binding.textPendingTransactionsCount.text = "Funding & Spending History"
             binding.iconPendingClock.visibility = View.GONE
         }
 

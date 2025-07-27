@@ -120,7 +120,7 @@
                                         android:id="@+id/textCurrencyFiat3"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Fiat to Crypto Conversion"
+                                        android:text="Buy Crypto"
                                         android:textColor="@color/white"
                                         android:fontFamily="@font/kumbhsans_semibold"
                                         android:textSize="14sp"

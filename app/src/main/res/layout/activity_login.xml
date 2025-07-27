@@ -6,7 +6,6 @@
         android:background="@drawable/general_gradient_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="@dimen/activity_vertical_margin"
         tools:context=".features.auth.ui.LoginActivity">
 
     <!-- Welcome Text -->

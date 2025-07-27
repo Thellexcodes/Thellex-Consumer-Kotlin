@@ -34,6 +34,7 @@ import com.thellex.payments.R
 import com.thellex.payments.data.model.PaymentStatusEnum
 import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.features.dashboard.ui.MainActivity
+import com.thellex.payments.settings.SupportedBlockchainEnum
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.HttpException
@@ -102,14 +103,6 @@ object Helpers {
         return when (chain.lowercase(Locale.getDefault())) {
             "matic" -> R.drawable.icon_polygon
             else -> R.drawable.icon_bnb_chain
-        }
-    }
-
-    fun getDisplayNameForNetwork(network: String): String {
-        return when (network.lowercase(Locale.getDefault())) {
-            "matic" -> "Polygon"
-            "bep20" -> "Binance"
-            else -> network.replaceFirstChar { it.uppercase() }
         }
     }
 
@@ -515,6 +508,29 @@ object Helpers {
         }
         println("No resolver matched event '$event'")
         return null
+    }
+
+    fun formatNetworkName(rawNetworkName: String?): String {
+        return when (rawNetworkName?.lowercase(Locale.getDefault())) {
+            "matic" -> "Polygon PoS"
+            "bep20" -> "Binance Smart Chain"
+            "eth" -> "Ethereum"
+            "sol" -> "Solana"
+            "avax" -> "Avalanche"
+            "tron" -> "Tron"
+            else -> rawNetworkName?.replaceFirstChar { it.uppercase() } ?: "Unknown"
+        }
+    }
+
+    // Optional: You can customize display names here
+    fun getDisplayNameForNetwork(network: SupportedBlockchainEnum): String {
+        return when (network) {
+            SupportedBlockchainEnum.bep20 -> "Binance Smart Chain"
+            SupportedBlockchainEnum.matic -> "Polygon PoS"
+            SupportedBlockchainEnum.stellar -> "Stellar"
+            SupportedBlockchainEnum.base -> "Base"
+            SupportedBlockchainEnum.lisk -> "Lisk"
+        }
     }
 }
 

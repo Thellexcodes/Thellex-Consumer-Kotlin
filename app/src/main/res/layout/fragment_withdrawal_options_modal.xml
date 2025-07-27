@@ -127,7 +127,7 @@
                         android:id="@+id/text_fiat_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Withdraw Crypto to Fiat"
+                        android:text="Spend Your Crypto"
                         android:textColor="@color/white"
                         android:fontFamily="@font/kumbhsans_semibold"
                         android:textSize="14sp"

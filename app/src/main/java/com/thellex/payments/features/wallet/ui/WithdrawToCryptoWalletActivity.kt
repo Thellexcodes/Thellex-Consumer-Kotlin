@@ -9,10 +9,10 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.gson.Gson
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import com.thellex.payments.R
@@ -25,8 +25,10 @@ import com.thellex.payments.data.model.CreateRequestPaymentDto
 import com.thellex.payments.databinding.ActivityWithdrawToCryptoWalletBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.fiat.adapters.TokenSelectionBottomSheet
 import com.thellex.payments.features.pos.fragments.NetworkSelectionTopSheet
 import com.thellex.payments.features.pos.fragments.NetworkTokenSelectionTopSheet
+import com.thellex.payments.features.wallet.adapters.TokenListByNetworkBottomSheet
 import com.thellex.payments.features.wallet.model.WalletDto
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
@@ -38,11 +40,7 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 
 class WithdrawToCryptoWalletActivity : AppCompatActivity() {
-
-    companion object {
-        private const val TAG = "TAG"
-    }
-
+    private lateinit var topBar: Helpers.TopAppBarController
     private lateinit var binding: ActivityWithdrawToCryptoWalletBinding
     private lateinit var userModel: UserViewModel
     private lateinit var walletManagerViewModel: WalletManagerViewModel
@@ -67,6 +65,12 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
         binding = ActivityWithdrawToCryptoWalletBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ActivityTracker.add(this)
+        // Initialize data from intent
+        topBar = Helpers.setupTopAppBar(
+            activity = this,
+            rootView = findViewById(R.id.withdrawCryptoTopAppBar),
+            title = "WITHDRAW"
+        )
 
         userModel = ViewModelProvider(
             this,
@@ -83,12 +87,8 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
             val tokenName = savedInstanceState.getString("selectedTokenKey")
             val networkName = savedInstanceState.getString("selectedNetworkKey")
 
-            tokenName?.let { token ->
-                defaultToken = TokensEnum.valueOf(token)
-            }
-            networkName?.let { network ->
-                selectedNetwork = SupportedBlockchainEnum.valueOf(network)
-            }
+            tokenName?.let { token -> defaultToken = TokensEnum.valueOf(token) }
+            networkName?.let { network -> selectedNetwork = SupportedBlockchainEnum.valueOf(network) }
         }
 
         userModel.token.observe(this) { token ->
@@ -166,10 +166,8 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
             showNetworkSelection()
         }
 
-        binding.withdrawSpinner.setOnClickListener {
-            selectedNetwork?.let {
-                showTokenSelectionForNetwork(it)
-            } ?: Toast.makeText(this, "Please select a network first", Toast.LENGTH_SHORT).show()
+        binding.tokenSpinner.setOnClickListener {
+            showTokenSelectionForNetwork()
         }
 
         binding.withdrawBtn.setOnClickListener {
@@ -184,10 +182,6 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
                 captureActivity = com.journeyapps.barcodescanner.CaptureActivity::class.java
             }
             qrScannerLauncher.launch(options)
-        }
-
-        binding.backButton.setOnClickListener{
-            finish()
         }
     }
 
@@ -214,25 +208,27 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
             selectedNetwork = selectedWallet.network
             defaultToken = selectedWallet.assetCode
             updateUIWithWallet(selectedWallet)
-            showTokenSelectionForNetwork(selectedWallet.network)
+//            showTokenSelectionForNetwork(selectedWallet.network)
         }
     }
 
-    private fun showTokenSelectionForNetwork(network: SupportedBlockchainEnum) {
-        val wallets = walletManagerViewModel.walletBalance.value ?: return
-        val tokensForNetwork = wallets.wallets.values.filter { it.network == network }
+    private fun showTokenSelectionForNetwork() {
+        val walletBalance = walletManagerViewModel.walletBalance.value ?: return
+        val selectedNetwork = this.selectedNetwork ?: return
 
-        if (tokensForNetwork.isEmpty()) {
-            Toast.makeText(this, "No tokens found for the selected network", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        NetworkTokenSelectionTopSheet(wallets.wallets, network) { token ->
-            selectedToken = token
-            defaultToken = token.assetCode
+        supportFragmentManager.setFragmentResultListener(
+            TokenListByNetworkBottomSheet.RESULT_KEY,
+            this
+        ) { _, bundle ->
+            val json = bundle.getString(TokenListByNetworkBottomSheet.TOKEN_KEY)
+            val token = Gson().fromJson(json, WalletDto::class.java)
             updateUIWithWallet(token)
-        }.show(supportFragmentManager, "NetworkTokenSelectionBottomSheet")
+        }
+
+        val bottomSheet = TokenListByNetworkBottomSheet.newInstance(walletBalance, selectedNetwork)
+        bottomSheet.show(supportFragmentManager, TokenListByNetworkBottomSheet.TAG)
     }
+
 
     private fun updateSpinnerUI(token: WalletDto) {
         val assetName = token.assetCode.name.uppercase(Locale.getDefault())
@@ -244,7 +240,7 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
 
     private fun updateNetworkUI(network: SupportedBlockchainEnum) {
         binding.withdrawCryptoWalletEdittextAmount.setText(
-            Helpers.getDisplayNameForNetwork(network.name)
+            SupportedBlockchainEnum.fromValue(network.name)?.let { Helpers.getDisplayNameForNetwork(it) }
         )
     }
 
@@ -358,7 +354,7 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
         binding.withdrawCryptoWalletEdittextWalletAddress.isEnabled = !isLoading
 
         // Show or hide spinner
-        binding.withdrawSpinner.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.withdrawProgress.visibility = if (isLoading) View.VISIBLE else View.GONE
 
         // Update button text and text color
         binding.withdrawBtnText.text = if (isLoading) "PROCESSING" else getString(R.string.withdraw)
@@ -372,5 +368,10 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
             if (isLoading) R.drawable.button_riple_darkblue else R.drawable.button_ripple_golden_yellow
         )
     }
+
+    companion object {
+        private const val TAG = "TAG"
+    }
+
 }
 

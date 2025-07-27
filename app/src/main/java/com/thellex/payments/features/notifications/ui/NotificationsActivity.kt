@@ -12,10 +12,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.thellex.payments.R
 import com.thellex.payments.core.decorators.ItemSpacingDecoration
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.ErrorHandler
+import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.data.model.NotificationEntity
 import com.thellex.payments.data.model.NotificationGroup
@@ -37,6 +42,8 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 class NotificationsActivity : AppCompatActivity() {
+    private lateinit var topBar: Helpers.TopAppBarController
+
     private sealed class ConsumeResult {
         object Success : ConsumeResult()
         data class Failure(val userError: UserErrorEnum, val message: String? = null) : ConsumeResult()
@@ -57,17 +64,19 @@ class NotificationsActivity : AppCompatActivity() {
         binding = ActivityNotificationsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ActivityTracker.add(this)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.main.applyAdvancedSystemBarInsets()
+        topBar = Helpers.setupTopAppBar(
+            activity = this,
+            rootView = findViewById(R.id.notification_top_app_bar),
+            title = "NOTIFICATIONS"
+        )
 
         userViewModel = ViewModelProvider(
             this,
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
         val options = listOf( "All" to null, "Transaction" to NotificationKindEnum.Transaction,)
 
@@ -78,8 +87,6 @@ class NotificationsActivity : AppCompatActivity() {
 
         binding.sortOptionsRecycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.sortOptionsRecycler.adapter = sortOptionsAdapter
-
-        binding.backButton.setOnClickListener{finish()}
 
         setupRecyclerView()
         observeNotification()
