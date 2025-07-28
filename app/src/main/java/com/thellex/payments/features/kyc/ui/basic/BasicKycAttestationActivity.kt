@@ -19,6 +19,7 @@ import com.thellex.payments.databinding.FragmentBasicKycReviewBinding
 import com.thellex.payments.features.auth.viewModel.BasicKycFormModelData
 import com.thellex.payments.features.auth.viewModel.BasicKycFormViewModel
 import com.thellex.payments.features.auth.viewModel.BasicKycFormViewModelFactory
+import com.thellex.payments.features.auth.viewModel.UserRepository
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.network.services.ApiClient
@@ -32,6 +33,7 @@ class BasicKycAttestationActivity : AppCompatActivity() {
     private lateinit var binding: FragmentBasicKycReviewBinding
     private lateinit var basicKycFormModel: BasicKycFormViewModel
     private lateinit var userViewModel: UserViewModel
+    private val userRepository by lazy { UserRepository.getInstance(applicationContext) }
     private val gson = Gson()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -144,13 +146,22 @@ class BasicKycAttestationActivity : AppCompatActivity() {
                     val response = api.verifyBasic(requestDto)
 
                     val kycResult = response.body()?.result
+                    Log.d("KYC", "the kyc result is $kycResult")
                     if (response.isSuccessful && kycResult?.isVerified == true) {
                         val currentUser = userViewModel.authResult.value
                         val updatedUser = currentUser?.copy(
-                            currentTier = kycResult.currentTier,
+                            currentTier = kycResult.nextTier,
                             nextTier = kycResult.nextTier
                         )
-                        userViewModel.saveAuthResult(updatedUser)
+                        // Save updated user directly via UserRepository
+                        if (updatedUser != null) {
+                            userRepository.saveAuthResult(updatedUser)
+                        }
+                        // Pass currentTier to KycSuccessActivity
+                        val intent = Intent(this@BasicKycAttestationActivity, KycSuccessActivity::class.java)
+                        kycResult.nextTier.let { tier ->
+                            intent.putExtra("CURRENT_TIER_JSON", gson.toJson(tier))
+                        }
                         startActivity(Intent(this@BasicKycAttestationActivity, KycSuccessActivity::class.java))
                         finish()
                     } else {
@@ -173,5 +184,4 @@ class BasicKycAttestationActivity : AppCompatActivity() {
         private const val TAG = "TAG"
     }
 }
-
 

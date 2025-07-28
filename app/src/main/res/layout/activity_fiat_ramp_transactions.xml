@@ -36,8 +36,6 @@
                         app:tabBackground="@android:color/transparent"
                         app:tabIndicatorHeight="0dp"
                         app:tabTextColor="@color/midnight"
-                        app:tabPaddingStart="12dp"
-                        app:tabPaddingEnd="12dp"
                         app:tabSelectedTextColor="@color/darkBlue"
                         app:tabContentStart="0dp" />
 

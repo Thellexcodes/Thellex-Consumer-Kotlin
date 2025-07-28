@@ -233,12 +233,12 @@ class BasicKycStep1Activity : AppCompatActivity() {
 
             // Validate phone number length based on country-specific rules
             if (cleaned.length != country.phoneLength) {
-                return Pair(false, "Phone number must be ${country.phoneLength} digits for ${country.name}")
+//                return Pair(false, "Phone number must be ${country.phoneLength} digits for ${country.name}")
             }
 
             // Validate that the cleaned input contains only digits
             if (!cleaned.matches(Regex("\\d+"))) {
-                return Pair(false, "Phone number must contain only digits")
+//                return Pair(false, "Phone number must contain only digits")
             }
 
             // Format the phone number with the country code
@@ -254,12 +254,12 @@ class BasicKycStep1Activity : AppCompatActivity() {
                 )
             }
 
-            Pair(isValid, if (isValid) formattedNumber else "Invalid phone number format")
+            Pair(isValid, if (isValid) formattedNumber else "")
         } catch (e: Exception) {
             runOnUiThread {
                 binding.fragmentKycStep1PhoneContainer.setBackgroundResource(R.drawable.bg_edittext_error)
             }
-            Pair(false, "Validation error")
+            Pair(false, "")
         }
     }
 
@@ -318,7 +318,7 @@ class BasicKycStep1Activity : AppCompatActivity() {
                 .into(binding.fragmentKycStep1IvCountryFlag)
             binding.fragmentKycStep1EtPhoneNumber.setText(phoneNumber)
         }
-        binding.kycStep1DobText.setText(data.dob.ifEmpty { "" })
+        binding.kycStep1DobText.text = data.dob.ifEmpty { "" }
     }
 
     override fun onDestroy() {

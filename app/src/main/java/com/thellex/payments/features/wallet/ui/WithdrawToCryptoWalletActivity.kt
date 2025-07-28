@@ -20,6 +20,9 @@ import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.PaymentErrorEnum
 import com.thellex.payments.data.model.CreateRequestPaymentDto
 import com.thellex.payments.databinding.ActivityWithdrawToCryptoWalletBinding
@@ -65,7 +68,10 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
         binding = ActivityWithdrawToCryptoWalletBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ActivityTracker.add(this)
-        // Initialize data from intent
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.main.applyAdvancedSystemBarInsets()
+
         topBar = Helpers.setupTopAppBar(
             activity = this,
             rootView = findViewById(R.id.withdrawCryptoTopAppBar),
