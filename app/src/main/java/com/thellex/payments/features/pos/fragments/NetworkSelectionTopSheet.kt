@@ -1,9 +1,8 @@
 package com.thellex.payments.features.pos.fragments
 
 import android.content.res.Resources
+import android.graphics.Rect
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.thellex.payments.R
 import com.thellex.payments.core.utils.Helpers
-import com.thellex.payments.core.utils.Helpers.getDisplayNameForNetwork
 import com.thellex.payments.databinding.FragmentNetworkTokenSelectionTopSheetBinding
 import com.thellex.payments.databinding.ItemNetworkBinding
 import com.thellex.payments.features.wallet.model.WalletDto
@@ -38,14 +37,24 @@ class NetworkSelectionTopSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ✅ Filter unique networks using the enum directly
         val uniqueNetworks = wallets.values.distinctBy { it.network }
 
-        binding.tokenRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.tokenRecyclerView.adapter = NetworkAdapter(uniqueNetworks) { selected ->
+        binding.recyclerNetworkList.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerNetworkList.adapter = NetworkAdapter(uniqueNetworks) { selected ->
             onNetworkSelected(selected)
             dismiss()
         }
+
+        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.dp_8)
+        binding.recyclerNetworkList.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(
+                outRect: Rect, view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
+            ) {
+                outRect.bottom = spacingInPixels
+            }
+        })
     }
 
     override fun onStart() {
@@ -78,8 +87,7 @@ class NetworkSelectionTopSheet(
                 val networkEnum = wallet.network
 
                 // ✅ Display name and icon using enum
-                binding.networkName.text = getDisplayNameForNetwork(networkEnum)
-                binding.networkIcon.setImageResource(Helpers.getIconResIdForBlockchain(networkEnum.name.lowercase()))
+                binding.textNetworkName.text = Helpers.getDisplayNameForNetwork(networkEnum)
 
                 binding.root.setOnClickListener { onClick(wallet) }
             }
@@ -107,17 +115,6 @@ class NetworkSelectionTopSheet(
         ) {
             val sheet = NetworkSelectionTopSheet(wallets, onNetworkSelected)
             sheet.show(fragmentManager, TAG)
-        }
-
-        // Optional: You can customize display names here
-        fun getDisplayNameForNetwork(network: SupportedBlockchainEnum): String {
-            return when (network) {
-                SupportedBlockchainEnum.bep20 -> "Binance Smart Chain"
-                SupportedBlockchainEnum.matic -> "Polygon"
-                SupportedBlockchainEnum.stellar -> "Stellar"
-                SupportedBlockchainEnum.base -> "Base"
-                SupportedBlockchainEnum.lisk -> "Lisk"
-            }
         }
     }
 }

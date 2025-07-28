@@ -1,34 +1,31 @@
 package com.thellex.payments.features.dashboard.ui
 
-import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.core.utils.Helpers
-import com.thellex.payments.core.utils.Helpers.showSystemNotification
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.UserErrorEnum
+import com.thellex.payments.data.viewModels.rates.RateViewModel
 import com.thellex.payments.databinding.ActivityMainBinding
-import com.thellex.payments.features.onboarding.OnboardingActivity
 import com.thellex.payments.network.services.ApiClient
-import com.thellex.payments.network.services.SocketService
 import com.thellex.payments.features.pos.ui.POSHomeActivity
 import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
-import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -38,6 +35,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var userModel: UserViewModel
+    private lateinit var rateViewModel: RateViewModel
 
     private var hasShownErrorToast = false
 
@@ -46,23 +44,30 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.main.applyAdvancedSystemBarInsets()
 
         userModel = ViewModelProvider(
             this,
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
+
+        rateViewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        )[RateViewModel::class.java]
+
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onStart() {
         super.onStart()
         checkAuthStatus()
-
-        userModel.authResult.observe(this) { authResult ->
-            val alertID = authResult?.alertID ?: "default-id"
-            startSocketServiceWithAlertId(alertID)
-        }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun checkAuthStatus() {
         lifecycleScope.launch {
             val token = withTimeoutOrNull(5000) {
@@ -73,6 +78,8 @@ class MainActivity : AppCompatActivity() {
                 navigateToLogin()
                 return@launch
             }
+
+            rateViewModel.startPolling()
 
             try {
                 val api = ApiClient.getAuthenticatedApi(token)
@@ -116,7 +123,7 @@ class MainActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.e("TAG", "Error message", e)
+                Log.e(TAG, "Error message", e)
                 if (!hasShownErrorToast) {
                     hasShownErrorToast = true
                     val errorMessage = Helpers.getErrorMessageFromException(e)
@@ -127,21 +134,6 @@ class MainActivity : AppCompatActivity() {
                 navigateToLogin()
             }
         }
-    }
-
-    private fun startSocketServiceWithAlertId(alertID: String) {
-        lifecycleScope.launch {
-            val serviceIntent = Intent(this@MainActivity, SocketService::class.java).apply {
-                putExtra("alertID", alertID)
-            }
-            ContextCompat.startForegroundService(this@MainActivity, serviceIntent)
-        }
-    }
-
-    private fun navigateToOnboarding() {
-        val intent = Intent(this, OnboardingActivity::class.java)
-        startActivity(intent)
-        finish()
     }
 
     private suspend fun navigateToDashboard() = withContext(Dispatchers.Main) {
@@ -166,5 +158,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    companion object {
+        private val TAG = "TAGY"
     }
 }

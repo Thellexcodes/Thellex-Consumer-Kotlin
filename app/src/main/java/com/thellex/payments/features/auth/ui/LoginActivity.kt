@@ -18,7 +18,10 @@ import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.data.model.ApiResponse
 import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.applyEmailCharacterFilter
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.data.model.AccessResponse
 import com.thellex.payments.databinding.ActivityLoginBinding
@@ -26,6 +29,7 @@ import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.data.model.LoginRequestDto
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.profile.ProfileActivity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -43,6 +47,10 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ActivityTracker.add(this)
+        ActivityTracker.finishActivity(ProfileActivity::class.java)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.main.applyAdvancedSystemBarInsets()
 
         userModel = ViewModelProvider(
             this,
@@ -50,18 +58,9 @@ class LoginActivity : AppCompatActivity() {
         )[UserViewModel::class.java]
 
         applyEmailCharacterFilter(binding.emailInput)
-        handleWindowInsets()
         setupTabSwitching()
         setupInputValidation()
         setupSubmitAction()
-    }
-
-    private fun handleWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(view.paddingLeft, systemBars.top, view.paddingRight, systemBars.bottom)
-            insets
-        }
     }
 
     private fun setupTabSwitching() {
@@ -89,7 +88,6 @@ class LoginActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
     }
-
     private fun setupSubmitAction() {
         binding.nextButton.setOnClickListener {
             if (isSubmitting) return@setOnClickListener
@@ -154,6 +152,8 @@ class LoginActivity : AppCompatActivity() {
                     val code = JSONObject(errorBody ?: "").optString("message")
                     val userError = UserErrorEnum.fromCode(code)
 
+                    Log.d(TAG, userError.toString())
+
                     if (userError == UserErrorEnum.CODE_ALREADY_SENT) {
                         val accessToken = withTimeoutOrNull(5000) {
                             userModel.token.asFlow().first { !it.isNullOrBlank() }
@@ -193,7 +193,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "TAG"
+        private const val TAG = "TAGY"
     }
 }
 

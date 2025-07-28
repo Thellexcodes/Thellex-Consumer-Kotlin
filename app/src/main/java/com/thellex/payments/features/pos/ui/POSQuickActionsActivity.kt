@@ -6,6 +6,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.databinding.ActivityQuickActionsBinding
 
 class POSQuickActionsActivity : AppCompatActivity() {
@@ -16,6 +17,7 @@ class POSQuickActionsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityQuickActionsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment

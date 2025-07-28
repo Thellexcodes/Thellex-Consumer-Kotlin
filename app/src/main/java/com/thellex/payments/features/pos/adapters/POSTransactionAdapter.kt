@@ -1,11 +1,15 @@
 package com.thellex.payments.features.pos.adapters
 
+import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.Helpers.formatAmountWithSymbol
@@ -14,14 +18,13 @@ import com.thellex.payments.core.utils.Helpers.formatTimestamp
 import com.thellex.payments.core.utils.Helpers.getIconResIdForToken
 import com.thellex.payments.core.utils.Helpers.getStatusIconResId
 import com.thellex.payments.core.utils.Helpers.mapToTransactionStatus
-import com.thellex.payments.data.model.ITransactionHistoryEntity
-import com.thellex.payments.data.model.PaymentStatus
+import com.thellex.payments.data.model.ITransactionHistoryDto
+import com.thellex.payments.data.model.PaymentStatusEnum
 import java.util.Locale
 
 class POSTransactionAdapter(
-    private var items: List<PosTransaction>,
     private val onItemClick: (PosTransaction) -> Unit
-) : RecyclerView.Adapter<POSTransactionAdapter.TransactionViewHolder>() {
+) : ListAdapter<PosTransaction, POSTransactionAdapter.TransactionViewHolder>(PosTransactionDiffCallback()) {
 
     inner class TransactionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txnIcon: ImageView = view.findViewById(R.id.txn_icon)
@@ -35,8 +38,24 @@ class POSTransactionAdapter(
             view.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    onItemClick(items[position])
+                    onItemClick(getItem(position))
                 }
+            }
+        }
+
+        fun bind(item: PosTransaction) {
+            item.iconResId?.let { txnIcon.setImageResource(it) }
+            item.statusIconResId?.let { statusIcon.setImageResource(it) }
+            description.text = item.description
+            timeText.text = item.time
+            amount.text = item.amountWithSymbol
+            status.text = item.paymentStatus.name
+            Log.d("status", item.paymentStatus.name)
+
+            if (item.paymentStatus == PaymentStatusEnum.Complete) {
+                status.setTextColor(ContextCompat.getColor(status.context, R.color.green))
+            } else {
+                status.setTextColor(ContextCompat.getColor(status.context, R.color.white))
             }
         }
     }
@@ -48,42 +67,42 @@ class POSTransactionAdapter(
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        val item = items[position]
-        item.iconResId?.let { holder.txnIcon.setImageResource(it) }
-        item.statusIconResId?.let { holder.statusIcon.setImageResource(it) }
-        holder.description.text = item.description
-        holder.timeText.text = item.time
-        holder.amount.text = item.amountWithSymbol
-        holder.status.text = item.status.toString()
-
-        // Set green color if status is Complete
-        if (item.status == PaymentStatus.Complete) {
-            holder.status.setTextColor(
-                ContextCompat.getColor(holder.status.context, R.color.green)
-            )
-        } else {
-            // Reset to default color (black or whatever your default is)
-            holder.status.setTextColor(
-                ContextCompat.getColor(holder.status.context, R.color.white)
-            )
-        }
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int = items.size
-
-    fun updateList(newItems: List<ITransactionHistoryEntity>) {
-        items = newItems.map { entity ->
+    fun updateList(newItems: List<ITransactionHistoryDto>) {
+        val posTransactions = newItems.map { transaction ->
+            Log.d("Transaction", "Mapping transaction: $transaction")
             PosTransaction(
-                iconResId = getIconResIdForToken(entity.assetCode),
-                statusIconResId = getStatusIconResId(entity.paymentStatus),
-                description = entity.assetCode.uppercase(Locale.getDefault()),
-                time = formatTimestamp(entity.createdAt),
-                amountWithSymbol = formatAmountWithSymbol(entity.amount.toString()),
-                status = mapToTransactionStatus(entity.paymentStatus)
+                iconResId = getIconResIdForToken(transaction.assetCode),
+                statusIconResId = getStatusIconResId(transaction.paymentStatus),
+                description = transaction.assetCode.uppercase(Locale.getDefault()),
+                time = formatTimestamp(transaction.createdAt),
+                amountWithSymbol = formatAmountWithSymbol(transaction.amount),
+                paymentStatus = mapToTransactionStatus(transaction.paymentStatus)
             )
         }
-        notifyDataSetChanged()
+        submitList(posTransactions)
     }
 }
 
+class PosTransactionDiffCallback : DiffUtil.ItemCallback<PosTransaction>() {
+    override fun areItemsTheSame(oldItem: PosTransaction, newItem: PosTransaction): Boolean {
+        // Assuming PosTransaction has a unique identifier like transactionId
+        return oldItem.time == newItem.time
+    }
 
+    override fun areContentsTheSame(oldItem: PosTransaction, newItem: PosTransaction): Boolean {
+        return oldItem == newItem
+    }
+}
+
+data class PosTransaction(
+    val transactionId: String, // Add transactionId to uniquely identify transactions
+    val iconResId: Int?,
+    val statusIconResId: Int?,
+    val description: String,
+    val time: String,
+    val amountWithSymbol: String,
+    val paymentStatus: PaymentStatusEnum
+)

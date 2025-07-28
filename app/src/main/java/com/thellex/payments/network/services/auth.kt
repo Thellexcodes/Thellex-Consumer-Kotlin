@@ -7,12 +7,14 @@ import com.thellex.payments.data.model.ApiResponse
 import com.thellex.payments.core.utils.Constants
 import com.thellex.payments.data.enums.TierEnum
 import com.thellex.payments.data.model.AccessResponse
+import com.thellex.payments.data.model.FcmTokenDto
 import com.thellex.payments.data.model.LoginRequestDto
 import com.thellex.payments.data.model.UserEntity
 import com.thellex.payments.data.model.VerifyUserDto
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.Response
+import retrofit2.http.PATCH
 import java.lang.reflect.Type
 
 interface AuthService {
@@ -24,6 +26,9 @@ interface AuthService {
 
     @POST(Constants.AUTH_LOGIN_ENDPOINT)
     suspend fun checkAuthStatus(): Response<ApiResponse<UserEntity>>
+
+    @PATCH(Constants.UPDATE_FCM_TOKEN_ENDPOINT)
+    suspend fun updateFcmToken(@Body request: FcmTokenDto): Response<ApiResponse<Unit>>
 }
 
 class TierEnumDeserializer : JsonDeserializer<TierEnum> {

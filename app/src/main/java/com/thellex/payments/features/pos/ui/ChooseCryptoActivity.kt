@@ -13,7 +13,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.core.decorators.ItemSpacingDecoration
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.features.pos.adapters.CryptoAdapter
 import com.thellex.payments.data.model.TokenListDto
 import com.thellex.payments.databinding.ActivityPosChooseCryptoBinding
@@ -23,7 +27,7 @@ import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 
 class POSChooseCryptoActivity : AppCompatActivity() {
-
+    private lateinit var topBar: Helpers.TopAppBarController
     private lateinit var binding: ActivityPosChooseCryptoBinding
     private lateinit var cryptoAdapter: CryptoAdapter
     private lateinit var viewModel: UserViewModel
@@ -35,17 +39,17 @@ class POSChooseCryptoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPosChooseCryptoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.main.applyAdvancedSystemBarInsets()
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(
-                view.paddingLeft,
-                systemBarsInsets.top,
-                view.paddingRight,
-                systemBarsInsets.bottom
-            )
-            insets
-        }
+        // Initialize data from intent
+        topBar = Helpers.setupTopAppBar(
+            activity = this,
+            rootView = findViewById(R.id.requestPosChooseTopAppBAr),
+            title = "CHOOSE CURRENCY"
+        )
 
         viewModel = ViewModelProvider(
             this,
@@ -75,10 +79,6 @@ class POSChooseCryptoActivity : AppCompatActivity() {
         binding.posCryptoListSelection.addItemDecoration(ItemSpacingDecoration(spacing))
 
         observeWalletData()
-
-        binding.backButton.setOnClickListener {
-            finish()
-        }
     }
 
     private fun observeWalletData() {
@@ -97,10 +97,6 @@ class POSChooseCryptoActivity : AppCompatActivity() {
                 cryptoAdapter.updateData(it)
             }
         }
-    }
-
-    companion object {
-        private val TAG = "TAG"
     }
 }
 

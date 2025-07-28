@@ -3,24 +3,15 @@ package com.thellex.payments.data.model
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
-sealed class NotificationPayload
-
-data class ITransactionNotificationPayload(
-    @SerializedName("notification") val notification: NotificationEntity,
-    @SerializedName("transaction") val transaction: ITransactionHistoryEntity
-) : NotificationPayload()
-
-data class IWalletUpdatedNotificationPayload(
-    @SerializedName("updated") val updated: Boolean
-) : NotificationPayload()
-
 data class INotificationConsumeDto(
     @SerializedName("id") val id: String,
-    @SerializedName("consumed") val consumed: Boolean
+    @SerializedName("consumed") val consumed: Boolean,
+    @SerializedName("kind") val kind: NotificationKindEnum
 )
 
 @Serializable
 data class NotificationEntity(
+    @SerializedName("id") val id: String,
     @SerializedName("title") val title: String,
     @SerializedName("message") val message: String,
     @SerializedName("consumed") val consumed: Boolean,
@@ -28,7 +19,6 @@ data class NotificationEntity(
     @SerializedName("amount") val amount: String,
     @SerializedName("txnID") val txnID: String,
     @SerializedName("kind") val kind: NotificationKindEnum,
-    @SerializedName("walletID") val walletID: String,
     @SerializedName("createdAt") val createdAt: String,
 )
 

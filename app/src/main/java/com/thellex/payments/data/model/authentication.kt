@@ -21,6 +21,11 @@ data class AccessResponse(
 )
 
 @Serializable
+data class FcmTokenDto (
+    @SerializedName("token") val token: String
+)
+
+@Serializable
 data class UserEntity(
     @SerializedName("uid") val uid: Int,
     @SerializedName("email") val email: String,
@@ -28,11 +33,14 @@ data class UserEntity(
     @SerializedName("suspended") val suspended: Boolean,
     @SerializedName("alertID") val alertID: String,
     @SerializedName("kyc") val kyc: KycInfoEntity? = null,
-    @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryEntity>,
+    @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryDto>,
     @SerializedName("notifications") val notifications: List<NotificationEntity>,
-    @SerializedName("settings") val settings: List<StoreSettingsEntity>,
-    @SerializedName("bankAccounts") val bankAccounts: List<BankAccountEntity>,
+    @SerializedName("settings") val settings: List<IStoreSettingsEntityDto>,
+    @SerializedName("bankAccounts") val bankAccounts: List<IBankAccountDto>,
+    @SerializedName("fiatCryptoRampTransactions") val fiatCryptoRampTransactions: List<IFiatCryptoRampTransactionsDto> = emptyList(),
     @SerializedName("currentTier") val currentTier: TierInfo? = null,
     @SerializedName("nextTier") val nextTier: TierInfo? = null,
-    @SerializedName("outstandingKyc") val outstandingKyc: List<String>? = emptyList()
+    @SerializedName("remainingTiers") val remainingTiers: List<TierInfo> = emptyList(),
+    @SerializedName("outstandingKyc") val outstandingKyc: List<String> = emptyList(),
+    @SerializedName("transactionSettings") val transactionSettings: ITransactionSettingsDto
 )

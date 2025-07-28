@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -12,19 +13,26 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.messaging.FirebaseMessaging
 import com.otpview.OTPListener
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.ErrorHandler
+import com.thellex.payments.core.utils.FcmHelper
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.data.model.VerifyUserDto
 import com.thellex.payments.databinding.ActivityAuthVerificationBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.onboarding.NotificationPermissionActivity
 import com.thellex.payments.features.pos.ui.POSHomeActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -43,6 +51,9 @@ class AuthVerificationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthVerificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.authVerificationMain.applyAdvancedSystemBarInsets()
 
         userModel = ViewModelProvider(
             this,
@@ -52,23 +63,9 @@ class AuthVerificationActivity : AppCompatActivity() {
         ActivityTracker.add(this)
         token = intent.getStringExtra("token")
 
-        setupInsets()
         setupOtpListener()
         setupVerifyButton()
         startExpirationTimer()
-    }
-
-    private fun setupInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(
-                view.paddingLeft,
-                systemBarsInsets.top,
-                view.paddingRight,
-                systemBarsInsets.bottom
-            )
-            insets
-        }
     }
 
     private fun setupOtpListener() {
@@ -185,6 +182,8 @@ class AuthVerificationActivity : AppCompatActivity() {
                     return@launch
                 }
 
+                val fcmToken = FirebaseMessaging.getInstance().token.await()
+                FcmHelper.sendFcmTokenToBackend(userAuthToken = token!!, fcmToken = fcmToken)
                 val api = ApiClient.getAuthenticatedApi(token!!)
                 val response = api.verifyCode(verifyUserRequestData)
 
@@ -192,6 +191,7 @@ class AuthVerificationActivity : AppCompatActivity() {
                     withContext(Dispatchers.Main) {
                         userModel.saveAuthResult(result)
                         navigateToQuickActions()
+
                     }
                 } ?: run {
                     val errorBody = response.errorBody()?.string().orEmpty()
@@ -200,10 +200,10 @@ class AuthVerificationActivity : AppCompatActivity() {
                         ErrorHandler.handle(this@AuthVerificationActivity, "Error", userError)
                     }
                 }
-
-            } catch (e: Exception) {
+            }catch (e: Exception) {
                 val userError = UserErrorEnum.fromCode(e.message)
                 withContext(Dispatchers.Main) {
+                    Log.e(TAG, "Error occurred during verification", e)
                     ErrorHandler.handle(this@AuthVerificationActivity, "Error", userError)
                 }
             } finally {
@@ -214,13 +214,19 @@ class AuthVerificationActivity : AppCompatActivity() {
         }
     }
 
-    private fun navigateToLoginPin() {
-        startActivity(Intent(this, LoginPinActivity::class.java))
+    private fun navigateToQuickActions() {
+        val sharedPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val hasEnabledNotifications = sharedPrefs.getBoolean("has_enabled_notifications", false)
+
+        if (!hasEnabledNotifications) {
+            startActivity(Intent(this, NotificationPermissionActivity::class.java))
+        } else {
+            startActivity(Intent(this, POSHomeActivity::class.java))
+        }
         finish()
     }
 
-    private fun navigateToQuickActions() {
-        startActivity(Intent(this, POSHomeActivity::class.java))
-        finish()
+    companion object {
+        private val TAG = "TAGY"
     }
 }

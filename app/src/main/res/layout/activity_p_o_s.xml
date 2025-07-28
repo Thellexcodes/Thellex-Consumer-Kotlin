@@ -5,7 +5,7 @@
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:background="@drawable/general_gradient_background"
-        android:paddingTop="20dp"
+        android:id="@+id/posMain"
         tools:context=".features.pos.ui.POSHomeActivity">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -13,8 +13,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:paddingHorizontal="20dp"
                     android:layout_width="match_parent"
+                    android:paddingHorizontal="12dp"
                     android:layout_height="wrap_content">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -169,9 +169,11 @@
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
-                                android:src="@drawable/icon_nigerian_flag" />
+                                android:src="@drawable/icon_usd"
+                                app:layout_constraintEnd_toEndOf="parent" />
 
                         <ImageView
+                                android:visibility="gone"
                                 android:src="@drawable/icon_arrow_down"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -413,8 +415,7 @@
 
                         <FrameLayout
                                 android:layout_width="22dp"
-                                android:layout_height="22dp"
-                                android:layout_marginEnd="-10dp">
+                                android:layout_height="22dp">
 
                             <ImageView
                                     android:layout_width="match_parent"
@@ -422,17 +423,6 @@
                                     android:src="@drawable/icon_usdc"
                                     android:scaleType="centerCrop"
                                     android:background="@drawable/circle_bg" />
-                        </FrameLayout>
-
-                        <FrameLayout
-                                android:layout_width="22dp"
-                                android:layout_height="22dp">
-                                <ImageView
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:src="@drawable/icon_nigerian_flag"
-                                        android:scaleType="centerCrop"
-                                        android:background="@drawable/circle_bg" />
                         </FrameLayout>
                     </LinearLayout>
 

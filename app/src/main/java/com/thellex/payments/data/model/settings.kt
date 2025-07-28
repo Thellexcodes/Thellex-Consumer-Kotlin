@@ -3,9 +3,24 @@ package com.thellex.payments.data.model
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
+@Serializable
+data class ITransactionSettingsDto(
+    @SerializedName("cryptoDepositAllowed") val cryptoDepositAllowed: Boolean,
+    @SerializedName("cryptoDepositRequiresKyc") val cryptoDepositRequiresKyc: Boolean,
+    @SerializedName("cryptoWithdrawalAllowed") val cryptoWithdrawalAllowed: Boolean,
+    @SerializedName("cryptoWithdrawalRequiresKyc") val cryptoWithdrawalRequiresKyc: Boolean,
+    @SerializedName("fiatToCryptoDepositAllowed") val fiatToCryptoDepositAllowed: Boolean,
+    @SerializedName("fiatToCryptoDepositRequiresKyc") val fiatToCryptoDepositRequiresKyc: Boolean,
+    @SerializedName("cryptoToFiatWithdrawalAllowed") val cryptoToFiatWithdrawalAllowed: Boolean,
+    @SerializedName("cryptoToFiatWithdrawalRequiresKyc") val cryptoToFiatWithdrawalRequiresKyc: Boolean,
+    @SerializedName("fiatToFiatDepositAllowed") val fiatToFiatDepositAllowed: Boolean,
+    @SerializedName("fiatToFiatDepositRequiresKyc") val fiatToFiatDepositRequiresKyc: Boolean,
+    @SerializedName("fiatToFiatWithdrawalAllowed") val fiatToFiatWithdrawalAllowed: Boolean,
+    @SerializedName("fiatToFiatWithdrawalRequiresKyc") val fiatToFiatWithdrawalRequiresKyc: Boolean
+)
 
 @Serializable
-data class StoreSettingsEntity(
+data class IStoreSettingsEntityDto(
     @SerializedName("storeName") val storeName: String,
     @SerializedName("storeLogoUrl") val storeLogoUrl: String,
     @SerializedName("currency") val currency: String,

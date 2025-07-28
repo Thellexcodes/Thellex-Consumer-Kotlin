@@ -7,6 +7,7 @@ object Constants {
     const val LOGIN_ENDPOINT = "$VERSIONED_BASE/user/access"
     const val VERIFY_CODE_ENDPOINT = "$VERSIONED_BASE/user/verify"
     const val AUTH_LOGIN_ENDPOINT = "$VERSIONED_BASE/user/authenticate"
+    const val UPDATE_FCM_TOKEN_ENDPOINT = "$VERSIONED_BASE/user/update-fcm-token"
 
     // Payment Endpoints
     const val WITHDRAW_CRYPTO_PAYMENT_ENDPOINT = "$VERSIONED_BASE/payments/withdraw-crypto"
@@ -20,6 +21,15 @@ object Constants {
 
     //Notification Endpoints
     const val NOTIFICATION_CONSUME_ENDPOINT = "$VERSIONED_BASE/notifications/{id}/consume"
+
+    //Trades
+    const val WALLET_MANAGER_RATES_ENDPOINT = "$VERSIONED_BASE/payments/rates?fiatCode=ngn"
+    const val FIAT_TO_CRYPTO_ONRAMP_ENDPOINT = "${VERSIONED_BASE}/payments/fiat-to-crypto/onramp"
+    const val CRYPTO_TO_FIAT_OFFRAMP_ENDPOINT = "${VERSIONED_BASE}/payments/crypto-to-fiat/offramp"
+
+    //Banking
+    const val ADD_BANK_ACCOUNT_ENDPOINT = "${VERSIONED_BASE}/settings/bank-account/add"
+
 
     val BASE_URL: String
         get() = if (isEmulator()) {
@@ -35,3 +45,8 @@ object Constants {
                 || android.os.Build.MODEL.contains("Android SDK built for x86")
     }
 }
+
+val reasonList = listOf(
+    "Gift", "Bills", "Groceries", "Travel", "Health",
+    "Entertainment", "Housing", "School Fees"
+)

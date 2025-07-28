@@ -10,6 +10,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.features.pos.adapters.OnboardItem
 import com.thellex.payments.features.pos.adapters.OnboardingAdapter
 import com.thellex.payments.databinding.ActivityOnboardingBinding
@@ -23,19 +27,10 @@ class OnboardingActivity : AppCompatActivity() {
 
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
-            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            view.setPadding(
-                view.paddingLeft,
-                systemBarsInsets.top,
-                view.paddingRight,
-                systemBarsInsets.bottom
-            )
-
-            insets
-        }
+        ActivityTracker.add(this)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.main.applyAdvancedSystemBarInsets(fixedHorizontalPaddingDp = 12)
 
         val slides = listOf(
             OnboardItem(R.drawable.slide2, "Instant Crypto-to-Cash Conversion", "Auto-convert crypto to your local currency. No hassle."),
@@ -47,16 +42,16 @@ class OnboardingActivity : AppCompatActivity() {
         setupIndicators(slides.size)
         setCurrentIndicator(0)
 
-        binding.loginBtn.setOnClickListener {
+        binding.nextButton.setOnClickListener {
             navigateToLogin()
         }
     }
 
     private fun navigateToLogin() {
-        // Navigate to the OnboardingActivity
+        val sharedPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        sharedPrefs.edit().putBoolean("is_first_launch", false).apply()
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
-        finish()
     }
 
     private fun setupIndicators(count: Int) {

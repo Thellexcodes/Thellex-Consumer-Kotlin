@@ -40,8 +40,9 @@ class UserRepository private constructor(private val context: Context) {
     }
 
     suspend fun saveAuthResult(result: UserEntity?) {
-        result?.let {
-            UserPreferences.saveAuthResultAsync(context, it)
+        if (result != null) {
+            UserPreferences.saveAuthResult(context, result)
+        } else {
         }
     }
 

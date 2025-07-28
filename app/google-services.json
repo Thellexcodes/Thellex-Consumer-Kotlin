@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "738329047222",
+    "project_id": "thellex-development",
+    "storage_bucket": "thellex-development.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:738329047222:android:f5beeb9aa7304f77043617",
+        "android_client_info": {
+          "package_name": "com.thellex.payments"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0tQ10c_SOqIZCoaFj5JKb3qvl0WXOHrU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

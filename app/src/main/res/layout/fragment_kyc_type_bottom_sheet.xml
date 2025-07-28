@@ -59,22 +59,30 @@
                 android:background="@drawable/rounded_border"
                 android:clickable="true"
                 android:focusable="true">
-
-            <ImageView
-                    android:id="@+id/ninIcon"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_marginBottom="12dp"
-                    android:src="@drawable/icon_passport" />
-
-            <TextView
-                    android:id="@+id/ninTitle"
-                    android:layout_width="wrap_content"
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="National Identification Number (NIN)"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/kumbhsans_bold" />
+                    android:gravity="center_vertical"
+                    android:padding="8dp">
+
+                <ImageView
+                        android:id="@+id/ninIcon"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/icon_passport" />
+
+                <TextView
+                        android:id="@+id/ninTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:text="National Identification Number (NIN)"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/kumbhsans_bold" />
+            </LinearLayout>
+
 
             <TextView
                     android:id="@+id/ninSubtitle"
@@ -83,7 +91,7 @@
                     android:layout_marginTop="3dp"
                     android:text="Don’t know your NIN? Dial *346# on your registered number."
                     android:textColor="@color/steelBlueGrey"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     android:fontFamily="@font/kumbhsans_regular" />
         </LinearLayout>
 
@@ -96,26 +104,31 @@
                 android:paddingHorizontal="20dp"
                 android:paddingVertical="15dp"
                 android:background="@drawable/rounded_border"
-                android:visibility="gone"
                 android:clickable="true"
                 android:focusable="true">
-
-            <ImageView
-                    android:id="@+id/passportIcon"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_marginBottom="12dp"
-                    android:src="@drawable/icon_passport" />
-
-            <TextView
-                    android:id="@+id/passportTitle"
-                    android:layout_width="wrap_content"
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Passport or Voter ID"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/kumbhsans_bold" />
+                    android:gravity="center_vertical"
+                    android:padding="8dp">
 
+                <ImageView
+                        android:id="@+id/passportIcon"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/icon_passport" />
+
+                <TextView
+                        android:id="@+id/passportTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="Passport or Voter ID"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/kumbhsans_bold" />
+            </LinearLayout>
             <TextView
                     android:id="@+id/passportSubtitle"
                     android:layout_width="wrap_content"
@@ -123,7 +136,7 @@
                     android:layout_marginTop="3dp"
                     android:text="Includes International Passport, Voter’s Card, Driver’s License, and others"
                     android:textColor="@color/steelBlueGrey"
-                    android:textSize="10sp"
+                    android:textSize="12sp"
                     android:fontFamily="@font/kumbhsans_regular" />
         </LinearLayout>
 

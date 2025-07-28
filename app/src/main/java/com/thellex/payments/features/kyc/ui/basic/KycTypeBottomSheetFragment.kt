@@ -27,7 +27,7 @@ class KycTypeBottomSheetFragment : BottomSheetDialogFragment() {
 
         binding.ninOption.setOnClickListener {
             dismiss()
-            val intent = Intent(requireContext(), BasicKycRequirements::class.java)
+            val intent = Intent(requireContext(), BasicKycRequirementsActivity::class.java)
             intent.putExtra("KYC_TYPE", "NIN")
             requireActivity().startActivity(intent)
         }

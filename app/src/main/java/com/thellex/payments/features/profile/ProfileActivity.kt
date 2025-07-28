@@ -7,6 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.databinding.ActivityProfileBinding
 import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.features.auth.viewModel.UserViewModel
@@ -22,19 +26,14 @@ class ProfileActivity : AppCompatActivity() {
 
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.profileMain.applyAdvancedSystemBarInsets()
 
-        handleWindowInsets()
         initViewModel()
         setupUI()
         observeUser()
-    }
-
-    private fun handleWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
     }
 
     private fun initViewModel() {
@@ -54,15 +53,18 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+        binding.backButton.setOnClickListener { finish() }
+
         binding.logout.setOnClickListener {
             onLogout()
         }
     }
 
     private fun onLogout() {
+        ActivityTracker.remove(this)
         userViewModel.logout()
-         finish()
         //TODO: Prompt user to logout
+        ActivityTracker.finishAll()
         startActivity(Intent(this, LoginActivity::class.java))
     }
 }

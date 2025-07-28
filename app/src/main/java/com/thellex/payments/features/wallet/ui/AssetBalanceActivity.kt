@@ -6,6 +6,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivitySingleAssetBalanceBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
@@ -26,6 +27,7 @@ class AssetBalanceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySingleAssetBalanceBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
 
         setupViewModels()
         walletPreferences = walletManagerViewModel.getWalletPreferences()

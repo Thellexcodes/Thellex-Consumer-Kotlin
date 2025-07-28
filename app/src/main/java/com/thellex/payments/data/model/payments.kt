@@ -1,6 +1,7 @@
 package com.thellex.payments.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.thellex.payments.settings.FiatEnum
 import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.settings.SupportedBlockchainEnum
 import com.thellex.payments.settings.TokensEnum
@@ -19,17 +20,22 @@ data class CreateRequestPaymentDto(
     @SerializedName("fund_uid2") val fundUid2: String? = null
 )
 
-@Serializable
-data class BankAccountEntity(
+@Serializable()
+data class IBankAccountDto(
     @SerializedName("bankName") val bankName: String,
     @SerializedName("accountName") val accountName: String,
     @SerializedName("accountNumber") val accountNumber: String,
-    @SerializedName("swiftCode") val swiftCode: String,
-    @SerializedName("iban") val iban: String,
-    @SerializedName("isPrimary") val isPrimary: Boolean
+    @SerializedName("swiftCode") val swiftCode: String? = null,
+    @SerializedName("iban") val iban: String? = null,
+    @SerializedName("isPrimary") val isPrimary: Boolean,
+    @SerializedName("external_createdAt") val externalCreatedAt: String,
+    @SerializedName("require_consent") val requireConsent: Boolean,
+    @SerializedName("consent_url") val consentUrl: String? = null,
+    @SerializedName("reference") val reference: String? = null,
+    @SerializedName("eur") val eur: String? = null
 )
 
-enum class PaymentStatus(val value: String) {
+enum class PaymentStatusEnum(val value: String) {
     None("None"),
     Complete("COMPLETE"),
     Confirmed("confirmed"),
@@ -45,11 +51,30 @@ enum class PaymentStatus(val value: String) {
     Rejected("Rejected");
 
     companion object {
-        fun fromValue(value: String): PaymentStatus? = entries.find { it.value.equals(value, ignoreCase = true) }
+        fun fromValue(value: String): PaymentStatusEnum? = entries.find { it.value.equals(value, ignoreCase = true) }
     }
 }
 
-enum class WalletWebhookEvent(val value: String) {
+enum class TransactionTypeEnum(val value: String) {
+    CRYPTO_DEPOSIT("crypto_deposit"),
+    CRYPTO_WITHDRAWAL("crypto_withdrawal"),
+
+    FIAT_TO_CRYPTO_DEPOSIT("fiat_to_crypto_deposit"),
+    FIAT_TO_CRYPTO_WITHDRAWAL("fiat_to_crypto_withdrawal"),
+
+    CRYPTO_TO_FIAT_DEPOSIT("crypto_to_fiat_deposit"),
+    CRYPTO_TO_FIAT_WITHDRAWAL("crypto_to_fiat_withdrawal"),
+
+    FIAT_TO_FIAT_DEPOSIT("fiat_to_fiat_deposit"),
+    FIAT_TO_FIAT_WITHDRAWAL("fiat_to_fiat_withdrawal");
+
+    companion object {
+        fun fromValue(value: String): TransactionTypeEnum? =
+            values().find { it.value.equals(value, ignoreCase = true) }
+    }
+}
+
+enum class WalletWebhookEventEnum(val value: String) {
     // Errors
     INVALID_USER("INVALID_USER"),
     INVALID_CURRENCY("INVALID_CURRENCY"),
@@ -101,9 +126,45 @@ enum class WalletWebhookEvent(val value: String) {
     BUY_TRANSACTION_FAILED("BUY_TRANSACTION_FAILED");
 
     companion object {
-        fun fromValue(value: String?): WalletWebhookEvent? {
-            return entries.firstOrNull { it.value.equals(value, ignoreCase = true) }
+        fun fromValue(value: String?): WalletWebhookEventEnum? {
+            if (value.isNullOrBlank()) return null
+            val normalizedValue = value.replace(".", "_").uppercase()
+            return entries.firstOrNull { it.value == normalizedValue }
         }
     }
 }
+
+data class FiatToCryptoOnRampRequestDto(
+    @SerializedName("userAmount") val userAmount: Double,
+    @SerializedName("fiatCode") val fiatCode: String,
+    @SerializedName("assetCode") val assetCode: String,
+    @SerializedName("country") val country: String,
+    @SerializedName("paymentReason") val paymentReason: String,
+    @SerializedName("network") val network: String,
+    @SerializedName("destinationAddress") val destinationAddress: String
+)
+
+data class CryptoToFiatOffRampRequestDto(
+    @SerializedName("assetCode") val assetCode: TokensEnum,
+    @SerializedName("network") val network: SupportedBlockchainEnum,
+    @SerializedName("userAmount") val userAmount: Double,
+    @SerializedName("fiatCode") val fiatCode: FiatEnum,
+    @SerializedName("country") val country: String,
+    @SerializedName("paymentMethod") val paymentMethod: String? = null,
+    @SerializedName("paymentReason") val paymentReason: String,
+    @SerializedName("sourceAddress") val sourceAddress: String,
+    @SerializedName("bankInfo") val bankInfo: IBankInfoRequestDto
+)
+
+data class CreateBankAccountDto(
+    @SerializedName("bankName") val bankName: String,
+    @SerializedName("accountNumber") val accountNumber: Number,
+    @SerializedName("bankCode") val bankCode: String,
+    @SerializedName("accountName") val accountName: String? = null,
+    @SerializedName("swiftCode") val swiftCode: String? = null,
+    @SerializedName("iban") val iban: String? = null,
+)
+
+
+
 

@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.databinding.ActivitySingleAssetDepositBinding
 import com.thellex.payments.features.pos.ui.GeneratePOSAddressActivity
 
@@ -17,6 +18,7 @@ class AssetDepositActivity : AppCompatActivity() {
 
         binding = ActivitySingleAssetDepositBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ActivityTracker.add(this)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())

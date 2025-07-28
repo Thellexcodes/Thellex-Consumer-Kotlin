@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.ActivityTracker
 
 class POSWithdrawalSummaryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_withdrawal_summary)
+        ActivityTracker.add(this)
 
         val rootView = findViewById<View>(android.R.id.content)
         val statusBarHeight = resources.getIdentifier("status_bar_height", "dimen", "android").let { resId ->

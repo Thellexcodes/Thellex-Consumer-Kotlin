@@ -22,9 +22,9 @@ class RequestOptionsModalFragment : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     interface ReceiveOptionsListener {
-        fun onFiatClick()
-        fun onCryptoClick()
-        fun onBankClick()
+        fun onCryptoToFiatOnRampClick()
+        fun onChainDepositClick()
+        fun onFiatDepositClick()
         fun onStartKyc()
     }
 
@@ -50,28 +50,73 @@ class RequestOptionsModalFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         userViewModel.authResult.observe(viewLifecycleOwner) { userDto ->
-            isKycDone = userDto?.currentTier?.name != TierEnum.NONE
 
-            if (isKycDone) {
-                binding.badgeKycNaira.visibility = View.GONE
-                binding.badgeKycFiat3.visibility = View.GONE
+             isKycDone = userDto?.currentTier?.name != TierEnum.NONE
+            val kycFlags = userDto?.transactionSettings
+
+            val isCryptoDepositAllowed = kycFlags?.cryptoDepositAllowed == true
+            binding.fragmentRequestOptionsOnChainDeposit.isEnabled = isCryptoDepositAllowed
+            binding.fragmentRequestOptionsOnChainDeposit.alpha = if (isCryptoDepositAllowed) 1f else 0.5f
+
+            val isFiatToCryptoDepositAllowed = kycFlags?.fiatToCryptoDepositAllowed == true
+            binding.fiatToCrypto.isEnabled = isFiatToCryptoDepositAllowed
+            binding.fiatToCrypto.alpha = if (isFiatToCryptoDepositAllowed) 1f else 0.5f
+
+            val isFiatToFiatDepositAllowed = kycFlags?.fiatToFiatDepositAllowed == true
+            binding.fiatDeposit.isEnabled = isFiatToFiatDepositAllowed
+            binding.fiatDeposit.alpha = if (isFiatToFiatDepositAllowed) 1f else 0.5f
+
+            // Handle On-Chain Deposit KYC badge
+            val isOnChainKycRequired = kycFlags?.cryptoDepositRequiresKyc == true
+            binding.badgeKycOnChain.visibility = if (!isKycDone && isOnChainKycRequired) {
+                View.VISIBLE
             } else {
-                binding.badgeKycNaira.visibility = View.VISIBLE
-                binding.badgeKycFiat3.visibility = View.VISIBLE
+                View.GONE
+            }
+
+            // Handle Fiat-to-Crypto KYC badge
+            val isFiatToCryptoKycRequired = kycFlags?.fiatToCryptoDepositRequiresKyc == true
+            binding.badgeKycConvertFiat.visibility = if (!isKycDone && isFiatToCryptoKycRequired) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+
+            val isFiatToFiatKycRequired = kycFlags?.fiatToFiatDepositRequiresKyc == true
+            binding.badgeKycFiat.visibility = if (!isKycDone && isFiatToFiatKycRequired) {
+                View.VISIBLE
+            } else {
+                View.GONE
             }
         }
 
-        binding.fragmentRequestOptionsReceiveFromFiat.setOnClickListener {
-            if (isKycDone) listener?.onBankClick() else listener?.onStartKyc()
-        }
-
         binding.fragmentRequestOptionsOnChainDeposit.setOnClickListener {
-            listener?.onCryptoClick()
+            val isOnChainKycRequired = userViewModel.authResult.value?.transactionSettings?.cryptoDepositRequiresKyc == true
+            if (!isKycDone && isOnChainKycRequired) {
+                listener?.onStartKyc()
+            } else {
+                listener?.onChainDepositClick()
+            }
         }
 
-        binding.fragmentRequestOptionsFiatToCrypto.setOnClickListener {
-            if (isKycDone) listener?.onFiatClick() else listener?.onStartKyc()
+        binding.fiatToCrypto.setOnClickListener {
+            val isFiatToCryptoKycRequired = userViewModel.authResult.value?.transactionSettings?.fiatToCryptoDepositRequiresKyc == true
+            if (!isKycDone && isFiatToCryptoKycRequired) {
+                listener?.onStartKyc()
+            } else {
+                listener?.onCryptoToFiatOnRampClick()
+            }
         }
+
+        binding.fiatDeposit.setOnClickListener {
+            val isFiatToCryptoKycRequired = userViewModel.authResult.value?.transactionSettings?.fiatToFiatDepositRequiresKyc == true
+            if (!isKycDone && isFiatToCryptoKycRequired) {
+                listener?.onStartKyc()
+            } else {
+                listener?.onFiatDepositClick()
+            }
+        }
+
     }
 
     override fun onDestroyView() {

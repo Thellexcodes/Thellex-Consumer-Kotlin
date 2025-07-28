@@ -2,11 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/container"
+        android:id="@+id/main"
         android:background="@drawable/general_gradient_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="@dimen/activity_vertical_margin"
         tools:context=".features.auth.ui.LoginActivity">
 
     <!-- Welcome Text -->
@@ -78,7 +77,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingHorizontal="24dp"
                 android:paddingBottom="16dp"
                 app:layout_constraintTop_toBottomOf="@+id/auth_verification_tab_container"
                 android:layout_marginTop="42dp"

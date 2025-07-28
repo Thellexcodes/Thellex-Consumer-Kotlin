@@ -14,6 +14,7 @@ import com.thellex.payments.databinding.ActivityPassportBinding
 import com.thellex.payments.features.kyc.ui.FaceVerificationActivity
 import android.util.Base64
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.thellex.payments.features.auth.viewModel.UserViewModel
@@ -100,7 +101,11 @@ class PassportActivity : AppCompatActivity() {
                 val base64 = encodeUriToBase64(uri)
                 withContext(Dispatchers.Main) {
                     frontBase64 = base64
-                    binding.passportFrontPreview.setImageURI(uri)
+                    binding.documentPreview.visibility = View.VISIBLE
+                    binding.passportFrontPreview.apply {
+                        visibility = View.VISIBLE
+                        setImageURI(uri)
+                    }
                     Log.d(TAG, "Front image updated, base64 length: ${base64.length}")
                 }
             } catch (e: Exception) {

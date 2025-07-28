@@ -1,38 +1,57 @@
 package com.thellex.payments.core.utils
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.text.InputFilter
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Patterns
+import android.view.View
+import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsAnimationCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.thellex.payments.R
-import com.thellex.payments.data.model.PaymentStatus
+import com.thellex.payments.data.model.PaymentStatusEnum
+import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.features.dashboard.ui.MainActivity
+import com.thellex.payments.settings.SupportedBlockchainEnum
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.HttpException
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.regex.Pattern
+import kotlin.time.Duration
 
 object Helpers {
     public fun getNavigationBarHeight(context: Context): Int {
@@ -63,18 +82,27 @@ object Helpers {
         }
     }
 
+    fun getStatusColor(context: Context, status: PaymentStatusEnum): Int {
+        return when (status) {
+            PaymentStatusEnum.Complete -> ContextCompat.getColor(context, R.color.green)
+            PaymentStatusEnum.None -> ContextCompat.getColor(context, R.color.darkBlue)
+            PaymentStatusEnum.Confirmed -> ContextCompat.getColor(context, R.color.blue)
+            PaymentStatusEnum.Accepted -> ContextCompat.getColor(context, R.color.green)
+            PaymentStatusEnum.Done -> ContextCompat.getColor(context, R.color.green)
+            PaymentStatusEnum.Processing -> ContextCompat.getColor(context, R.color.orange)
+            PaymentStatusEnum.Outbound -> ContextCompat.getColor(context, R.color.purple)
+            PaymentStatusEnum.Inbound -> ContextCompat.getColor(context, R.color.darkBlue)
+            PaymentStatusEnum.PendingRiskScreening -> ContextCompat.getColor(context, R.color.darkBlue)
+            PaymentStatusEnum.Queued -> ContextCompat.getColor(context, R.color.darkBlue)
+            PaymentStatusEnum.Sent -> ContextCompat.getColor(context, R.color.green)
+            PaymentStatusEnum.Rejected -> ContextCompat.getColor(context, R.color.pinkRed)
+        }
+    }
+
     fun getIconResIdForBlockchain(chain: String): Int {
         return when (chain.lowercase(Locale.getDefault())) {
             "matic" -> R.drawable.icon_polygon
             else -> R.drawable.icon_bnb_chain
-        }
-    }
-
-    fun getDisplayNameForNetwork(network: String): String {
-        return when (network.lowercase(Locale.getDefault())) {
-            "matic" -> "Polygon"
-            "bep20" -> "Binance"
-            else -> network.replaceFirstChar { it.uppercase() }
         }
     }
 
@@ -107,13 +135,14 @@ object Helpers {
         } catch (e: Exception) { "" }
     }
 
-    fun mapToTransactionStatus(rawStatus: String): PaymentStatus {
+    fun mapToTransactionStatus(rawStatus: String): PaymentStatusEnum {
         return when (rawStatus.trim().lowercase(Locale.getDefault())) {
-            "accepted" -> PaymentStatus.Complete
-            "done" -> PaymentStatus.Complete
-            "rejected" -> PaymentStatus.Rejected
-            "pending" -> PaymentStatus.Processing
-            else -> PaymentStatus.Processing
+            "accepted" -> PaymentStatusEnum.Complete
+            "complete" -> PaymentStatusEnum.Complete
+            "done" -> PaymentStatusEnum.Complete
+            "rejected" -> PaymentStatusEnum.Rejected
+            "pending" -> PaymentStatusEnum.Processing
+            else -> PaymentStatusEnum.Processing
         }
     }
 
@@ -131,7 +160,7 @@ object Helpers {
         return BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString()
     }
 
-    fun formatAmountWithSymbol(amountStr: String, symbol: String? = null, decimals: Int = 4): String {
+    fun formatAmountWithSymbol(amountStr: String, symbol: String? = null, decimals: Int = 2): String {
         val amount = amountStr.toDoubleOrNull() ?: 0.0
         val symbolToUse = symbol ?: ""
         val formattedAmount = "%.${decimals}f".format(amount)
@@ -280,12 +309,12 @@ object Helpers {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Notification Manager
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Create the NotificationChannel for Android 8.0+
+        // Create NotificationChannel (Android 8.0+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "My App Notifications"
+            val name = "Notifications"
             val descriptionText = "Shows important app updates"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(channelId, name, importance).apply {
@@ -294,18 +323,214 @@ object Helpers {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Build the notification
+        // Optional: setLargeIcon for legacy support (Android < 5.0)
+        val largeIcon = BitmapFactory.decodeResource(context.resources, R.drawable.ic_thellex_logo_x)
+
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.thellex_logo_white)
+            .setSmallIcon(R.drawable.ic_thellex_logo_x)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
+            .setLargeIcon(largeIcon)
             .build()
 
-        // Show the notification
         notificationManager.notify(notificationId, notification)
+    }
+
+    fun Button.setSubmitting(
+        submitting: Boolean,
+        loadingText: String = "Submitting...",
+        defaultText: String = "Submit",
+        submittingBackgroundRes: Int = R.drawable.rounded_border_button_darkblue,
+        defaultBackgroundRes: Int = R.drawable.rounded_border_button_golden,
+        submittingTextColor: Int = R.color.white,
+        defaultTextColor: Int = R.color.darkBlue
+    ) {
+        isEnabled = !submitting
+        text = if (submitting) loadingText else defaultText
+        setBackgroundResource(if (submitting) submittingBackgroundRes else defaultBackgroundRes)
+        setTextColor(ContextCompat.getColor(context, if (submitting) submittingTextColor else defaultTextColor))
+    }
+
+    fun Button.setLoading(
+        isLoading: Boolean,
+        loadingBackgroundRes: Int = R.drawable.rounded_border_button_darkblue,
+        defaultBackgroundRes: Int = R.drawable.rounded_border_button_golden
+    ) {
+        isEnabled = !isLoading
+        setBackgroundResource(if (isLoading) loadingBackgroundRes else defaultBackgroundRes)
+    }
+
+    /**
+     * Applies advanced system bar insets padding to this View (top + bottom).
+     *
+     * @param extraTopPaddingDp Extra fallback padding in dp to add to top inset (default 12dp)
+     * @param extraBottomPaddingDp Extra fallback padding in dp to add to bottom inset (default 12dp)
+     * @param fixedHorizontalPaddingDp Fixed horizontal padding in dp (default 20dp)
+     */
+    fun View.applyAdvancedSystemBarInsets(
+        extraTopPaddingDp: Int = 12,
+        extraBottomPaddingDp: Int = 12,
+        fixedHorizontalPaddingDp: Int = 15,
+    ) {
+        val density = resources.displayMetrics.density
+        val extraTopPaddingPx = (extraTopPaddingDp * density).toInt()
+        val extraBottomPaddingPx = (extraBottomPaddingDp * density).toInt()
+        val fixedHorizontalPaddingPx = (fixedHorizontalPaddingDp * density).toInt()
+
+        val windowInsetsType = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.navigationBars()
+
+        ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+            val systemBarsInsets = insets.getInsets(windowInsetsType)
+
+            val paddingTop = systemBarsInsets.top + extraTopPaddingPx
+            val paddingBottom = systemBarsInsets.bottom + extraBottomPaddingPx
+
+            v.setPadding(
+                fixedHorizontalPaddingPx,
+                paddingTop,
+                fixedHorizontalPaddingPx,
+                paddingBottom
+            )
+            insets
+        }
+
+        ViewCompat.setWindowInsetsAnimationCallback(this, object : WindowInsetsAnimationCompat.Callback(
+            WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
+        ) {
+            override fun onProgress(
+                insets: WindowInsetsCompat,
+                runningAnimations: List<WindowInsetsAnimationCompat>
+            ): WindowInsetsCompat {
+                val systemBarsInsets = insets.getInsets(windowInsetsType)
+
+                val paddingTop = systemBarsInsets.top + extraTopPaddingPx
+                val paddingBottom = systemBarsInsets.bottom + extraBottomPaddingPx
+
+                setPadding(
+                    fixedHorizontalPaddingPx,
+                    paddingTop,
+                    fixedHorizontalPaddingPx,
+                    paddingBottom
+                )
+                return insets
+            }
+        })
+    }
+
+
+    fun Activity.disableDecorFitsSystemWindows() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+    }
+
+    fun Activity.setTransparentStatusBarWithWhiteIcons() {
+        // Allow content to draw behind system bars
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // Use WindowInsetsControllerCompat to set icon colors
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false   // false = white status bar icons
+            isAppearanceLightNavigationBars = false  // false = white nav bar icons
+        }
+    }
+
+    fun Context.copyToClipboard(label: String, text: String) {
+        if (text.isNotEmpty()) {
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText(label, text)
+            clipboard.setPrimaryClip(clip)
+            CustomToast.show(this, label, "$label copied to clipboard")
+        } else {
+            CustomToast.show(this, "Empty", "Nothing to copy")
+        }
+    }
+
+    // Reusable Top App Bar Setup
+    fun setupTopAppBar(
+        activity: Activity,
+        rootView: View,
+        title: String,
+        onBackClick: (() -> Unit)? = null
+    ): TopAppBarController {
+        val titleTextView = rootView.findViewById<TextView>(R.id.text_title)
+        val backButton = rootView.findViewById<ImageView>(R.id.button_back)
+
+        titleTextView.text = title
+        backButton.setOnClickListener {
+            onBackClick?.invoke() ?: activity.finish()
+        }
+
+        return TopAppBarController(titleTextView)
+    }
+
+    class TopAppBarController(private val titleTextView: TextView) {
+        fun updateTitle(newTitle: String) {
+            titleTextView.text = newTitle
+        }
+    }
+
+    fun getTransactionAction(transactionType: TransactionTypeEnum): String {
+        return when (transactionType) {
+            TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT -> "BUY"
+            TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> "SELL"
+            else -> transactionType.name
+                .replace("_", " ")
+                .lowercase()
+                .replaceFirstChar { it.uppercase() }
+        }
+    }
+
+    fun formatToTwoDecimalPlaces(value: Double?): String {
+        return if (value != null) String.format("%.2f", value) else "0.00"
+    }
+
+    fun Double?.toTwoDecimalString(): String {
+        return if (this != null) String.format("%.2f", this) else "0.00"
+    }
+
+    fun String.capitalizeFirst(): String = replaceFirstChar { it.uppercase() }
+
+    fun <T> firstMatchingEnum(event: String?, vararg resolvers: (String) -> T?): T? {
+        if (event.isNullOrBlank()) {
+            println("Error: Event string is null or blank")
+            return null
+        }
+        for (resolver in resolvers) {
+            val result = resolver(event)
+            if (result != null) {
+                println("Resolved event '$event' to $result")
+                return result
+            } else {
+                println("Resolver $resolver returned null for event '$event'")
+            }
+        }
+        println("No resolver matched event '$event'")
+        return null
+    }
+
+    fun formatNetworkName(rawNetworkName: String?): String {
+        return when (rawNetworkName?.lowercase(Locale.getDefault())) {
+            "matic" -> "Polygon PoS"
+            "bep20" -> "Binance Smart Chain"
+            "eth" -> "Ethereum"
+            "sol" -> "Solana"
+            "avax" -> "Avalanche"
+            "tron" -> "Tron"
+            else -> rawNetworkName?.replaceFirstChar { it.uppercase() } ?: "Unknown"
+        }
+    }
+
+    // Optional: You can customize display names here
+    fun getDisplayNameForNetwork(network: SupportedBlockchainEnum): String {
+        return when (network) {
+            SupportedBlockchainEnum.bep20 -> "Binance Smart Chain"
+            SupportedBlockchainEnum.matic -> "Polygon PoS"
+            SupportedBlockchainEnum.stellar -> "Stellar"
+            SupportedBlockchainEnum.base -> "Base"
+            SupportedBlockchainEnum.lisk -> "Lisk"
+        }
     }
 }
 

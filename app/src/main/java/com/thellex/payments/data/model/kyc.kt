@@ -48,7 +48,8 @@ data class KycResponseDto(
     @SerializedName("isVerified") val isVerified: Boolean,
     @SerializedName("currentTier") val currentTier: TierInfo,
     @SerializedName("nextTier") val nextTier: TierInfo,
-    @SerializedName("outstandingKyc") val outstandingKyc: List<String> = emptyList()
+    @SerializedName("outstandingKyc") val outstandingKyc: List<String> = emptyList(),
+    @SerializedName("remainingTiers") val remainingTiers: List<TierInfo> = emptyList(),
 )
 
 data class VerifySelfieWithPhotoIdDto(

@@ -22,9 +22,9 @@ class WithdrawalOptionsModalFragment : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     interface WithdrawalOptionsListener {
-        fun onWithdrawToFiat()
+        fun onCryptoToFiatOffRamp()
         fun onWithdrawToBank()
-        fun onWithdrawToCryptoWallet()
+        fun onChainWithdraw()
         fun onStartKyc()
     }
 
@@ -49,29 +49,71 @@ class WithdrawalOptionsModalFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        userViewModel.authResult.observe(viewLifecycleOwner) { user ->
-            isKycDone = user?.currentTier?.name != TierEnum.NONE
+        userViewModel.authResult.observe(viewLifecycleOwner) { userDto ->
+            isKycDone = userDto?.currentTier?.name != TierEnum.NONE
+            val kycFlags = userDto?.transactionSettings
 
-            // Toggle badge visibility
-            if (isKycDone) {
-                binding.badgeKycFiat.visibility = View.GONE
-                binding.badgeKycBank.visibility = View.GONE
+            val isCryptoWithdrawalAllowed = kycFlags?.cryptoWithdrawalAllowed == true
+            binding.onChainWithdrawal.isEnabled = isCryptoWithdrawalAllowed
+            binding.onChainWithdrawal.alpha = if (isCryptoWithdrawalAllowed) 1f else 0.5f
+
+            val isCryptoToFiatWithdrawalAllowed = kycFlags?.cryptoToFiatWithdrawalAllowed == true
+            binding.cryptoToFiat.isEnabled = isCryptoToFiatWithdrawalAllowed
+            binding.cryptoToFiat.alpha = if (isCryptoToFiatWithdrawalAllowed) 1f else 0.5f
+
+            val isFiatToFiatWithdrawalAllowed = kycFlags?.fiatToFiatWithdrawalAllowed == true
+            binding.cryptoToFiat.isEnabled =isFiatToFiatWithdrawalAllowed
+            binding.cryptoToFiat.alpha = if (isFiatToFiatWithdrawalAllowed) 1f else 0.5f
+
+            // Handle On-Chain Deposit KYC badge
+            val isOnChainKycRequired = kycFlags?.cryptoWithdrawalRequiresKyc == true
+            binding.badgeKycCrypto.visibility = if (!isKycDone && isOnChainKycRequired) {
+                View.VISIBLE
             } else {
-                binding.badgeKycFiat.visibility = View.VISIBLE
-                binding.badgeKycBank.visibility = View.VISIBLE
+                View.GONE
+            }
+
+            // Handle Fiat-to-Crypto KYC badge
+            val isFiatToCryptoKycRequired = kycFlags?.cryptoToFiatWithdrawalRequiresKyc == true
+            binding.badgeKycFiat.visibility = if (!isKycDone && isFiatToCryptoKycRequired) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+
+            val isFiatToFiatKycRequired = kycFlags?.fiatToFiatWithdrawalRequiresKyc == true
+            binding.badgeKycBank.visibility = if (!isKycDone && isFiatToFiatKycRequired) {
+                View.VISIBLE
+            } else {
+                View.GONE
             }
         }
 
-        binding.fragmentWithdrawalOptionsBankTransfer.setOnClickListener {
-            if (isKycDone) listener?.onWithdrawToBank() else listener?.onStartKyc()
+        binding.onChainWithdrawal.setOnClickListener {
+            val isOnChainKycRequired = userViewModel.authResult.value?.transactionSettings?.cryptoWithdrawalRequiresKyc == true
+            if (!isKycDone && isOnChainKycRequired) {
+                listener?.onStartKyc()
+            } else {
+                listener?.onChainWithdraw()
+            }
         }
 
-        binding.fragmentWithdrawalOptionsCrypto.setOnClickListener{
-            listener?.onWithdrawToCryptoWallet()
+        binding.cryptoToFiat.setOnClickListener {
+            val isCryptoToFiatKycRequired = userViewModel.authResult.value?.transactionSettings?.cryptoToFiatWithdrawalRequiresKyc == true
+            if (!isKycDone && isCryptoToFiatKycRequired) {
+                listener?.onStartKyc()
+            } else {
+                listener?.onCryptoToFiatOffRamp()
+            }
         }
 
-        binding.fragmentWithdrawalOptionsFiat.setOnClickListener {
-            if (isKycDone) listener?.onWithdrawToFiat() else listener?.onStartKyc()
+        binding.fiatWithdraw.setOnClickListener {
+            val isCryptoToFiatKycRequired = userViewModel.authResult.value?.transactionSettings?.fiatToFiatWithdrawalRequiresKyc == true
+            if (!isKycDone && isCryptoToFiatKycRequired) {
+                listener?.onStartKyc()
+            } else {
+                listener?.onWithdrawToBank()
+            }
         }
     }
 

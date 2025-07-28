@@ -5,11 +5,14 @@ import com.google.gson.GsonBuilder
 import com.thellex.payments.core.utils.Constants
 import com.thellex.payments.data.enums.TierEnum
 import com.thellex.payments.data.model.NotificationKindEnum
+import com.thellex.payments.data.model.PaymentStatusEnum
+import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.settings.SupportedBlockchainEnum
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -25,6 +28,9 @@ object ApiClient {
         }
 
         return OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(90, TimeUnit.SECONDS)
+            .writeTimeout(90, TimeUnit.SECONDS)
             .addInterceptor { chain ->
                 val originalRequest = chain.request()
                 val requestBuilder = originalRequest.newBuilder()
@@ -45,6 +51,8 @@ object ApiClient {
             .registerTypeAdapter(NotificationKindEnum::class.java, NotificationKindEnumDeserializer())
             .registerTypeAdapter(TierEnum::class.java, TierEnumDeserializer())
             .registerTypeAdapter(SupportedBlockchainEnum::class.java, SupportedBlockchainDeserializer())
+            .registerTypeAdapter(PaymentStatusEnum::class.java, PaymentStatusDeserializer())
+            .registerTypeAdapter(TransactionTypeEnum::class.java, TransactionTypeDeserializer())
             .registerTypeAdapter(Instant::class.java, InstantDeserializer())
             .create()
 

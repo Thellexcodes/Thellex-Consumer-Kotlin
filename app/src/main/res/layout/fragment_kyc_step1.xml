@@ -2,66 +2,20 @@
 <androidx.core.widget.NestedScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/fragmentKycStep1_scrollView"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:background="@drawable/general_gradient_background"
-        android:padding="20dp">
+        android:background="@drawable/general_gradient_background">
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/fragmentKycStep1Root"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <!-- Top App Bar Container -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/fragmentKycStep1_activity_wallet_top_app_bar_container"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:paddingBottom="12dp">
+            <include layout="@layout/top_app_bar" android:id="@+id/basicKycStep1TopAppBar"/>
 
-            <ImageView
-                    android:id="@+id/fragmentKycStep1_activity_wallet_back_button"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:src="@drawable/icon_back"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- Title and Subtitle -->
-        <LinearLayout
-                android:id="@+id/fragmentKycStep1_linearLayout4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="31dp"
-                app:layout_constraintTop_toBottomOf="@id/fragmentKycStep1_activity_wallet_top_app_bar_container"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-            <TextView
-                    android:text="Personal Details"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/kumbhsans_bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-            <TextView
-                    android:text="Enter your biodata"
-                    android:layout_marginTop="5dp"
-                    android:textSize="14sp"
-                    android:textColorHint="@color/steelBlueGrey"
-                    android:fontFamily="@font/kumbhsans_regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-        </LinearLayout>
 
         <!-- Info Warning Box -->
         <LinearLayout
@@ -71,14 +25,22 @@
                 android:layout_marginTop="22dp"
                 android:paddingVertical="14dp"
                 android:paddingHorizontal="20dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:background="@drawable/rounded_golden_yellow_15pct"
-                app:layout_constraintTop_toBottomOf="@id/fragmentKycStep1_linearLayout4"
+                app:layout_constraintTop_toBottomOf="@id/basicKycStep1TopAppBar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                    android:src="@drawable/icon_info_circle"
+                    android:layout_width="@dimen/dp_16"
+                    android:layout_height="@dimen/dp_16"/>
 
             <TextView
                     android:text="Please ensure you cross check your details before submitting."
                     android:textSize="10sp"
+                    android:layout_marginStart="@dimen/dp_15"
                     android:textColor="@color/goldenYellow"
                     android:fontFamily="@font/kumbhsans_regular"
                     android:layout_width="wrap_content"
@@ -190,47 +152,83 @@
                         android:background="@drawable/rounded_edittext" />
             </LinearLayout>
 
-            <!-- Phone Number Group -->
+            <!-- Phone Number with Country Code Picker -->
             <LinearLayout
-                    android:id="@+id/fragmentKycStep1_llPhoneNumberGroup"
+                    android:id="@+id/fragmentKycStep1_phoneContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/rounded_edittext"
+                    android:paddingVertical="15dp"
+                    app:layout_constraintTop_toBottomOf="@id/fragmentKycStep1_etLastName"
+                    app:layout_constraintStart_toStartOf="parent">
 
-                <TextView
-                        android:id="@+id/fragmentKycStep1_tvPhoneNumberLabel"
+                <LinearLayout
+                        android:id="@+id/fragmentKycStep1_countryPickerContainer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Phone Number"
-                        android:textColor="@color/white"
-                        android:textSize="10sp"
-                        android:fontFamily="@font/kumbhsans_light" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                    <ImageView
+                            android:id="@+id/fragmentKycStep1_ivCountryFlag"
+                            android:layout_width="@dimen/dp_16"
+                            android:layout_height="@dimen/dp_16"
+                            android:contentDescription="Country Flag"
+                            android:src="@drawable/icon_nigerian_flag" />
+
+                    <TextView
+                            android:id="@+id/fragmentKycStep1_tvCountryCode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="@dimen/dp_14"
+                            android:text="+234"
+                            android:textSize="10sp"
+                            android:textColor="@color/steelBlueGrey" />
+
+                    <ImageView
+                            android:id="@+id/fragmentKycStep1_ivArrow"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/icon_arrow_down"
+                            android:contentDescription="Expand"
+                            app:tint="@color/steelBlueGrey" />
+
+                </LinearLayout>
 
                 <EditText
                         android:id="@+id/fragmentKycStep1_etPhoneNumber"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/dp_12"
+                        android:paddingVertical="0dp"
+                        android:paddingTop="0dp"
+                        android:paddingBottom="0dp"
                         android:hint="Phone Number"
-                        android:paddingVertical="15dp"
-                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        android:textSize="12sp"
                         android:textColor="@color/steelBlueGrey"
                         android:textColorHint="@color/steelBlueGrey"
-                        android:inputType="textPhonetic"
-                        android:background="@drawable/rounded_edittext" />
+                        android:inputType="phone"
+                        android:background="@null" />
             </LinearLayout>
 
             <!-- Date of Birth Group -->
             <LinearLayout
-                    android:id="@+id/fragmentKycStep1_llDobGroup"
+                    android:id="@+id/kycStep1_dobGroup"
+                    android:layout_marginTop="@dimen/dp_12"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_marginBottom="12dp">
 
                 <TextView
-                        android:id="@+id/fragmentKycStep1_tvDobLabel"
+                        android:id="@+id/kycStep1_dobLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Date of Birth (DD/MM/YYYY)"
@@ -238,19 +236,38 @@
                         android:textSize="10sp"
                         android:fontFamily="@font/kumbhsans_light" />
 
-                <EditText
-                        android:id="@+id/fragmentKycStep1_etDob"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/kycStep1_dobInputContainer"
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:paddingVertical="@dimen/dp_15"
+                        android:background="@drawable/rounded_edittext"
+                        android:padding="@dimen/dp_16"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:hint="Date of Birth (DD/MM/YYYY)"
-                        android:textSize="10sp"
-                        android:textColor="@color/steelBlueGrey"
-                        android:paddingVertical="15dp"
-                        android:textColorHint="@color/steelBlueGrey"
-                        android:inputType="none"
-                        android:background="@drawable/rounded_edittext" />
+                        android:layout_height="wrap_content">
+
+                    <TextView
+                            android:id="@+id/kycStep1_dobText"
+                            android:text="DD.MM.YYYY"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/kumbhsans_regular"
+                            android:textSize="@dimen/sp_12"
+                            android:textColor="@color/steelBlueGrey"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                    <ImageView
+                            android:id="@+id/kycStep1_dobCalendarIcon"
+                            android:src="@drawable/icon_calender"
+                            android:layout_width="@dimen/dp_16"
+                            android:layout_height="@dimen/dp_16"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
+
         </LinearLayout>
 
         <!-- Continue Button -->

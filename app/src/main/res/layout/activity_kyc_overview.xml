@@ -6,37 +6,18 @@
         android:id="@+id/activity_kyc_overview_layout_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="20dp"
-        android:paddingHorizontal="20dp"
         android:background="@drawable/general_gradient_background"
-        tools:context=".features.kyc.ui.basic.BasicKycRequirements">
+        tools:context=".features.kyc.ui.basic.BasicKycRequirementsActivity">
 
-    <ImageView
-            android:id="@+id/activity_kyc_overview_iv_back_icon"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:src="@drawable/icon_back"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-            android:id="@+id/activity_kyc_overview_tv_kyc_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Kyc Requirements"
-            android:textColor="@color/white"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/activity_kyc_overview_iv_back_icon" />
+    <include layout="@layout/top_app_bar" android:id="@+id/inKycOverviewTopAppBar"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/activity_kyc_overview_layout_kyc_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="13dp"
-            android:padding="17dp"
             android:background="@drawable/rounded_border_midnight"
-            app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_tv_kyc_title">
+            app:layout_constraintTop_toBottomOf="@id/inKycOverviewTopAppBar">
 
         <TextView
                 android:id="@+id/activity_kyc_overview_tv_kyc_start_header"

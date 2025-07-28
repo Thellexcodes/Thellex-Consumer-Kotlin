@@ -1,22 +1,10 @@
 package com.thellex.payments.features.pos.ui
 
-import android.app.AlertDialog
-import android.content.Context
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
@@ -26,15 +14,25 @@ import com.thellex.payments.core.decorators.ItemSpacingDecoration
 import com.thellex.payments.features.pos.adapters.POSTransactionAdapter
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
-import com.thellex.payments.core.utils.Helpers.parseDate
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivityPOSBinding
 import com.thellex.payments.features.auth.ui.AuthVerificationActivity
+import com.thellex.payments.features.kyc.ui.basic.KycSuccessActivity
 import com.thellex.payments.features.auth.ui.LoginActivity
-import com.thellex.payments.settings.PaymentType
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.dashboard.ui.MainActivity
+import com.thellex.payments.features.fiat.CryptoToFiatOffRampActivity
+import com.thellex.payments.features.fiat.FiatDepositActivity
+import com.thellex.payments.features.fiat.FiatRampTransactionsActivity
+import com.thellex.payments.features.fiat.FiatToCryptoOnRampActivity
+import com.thellex.payments.features.fiat.FiatWithdrawActivity
 import com.thellex.payments.features.kyc.ui.StartKycActivity
 import com.thellex.payments.features.notifications.ui.NotificationsActivity
+import com.thellex.payments.features.onboarding.LauncherActivity
+import com.thellex.payments.features.onboarding.OnboardingActivity
 import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
 import com.thellex.payments.features.pos.fragments.WithdrawalOptionsModalFragment
 import com.thellex.payments.features.profile.ProfileActivity
@@ -61,12 +59,10 @@ class POSHomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPOSBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        ActivityTracker.finishActivity(LoginActivity::class.java)
-        ActivityTracker.finishActivity(AuthVerificationActivity::class.java)
-        ActivityTracker.finishActivity(TransactionSuccessActivity::class.java)
-
-        setupWindowInsetsAndBars()
+        ActivityTracker.add(this)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.posMain.applyAdvancedSystemBarInsets(fixedHorizontalPaddingDp = 0)
 
         userViewModel = ViewModelProvider(
             this,
@@ -85,36 +81,14 @@ class POSHomeActivity : AppCompatActivity() {
         loadWalletData()
         observeUserUid()
         observeNotification()
-        setupNotification()
-    }
-
-    private fun setupWindowInsetsAndBars() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
-            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            view.setPadding(
-                view.paddingLeft,
-                systemBarsInsets.top,
-                view.paddingRight,
-                systemBarsInsets.bottom
-            )
-
-            insets
-        }
-
-        val window = window
-        WindowCompat.setDecorFitsSystemWindows(window, true)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.statusBarColor = Color.parseColor("#212C2C3A")
-        }
+        closeAllOtherActivities()
     }
 
     private fun setupRecyclerView() {
         transactionRecyclerView = binding.recyclerRecentTransactions
         transactionRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        transactionAdapter = POSTransactionAdapter(emptyList()) {}
+        transactionAdapter = POSTransactionAdapter() {}
         transactionRecyclerView.adapter = transactionAdapter
 
         val itemSpacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
@@ -182,7 +156,6 @@ class POSHomeActivity : AppCompatActivity() {
         userViewModel.authResult.observe(this) { dto ->
             dto?.notifications?.let { notifications ->
                 val unconsumedCount = notifications.count { !it.consumed }
-
                 updateNotificationBadge(unconsumedCount)
             }
         }
@@ -190,7 +163,7 @@ class POSHomeActivity : AppCompatActivity() {
 
     private fun updateNotificationBadge(count: Int) {
         if (count > 0) {
-            binding.activityPosNotificationBadge .visibility = View.VISIBLE
+            binding.activityPosNotificationBadge.visibility = View.VISIBLE
             binding.activityPosNotificationBadge.text = "$count"
         } else {
             binding.activityPosNotificationBadge.visibility = View.GONE
@@ -223,11 +196,17 @@ class POSHomeActivity : AppCompatActivity() {
         val modal = RequestOptionsModalFragment.newInstance()
 
         modal.setListener(object : RequestOptionsModalFragment.ReceiveOptionsListener {
-            override fun onFiatClick() { }
-            override fun onCryptoClick() {
+            override fun onChainDepositClick() {
                 startActivity(Intent(this@POSHomeActivity, POSChooseCryptoActivity::class.java))
             }
-            override fun onBankClick() { }
+            override fun onCryptoToFiatOnRampClick() {
+                startActivity(Intent(this@POSHomeActivity, FiatToCryptoOnRampActivity::class.java))
+            }
+
+            override fun onFiatDepositClick() {
+                startActivity(Intent(this@POSHomeActivity, FiatDepositActivity::class.java))
+            }
+
             override fun onStartKyc() {
                 modal.dismiss()
                 startActivity(Intent(this@POSHomeActivity, StartKycActivity::class.java))
@@ -241,17 +220,15 @@ class POSHomeActivity : AppCompatActivity() {
         val modal = WithdrawalOptionsModalFragment.newInstance()
 
         modal.setListener(object : WithdrawalOptionsModalFragment.WithdrawalOptionsListener {
-            override fun onWithdrawToFiat() {
-                startActivity(Intent(this@POSHomeActivity, EnterTransactionAmountActivity::class.java).apply {
-                    putExtra("type", PaymentType.WITHDRAW_FIAT)
-                })
+            override fun onCryptoToFiatOffRamp() {
+                startActivity(Intent(this@POSHomeActivity, CryptoToFiatOffRampActivity::class.java))
             }
 
             override fun onWithdrawToBank() {
-//                startActivity(Intent(this@POSHomeActivity, WithdrawToBankActivity::class.java))
+                startActivity(Intent(this@POSHomeActivity, FiatWithdrawActivity::class.java))
             }
 
-            override fun onWithdrawToCryptoWallet() {
+            override fun onChainWithdraw() {
                 startActivity(Intent(this@POSHomeActivity, WithdrawToCryptoWalletActivity::class.java))
             }
 
@@ -264,52 +241,15 @@ class POSHomeActivity : AppCompatActivity() {
         modal.show(supportFragmentManager, "WithdrawalOptionsModal")
     }
 
-    private fun setupNotification(){
-        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val hasAskedPermission = sharedPref.getBoolean("asked_notification_permission", false)
-
-        if (!hasAskedPermission) {
-            object : CountDownTimer(10_000, 1_000) {
-                override fun onTick(millisUntilFinished: Long) {}
-                override fun onFinish() {
-                    promptNotificationPermissionWithDialog()
-                }
-            }.start()
-        }
+    private fun closeAllOtherActivities() {
+        ActivityTracker.finishActivity(MainActivity::class.java)
+        ActivityTracker.finishActivity(LauncherActivity::class.java)
+        ActivityTracker.finishActivity(OnboardingActivity::class.java)
+        ActivityTracker.finishActivity(LoginActivity::class.java)
+        ActivityTracker.finishActivity(AuthVerificationActivity::class.java)
+        ActivityTracker.finishActivity(TransactionSuccessActivity::class.java)
+        ActivityTracker.finishActivity(KycSuccessActivity::class.java)
+        ActivityTracker.finishActivity(FiatRampTransactionsActivity::class.java)
     }
 
-    private fun promptNotificationPermissionWithDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Enable Notifications")
-            .setMessage("We’ll notify you of important account activity like transfers and payments.")
-            .setPositiveButton("Allow") { _, _ ->
-                requestNotificationPermissionIfFirstTime()
-            }
-            .setNegativeButton("Not now", null)
-            .show()
-    }
-
-    private fun requestNotificationPermissionIfFirstTime() {
-        val sharedPref = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val hasAskedPermission = sharedPref.getBoolean("asked_notification_permission", false)
-
-        if (!hasAskedPermission) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (ContextCompat.checkSelfPermission(
-                        this,
-                        android.Manifest.permission.POST_NOTIFICATIONS
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                        100
-                    )
-                }
-            }
-
-            // Save that we've asked for permission already
-            sharedPref.edit().putBoolean("asked_notification_permission", true).apply()
-        }
-    }
 }
