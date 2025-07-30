@@ -54,12 +54,6 @@ import java.util.regex.Pattern
 import kotlin.time.Duration
 
 object Helpers {
-    public fun getNavigationBarHeight(context: Context): Int {
-        val resources = context.resources
-        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        return if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
-    }
-
     fun parseBackendErrorEnum(errorBody: String?): String? {
         return try {
             val json = JSONObject(errorBody ?: "{}")
@@ -531,6 +525,19 @@ object Helpers {
             SupportedBlockchainEnum.base -> "Base"
             SupportedBlockchainEnum.lisk -> "Lisk"
         }
+    }
+
+    fun abbreviateAddress(address: String?, startLength: Int = 4, endLength: Int = 4): String {
+        if (address.isNullOrBlank()) return ""
+        if (address.length <= startLength + endLength) return address
+        val start = address.take(startLength)
+        val end = address.takeLast(endLength)
+        return "$start...$end"
+    }
+
+    @SuppressLint("DefaultLocale")
+    fun Double.roundToTwoDecimals(): Double {
+        return String.format("%.2f", this).toDouble()
     }
 }
 

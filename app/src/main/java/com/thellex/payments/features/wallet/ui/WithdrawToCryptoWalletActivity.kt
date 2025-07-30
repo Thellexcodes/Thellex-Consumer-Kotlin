@@ -110,7 +110,7 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val input = s?.toString()?.toDoubleOrNull()
-                val currentBalance = selectedToken?.totalBalance?.toDoubleOrNull() ?: 0.0
+                val currentBalance = selectedToken?.totalBalance?: 0.0
                 if (input != null && input > currentBalance) {
                     binding.withdrawAmountEditText.error = "Insufficient balance"
                 } else {
@@ -122,9 +122,10 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
         binding.buttonMax.setOnClickListener {
             selectedToken?.let {
                 val maxAmount = it.totalBalance
-                binding.withdrawAmountEditText.setText(maxAmount)
+                val editableAmount = Editable.Factory.getInstance().newEditable(maxAmount.toString())
+                binding.withdrawAmountEditText.text = editableAmount
             } ?: run {
-                CustomToast.show(this, "Warning","Balance not available")
+                CustomToast.show(this, "Warning", "Balance not available")
             }
         }
     }
@@ -161,7 +162,7 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
     }
 
     private fun updateUIWithWallet(wallet: WalletDto) {
-        val formatted = Helpers.formatBalance(wallet.totalBalance)
+        val formatted = Helpers.formatBalance(wallet.totalBalance.toString())
         binding.textAvailableBalance.text = "Available: $formatted ${wallet.assetCode.name.uppercase()}"
         updateSpinnerUI(wallet)
         updateNetworkUI(wallet.network)

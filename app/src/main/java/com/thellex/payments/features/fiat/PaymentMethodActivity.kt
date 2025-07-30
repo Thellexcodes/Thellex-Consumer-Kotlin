@@ -119,7 +119,6 @@ class PaymentMethodActivity : AppCompatActivity() {
                 paymentMethodsRecycler.visibility = View.GONE
                 emptyStateContainer.visibility = View.VISIBLE
                 title.visibility = View.GONE
-
             } else {
                 paymentMethodsRecycler.visibility = View.VISIBLE
                 emptyStateContainer.visibility = View.GONE

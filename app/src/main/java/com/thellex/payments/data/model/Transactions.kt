@@ -20,7 +20,7 @@ data class ITransactionHistoryDto(
     @SerializedName("event") val event: String,
     @SerializedName("transactionId") val transactionId: String,
     @SerializedName("transactionDirection") val transactionDirection: String,
-    @SerializedName("transactionType") val transactionType: String,
+    @SerializedName("transactionType") val transactionType: TransactionTypeEnum,
     @SerializedName("assetCode") val assetCode: String,
     @SerializedName("amount") val amount: String,
     @SerializedName("fee") val fee: String,
@@ -31,7 +31,10 @@ data class ITransactionHistoryDto(
     @SerializedName("sourceAddress") val sourceAddress: String,
     @SerializedName("destinationAddress") val destinationAddress: String,
     @SerializedName("paymentNetwork") val paymentNetwork: String,
-    @SerializedName("createdAt") val createdAt: String
+    @SerializedName("createdAt") val createdAt: String,
+    @SerializedName("rampID") val rampID: String,
+    @SerializedName("mainFiatAmount") val mainFiatAmount: Double,
+    @SerializedName("mainAssetAmount") val mainAssetAmount: Double,
 )
 
  enum class TransactionType {
@@ -41,11 +44,15 @@ data class ITransactionHistoryDto(
 
 data class PosTransaction(
     @SerializedName("iconResId") val iconResId: Int?,
+    @SerializedName("id") val id: String?,
     @SerializedName("statusIconResId") val statusIconResId: Int?,
     @SerializedName("description") val description: String,
     @SerializedName("time") val time: String,
     @SerializedName("amountWithSymbol") val amountWithSymbol: String,
-    @SerializedName("paymentStatus") val paymentStatus:  PaymentStatusEnum
+    @SerializedName("paymentStatus") val paymentStatus:  PaymentStatusEnum,
+    @SerializedName("transactionType") val transactionType: TransactionTypeEnum,
+    @SerializedName("transactionType") val rampID: String,
+    @SerializedName("amount") val amount: String,
 )
 
 data class BlockchainItem(

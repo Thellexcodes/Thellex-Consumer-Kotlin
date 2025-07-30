@@ -101,6 +101,8 @@
     <dimen name="sp_26">26sp</dimen>
     <dimen name="sp_28">28sp</dimen>
     <dimen name="sp_30">30sp</dimen>
+    <dimen name="sp_31">31sp</dimen>
+    <dimen name="sp_32">32sp</dimen>
 
     <dimen name="border_radius">12dp</dimen>
 </resources>

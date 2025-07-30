@@ -199,6 +199,7 @@ class RampSummaryActivity : AppCompatActivity() {
         val fiatCode = cryptoToFiatViewModel.fiatCode.value
         val fiatAmount = cryptoToFiatViewModel.fiatAmount.value
         val bankInfo = cryptoToFiatViewModel.bankInfo.value
+        val mainAssetAmount = cryptoToFiatViewModel.mainAssetAmount.value
 
         if (reason.isNullOrBlank() || network.isNullOrBlank() || sourceAddress.isNullOrBlank() ||
             assetCode.isNullOrBlank() || country.isNullOrBlank() || fiatCode.isNullOrBlank() ||
@@ -229,7 +230,8 @@ class RampSummaryActivity : AppCompatActivity() {
             country = country,
             fiatCode = fiatEnum,
             userAmount = fiatAmount,
-            bankInfo = bankInfo
+            bankInfo = bankInfo,
+            mainAssetAmount = mainAssetAmount
         )
     }
 

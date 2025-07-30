@@ -3,6 +3,7 @@ package com.thellex.payments.features.pos.ui
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +18,7 @@ import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
+import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivityPOSBinding
 import com.thellex.payments.features.auth.ui.AuthVerificationActivity
@@ -27,6 +29,7 @@ import com.thellex.payments.features.dashboard.ui.MainActivity
 import com.thellex.payments.features.fiat.CryptoToFiatOffRampActivity
 import com.thellex.payments.features.fiat.FiatDepositActivity
 import com.thellex.payments.features.fiat.FiatRampTransactionsActivity
+import com.thellex.payments.features.fiat.FiatRampTransactionsDetailActivity
 import com.thellex.payments.features.fiat.FiatToCryptoOnRampActivity
 import com.thellex.payments.features.fiat.FiatWithdrawActivity
 import com.thellex.payments.features.kyc.ui.StartKycActivity
@@ -88,7 +91,27 @@ class POSHomeActivity : AppCompatActivity() {
         transactionRecyclerView = binding.recyclerRecentTransactions
         transactionRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        transactionAdapter = POSTransactionAdapter() {}
+            transactionAdapter = POSTransactionAdapter { transaction ->
+
+            when (transaction.transactionType) {
+                in setOf(
+                    TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT,
+                    TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL,
+                    TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL,
+                    TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT
+                ) -> {
+                    transaction.rampID.let { rampId ->
+                        val intent = Intent(this, FiatRampTransactionsDetailActivity::class.java)
+                        intent.putExtra("ramp_id", rampId)
+                        startActivity(intent)
+                    }
+                }
+                else -> {
+                    Log.d("Unhandled", "Unhandled transaction type: ${transaction.transactionType}")
+                }
+            }
+        }
+
         transactionRecyclerView.adapter = transactionAdapter
 
         val itemSpacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
@@ -137,7 +160,6 @@ class POSHomeActivity : AppCompatActivity() {
                 val sortedTransactions = transactions.sortedByDescending { it.createdAt }
                 withContext(Dispatchers.Main) {
                     transactionAdapter.updateList(sortedTransactions)
-
                     if (sortedTransactions.isEmpty()) {
                         binding.recyclerRecentTransactions.visibility = View.GONE
                         binding.titleRecentTransactions.visibility = View.GONE

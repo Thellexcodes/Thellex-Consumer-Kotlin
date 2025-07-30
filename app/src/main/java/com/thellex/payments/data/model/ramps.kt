@@ -5,9 +5,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class IFiatCryptoRampTransactionsDto(
+    @SerializedName("id") val id: String,
     @SerializedName("expiresAt") val expiresAt: String,
     @SerializedName("netFiatAmount") val netFiatAmount: Double,
     @SerializedName("netCryptoAmount") val netCryptoAmount: Double,
+    @SerializedName("mainAssetAmount") val mainAssetAmount: Double,
     @SerializedName("feeLabel") val feeLabel: String,
     @SerializedName("serviceFeeAmountLocal") val serviceFeeAmountLocal: Double,
     @SerializedName("serviceFeeAmountUSD") val serviceFeeAmountUSD: Double,

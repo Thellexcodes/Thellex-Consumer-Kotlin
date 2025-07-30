@@ -142,6 +142,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         }
 
         cryptoToFiatViewModel.fee.observe(this) { fee ->
+            binding.textPriceValue.text = "${fee}%"
         }
     }
 
@@ -329,16 +330,18 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     val fiatAmountStr = binding.edittextFiatAmount.text.toString().trim()
+                    val cryptoAmountStr = binding.edittextCryptoAmount.text.toString().trim()
                     val reason = binding.edittextPaymentReason.text.toString().trim()
 
-                    if (reason.isEmpty()) {
-                        CustomToast.show(this@CryptoToFiatOffRampActivity, "Warning", "Please select a reason")
+                    val fiatAmount = fiatAmountStr.toDoubleOrNull()
+                    if (fiatAmount == null || fiatAmount <= minimumAmountInFiat) {
+                        CustomToast.show(this@CryptoToFiatOffRampActivity, "Warning", "Please enter a valid amount above $minimumAmountInFiat $fiatCode")
                         return@launch
                     }
 
-                    val fiatAmount = fiatAmountStr.toDoubleOrNull()
-                    if (fiatAmount == null || fiatAmount <= 0) {
-                        CustomToast.show(this@CryptoToFiatOffRampActivity, "Warning", "Please enter a valid amount")
+                    val cryptoAmount = cryptoAmountStr.toDoubleOrNull()
+                    if (cryptoAmount == null || cryptoAmount <= 0.0) {
+                        CustomToast.show(this@CryptoToFiatOffRampActivity, "Warning", "Invalid crypto amount")
                         return@launch
                     }
 
@@ -353,10 +356,21 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                         return@launch
                     }
 
+//                    // Validate crypto amount against wallet balance
+//                    if (cryptoAmount > selectedToken.totalBalance) {
+//                        CustomToast.show(this@CryptoToFiatOffRampActivity, "Error", "Insufficient balance in ${selectedToken.assetCode.name.uppercase()}")
+//                        return@launch
+//                    }
+
+                    if (reason.isEmpty()) {
+                        CustomToast.show(this@CryptoToFiatOffRampActivity, "Warning", "Please select a reason")
+                        return@launch
+                    }
+
                     binding.nextButton.setLoading(true) // Set loading state during navigation
 
                     // Save data to ViewModel
-                    cryptoToFiatViewModel.setOffRampData(
+                    cryptoToFiatViewModel.setRampData(
                         paymentReason = reason.lowercase(),
                         network = selectedToken.network.name,
                         sourceAddress = selectedToken.address,
@@ -364,6 +378,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                         country = userViewModel.authResult.value?.kyc?.country ?: "ng",
                         fiatCode = fiatCode,
                         fiatAmount = fiatAmount,
+                        mainAssetAmount = cryptoAmount
                     )
 
                     val intent = Intent(this@CryptoToFiatOffRampActivity, PaymentMethodActivity::class.java)
@@ -480,5 +495,4 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "TAGY"
     }
-
 }

@@ -20,6 +20,7 @@ import com.thellex.payments.core.utils.Helpers.getStatusIconResId
 import com.thellex.payments.core.utils.Helpers.mapToTransactionStatus
 import com.thellex.payments.data.model.ITransactionHistoryDto
 import com.thellex.payments.data.model.PaymentStatusEnum
+import com.thellex.payments.data.model.TransactionTypeEnum
 import java.util.Locale
 
 class POSTransactionAdapter(
@@ -48,9 +49,8 @@ class POSTransactionAdapter(
             item.statusIconResId?.let { statusIcon.setImageResource(it) }
             description.text = item.description
             timeText.text = item.time
-            amount.text = item.amountWithSymbol
+            amount.text = item.amount
             status.text = item.paymentStatus.name
-            Log.d("status", item.paymentStatus.name)
 
             if (item.paymentStatus == PaymentStatusEnum.Complete) {
                 status.setTextColor(ContextCompat.getColor(status.context, R.color.green))
@@ -71,19 +71,35 @@ class POSTransactionAdapter(
     }
 
     fun updateList(newItems: List<ITransactionHistoryDto>) {
-        val posTransactions = newItems.map { transaction ->
-            Log.d("Transaction", "Mapping transaction: $transaction")
+            val posTransactions = newItems.map { transaction ->
+            val displayAmount = when (transaction.transactionType) {
+                TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT -> transaction.amount
+                TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> transaction.mainAssetAmount
+                TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT -> transaction.mainAssetAmount
+                TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL -> transaction.mainAssetAmount
+                TransactionTypeEnum.FIAT_TO_FIAT_DEPOSIT -> transaction.mainFiatAmount
+                TransactionTypeEnum.FIAT_TO_FIAT_WITHDRAWAL -> transaction.mainFiatAmount
+                TransactionTypeEnum.CRYPTO_DEPOSIT -> transaction.amount
+                TransactionTypeEnum.CRYPTO_WITHDRAWAL -> transaction.amount
+                else -> transaction.amount
+            }
+
             PosTransaction(
                 iconResId = getIconResIdForToken(transaction.assetCode),
                 statusIconResId = getStatusIconResId(transaction.paymentStatus),
                 description = transaction.assetCode.uppercase(Locale.getDefault()),
                 time = formatTimestamp(transaction.createdAt),
-                amountWithSymbol = formatAmountWithSymbol(transaction.amount),
-                paymentStatus = mapToTransactionStatus(transaction.paymentStatus)
+                amountWithSymbol = formatAmountWithSymbol(displayAmount.toString()),
+                paymentStatus = mapToTransactionStatus(transaction.paymentStatus),
+                id = transaction.id,
+                transactionType = transaction.transactionType,
+                rampID = transaction.rampID,
+                amount = displayAmount.toString()
             )
         }
         submitList(posTransactions)
     }
+
 }
 
 class PosTransactionDiffCallback : DiffUtil.ItemCallback<PosTransaction>() {
@@ -96,13 +112,3 @@ class PosTransactionDiffCallback : DiffUtil.ItemCallback<PosTransaction>() {
         return oldItem == newItem
     }
 }
-
-data class PosTransaction(
-    val transactionId: String, // Add transactionId to uniquely identify transactions
-    val iconResId: Int?,
-    val statusIconResId: Int?,
-    val description: String,
-    val time: String,
-    val amountWithSymbol: String,
-    val paymentStatus: PaymentStatusEnum
-)

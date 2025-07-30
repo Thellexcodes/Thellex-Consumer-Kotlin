@@ -153,7 +153,9 @@ data class CryptoToFiatOffRampRequestDto(
     @SerializedName("paymentMethod") val paymentMethod: String? = null,
     @SerializedName("paymentReason") val paymentReason: String,
     @SerializedName("sourceAddress") val sourceAddress: String,
-    @SerializedName("bankInfo") val bankInfo: IBankInfoRequestDto
+    @SerializedName("bankInfo") val bankInfo: IBankInfoRequestDto,
+    @SerializedName("mainAssetAmount") val mainAssetAmount: Double? = null,
+    @SerializedName("mainFiatAmount") val mainFiatAmount: Double? = null
 )
 
 data class CreateBankAccountDto(

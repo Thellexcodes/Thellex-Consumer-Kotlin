@@ -132,9 +132,9 @@ class WalletAssetsActivity : AppCompatActivity() {
 
             val updatedAssets = walletDto?.wallets?.values?.map { wallet ->
                 val symbol = wallet.assetCode.name?.uppercase() ?: "N/A"
-                val amount = formatDecimal(wallet.totalBalance)
-                val usdValue = formatDecimal(wallet.totalBalance)
-                val valueInLocal = formatDecimal(wallet.valueInLocal)
+                val amount = formatDecimal("${wallet.totalBalance}")
+                val usdValue = formatDecimal("$wallet.totalBalance")
+                val valueInLocal = formatDecimal("$wallet.valueInLocal")
 
                 Asset(
                     symbol = symbol,
