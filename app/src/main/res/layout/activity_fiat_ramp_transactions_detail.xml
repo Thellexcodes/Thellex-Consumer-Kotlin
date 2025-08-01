@@ -52,7 +52,7 @@
                         app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
-                        android:id="@+id/ramp_fiat_amount"
+                        android:id="@+id/ramp_amount"
                         android:text="N0.00"
                         android:fontFamily="@font/outfit_bold"
                         android:layout_marginTop="@dimen/dp_11"

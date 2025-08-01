@@ -102,3 +102,18 @@ object FiatTickers {
         return currencies[code.lowercase()]
     }
 }
+
+data class TransactionLimits(
+    val deposit: Int,
+    val withdrawal: Int
+)
+
+val MIN_TRANSACTION_AMOUNT: Map<String, TransactionLimits> = mapOf(
+    "NGN" to TransactionLimits(deposit = 4000, withdrawal = 4000),
+    "GHC" to TransactionLimits(deposit = 100, withdrawal = 100),
+    "KES" to TransactionLimits(deposit = 500, withdrawal = 500),
+    "ZAR" to TransactionLimits(deposit = 100, withdrawal = 100),
+    "BWP" to TransactionLimits(deposit = 100, withdrawal = 100)
+)
+
+val minimumAmountInFiat = MIN_TRANSACTION_AMOUNT["NGN"]?.deposit ?: 0

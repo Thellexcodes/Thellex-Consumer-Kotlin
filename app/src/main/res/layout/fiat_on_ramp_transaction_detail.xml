@@ -142,6 +142,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/on_ramp_network_fee_section"
             android:layout_marginTop="@dimen/dp_15"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -174,6 +175,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/on_ramp_network_section"
             android:layout_marginTop="@dimen/dp_15"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -222,6 +224,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/on_ramp_transaction_hash_section"
             android:layout_marginTop="@dimen/dp_15"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -268,6 +271,7 @@
     <!-- Reason -->
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/on_ramp_reason_section"
+            android:visibility="gone"
             android:layout_marginTop="@dimen/dp_15"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -302,7 +306,7 @@
 
     <!-- Sender Details (Bank) -->
     <LinearLayout
-            android:id="@+id/on_ramp_bank_sender_details_container"
+            android:id="@+id/on_ramp_bank_receiver_details_container"
             android:orientation="vertical"
             android:background="@drawable/rounded_border_midnight"
             android:layout_marginTop="@dimen/dp_15"
@@ -311,7 +315,7 @@
 
         <TextView
                 android:id="@+id/on_ramp_bank_sender_details_title"
-                android:text="Bank Sender Details"
+                android:text="Bank Receiver Details"
                 android:fontFamily="@font/kumbhsans_bold"
                 android:textSize="@dimen/sp_10"
                 android:textColor="@color/white"
@@ -439,7 +443,7 @@
             <TextView
                     android:id="@+id/on_ramp_crypto_address_label"
                     android:textColor="@color/steelBlueGrey"
-                    android:text="Crypto Address"
+                    android:text="Address"
                     android:fontFamily="@font/kumbhsans_regular"
                     android:textSize="@dimen/sp_12"
                     android:layout_width="wrap_content"

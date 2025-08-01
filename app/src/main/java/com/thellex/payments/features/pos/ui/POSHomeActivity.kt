@@ -27,7 +27,7 @@ import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.dashboard.ui.MainActivity
 import com.thellex.payments.features.fiat.CryptoToFiatOffRampActivity
-import com.thellex.payments.features.fiat.FiatDepositActivity
+import com.thellex.payments.features.fiat.OnRampFiatSummaryActivity
 import com.thellex.payments.features.fiat.FiatRampTransactionsActivity
 import com.thellex.payments.features.fiat.FiatRampTransactionsDetailActivity
 import com.thellex.payments.features.fiat.FiatToCryptoOnRampActivity
@@ -226,7 +226,7 @@ class POSHomeActivity : AppCompatActivity() {
             }
 
             override fun onFiatDepositClick() {
-                startActivity(Intent(this@POSHomeActivity, FiatDepositActivity::class.java))
+                startActivity(Intent(this@POSHomeActivity, OnRampFiatSummaryActivity::class.java))
             }
 
             override fun onStartKyc() {

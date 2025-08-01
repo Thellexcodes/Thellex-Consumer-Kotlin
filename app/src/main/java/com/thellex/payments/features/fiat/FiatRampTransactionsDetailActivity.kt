@@ -58,14 +58,27 @@ class FiatRampTransactionsDetailActivity : AppCompatActivity() {
 
         when (transaction.transactionType) {
             TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT -> {
+                binding.rampAmount.text = "${transaction.recipientInfo.assetCode.uppercase()} ${transaction.netCryptoAmount.roundToTwoDecimals()}"
                 binding.onRampTransactionDetails.root.visibility = View.VISIBLE
                 binding.offRampTransactionDetails.root.visibility = View.GONE
+                binding.rampActionLabel.text = "YOU ARE BUYING"
                 with(binding.onRampTransactionDetails) {
-                    onRampTransactionTypeValue.text = "DEPOSIT"
+                    onRampTransactionTypeValue.text = "WITHDRAWAL"
+                    onRampAmountSentValue.text = "${transaction.mainFiatAmount.roundToTwoDecimals()}"
+                    onRampReasonValue.text = "${transaction.recipientInfo.assetCode.uppercase()}${transaction.netCryptoAmount.roundToTwoDecimals()}"
+                    onRampAmountReceivedValue.text = "${transaction.netCryptoAmount.roundToTwoDecimals()}"
+                    onRampServiceFeeValue.text = "${FiatTickers.getByCodeOrCountry("ngn")?.symbol}${transaction.serviceFeeAmountLocal.roundToTwoDecimals()} | ${
+                        FiatTickers.getByCodeOrCountry("usd")?.symbol
+                    }${transaction.serviceFeeAmountUSD.roundToTwoDecimals()}"
+                    onRampCryptoAddressValue.text = Helpers.abbreviateAddress(transaction.recipientInfo.destinationAddress, startLength = 6, endLength = 6)
+                    onRampBankAccountValue.text = transaction.bankInfo.accountNumber
+                    onRampBankNameValue.text = transaction.bankInfo.bankName
+                    onRampBankAccountNameValue.text = transaction.bankInfo.accountHolder
                 }
             }
             TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> {
-                binding.rampFiatAmount.text = "${transaction.recipientInfo.assetCode.uppercase()} ${transaction.mainAssetAmount.roundToTwoDecimals()}"
+                binding.rampActionLabel.text = "YOU ARE SPENDING"
+                binding.rampAmount.text = "${transaction.recipientInfo.assetCode.uppercase()} ${transaction.mainAssetAmount.roundToTwoDecimals()}"
                 binding.onRampTransactionDetails.root.visibility = View.GONE
                 binding.offRampTransactionDetails.root.visibility = View.VISIBLE
                 with(binding.offRampTransactionDetails) {

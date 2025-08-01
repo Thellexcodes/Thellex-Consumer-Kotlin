@@ -10,6 +10,7 @@ data class IFiatCryptoRampTransactionsDto(
     @SerializedName("netFiatAmount") val netFiatAmount: Double,
     @SerializedName("netCryptoAmount") val netCryptoAmount: Double,
     @SerializedName("mainAssetAmount") val mainAssetAmount: Double,
+    @SerializedName("mainFiatAmount") val mainFiatAmount: Double,
     @SerializedName("feeLabel") val feeLabel: String,
     @SerializedName("serviceFeeAmountLocal") val serviceFeeAmountLocal: Double,
     @SerializedName("serviceFeeAmountUSD") val serviceFeeAmountUSD: Double,
@@ -22,7 +23,8 @@ data class IFiatCryptoRampTransactionsDto(
     @SerializedName("seen") val seen: Boolean,
     @SerializedName("paymentStatus") val paymentStatus: PaymentStatusEnum,
     @SerializedName("transactionType") val transactionType: TransactionTypeEnum,
-    @SerializedName("createdAt") val createdAt: String
+    @SerializedName("createdAt") val createdAt: String,
+    @SerializedName("paymentReason") val paymentReason: String
 )
 
 @Serializable

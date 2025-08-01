@@ -41,6 +41,7 @@ import com.thellex.payments.features.fiat.model.CryptoToFiatViewModel
 import com.thellex.payments.features.wallet.model.WalletDto
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
+import com.thellex.payments.settings.minimumAmountInFiat
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.math.RoundingMode
@@ -53,7 +54,6 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCryptoToFiatOffRampBinding
     private var selectedToken: WalletDto? = null
     private var ratesRefreshHandler: Handler? = null
-    private val minimumAmountInFiat = 5000.0
     private lateinit var userViewModel: UserViewModel
     private lateinit var walletManagerViewModel: WalletManagerViewModel
     private var fiatCode: String = "NGN"

@@ -13,11 +13,11 @@ class CryptoToFiatViewModel(application: Application) : AndroidViewModel(applica
     val sourceAddress = MutableLiveData<String?>()
     val assetCode = MutableLiveData<String?>()
     val country = MutableLiveData<String?>()
-    val fiatCode = MutableLiveData<String?>( "NGN")
+    val fiatCode = MutableLiveData( "NGN")
     val fiatAmount = MutableLiveData<Double?>()
     val currentRate = MutableLiveData<IRateDto?>()
     val fee = MutableLiveData<Double?>()
-    val bankInfo = MutableLiveData<IBankInfoRequestDto?>() // ✅ Add this line
+    val bankInfo = MutableLiveData<IBankInfoRequestDto?>()
     val mainAssetAmount = MutableLiveData<Double?>()
     val mainFiatAmount = MutableLiveData<Double?>()
 

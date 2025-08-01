@@ -34,7 +34,7 @@
                 android:name=".features.fiat.FiatRampTransactionsDetailActivity"
                 android:exported="false" />
         <activity
-                android:name=".features.fiat.RampSummaryActivity"
+                android:name=".features.fiat.OffRampSummaryActivity"
                 android:exported="false" />
         <activity
                 android:name=".features.fiat.PaymentMethodActivity"
@@ -47,7 +47,7 @@
                 android:name=".features.fiat.FiatWithdrawActivity"
                 android:exported="false" />
         <activity
-                android:name=".features.fiat.FiatDepositActivity"
+                android:name=".features.fiat.OnRampFiatSummaryActivity"
                 android:exported="false" />
         <activity
                 android:name=".features.onboarding.NotificationPermissionActivity"

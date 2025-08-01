@@ -46,6 +46,7 @@ import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.settings.FiatEnum
+import com.thellex.payments.settings.minimumAmountInFiat
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.math.RoundingMode
@@ -66,7 +67,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     private var ratesExpiryTime: Long? = null
     private var ratesRefreshHandler: Handler? = null
     private var refreshRunnable: Runnable? = null
-    private val minimumAmountInFiat = 5000.0
     private var fee: Double = 0.0
 
 
@@ -157,12 +157,12 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                     )
 
                     val response = ApiClient.getAuthenticatedPaymentApi(authToken!!).fiatToCryptoOnRamp(onRampRequest)
+                    Log.d(TAG, "Response from fiatToCryptoOnRamp: ${response.body()?.result}")
 
                     response.body()?.result?.let { result ->
-                        Log.d(TAG, "Response from fiatToCryptoOnRamp: $result")
                         userViewModel.addFiatCryptoRampTransaction(result)
 
-                        val intent = Intent(this@FiatToCryptoOnRampActivity, FiatDepositActivity::class.java).apply {
+                        val intent = Intent(this@FiatToCryptoOnRampActivity, OnRampFiatSummaryActivity::class.java).apply {
                             putExtra("fiatCryptoRampResultJson", Gson().toJson(result))
                         }
                         startActivity(intent)
@@ -211,7 +211,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     if (transactions.isEmpty()) {
         // No transactions at all
         binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
-        binding.textPendingTransactionsCount.text = "Ramp Transaction History"
+        binding.textPendingTransactionsCount.text = "Funding & Spending History"
         binding.iconPendingClock.visibility = View.GONE
         return
     }
@@ -266,28 +266,26 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         val defaultToken = walletBalance?.wallets?.get("usdc") ?: walletBalance?.wallets?.values?.firstOrNull()
 
         defaultToken?.let {
-            Log.d(TAG, "Setting default token: ${it.assetCode}, balance: ${it.totalBalance}")
             updateTokenSpinner(it)
         } ?: run {
-                Log.w(TAG, "No default token available")
                 updateDefaultPriceText()
                 updateWalletInfo() // Set default UI for balanceOverview
         }
     }
 
     private fun updateWalletInfo() {
-    selectedToken?.let { token ->
-        binding.textCryptoWalletName.text = "${token.assetCode.name.uppercase(Locale.getDefault())} WALLET"
-        binding.assetFlag.setImageResource(getIconResIdForToken(token.assetCode.toString()))
-    val formattedBalance = token.totalBalance.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toPlainString()
-    binding.textBalanceAmount.text = "${formattedBalance} ${token.assetCode.name.uppercase(Locale.getDefault())}"
-    } ?: run {
-        //            binding.textCryptoWalletName.text = "TOKEN Wallet"
-        //            binding.assetFlag.setImageResource(getIconResIdForToken())
-        //            binding.textBalanceAmount.text = "0.00"
-        //            Log.d(TAG, "No selected token, set default wallet info")
+        selectedToken?.let { token ->
+            binding.textCryptoWalletName.text = "${token.assetCode.name.uppercase(Locale.getDefault())} WALLET"
+            binding.assetFlag.setImageResource(getIconResIdForToken(token.assetCode.toString()))
+            val formattedBalance = token.totalBalance.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toPlainString()
+            binding.textBalanceAmount.text = "${formattedBalance} ${token.assetCode.name.uppercase(Locale.getDefault())}"
+            } ?: run {
+            //            binding.textCryptoWalletName.text = "TOKEN Wallet"
+            //            binding.assetFlag.setImageResource(getIconResIdForToken())
+            //            binding.textBalanceAmount.text = "0.00"
+            //            Log.d(TAG, "No selected token, set default wallet info")
+            }
         }
-    }
 
     private fun fetchRatesAndScheduleRefresh() {
         lifecycleScope.launch {
@@ -441,7 +439,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                 binding.textPriceValue.text = "≅ ${fiatAmount.toBigDecimal().setScale(2, RoundingMode.HALF_UP)} $fiatCode/$tokenSymbol"
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Calculation error: ${e.message}", e)
             binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
             Toast.makeText(this, "Invalid input", Toast.LENGTH_SHORT).show()
         }
