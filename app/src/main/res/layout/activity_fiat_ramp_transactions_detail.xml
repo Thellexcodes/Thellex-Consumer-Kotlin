@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                        android:id="@+id/on_ramp_status_label"
+                        android:id="@+id/ramp_status_label"
                         android:text="STATUS"
                         android:fontFamily="@font/kumbhsans_bold"
                         android:paddingHorizontal="@dimen/dp_6"
@@ -39,7 +39,7 @@
 
                 <TextView
                         android:id="@+id/ramp_action_label"
-                        android:text="YOU ARE SPENDING"
+                        android:text=""
                         android:fontFamily="@font/kumbhsans_bold"
                         android:layout_marginTop="@dimen/dp_11"
                         android:paddingHorizontal="@dimen/dp_6"
@@ -53,7 +53,7 @@
 
                 <TextView
                         android:id="@+id/ramp_amount"
-                        android:text="N0.00"
+                        android:text="0.00"
                         android:fontFamily="@font/outfit_bold"
                         android:layout_marginTop="@dimen/dp_11"
                         android:paddingHorizontal="@dimen/dp_6"

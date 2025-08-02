@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.formatAmountWithSymbol
 import com.thellex.payments.data.model.PosTransaction
 import com.thellex.payments.core.utils.Helpers.formatTimestamp
@@ -48,14 +49,10 @@ class POSTransactionAdapter(
             binding.txnDescription.text = item.description
             binding.timeText.text = item.time
             binding.amount.text = item.amount
-            binding.status.text = item.paymentStatus.name
 
-            val colorRes = if (item.paymentStatus == PaymentStatusEnum.Complete) {
-                R.color.green
-            } else {
-                R.color.white
-            }
-
+            binding.status.text = item.paymentStatus.toString()
+            val colorRes = Helpers.getPaymentStatusColor(item.paymentStatus)
+            binding.status.text = item.paymentStatus.toString().uppercase()
             binding.status.setTextColor(ContextCompat.getColor(binding.root.context, colorRes))
         }
     }
@@ -72,24 +69,28 @@ class POSTransactionAdapter(
     fun updateList(newItems: List<ITransactionHistoryDto>) {
         val posTransactions = newItems.map { transaction ->
             val displayAmount = when (transaction.transactionType) {
-                TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT -> transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
-                TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> transaction.mainAssetAmount.roundToTwoDecimals()
-                TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT -> transaction.mainAssetAmount.roundToTwoDecimals()
+                TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT,
+                TransactionTypeEnum.CRYPTO_DEPOSIT,
+                TransactionTypeEnum.CRYPTO_WITHDRAWAL,
+                TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
+
+                TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT,
                 TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL -> transaction.mainAssetAmount.roundToTwoDecimals()
-                TransactionTypeEnum.FIAT_TO_FIAT_DEPOSIT -> transaction.mainFiatAmount.roundToTwoDecimals()
+
+                TransactionTypeEnum.FIAT_TO_FIAT_DEPOSIT,
                 TransactionTypeEnum.FIAT_TO_FIAT_WITHDRAWAL -> transaction.mainFiatAmount.roundToTwoDecimals()
-                TransactionTypeEnum.CRYPTO_DEPOSIT -> transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
-                TransactionTypeEnum.CRYPTO_WITHDRAWAL -> transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
+
                 else -> transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
             }
 
+
             PosTransaction(
                 iconResId = getIconResIdForToken(transaction.assetCode),
-                statusIconResId = getStatusIconResId(transaction.paymentStatus),
+                statusIconResId = getStatusIconResId(transaction.transactionType.toString()),
                 description = transaction.assetCode.uppercase(Locale.getDefault()),
                 time = formatTimestamp(transaction.createdAt),
                 amountWithSymbol = formatAmountWithSymbol(displayAmount.toString()),
-                paymentStatus = mapToTransactionStatus(transaction.paymentStatus),
+                paymentStatus = mapToTransactionStatus(transaction.paymentStatus.toString()),
                 id = transaction.id,
                 transactionType = transaction.transactionType,
                 rampID = transaction.rampID,

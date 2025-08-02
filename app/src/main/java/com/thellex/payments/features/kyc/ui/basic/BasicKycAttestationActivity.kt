@@ -8,10 +8,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
+import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.ErrorHandler
+import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setSubmitting
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.data.model.BasicKycFormModelDto
 import com.thellex.payments.data.model.IdTypeEnum
@@ -29,7 +34,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.json.JSONObject
 
 class BasicKycAttestationActivity : AppCompatActivity() {
-
+    private lateinit var topBar: Helpers.TopAppBarController
     private lateinit var binding: FragmentBasicKycReviewBinding
     private lateinit var basicKycFormModel: BasicKycFormViewModel
     private lateinit var userViewModel: UserViewModel
@@ -48,7 +53,16 @@ class BasicKycAttestationActivity : AppCompatActivity() {
     private fun setupBinding() {
         binding = FragmentBasicKycReviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.main.applyAdvancedSystemBarInsets()
         ActivityTracker.add(this)
+
+        topBar = Helpers.setupTopAppBar(
+            activity = this,
+            rootView = findViewById(R.id.basicKycReviewTopAppBar),
+            title = "ATTESTATION"
+        )
     }
 
     private fun setupViewModel() {

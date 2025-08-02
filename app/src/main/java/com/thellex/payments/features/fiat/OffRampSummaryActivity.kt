@@ -159,29 +159,37 @@ class OffRampSummaryActivity : AppCompatActivity() {
         binding.offrampSubmitButton.setSubmitting(true)
 
         lifecycleScope.launch {
+            val context = this@OffRampSummaryActivity
+
             try {
                 val token = withTimeoutOrNull(5000) {
                     userViewModel.token.asFlow().first { !it.isNullOrBlank() }
                 }
 
                 if (token.isNullOrBlank()) {
-                    CustomToast.show(this@OffRampSummaryActivity, "Authentication Error", "Token not available.")
+                    CustomToast.show(context, "Authentication Error", "Token not available.")
                     return@launch
                 }
 
                 val request = buildOffRampRequest() ?: return@launch
 
-                val response = ApiClient.getAuthenticatedPaymentApi(token).cryptoToFiatOffRamp(request)
+                val api = ApiClient.getAuthenticatedPaymentApi(token)
+                val response = api.cryptoToFiatOffRamp(request)
 
-                response.body()?.result?.let { result ->
+                val result = response.body()?.result
+                if (result != null) {
                     userViewModel.addFiatCryptoRampTransaction(result)
+                    result.transaction?.let { txn -> userViewModel.addTransaction(transaction = txn) }
                     ActivityTracker.finishActivity(PaymentMethodActivity::class.java)
-                    startActivity(Intent(this@OffRampSummaryActivity, POSHomeActivity::class.java))
-                } ?: CustomToast.show(this@OffRampSummaryActivity, "Error", "Unexpected response")
-
+                    startActivity(Intent(context, POSHomeActivity::class.java))
+                } else {
+                    CustomToast.show(context, "Error", "Unexpected response")
+                }
             } catch (e: Exception) {
-                Log.e("RampSummaryActivity", "Exception occurred: ${e.message}", e)
-                CustomToast.show(this@OffRampSummaryActivity, "Error", "An unexpected error occurred.")
+                Log.e("OffRampRequest", "Error during off-ramp request: ${e.message}", e)
+                CustomToast.show(context, "Error", "An unexpected error occurred.")
+            } finally {
+                binding.offrampSubmitButton.setSubmitting(false)
             }
         }
     }

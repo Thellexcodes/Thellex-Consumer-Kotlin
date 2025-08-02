@@ -15,6 +15,7 @@ import android.text.InputFilter
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.Button
@@ -34,6 +35,7 @@ import com.thellex.payments.R
 import com.thellex.payments.data.model.PaymentStatusEnum
 import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.features.dashboard.ui.MainActivity
+import com.thellex.payments.settings.FiatTickers
 import com.thellex.payments.settings.SupportedBlockchainEnum
 import org.json.JSONException
 import org.json.JSONObject
@@ -100,8 +102,15 @@ object Helpers {
         }
     }
 
+    private fun normalizeStatusForIcon(status: String?): String {
+        return when (status?.lowercase(Locale.getDefault())) {
+            "accepted", "completed", "received", "fiat_to_crypto_deposit" -> "received"
+            else -> "sent"
+        }
+    }
+
     fun getStatusIconResId(status: String?): Int {
-        return when (normalizeStatusForIcon(status)) {
+        return when (normalizeStatusForIcon(status.toString())) {
             "received" -> R.drawable.icon_receive_status
             else -> R.drawable.icon_send_status
         }
@@ -113,7 +122,7 @@ object Helpers {
             parser.timeZone = TimeZone.getTimeZone("UTC")
             val date = parser.parse(timestamp)
             val formatter = SimpleDateFormat("MMM dd, hh:mm a", Locale.getDefault())
-            formatter.format(date)
+            formatter.format(date!!)
         } catch (e: Exception) {
             timestamp
         }
@@ -137,15 +146,6 @@ object Helpers {
             "rejected" -> PaymentStatusEnum.Rejected
             "pending" -> PaymentStatusEnum.Processing
             else -> PaymentStatusEnum.Processing
-        }
-    }
-
-    private fun normalizeStatusForIcon(status: String?): String {
-        return when (status?.lowercase(Locale.getDefault())) {
-            "accepted" -> "received"
-            "completed" -> "received"
-            "received" -> "received"
-            else -> "sent"
         }
     }
 
@@ -218,21 +218,42 @@ object Helpers {
         }
     }
 
+    fun getPaymentStatusColor(status: PaymentStatusEnum): Int {
+        return when (status) {
+            PaymentStatusEnum.Complete,
+            PaymentStatusEnum.Confirmed,
+            PaymentStatusEnum.Accepted,
+            PaymentStatusEnum.Done,
+            PaymentStatusEnum.Sent -> R.color.green
+
+            PaymentStatusEnum.Processing,
+            PaymentStatusEnum.Outbound,
+            PaymentStatusEnum.Inbound,
+            PaymentStatusEnum.PendingRiskScreening,
+            PaymentStatusEnum.Queued -> R.color.goldenYellow
+
+            PaymentStatusEnum.Rejected -> R.color.pinkRed
+
+            PaymentStatusEnum.None -> R.color.gray
+        }
+    }
+
     private fun parseErrorMessage(errorBody: String?): String? {
         if (errorBody == null) return null
         return try {
             val json = JSONObject(errorBody)
-            json.optString("message", null)
+            json.optString("message", null.toString())
         } catch (ex: Exception) {
             null
         }
     }
 
     fun formatCurrencyWithNGN(number: Int?): String {
+        val currencySymbol = FiatTickers.getByCodeOrCountry("ngn")?.symbol ?: "NGN"
         return if (number != null) {
-            "NGN " + NumberFormat.getNumberInstance(Locale.US).format(number)
+            "$currencySymbol${NumberFormat.getNumberInstance(Locale.US).format(number)}"
         } else {
-            "NGN N/A"
+            "$currencySymbol N/A"
         }
     }
 

@@ -33,6 +33,7 @@ import com.thellex.payments.core.utils.reasonList
 import com.thellex.payments.data.model.FiatToCryptoOnRampRequestDto
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.PaymentStatusEnum
+import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivityFiatToCryptoOnRampBinding
 import com.thellex.payments.databinding.DialogReasonSelectionBinding
 import com.thellex.payments.features.auth.viewModel.UserRepository
@@ -159,14 +160,15 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                     val response = ApiClient.getAuthenticatedPaymentApi(authToken!!).fiatToCryptoOnRamp(onRampRequest)
                     Log.d(TAG, "Response from fiatToCryptoOnRamp: ${response.body()?.result}")
 
-                    response.body()?.result?.let { result ->
+                    val result = response.body()?.result
+                    if(result != null){
                         userViewModel.addFiatCryptoRampTransaction(result)
-
+                        result.transaction?.let { txn -> userViewModel.addTransaction(transaction = txn) }
                         val intent = Intent(this@FiatToCryptoOnRampActivity, OnRampFiatSummaryActivity::class.java).apply {
                             putExtra("fiatCryptoRampResultJson", Gson().toJson(result))
                         }
                         startActivity(intent)
-                    } ?: run {
+                    } else  {
                         Log.w(TAG, "No result in response: $response")
                         CustomToast.show(this@FiatToCryptoOnRampActivity, "Error", "Unexpected response")
                     }

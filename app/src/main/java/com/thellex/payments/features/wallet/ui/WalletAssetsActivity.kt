@@ -130,12 +130,14 @@ class WalletAssetsActivity : AppCompatActivity() {
 
             binding.activityWalletBalanceAmount.text = if (isBalanceVisible) actualBalance else "****"
 
+            Log.d("Balance", "this is balance $walletDto")
+//
             val updatedAssets = walletDto?.wallets?.values?.map { wallet ->
-                val symbol = wallet.assetCode.name?.uppercase() ?: "N/A"
+                val symbol = wallet.assetCode.name.uppercase() ?: "N/A"
                 val amount = formatDecimal("${wallet.totalBalance}")
-                val usdValue = formatDecimal("$wallet.totalBalance")
-                val valueInLocal = formatDecimal("$wallet.valueInLocal")
-
+                val usdValue = formatDecimal("${wallet.totalBalance}")
+                val valueInLocal = formatDecimal("${wallet.valueInLocal}")
+//
                 Asset(
                     symbol = symbol,
                     amount = amount,

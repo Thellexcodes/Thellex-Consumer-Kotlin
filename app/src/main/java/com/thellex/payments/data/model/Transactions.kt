@@ -27,7 +27,7 @@ data class ITransactionHistoryDto(
     @SerializedName("feeLevel") val feeLevel: String,
     @SerializedName("blockchainTxId") val blockchainTxId: String,
     @SerializedName("reason") val reason: String,
-    @SerializedName("paymentStatus") val paymentStatus: String,
+    @SerializedName("paymentStatus") val paymentStatus: PaymentStatusEnum,
     @SerializedName("sourceAddress") val sourceAddress: String,
     @SerializedName("destinationAddress") val destinationAddress: String,
     @SerializedName("paymentNetwork") val paymentNetwork: String,

@@ -29,7 +29,7 @@
                 android:fontFamily="@font/kumbhsans_bold"
                 android:textSize="@dimen/sp_12"
                 android:textColor="@color/steelBlueGrey"
-                android:text="YOU ARE SPENDING"
+                android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -39,7 +39,7 @@
                 android:layout_marginTop="@dimen/dp_4"
                 android:textSize="@dimen/sp_32"
                 android:textColor="@color/white"
-                android:text="0.00 USDC"
+                android:text="0.00"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -49,7 +49,7 @@
                 android:layout_marginTop="@dimen/dp_2"
                 android:textSize="@dimen/sp_12"
                 android:textColor="@color/white"
-                android:text="210,000.00 NGN"
+                android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
     </LinearLayout>

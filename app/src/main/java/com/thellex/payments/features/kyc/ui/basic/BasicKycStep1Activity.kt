@@ -1,7 +1,5 @@
 package com.thellex.payments.features.kyc.ui.basic
 
-import android.annotation.SuppressLint
-import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.features.auth.viewModel.BasicKycFormModelData
 import com.thellex.payments.features.auth.viewModel.BasicKycFormViewModel
 import com.thellex.payments.features.auth.viewModel.BasicKycFormViewModelFactory
@@ -22,11 +20,12 @@ import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.thellex.payments.R
 import com.thellex.payments.core.adapters.CountryPickerDialogFragment
+import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
-import com.thellex.payments.data.model.Country
+import com.thellex.payments.data.model.getNonSanctionedCountryList
 import com.thellex.payments.databinding.FragmentKycStep1Binding
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import java.text.SimpleDateFormat
@@ -44,7 +43,6 @@ class BasicKycStep1Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = FragmentKycStep1Binding.inflate(layoutInflater)
         setContentView(binding.root)
-//        ActivityTracker.add(this)
         disableDecorFitsSystemWindows()
         setTransparentStatusBarWithWhiteIcons()
         binding.main.applyAdvancedSystemBarInsets()
@@ -79,19 +77,39 @@ class BasicKycStep1Activity : AppCompatActivity() {
             binding.fragmentKycStep1EtPhoneNumber
         ).forEach { disableAutoComplete(it) }
 
-        // Disable input for DOB EditText
-//        binding.fragmentKycStep1TvDob.apply {
-//            keyListener = null // Prevent keyboard input
-//            isEnabled = false // Disable all interactions
-//        }
+        // Real-time validation for first name
+        binding.fragmentKycStep1EtFirstName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                validateNonEmpty(
+                    binding.fragmentKycStep1EtFirstName,
+                    s.toString().trim(),
+                    "First Name is required"
+                )
+            }
+        })
 
-        // Add real-time phone number validation
+        // Real-time validation for last name
+        binding.fragmentKycStep1EtLastName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                validateNonEmpty(
+                    binding.fragmentKycStep1EtLastName,
+                    s.toString().trim(),
+                    "Last Name is required"
+                )
+            }
+        })
+
+        // Real-time validation for phone number
         setupPhoneNumberInput()
+
+        // Note: DOB validation is handled via DatePickerDialog, so no TextWatcher needed
     }
 
-    @SuppressLint("SetTextI18n")
     private fun setupDefaultCountry() {
-        // Set Nigeria as default
         binding.fragmentKycStep1TvCountryCode.text = "+234"
         Glide.with(this)
             .load("https://flagcdn.com/16x12/ng.png")
@@ -118,7 +136,7 @@ class BasicKycStep1Activity : AppCompatActivity() {
                 if (phoneInput.isNotEmpty()) {
                     val (isValid, errorOrFormatted) = formatAndValidatePhoneNumber(phoneInput, country.code)
                     if (!isValid) {
-//                        Toast.makeText(this, errorOrFormatted, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, errorOrFormatted, Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -134,6 +152,7 @@ class BasicKycStep1Activity : AppCompatActivity() {
                 { _, year, monthOfYear, dayOfMonth ->
                     val formattedDate = String.format("%02d/%02d/%04d", dayOfMonth, monthOfYear + 1, year)
                     binding.kycStep1DobText.setText(formattedDate)
+                    validateDob(binding.kycStep1DobText, formattedDate)
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -160,7 +179,7 @@ class BasicKycStep1Activity : AppCompatActivity() {
             val countryCode = binding.fragmentKycStep1TvCountryCode.text.toString().trim()
             val dob = binding.kycStep1DobText.text.toString().trim()
 
-            // Validate form fields
+            // Validate all fields
             var isValid = true
             isValid = validateNonEmpty(binding.fragmentKycStep1EtFirstName, firstName, "First Name is required") && isValid
             isValid = validateNonEmpty(binding.fragmentKycStep1EtLastName, lastName, "Last Name is required") && isValid
@@ -169,8 +188,8 @@ class BasicKycStep1Activity : AppCompatActivity() {
             isValid = phoneValid && isValid
             isValid = validateDob(binding.kycStep1DobText, dob) && isValid
 
-            if (!phoneValid) {
-//                Toast.makeText(this, formattedPhoneOrError, Toast.LENGTH_SHORT).show()
+            if (!phoneValid && phoneInput.isNotEmpty()) {
+                Toast.makeText(this, formattedPhoneOrError, Toast.LENGTH_SHORT).show()
             }
 
             if (isValid) {
@@ -201,7 +220,10 @@ class BasicKycStep1Activity : AppCompatActivity() {
                 val countryCode = binding.fragmentKycStep1TvCountryCode.text.toString().trim()
                 if (phoneInput.isNotEmpty()) {
                     val (isValid, errorOrFormatted) = formatAndValidatePhoneNumber(phoneInput, countryCode)
-                    if (!isValid) {
+                    binding.fragmentKycStep1PhoneContainer.setBackgroundResource(
+                        if (isValid || phoneInput.isNotEmpty()) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
+                    )
+                    if (!isValid && phoneInput.length >= 7) { // Show error only after sufficient input
                         Toast.makeText(this@BasicKycStep1Activity, errorOrFormatted, Toast.LENGTH_SHORT).show()
                     }
                 } else {
@@ -222,7 +244,7 @@ class BasicKycStep1Activity : AppCompatActivity() {
     private fun formatAndValidatePhoneNumber(rawInput: String, countryCode: String): Pair<Boolean, String> {
         return try {
             // Find the country from the countryList based on the countryCode
-            val country = countryList.find { it.code == countryCode }
+            val country = getNonSanctionedCountryList().find { it.code == countryCode }
                 ?: return Pair(false, "Invalid country code")
 
             // Clean the raw input: remove spaces and leading zeros
@@ -231,35 +253,36 @@ class BasicKycStep1Activity : AppCompatActivity() {
                 cleaned = cleaned.substring(1)
             }
 
-            // Validate phone number length based on country-specific rules
-            if (cleaned.length != country.phoneLength) {
-//                return Pair(false, "Phone number must be ${country.phoneLength} digits for ${country.name}")
-            }
-
             // Validate that the cleaned input contains only digits
             if (!cleaned.matches(Regex("\\d+"))) {
-//                return Pair(false, "Phone number must contain only digits")
+                return Pair(false, "Phone number must contain only digits")
+            }
+
+            // Validate phone number length based on country-specific rules
+            // Note: phoneLength is assumed to be defined in Country data class
+            if (cleaned.length !in 7..15) { // Relaxed range for partial input
+                return Pair(false, "Phone number length invalid for ${country.name}")
             }
 
             // Format the phone number with the country code
             val formattedNumber = "$countryCode$cleaned"
 
             // Final regex validation for the formatted number
-            val isValid = formattedNumber.matches(Regex("^\\+\\d{${country.phoneLength + country.code.length - 1}}$"))
+            val isValid = cleaned.length >= 7 && formattedNumber.matches(Regex("^\\+\\d{7,15}$"))
 
-            // Update UI on the main thread
+            // Update UI
             runOnUiThread {
                 binding.fragmentKycStep1PhoneContainer.setBackgroundResource(
-                    if (isValid) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
+                    if (isValid || cleaned.isNotEmpty()) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
                 )
             }
 
-            Pair(isValid, if (isValid) formattedNumber else "")
+            Pair(isValid, if (isValid) formattedNumber else "Invalid phone number")
         } catch (e: Exception) {
             runOnUiThread {
                 binding.fragmentKycStep1PhoneContainer.setBackgroundResource(R.drawable.bg_edittext_error)
             }
-            Pair(false, "")
+            Pair(false, "Error validating phone number")
         }
     }
 
@@ -269,7 +292,7 @@ class BasicKycStep1Activity : AppCompatActivity() {
             if (isValid) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
         )
         if (!isValid) {
-//            Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
         }
         return isValid
     }
@@ -289,8 +312,8 @@ class BasicKycStep1Activity : AppCompatActivity() {
         binding.kycStep1DobInputContainer.setBackgroundResource(
             if (isValid) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
         )
-        if (!isValid) {
-//            Toast.makeText(this, "Invalid date of birth", Toast.LENGTH_SHORT).show()
+        if (!isValid && dob.isNotEmpty()) {
+            Toast.makeText(this, "Invalid date of birth", Toast.LENGTH_SHORT).show()
         }
         return isValid
     }
@@ -312,9 +335,9 @@ class BasicKycStep1Activity : AppCompatActivity() {
             val countryCode = phone.takeWhile { it != ' ' && it != '-' }.take(4)
             val phoneNumber = phone.substringAfter(countryCode, "")
             binding.fragmentKycStep1TvCountryCode.text = countryCode
-            val country = countryList.find { it.code == countryCode }
+            val country = getNonSanctionedCountryList().find { it.code == countryCode }
             Glide.with(this)
-                .load(country?.flagUrl ?: "https://flagcdn.com/16x12/ng.png")
+                .load(country?.flagUrl)
                 .into(binding.fragmentKycStep1IvCountryFlag)
             binding.fragmentKycStep1EtPhoneNumber.setText(phoneNumber)
         }
@@ -324,20 +347,5 @@ class BasicKycStep1Activity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Glide.with(this).clear(binding.fragmentKycStep1IvCountryFlag)
-//        ActivityTracker.remove(this)
     }
-
-    private val countryList = listOf(
-        Country("United States", "+1", "https://flagcdn.com/16x12/us.png", 10),
-        Country("United Kingdom", "+44", "https://flagcdn.com/16x12/gb.png", 10),
-        Country("India", "+91", "https://flagcdn.com/16x12/in.png", 10),
-        Country("Canada", "+1", "https://flagcdn.com/16x12/ca.png", 10),
-        Country("Australia", "+61", "https://flagcdn.com/16x12/au.png", 9),
-        Country("Germany", "+49", "https://flagcdn.com/16x12/de.png", 10),
-        Country("France", "+33", "https://flagcdn.com/16x12/fr.png", 9),
-        Country("Brazil", "+55", "https://flagcdn.com/16x12/br.png", 11),
-        Country("Japan", "+81", "https://flagcdn.com/16x12/jp.png", 10),
-        Country("South Africa", "+27", "https://flagcdn.com/16x12/za.png", 9),
-        Country("Nigeria", "+234", "https://flagcdn.com/16x12/ng.png", 10)
-    )
 }

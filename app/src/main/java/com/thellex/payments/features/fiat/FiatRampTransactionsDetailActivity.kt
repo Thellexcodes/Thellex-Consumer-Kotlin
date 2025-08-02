@@ -12,18 +12,24 @@ import com.thellex.payments.core.utils.ActivityTracker // Adjust package
 import com.thellex.payments.core.utils.Helpers // Adjust package
 import android.util.Log
 import android.view.View
+import androidx.core.content.ContextCompat
+import com.thellex.payments.R
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.formatTimestamp
 import com.thellex.payments.core.utils.Helpers.roundToTwoDecimals
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.TransactionTypeEnum
+import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.settings.FiatTickers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 class FiatRampTransactionsDetailActivity : AppCompatActivity() {
-    private lateinit var transactionId: String
+    private lateinit var rampID: String
     private lateinit var binding: ActivityFiatRampTransactionsDetailBinding
     private lateinit var topBar: Helpers.TopAppBarController
     private lateinit var userViewModel: UserViewModel
@@ -32,7 +38,7 @@ class FiatRampTransactionsDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFiatRampTransactionsDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        transactionId = intent.getStringExtra("ramp_id") ?: ""
+        rampID = intent.getStringExtra("ramp_id") ?: ""
         ActivityTracker.add(this)
         disableDecorFitsSystemWindows()
         setTransparentStatusBarWithWhiteIcons()
@@ -48,22 +54,32 @@ class FiatRampTransactionsDetailActivity : AppCompatActivity() {
             this,
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
-
+        userViewModel.refreshAuthResult(this)
         observeUser()
     }
 
     @SuppressLint("SetTextI18n")
     private fun updateUI(transaction: IFiatCryptoRampTransactionsDto) {
-        Log.d("Transaction", "this is fiat ramp transaction: $transaction")
+        binding.rampTimestamp.text =  formatTimestamp(transaction.createdAt)
+
+        val statusEnum = Helpers.mapToTransactionStatus(transaction.paymentStatus.toString())
+        val color = Helpers.getStatusColor(this, statusEnum)
+
+        binding.rampStatusLabel.apply {
+            text = statusEnum.toString().uppercase()
+            background = ContextCompat.getDrawable(context, R.drawable.status_background)
+            background.setTint(color)
+        }
 
         when (transaction.transactionType) {
             TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT -> {
                 binding.rampAmount.text = "${transaction.recipientInfo.assetCode.uppercase()} ${transaction.netCryptoAmount.roundToTwoDecimals()}"
                 binding.onRampTransactionDetails.root.visibility = View.VISIBLE
                 binding.offRampTransactionDetails.root.visibility = View.GONE
+
                 binding.rampActionLabel.text = "YOU ARE BUYING"
                 with(binding.onRampTransactionDetails) {
-                    onRampTransactionTypeValue.text = "WITHDRAWAL"
+                    onRampTransactionTypeValue.text = "DEPOSIT"
                     onRampAmountSentValue.text = "${transaction.mainFiatAmount.roundToTwoDecimals()}"
                     onRampReasonValue.text = "${transaction.recipientInfo.assetCode.uppercase()}${transaction.netCryptoAmount.roundToTwoDecimals()}"
                     onRampAmountReceivedValue.text = "${transaction.netCryptoAmount.roundToTwoDecimals()}"
@@ -94,7 +110,6 @@ class FiatRampTransactionsDetailActivity : AppCompatActivity() {
                 }
             }
             else -> {
-                Log.e("FiatRampTransaction", "Unsupported transaction type: ${transaction.transactionType}")
                 binding.onRampTransactionDetails.root.visibility = View.GONE
                 binding.offRampTransactionDetails.root.visibility = View.GONE
             }
@@ -102,8 +117,10 @@ class FiatRampTransactionsDetailActivity : AppCompatActivity() {
     }
 
     private fun observeUser() {
+
         userViewModel.authResult.observe(this) { user ->
-                val transaction = user?.fiatCryptoRampTransactions?.find { txn -> txn.id == transactionId }
+                val transaction = user?.fiatCryptoRampTransactions?.find { txn -> txn.id == rampID }
+            Log.d("FiatToCTxn", "RampID: $rampID, ${user?.fiatCryptoRampTransactions}")
                 if (transaction != null) {
                     updateUI(transaction)
                 } else {

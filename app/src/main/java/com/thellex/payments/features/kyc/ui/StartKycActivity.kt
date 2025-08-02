@@ -63,8 +63,8 @@ class StartKycActivity : AppCompatActivity() {
     private fun observeUserLimits() {
         userViewModel.authResult.observe(this) { userDto ->
             userDto?.nextTier?.let {
-                binding.activityStartKycTier1Value.text = (it.name ?: "No Tier Name").toString()
-                binding.activityStartKycTier1Limit.text = formatCurrencyWithNGN(it.transactionLimits.dailyDebitLimit)
+                binding.activityStartKycTier1Value.text = it.name.toString()
+                binding.activityStartKycTier1Limit.text = "${formatCurrencyWithNGN(it.transactionLimits.singleDebitLimit + it.transactionLimits.dailyDebitLimit)}/DAY"
             }
         }
     }
