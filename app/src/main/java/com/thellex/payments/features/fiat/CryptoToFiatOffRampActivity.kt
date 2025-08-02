@@ -99,6 +99,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
     private fun restoreSavedData() {
         // Restore payment reason
@@ -122,7 +123,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         }
 
         // Restore rate and fee
-        cryptoToFiatViewModel.currentRate.value?.let { rate ->
+        cryptoToFiatViewModel.currentRate.value?.let {
             cryptoToFiatViewModel.fee.value?.let { fee ->
                 binding.textPriceValue.text = "${fee}%"
                 binding.nextButton.setLoading(false) // Enable button if rate is restored
@@ -146,6 +147,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
     private fun observeRates() {
         lifecycleScope.launch {
@@ -367,7 +369,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                         return@launch
                     }
 
-                    binding.nextButton.setLoading(true) // Set loading state during navigation
+                    binding.nextButton.setLoading(true)
 
                     // Save data to ViewModel
                     cryptoToFiatViewModel.setRampData(

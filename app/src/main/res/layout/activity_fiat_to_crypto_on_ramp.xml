@@ -77,12 +77,12 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
             app:layout_constraintTop_toBottomOf="@id/layout_uncompleted_transactions_wrapper"
             android:id="@+id/balanceOverview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_marginTop="17dp"
             android:background="@drawable/img_rounded_darkblue_bg"
             android:padding="10dp">

@@ -81,14 +81,13 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
-    <style name="FullScreenDialog" parent="Theme.Material3.Light.NoActionBar">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowIsTranslucent">false</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:backgroundDimEnabled">false</item>
-    </style>
-dd
+<!--    <style name="FullScreenDialog" parent="Theme.Material3.Light.NoActionBar">-->
+<!--        <item name="android:windowFullscreen">true</item>-->
+<!--        <item name="android:windowIsTranslucent">false</item>-->
+<!--        <item name="android:windowNoTitle">true</item>-->
+<!--        <item name="android:windowIsFloating">false</item>-->
+<!--        <item name="android:backgroundDimEnabled">false</item>-->
+<!--    </style>-->
 
 </resources>
 

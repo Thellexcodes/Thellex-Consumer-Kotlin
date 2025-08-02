@@ -50,7 +50,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
 
-    implementation(libs.material.v1110)
+    implementation(libs.material)
 
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
@@ -88,4 +88,6 @@ dependencies {
     implementation(libs.glide)
     kapt("com.github.bumptech.glide:compiler:4.15.1")
     implementation(libs.materialdatetimepicker)
+    implementation("com.google.android.material:material:1.2.0-alpha06")
+
 }

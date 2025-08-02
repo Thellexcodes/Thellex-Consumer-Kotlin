@@ -161,7 +161,7 @@ data class CryptoToFiatOffRampRequestDto(
 
 data class CreateBankAccountDto(
     @SerializedName("bankName") val bankName: String,
-    @SerializedName("accountNumber") val accountNumber: Number,
+    @SerializedName("accountNumber") val accountNumber: String,
     @SerializedName("bankCode") val bankCode: String,
     @SerializedName("accountName") val accountName: String? = null,
     @SerializedName("swiftCode") val swiftCode: String? = null,

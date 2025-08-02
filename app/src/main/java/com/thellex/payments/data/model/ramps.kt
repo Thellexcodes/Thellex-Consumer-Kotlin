@@ -41,7 +41,6 @@ data class IBankInfoRequestDto(
     @SerializedName("accountHolder") val accountHolder: String,
     @SerializedName("accountNumber") val accountNumber: String,
     @SerializedName("bankName") val bankName: String,
-    @SerializedName("accountName") val accountName: String? = null,
     @SerializedName("networkId") val networkId: String? = null,
     @SerializedName("accountBank") val accountBank: String? = null,
     @SerializedName("networkName") val networkName: String? = null
