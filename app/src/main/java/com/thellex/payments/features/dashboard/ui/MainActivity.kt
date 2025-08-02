@@ -12,8 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.core.utils.CrashLogger
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
@@ -26,6 +28,7 @@ import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.features.pos.ui.POSHomeActivity
 import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -59,6 +62,11 @@ class MainActivity : AppCompatActivity() {
             ViewModelProvider.AndroidViewModelFactory.getInstance(application)
         )[RateViewModel::class.java]
 
+        FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
+        CrashLogger.init(this)
+        CoroutineScope(Dispatchers.IO).launch {
+            CrashLogger.sendStoredCrashes(this@MainActivity)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -146,6 +154,7 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun showServerUnavailableDialog() {
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_server_error)

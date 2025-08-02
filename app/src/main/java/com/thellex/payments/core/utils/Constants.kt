@@ -30,6 +30,8 @@ object Constants {
     //Banking
     const val ADD_BANK_ACCOUNT_ENDPOINT = "${VERSIONED_BASE}/settings/bank-account/add"
 
+    //Crash endpoint
+    const val CRASH_REPORT_ENDPOINT = "${VERSIONED_BASE}/crash-report"
 
     val BASE_URL: String
         get() = if (isEmulator()) {

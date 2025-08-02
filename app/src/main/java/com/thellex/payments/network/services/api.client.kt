@@ -82,5 +82,7 @@ object ApiClient {
     fun getAuthenticatedKycApi(token: String): KycService = getRetrofitWithToken(token).create(KycService::class.java)
 
     // Authenticated API for NotificationService
-    fun  getAuthenticatedNotificationApi(token: String): NotificationService = getRetrofitWithToken(token).create(NotificationService::class.java)
+    fun getAuthenticatedNotificationApi(token: String): NotificationService = getRetrofitWithToken(token).create(NotificationService::class.java)
+
+    fun getPublicCrashReportApi(): CrashReportService = retrofitWithoutToken.create(CrashReportService::class.java)
 }

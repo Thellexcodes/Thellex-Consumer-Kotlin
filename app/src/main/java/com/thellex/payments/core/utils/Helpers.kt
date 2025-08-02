@@ -92,6 +92,7 @@ object Helpers {
             PaymentStatusEnum.Queued -> ContextCompat.getColor(context, R.color.darkBlue)
             PaymentStatusEnum.Sent -> ContextCompat.getColor(context, R.color.green)
             PaymentStatusEnum.Rejected -> ContextCompat.getColor(context, R.color.pinkRed)
+            PaymentStatusEnum.Failed -> ContextCompat.getColor(context, R.color.pinkRed)
         }
     }
 
@@ -145,6 +146,7 @@ object Helpers {
             "done" -> PaymentStatusEnum.Complete
             "rejected" -> PaymentStatusEnum.Rejected
             "pending" -> PaymentStatusEnum.Processing
+            "failed" -> PaymentStatusEnum.Failed
             else -> PaymentStatusEnum.Processing
         }
     }
@@ -233,6 +235,7 @@ object Helpers {
             PaymentStatusEnum.Queued -> R.color.goldenYellow
 
             PaymentStatusEnum.Rejected -> R.color.pinkRed
+            PaymentStatusEnum.Failed -> R.color.pinkRed
 
             PaymentStatusEnum.None -> R.color.gray
         }

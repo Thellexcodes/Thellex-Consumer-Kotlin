@@ -30,7 +30,6 @@ class FirebaseManager : FirebaseMessagingService() {
     private val tag = "Firebase"
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val userRepository by lazy { UserRepository.getInstance(applicationContext) }
-    private val userViewModel by lazy { UserViewModel(applicationContext) }
 
     override fun onDestroy() {
         super.onDestroy()

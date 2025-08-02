@@ -48,7 +48,8 @@ enum class PaymentStatusEnum(val value: String) {
     PendingRiskScreening("PENDING_RISK_SCREENING"),
     Queued("QUEUED"),
     Sent("SENT"),
-    Rejected("Rejected");
+    Rejected("Rejected"),
+    Failed("failed");
 
     companion object {
         fun fromValue(value: String): PaymentStatusEnum? = entries.find { it.value.equals(value, ignoreCase = true) }
