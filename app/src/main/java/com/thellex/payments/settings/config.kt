@@ -16,8 +16,8 @@ enum class TokensEnum {
 }
 
 enum class FiatEnum(val code: String) {
-    NGN("ngn"),
-    GHC("ghc");
+    ngn("ngn"),
+    ghc("ghc");
 
     companion object {
         fun fromCode(code: String): FiatEnum? {
@@ -109,7 +109,7 @@ data class TransactionLimits(
 )
 
 val MIN_TRANSACTION_AMOUNT: Map<String, TransactionLimits> = mapOf(
-    "NGN" to TransactionLimits(deposit = 2000, withdrawal = 2000),
+    "NGN" to TransactionLimits(deposit = 100, withdrawal = 100),
     "GHC" to TransactionLimits(deposit = 100, withdrawal = 100),
     "KES" to TransactionLimits(deposit = 500, withdrawal = 500),
     "ZAR" to TransactionLimits(deposit = 100, withdrawal = 100),

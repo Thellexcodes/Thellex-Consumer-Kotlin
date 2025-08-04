@@ -149,7 +149,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
 
                     val onRampRequest = FiatToCryptoOnRampRequestDto(
                         userAmount = fiatAmount,
-                        fiatCode = FiatEnum.NGN.code,
+                        fiatCode = FiatEnum.ngn.code,
                         assetCode = selectedToken.assetCode.name,
                         country = "ng",
                         paymentReason = reason.lowercase(),
@@ -296,7 +296,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                 val response = ApiClient.getAuthenticatedPaymentApi(authToken).getRates()
 
                 response.result?.let { result ->
-                    val ngnRateDto = result.rates.firstOrNull { it.fiatCode.equals(FiatEnum.NGN.code, ignoreCase = true) }
+                    val ngnRateDto = result.rates.firstOrNull { it.fiatCode.equals(FiatEnum.ngn.code, ignoreCase = true) }
                     if (ngnRateDto == null) {
                         updateDefaultPriceText()
                         return@let
@@ -375,7 +375,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                 if (!isUpdating && binding.edittextCryptoAmount.hasFocus()) {
                     isUpdating = true
                     val cryptoAmount = s.toString().toDoubleOrNull() ?: 0.0
-                    val ngnRateDto = currentRates?.rates?.firstOrNull { it.fiatCode.equals(FiatEnum.NGN.name, ignoreCase = true) }
+                    val ngnRateDto = currentRates?.rates?.firstOrNull { it.fiatCode.equals(FiatEnum.ngn.name, ignoreCase = true) }
                     val rate = ngnRateDto?.rate
                     val fiatEquivalent = (cryptoAmount * rate?.buy!!) + rate.fee / rate.feeDivisor
                     val background = if (fiatEquivalent < minimumAmountInFiat) errorDrawable else normalDrawable
@@ -397,9 +397,9 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         val fiatText = binding.edittextFiatAmount.text.toString()
         val cryptoText = binding.edittextCryptoAmount.text.toString()
         val tokenSymbol = selectedToken?.assetCode?.name?.uppercase(Locale.getDefault()) ?: "TOKEN"
-        val ngnRateDto = currentRates?.rates?.firstOrNull { it.fiatCode.equals(FiatEnum.NGN.code, ignoreCase = true) }
+        val ngnRateDto = currentRates?.rates?.firstOrNull { it.fiatCode.equals(FiatEnum.ngn.code, ignoreCase = true) }
         val rate = ngnRateDto?.rate?.buy ?: 0.0
-        val fiatCode = ngnRateDto?.fiatCode ?: FiatEnum.NGN.code
+        val fiatCode = ngnRateDto?.fiatCode ?: FiatEnum.ngn.code
         val fee = ngnRateDto?.rate?.fee?.div(ngnRateDto.rate.feeDivisor) ?: 0.0
 
         if (fiatText.isEmpty() && cryptoText.isEmpty()) {
