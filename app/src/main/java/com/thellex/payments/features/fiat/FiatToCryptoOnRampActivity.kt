@@ -414,7 +414,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                 if (fiatAmount <= fee) {
                     if (!binding.edittextCryptoAmount.hasFocus()) binding.edittextCryptoAmount.setText("")
                     binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
-                    Toast.makeText(this, "Fiat amount must be greater than fee ($fee $fiatCode)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Fiat amount must be greater than fee ($minimumAmountInFiat $fiatCode)", Toast.LENGTH_SHORT).show()
                     return
                 }
                 val cryptoAmount = (fiatAmount - fee) / rate

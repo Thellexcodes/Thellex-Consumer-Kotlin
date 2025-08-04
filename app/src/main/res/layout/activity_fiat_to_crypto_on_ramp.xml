@@ -63,7 +63,7 @@
 
             <TextView
                     android:id="@+id/text_view_pending_transactions"
-                    android:fontFamily="@font/kumbhsans_regular"
+                    android:fontFamily="@font/kumbhsans_bold"
                     android:textSize="10sp"
                     android:text="VIEW"
                     android:layout_width="wrap_content"
@@ -249,9 +249,9 @@
                 app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
-                    android:background="@drawable/rounded_border"
                     android:orientation="horizontal"
-                    android:paddingVertical="5dp"
+                    android:paddingVertical="@dimen/dp_15"
+                    android:background="@drawable/rounded_golden_yellow_15pct"
                     android:paddingHorizontal="15dp"
                     android:gravity="center_vertical"
                     android:layout_width="match_parent"

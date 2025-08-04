@@ -51,7 +51,7 @@ data class PosTransaction(
     @SerializedName("amountWithSymbol") val amountWithSymbol: String,
     @SerializedName("paymentStatus") val paymentStatus:  PaymentStatusEnum,
     @SerializedName("transactionType") val transactionType: TransactionTypeEnum,
-    @SerializedName("transactionType") val rampID: String,
+    @SerializedName("transactionType") val rampID: String? = null,
     @SerializedName("amount") val amount: String,
 )
 

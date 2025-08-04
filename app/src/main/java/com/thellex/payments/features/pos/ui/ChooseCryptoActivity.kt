@@ -85,7 +85,7 @@ class POSChooseCryptoActivity : AppCompatActivity() {
         walletManagerViewModel.walletBalance.observe(this) { walletDto ->
             val updatedCryptoList1 = walletDto?.wallets?.values
                 ?.filter { wallet ->
-                    wallet.address.isNotEmpty() && Helpers.isValidEvmAddress(wallet.address)
+                    wallet.address?.isNotEmpty() == true && Helpers.isValidEvmAddress(wallet.address ?: "")
                 }?.map { wallet ->
                     TokenListDto(
                         wallet.assetCode,
@@ -93,9 +93,10 @@ class POSChooseCryptoActivity : AppCompatActivity() {
                         chainName = wallet.network.name
                     )
                 }
-            updatedCryptoList1?.let {
-                cryptoAdapter.updateData(it)
-            }
+
+                updatedCryptoList1?.let {
+                    cryptoAdapter.updateData(it)
+                }
         }
     }
 }

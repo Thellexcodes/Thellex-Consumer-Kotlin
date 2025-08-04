@@ -93,6 +93,7 @@ object Helpers {
             PaymentStatusEnum.Sent -> ContextCompat.getColor(context, R.color.green)
             PaymentStatusEnum.Rejected -> ContextCompat.getColor(context, R.color.pinkRed)
             PaymentStatusEnum.Failed -> ContextCompat.getColor(context, R.color.pinkRed)
+            PaymentStatusEnum.Unknown -> ContextCompat.getColor(context, R.color.orange)
         }
     }
 
@@ -237,6 +238,7 @@ object Helpers {
             PaymentStatusEnum.Rejected -> R.color.pinkRed
             PaymentStatusEnum.Failed -> R.color.pinkRed
 
+            PaymentStatusEnum.Unknown,
             PaymentStatusEnum.None -> R.color.gray
         }
     }

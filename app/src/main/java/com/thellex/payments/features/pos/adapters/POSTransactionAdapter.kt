@@ -44,15 +44,19 @@ class POSTransactionAdapter(
         }
 
         fun bind(item: PosTransaction) {
-            item.iconResId?.let { binding.txnIcon.setImageResource(it) }
-            item.statusIconResId?.let { binding.statusIcon.setImageResource(it) }
-            binding.txnDescription.text = item.description
-            binding.timeText.text = item.time
-            binding.amount.text = item.amount
+            // Log binding details for debugging
+            Log.d("POSTransactionAdapter", "Binding PosTransaction: $item")
 
-            binding.status.text = item.paymentStatus.toString()
-            val colorRes = Helpers.getPaymentStatusColor(item.paymentStatus)
-            binding.status.text = item.paymentStatus.toString().uppercase()
+            // Use default icon if iconResId is null
+            binding.txnIcon.setImageResource(item.iconResId ?: R.drawable.icon_txn)
+            binding.statusIcon.setImageResource(item.statusIconResId ?: R.drawable.icon_txn)
+
+            binding.txnDescription.text = item.description ?: "Unknown"
+            binding.timeText.text = item.time ?: "N/A"
+            binding.amount.text = item.amountWithSymbol ?: "0.00"
+
+            binding.status.text = item.paymentStatus?.toString()?.uppercase() ?: "UNKNOWN"
+            val colorRes = Helpers.getPaymentStatusColor(item.paymentStatus ?: PaymentStatusEnum.Unknown)
             binding.status.setTextColor(ContextCompat.getColor(binding.root.context, colorRes))
         }
     }
@@ -67,46 +71,60 @@ class POSTransactionAdapter(
     }
 
     fun updateList(newItems: List<ITransactionHistoryDto>) {
+        Log.d("POSHOme", "this is newItems $newItems")
         val posTransactions = newItems.map { transaction ->
-            val displayAmount = when (transaction.transactionType) {
-                TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT,
-                TransactionTypeEnum.CRYPTO_DEPOSIT,
-                TransactionTypeEnum.CRYPTO_WITHDRAWAL,
-                TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
+            try {
+                val displayAmount = when (transaction.transactionType) {
+                    TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT,
+                    TransactionTypeEnum.CRYPTO_DEPOSIT,
+                    TransactionTypeEnum.CRYPTO_WITHDRAWAL,
+                    TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> {
+                        transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
+                    }
+                    TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT,
+                    TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL -> {
+                        transaction.mainAssetAmount.roundToTwoDecimals()
+                    }
+                    TransactionTypeEnum.FIAT_TO_FIAT_DEPOSIT,
+                    TransactionTypeEnum.FIAT_TO_FIAT_WITHDRAWAL -> {
+                        transaction.mainFiatAmount.roundToTwoDecimals()
+                    }
+                    else -> {
+                        Log.w("POSHOme", "Unknown transaction type: ${transaction.transactionType}")
+                        transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
+                    }
+                }
 
-                TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT,
-                TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL -> transaction.mainAssetAmount.roundToTwoDecimals()
-
-                TransactionTypeEnum.FIAT_TO_FIAT_DEPOSIT,
-                TransactionTypeEnum.FIAT_TO_FIAT_WITHDRAWAL -> transaction.mainFiatAmount.roundToTwoDecimals()
-
-                else -> transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
+                PosTransaction(
+                    iconResId = getIconResIdForToken(transaction.assetCode),
+                    statusIconResId = getStatusIconResId(transaction.transactionType.toString()),
+                    description = transaction.assetCode.uppercase(Locale.getDefault()),
+                    time = formatTimestamp(transaction.createdAt),
+                    amountWithSymbol = formatAmountWithSymbol(displayAmount.toString()),
+                    paymentStatus = mapToTransactionStatus(transaction.paymentStatus.toString()),
+                    id = transaction.id,
+                    transactionType = transaction.transactionType,
+                    rampID = transaction.rampID,
+                    amount = displayAmount.toString()
+                ).also {
+                    Log.d("POSHOme", "Mapped to PosTransaction: $it")
+                }
+            } catch (e: Exception) {
+                Log.e("POSHOme", "Failed to map transaction ${transaction.id}: ${e.message}")
+                null
             }
-
-
-            PosTransaction(
-                iconResId = getIconResIdForToken(transaction.assetCode),
-                statusIconResId = getStatusIconResId(transaction.transactionType.toString()),
-                description = transaction.assetCode.uppercase(Locale.getDefault()),
-                time = formatTimestamp(transaction.createdAt),
-                amountWithSymbol = formatAmountWithSymbol(displayAmount.toString()),
-                paymentStatus = mapToTransactionStatus(transaction.paymentStatus.toString()),
-                id = transaction.id,
-                transactionType = transaction.transactionType,
-                rampID = transaction.rampID,
-                amount = displayAmount.toString()
-            )
         }
+        Log.d("POSHOme", "Submitting posTransactions: $posTransactions")
         submitList(posTransactions)
     }
-}
 
-class PosTransactionDiffCallback : DiffUtil.ItemCallback<PosTransaction>() {
-    override fun areItemsTheSame(oldItem: PosTransaction, newItem: PosTransaction): Boolean {
-        return oldItem.id == newItem.id // or use a unique field
-    }
+    class PosTransactionDiffCallback : DiffUtil.ItemCallback<PosTransaction>() {
+        override fun areItemsTheSame(oldItem: PosTransaction, newItem: PosTransaction): Boolean {
+            return oldItem.id == newItem.id
+        }
 
-    override fun areContentsTheSame(oldItem: PosTransaction, newItem: PosTransaction): Boolean {
-        return oldItem == newItem
+        override fun areContentsTheSame(oldItem: PosTransaction, newItem: PosTransaction): Boolean {
+            return oldItem == newItem
+        }
     }
 }

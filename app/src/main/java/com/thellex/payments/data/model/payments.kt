@@ -49,7 +49,8 @@ enum class PaymentStatusEnum(val value: String) {
     Queued("QUEUED"),
     Sent("SENT"),
     Rejected("Rejected"),
-    Failed("failed");
+    Failed("failed"),
+    Unknown("unknown");
 
     companion object {
         fun fromValue(value: String): PaymentStatusEnum? = entries.find { it.value.equals(value, ignoreCase = true) }

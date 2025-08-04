@@ -157,9 +157,11 @@ class POSHomeActivity : AppCompatActivity() {
         lifecycleScope.launch {
             UserPreferences.getAuthResult(applicationContext).collect { userEntity ->
                 val transactions = userEntity?.transactionHistory ?: emptyList()
+                Log.d("POSHOme", "Received transactions: $transactions")
                 val sortedTransactions = transactions.sortedByDescending { it.createdAt }
                 withContext(Dispatchers.Main) {
                     transactionAdapter.updateList(sortedTransactions)
+                    Log.d("POSHOme", "Sorted transactions count: ${sortedTransactions.size}")
                     if (sortedTransactions.isEmpty()) {
                         binding.recyclerRecentTransactions.visibility = View.GONE
                         binding.titleRecentTransactions.visibility = View.GONE
