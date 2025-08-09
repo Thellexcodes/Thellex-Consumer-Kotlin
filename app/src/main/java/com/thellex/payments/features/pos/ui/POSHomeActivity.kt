@@ -1,11 +1,18 @@
 package com.thellex.payments.features.pos.ui
 
+import android.Manifest
+import android.content.Context
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
@@ -85,6 +92,15 @@ class POSHomeActivity : AppCompatActivity() {
         observeUserUid()
         observeNotification()
         closeAllOtherActivities()
+        if (!areNotificationsEnabled(this@POSHomeActivity)) {
+            Log.d("POSHOme", "notifications are ${areNotificationsEnabled(this)}")
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        userViewModel.refreshNotificationsStatus()
+        updateAttentionGrabber()
     }
 
     private fun setupRecyclerView() {
@@ -157,11 +173,10 @@ class POSHomeActivity : AppCompatActivity() {
         lifecycleScope.launch {
             UserPreferences.getAuthResult(applicationContext).collect { userEntity ->
                 val transactions = userEntity?.transactionHistory ?: emptyList()
-                Log.d("POSHOme", "Received transactions: $transactions")
                 val sortedTransactions = transactions.sortedByDescending { it.createdAt }
+                Log.d("Txn", "this is sorted $sortedTransactions")
                 withContext(Dispatchers.Main) {
                     transactionAdapter.updateList(sortedTransactions)
-                    Log.d("POSHOme", "Sorted transactions count: ${sortedTransactions.size}")
                     if (sortedTransactions.isEmpty()) {
                         binding.recyclerRecentTransactions.visibility = View.GONE
                         binding.titleRecentTransactions.visibility = View.GONE
@@ -265,6 +280,54 @@ class POSHomeActivity : AppCompatActivity() {
         modal.show(supportFragmentManager, "WithdrawalOptionsModal")
     }
 
+    private fun areNotificationsEnabled(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                context, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            NotificationManagerCompat.from(context).areNotificationsEnabled()
+        }
+    }
+
+    private fun updateAttentionGrabber() {
+        val notificationsEnabled = userViewModel.notificationsEnabled.value
+        Log.d(TAG, "notificationsEnabled: $notificationsEnabled, Dismissed: ${userViewModel.isNotificationsDismissed()}")
+        if ((notificationsEnabled == false || notificationsEnabled == null) && !userViewModel.isNotificationsDismissed()) {
+            binding.attentionGrabber.setAttentionGrabber(
+                message = "Enable notifications to stay updated!",
+                actionText = "Enable",
+                iconResId = R.drawable.icon_notification_gray,
+                onActionClick = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        ActivityCompat.requestPermissions(
+                            this,
+                            arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                            REQUEST_CODE_NOTIFICATIONS
+                        )
+                    } else {
+//                        val intent = Intent().apply {
+////                            action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+////                            putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+//                        }
+//                        startActivity(intent)
+                    }
+                    // Persist the enabled state after user action
+                    userViewModel.setNotificationsDismissed(true)
+                    if (notificationsEnabled != null) {
+                        userViewModel.refreshNotificationsStatus()
+                    }
+                },
+                onCloseClick = {
+                    userViewModel.setNotificationsDismissed(true)
+                }
+            )
+            return
+        }
+
+        binding.attentionGrabber.hide()
+    }
+
     private fun closeAllOtherActivities() {
         ActivityTracker.finishActivity(MainActivity::class.java)
         ActivityTracker.finishActivity(LauncherActivity::class.java)
@@ -276,4 +339,20 @@ class POSHomeActivity : AppCompatActivity() {
         ActivityTracker.finishActivity(FiatRampTransactionsActivity::class.java)
     }
 
+    companion object {
+        private val TAG = "Dashboard"
+        private const val REQUEST_CODE_NOTIFICATIONS = 1001
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_NOTIFICATIONS) {
+            userViewModel.refreshNotificationsStatus()
+            updateAttentionGrabber()
+        }
+    }
 }

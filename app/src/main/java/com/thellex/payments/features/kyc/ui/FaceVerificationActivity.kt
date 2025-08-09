@@ -24,7 +24,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.ErrorHandler
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setSubmitting
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.UserErrorEnum
 import com.thellex.payments.data.model.VerifySelfieWithPhotoIdDto
 import com.thellex.payments.features.kyc.ui.basic.KycSuccessActivity
@@ -63,8 +66,9 @@ class FaceVerificationActivity : AppCompatActivity() {
         binding = ActivityFaceVerificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ActivityTracker.add(this)
-
-        applyWindowInsets()
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.main.applyAdvancedSystemBarInsets()
 
         userViewModel = ViewModelProvider(
             this,
@@ -85,17 +89,6 @@ class FaceVerificationActivity : AppCompatActivity() {
             } ?: run {
                 CustomToast.show(this, "Error", "Please capture a selfie first")
             }
-        }
-
-        // Initially disable submit button until selfie is captured
-        binding.startButton.isEnabled = false
-    }
-
-    private fun applyWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
         }
     }
 

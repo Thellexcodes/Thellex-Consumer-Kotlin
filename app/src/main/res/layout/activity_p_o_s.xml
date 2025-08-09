@@ -101,13 +101,19 @@
                                     android:minHeight="16dp"
                                     android:padding="2dp" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <com.thellex.payments.core.decorators.AttentionGrabberView
+                        android:id="@+id/attention_grabber"
+                        app:layout_constraintTop_toBottomOf="@+id/activity_pos_notificationHeaderContainer"
+                        android:layout_marginTop="26dp"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                        app:layout_constraintTop_toBottomOf="@id/attention_grabber"
                         android:id="@+id/pos_balance_currency_placeholder"
-                        app:layout_constraintTop_toBottomOf="@+id/activity_pos_notificationHeaderContainer"
                         app:layout_constraintStart_toStartOf="parent"
                         android:layout_width="match_parent"
                         android:layout_marginTop="26dp"
@@ -133,23 +139,22 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_vertical">
+                                <TextView
+                                        android:id="@+id/tv_balance"
+                                        android:text="$0.00"
+                                        android:textColor="@color/goldenYellow"
+                                        android:fontFamily="@font/outfit_bold"
+                                        android:textSize="24sp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
 
-                            <TextView
-                                    android:id="@+id/tv_balance"
-                                    android:text="$0.00"
-                                    android:textColor="@color/goldenYellow"
-                                    android:fontFamily="@font/outfit_bold"
-                                    android:textSize="24sp"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" />
-
-                            <ImageView
-                                    android:id="@+id/iv_toggle_balance"
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:layout_marginStart="8dp"
-                                    android:src="@drawable/icon_eye_open"
-                                    android:contentDescription="Toggle Balance" />
+                                <ImageView
+                                        android:id="@+id/iv_toggle_balance"
+                                        android:layout_width="24dp"
+                                        android:layout_height="24dp"
+                                        android:layout_marginStart="8dp"
+                                        android:src="@drawable/icon_eye_open"
+                                        android:contentDescription="Toggle Balance" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -246,129 +251,52 @@
                             </LinearLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <LinearLayout
-                            android:visibility="gone"
-                            android:id="@+id/pos_quick_actions"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="24dp"
-                            android:orientation="horizontal"
-                            android:weightSum="3"
-                            app:layout_constraintTop_toBottomOf="@id/user_dashboard_actions_wrapper">
+<!--                    <LinearLayout-->
+<!--                            android:visibility="gone"-->
+<!--                            app:layout_constraintTop_toBottomOf="@+id/user_dashboard_actions_wrapper"-->
+<!--                            android:id="@+id/pos_quick_actions"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginTop="24dp"-->
+<!--                            android:orientation="horizontal"-->
+<!--                            android:weightSum="3">-->
 
-                <!-- Card 3: Request from External Wallet -->
-                        <LinearLayout
-                                android:id="@+id/pos_quick_request_button"
-                                android:layout_width="0dp"
-                                android:layout_height="100dp"
-                                android:layout_weight="1"
-                                android:background="@drawable/card_button_background"
-                                android:orientation="vertical"
-                                android:padding="11dp"
-                                android:layout_marginEnd="4dp">
-                                <androidx.constraintlayout.widget.ConstraintLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent">
-                                        <ImageView
-                                                android:id="@+id/icon_3"
-                                                android:layout_width="24dp"
-                                                android:layout_height="24dp"
-                                                android:src="@drawable/icon_qr_code"
-                                                android:layout_gravity="center_horizontal"
-                                                app:layout_constraintStart_toStartOf="parent"
-                                                app:layout_constraintTop_toTopOf="parent" />
+<!--&lt;!&ndash;                &lt;!&ndash; Card 3: Request from External Wallet &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                        <LinearLayout&ndash;&gt;-->
+<!--&lt;!&ndash;                                android:id="@+id/pos_quick_request_button"&ndash;&gt;-->
+<!--&lt;!&ndash;                                android:layout_width="0dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                                android:layout_height="100dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                                android:layout_weight="1"&ndash;&gt;-->
+<!--&lt;!&ndash;                                android:background="@drawable/card_button_background"&ndash;&gt;-->
+<!--&lt;!&ndash;                                android:orientation="vertical"&ndash;&gt;-->
+<!--&lt;!&ndash;                                android:padding="11dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                                android:layout_marginEnd="4dp">&ndash;&gt;-->
+<!--&lt;!&ndash;                                <androidx.constraintlayout.widget.ConstraintLayout&ndash;&gt;-->
+<!--&lt;!&ndash;                                        android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;                                        android:layout_height="match_parent">&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <ImageView&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:id="@+id/icon_3"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:layout_width="24dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:layout_height="24dp"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:src="@drawable/icon_qr_code"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:layout_gravity="center_horizontal"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                app:layout_constraintStart_toStartOf="parent"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                app:layout_constraintTop_toTopOf="parent" />&ndash;&gt;-->
 
-                                        <TextView
-                                                android:id="@+id/text_3"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
-                                                android:text="Quick Request"
-                                                android:textColor="#FFFFFF"
-                                                android:textSize="12sp"
-                                                android:fontFamily="@font/outfit_regular"
-                                                android:layout_gravity="center_horizontal"
-                                                app:layout_constraintBottom_toBottomOf="parent"
-                                                app:layout_constraintStart_toStartOf="@+id/icon_3" />
-                                </androidx.constraintlayout.widget.ConstraintLayout>
-                        </LinearLayout>
+<!--&lt;!&ndash;                                        <TextView&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:id="@+id/text_3"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:layout_width="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:text="Quick Request"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:textColor="#FFFFFF"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:textSize="12sp"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:fontFamily="@font/outfit_regular"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                android:layout_gravity="center_horizontal"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                app:layout_constraintBottom_toBottomOf="parent"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                app:layout_constraintStart_toStartOf="@+id/icon_3" />&ndash;&gt;-->
+<!--&lt;!&ndash;                                </androidx.constraintlayout.widget.ConstraintLayout>&ndash;&gt;-->
+<!--                        </LinearLayout>-->
 
-                <!-- Card 1: Notifications -->
-                <LinearLayout
-                        android:id="@+id/card_1"
-                        android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/card_button_background"
-                        android:orientation="vertical"
-                        android:padding="11dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginEnd="4dp">
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
-                        <ImageView
-                                android:id="@+id/icon_1"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/icon_notification"
-                                android:layout_gravity="center_horizontal"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                                android:id="@+id/text_1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Notifications"
-                                android:textColor="#FFFFFF"
-                                android:textSize="12sp"
-                                android:fontFamily="@font/outfit_regular"
-                                android:layout_gravity="center_horizontal"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="@+id/icon_1" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    </LinearLayout>
-
-                    <!-- Card 2: Settings -->
-                    <LinearLayout
-                            android:id="@+id/card_2"
-                            android:layout_width="0dp"
-                            android:layout_height="100dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/card_button_background"
-                            android:orientation="vertical"
-                            android:padding="11dp"
-                            android:layout_marginStart="4dp">
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent">
-
-                            <ImageView
-                                    android:id="@+id/icon_2"
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:src="@drawable/icon_settings"
-                                    android:layout_gravity="center_horizontal"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent" />
-
-                            <TextView
-                                    android:id="@+id/text_2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Settings"
-                                    android:textColor="#FFFFFF"
-                                    android:textSize="12sp"
-                                    android:fontFamily="@font/outfit_regular"
-                                    android:layout_gravity="center_horizontal"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintStart_toStartOf="@+id/icon_2" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-                    </LinearLayout>
-                </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -379,7 +307,7 @@
                         tools:layout_editor_absoluteX="20dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:layout_constraintTop_toBottomOf="@+id/pos_quick_actions"
+                        app:layout_constraintTop_toBottomOf="@+id/user_dashboard_actions_wrapper"
                         android:layout_marginTop="26dp">
 
                     <TextView
@@ -429,8 +357,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/transactionSectionLayout"
             android:layout_width="match_parent"
@@ -473,7 +399,7 @@
                 android:id="@+id/recyclerRecentTransactions"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginTop="19dp"
+                android:layout_marginTop="@dimen/dp_19"
                 app:layout_constraintTop_toBottomOf="@id/titleRecentTransactions"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -530,9 +456,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
             </LinearLayout>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

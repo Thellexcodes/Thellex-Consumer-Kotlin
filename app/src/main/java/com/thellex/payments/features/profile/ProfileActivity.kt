@@ -2,12 +2,11 @@ package com.thellex.payments.features.profile
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
@@ -17,7 +16,7 @@ import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 
 class ProfileActivity : AppCompatActivity() {
-
+    private lateinit var topBar: Helpers.TopAppBarController
     private lateinit var binding: ActivityProfileBinding
     private lateinit var userViewModel: UserViewModel
 
@@ -30,9 +29,14 @@ class ProfileActivity : AppCompatActivity() {
         disableDecorFitsSystemWindows()
         setTransparentStatusBarWithWhiteIcons()
         binding.profileMain.applyAdvancedSystemBarInsets()
+        // Initialize data from intent
+        topBar = Helpers.setupTopAppBar(
+            activity = this,
+            rootView = findViewById(R.id.profile_include_top_app_bar),
+            title = "Profile"
+        )
 
         initViewModel()
-        setupUI()
         observeUser()
     }
 
@@ -49,14 +53,6 @@ class ProfileActivity : AppCompatActivity() {
             val userEmail = userDto?.email
             binding.userRealName.text = upperUid
             binding.userEmail.text = userEmail
-        }
-    }
-
-    private fun setupUI() {
-        binding.backButton.setOnClickListener { finish() }
-
-        binding.logout.setOnClickListener {
-            onLogout()
         }
     }
 

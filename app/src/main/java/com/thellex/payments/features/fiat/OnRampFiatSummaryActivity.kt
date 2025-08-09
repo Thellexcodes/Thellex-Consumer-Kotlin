@@ -1,6 +1,7 @@
 package com.thellex.payments.features.fiat
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -23,6 +24,7 @@ import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.databinding.ActivityFiatDepositBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
+import com.thellex.payments.features.pos.ui.POSHomeActivity
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.settings.FiatTickers
@@ -53,6 +55,11 @@ class OnRampFiatSummaryActivity : AppCompatActivity() {
         getRampTransactionFromIntent()?.let {
             renderTransactionUI(it)
         } ?: finishWithError("Failed to load transaction details")
+
+        binding.onrampConfirmPayment.setOnClickListener{ finish()
+            startActivity(Intent(this@OnRampFiatSummaryActivity, POSHomeActivity::class.java))
+            finish()
+        }
     }
 
     override fun onDestroy() {

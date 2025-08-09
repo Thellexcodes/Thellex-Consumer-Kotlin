@@ -7,56 +7,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/general_gradient_background"
-        android:padding="20dp"
         tools:context=".features.kyc.ui.basic.PassportActivity">
 
-    <!-- Top App Bar -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/topAppBar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:paddingVertical="12dp"
+    <include
+            android:id="@+id/passport_include_top_app_bar"
+            layout="@layout/top_app_bar"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageView
-                android:id="@+id/activity_wallet_back_button"
-                android:layout_width="24dp"
-                android:layout_height="12dp"
-                android:src="@drawable/icon_back"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:contentDescription="Back" />
-
-        <TextView
-                android:id="@+id/titleText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="INTERNATIONAL PASSPORT"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:fontFamily="@font/kumbhsans_bold"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:paddingStart="12dp"
-                app:layout_constraintStart_toEndOf="@id/activity_wallet_back_button"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Instructions -->
     <TextView
             android:id="@+id/instructionText"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Upload the data page of your international passport"
             android:textSize="14sp"
             android:textColor="@color/steelBlueGrey"
             android:fontFamily="@font/kumbhsans_regular"
-            app:layout_constraintTop_toBottomOf="@id/topAppBar"
+            app:layout_constraintTop_toBottomOf="@id/passport_include_top_app_bar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="20dp" />

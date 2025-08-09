@@ -2,6 +2,7 @@ package com.thellex.payments.data.model
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -10,7 +11,15 @@ import kotlinx.coroutines.flow.flow
 
 object UserPreferences {
     private const val PREFS_NAME = "user_prefs"
+    private const val KEY_REWARDS_COUNT = "rewards_count"
+    private const val KEY_REWARDS_DISMISSED = "rewards_dismissed"
+    private const val KEY_NOTIFICATIONS_DISMISSED = "notifications_dismissed"
     private val userFlow = MutableSharedFlow<UserEntity?>(replay = 1)
+    private val _rewardsCount = MutableLiveData<Int>()
+    private const val APP_PREFS_NAME = "app_prefs" // For has_enabled_notifications
+    private const val KEY_HAS_ENABLED_NOTIFICATIONS = "has_enabled_notifications"
+    private const val TAG = "UserPreferences"
+
 
     fun saveToken(context: Context, token: String) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -58,20 +67,83 @@ object UserPreferences {
         return try {
             if (json != null) Gson().fromJson(json, UserEntity::class.java) else null
         } catch (e: Exception) {
-            Log.e("UserPreferences", "Error parsing user: ${e.message}")
+            Log.e(TAG, "Error parsing user: ${e.message}")
             null
         }
+    }
+
+    fun getAvailableRewards(context: Context): Int {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getInt(KEY_REWARDS_COUNT, 0)
+    }
+
+    fun updateRewardsCount(context: Context, count: Int) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putInt(KEY_REWARDS_COUNT, count)
+            .apply()
+        _rewardsCount.postValue(count)
+        Log.d(TAG, "Updated rewards count: $count")
+    }
+
+    fun isRewardsDismissed(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_REWARDS_DISMISSED, false)
+    }
+
+    fun setRewardsDismissed(context: Context, dismissed: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_REWARDS_DISMISSED, dismissed)
+            .apply()
+        Log.d(TAG, "Rewards dismissed set to: $dismissed")
+    }
+
+    fun isNotificationsDismissed(context: Context): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_NOTIFICATIONS_DISMISSED, false)
+    }
+
+    fun setNotificationsDismissed(context: Context, dismissed: Boolean) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_NOTIFICATIONS_DISMISSED, dismissed)
+            .apply()
+        Log.d(TAG, "Notifications dismissed set to: $dismissed")
+    }
+
+    fun hasEnabledNotifications(context: Context): Boolean? {
+        val prefs = context.getSharedPreferences(APP_PREFS_NAME, Context.MODE_PRIVATE)
+        return if (prefs.contains(KEY_HAS_ENABLED_NOTIFICATIONS)) {
+            prefs.getBoolean(KEY_HAS_ENABLED_NOTIFICATIONS, false)
+        } else {
+            null // Not set yet
+        }
+    }
+
+    fun setHasEnabledNotifications(context: Context, enabled: Boolean) {
+        context.getSharedPreferences(APP_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_HAS_ENABLED_NOTIFICATIONS, enabled)
+            .apply()
+        Log.d(TAG, "has_enabled_notifications set to: $enabled")
     }
 
     fun addTransactionHistory(context: Context, transaction: ITransactionHistoryDto) {
         val currentUser = getAuthResultSync(context)
         if (currentUser != null) {
             val updatedList = currentUser.transactionHistory.toMutableList().apply {
-                if (none { it.transactionId == transaction.transactionId }) {
+                if (none { it.id == transaction.id }) {
                     add(transaction)
+                    if (transaction.transactionType == TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT) {
+                        val currentRewards = getAvailableRewards(context)
+                        updateRewardsCount(context, currentRewards + 1)
+                        setRewardsDismissed(context, false)
+                    }
                 }
             }.sortedByDescending { it.createdAt }
             val updatedUser = currentUser.copy(transactionHistory = updatedList)
+            Log.w(TAG, "Transaction $transaction and updatedUser: $updatedUser")
             saveAuthResult(context, updatedUser)
         }
     }
@@ -95,6 +167,7 @@ object UserPreferences {
             }
             val updatedUser = currentUser.copy(notifications = updatedList)
             saveAuthResult(context, updatedUser)
+            setNotificationsDismissed(context, false)
         }
     }
 
@@ -113,7 +186,6 @@ object UserPreferences {
             val updatedList = currentUser.fiatCryptoRampTransactions.map {
                 if (it.id == transactionId) updatedTransaction else it
             }
-
             val updatedUser = currentUser.copy(fiatCryptoRampTransactions = updatedList)
             saveAuthResult(context, updatedUser)
         }
@@ -126,20 +198,24 @@ object UserPreferences {
         val currentUser = getAuthResultSync(context)
         if (currentUser != null) {
             val updatedList = currentUser.fiatCryptoRampTransactions.toMutableList()
-
             val alreadyExists = updatedList.any { it.id == transaction.id }
             if (!alreadyExists) {
                 updatedList.add(transaction)
-                Log.d("UserPreferences", "Transaction added: ${transaction.id}")
+                Log.d(TAG, "Fiat ramp Transaction added: ${transaction.id}")
+                // Increment rewards for specific fiat-crypto transactions if needed
+//                if (/* Add condition based on transaction type */) {
+//                    val currentRewards = getAvailableRewards(context)
+//                    updateRewardsCount(context, currentRewards + 1)
+//                    setRewardsDismissed(context, false)
+//                }
             } else {
-                Log.d("UserPreferences", "Transaction already exists: ${transaction.id}")
+                Log.d(TAG, "Transaction already exists: ${transaction.id}")
             }
-
             val updatedUser = currentUser.copy(fiatCryptoRampTransactions = updatedList)
             saveAuthResult(context, updatedUser)
             refreshUser(context)
         } else {
-            Log.d("UserPreferences", "No user found when trying to add transaction: ${transaction.id}")
+            Log.d(TAG, "No user found when trying to add transaction: ${transaction.id}")
         }
     }
 

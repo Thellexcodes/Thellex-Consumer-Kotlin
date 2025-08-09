@@ -178,8 +178,7 @@ class OffRampSummaryActivity : AppCompatActivity() {
 
                 val result = response.body()?.result
                 if (result != null) {
-                    userViewModel.addFiatCryptoRampTransaction(result)
-                    result.transaction?.let { txn -> userViewModel.addTransaction(transaction = txn) }
+                    result.let { txn -> userViewModel.addFiatCryptoRampTransaction(txn) }
                     ActivityTracker.finishActivity(PaymentMethodActivity::class.java)
                     startActivity(Intent(context, POSHomeActivity::class.java))
                 } else {

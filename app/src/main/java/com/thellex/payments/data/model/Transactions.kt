@@ -17,7 +17,7 @@ data class Transaction(
 @Serializable()
 data class ITransactionHistoryDto(
     @SerializedName("id") val id: String,
-    @SerializedName("event") val event: String,
+    @SerializedName("event") val event: String?, // Change to nullable
     @SerializedName("transactionId") val transactionId: String,
     @SerializedName("transactionDirection") val transactionDirection: String,
     @SerializedName("transactionType") val transactionType: TransactionTypeEnum,
@@ -25,10 +25,10 @@ data class ITransactionHistoryDto(
     @SerializedName("amount") val amount: String,
     @SerializedName("fee") val fee: String,
     @SerializedName("feeLevel") val feeLevel: String,
-    @SerializedName("blockchainTxId") val blockchainTxId: String,
-    @SerializedName("reason") val reason: String,
+    @SerializedName("blockchainTxId") val blockchainTxId: String?,
+    @SerializedName("reason") val reason: String?,
     @SerializedName("paymentStatus") val paymentStatus: PaymentStatusEnum,
-    @SerializedName("sourceAddress") val sourceAddress: String,
+    @SerializedName("sourceAddress") val sourceAddress: String?,
     @SerializedName("destinationAddress") val destinationAddress: String,
     @SerializedName("paymentNetwork") val paymentNetwork: String,
     @SerializedName("createdAt") val createdAt: String,

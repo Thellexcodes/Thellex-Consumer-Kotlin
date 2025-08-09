@@ -44,9 +44,6 @@ class POSTransactionAdapter(
         }
 
         fun bind(item: PosTransaction) {
-            // Log binding details for debugging
-            Log.d("POSTransactionAdapter", "Binding PosTransaction: $item")
-
             // Use default icon if iconResId is null
             binding.txnIcon.setImageResource(item.iconResId ?: R.drawable.icon_txn)
             binding.statusIcon.setImageResource(item.statusIconResId ?: R.drawable.icon_txn)
@@ -67,8 +64,16 @@ class POSTransactionAdapter(
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        Log.d("POSTransactionAdapter", "Binding item at $position: ${getItem(position)}")
+        val item = getItem(position)
+        if (item != null) {
+            holder.bind(getItem(position))
+        } else {
+            Log.w("POSTransactionAdapter", "Null item at position $position")
+        }
     }
+//    override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
+//    }
 
     fun updateList(newItems: List<ITransactionHistoryDto>) {
         Log.d("POSHOme", "this is newItems $newItems")

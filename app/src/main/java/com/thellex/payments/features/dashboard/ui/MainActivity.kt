@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
@@ -66,6 +67,12 @@ class MainActivity : AppCompatActivity() {
         CrashLogger.init(this)
         CoroutineScope(Dispatchers.IO).launch {
             CrashLogger.sendStoredCrashes(this@MainActivity)
+        }
+        try {
+            FirebaseApp.initializeApp(this)
+            Log.d("FirebaseInit", "Firebase initialized successfully")
+        } catch (e: Exception) {
+            Log.e("FirebaseInit", "Firebase initialization failed: ${e.message}", e)
         }
     }
 

@@ -1,9 +1,7 @@
 package com.thellex.payments.network.services
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.util.Log
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
@@ -16,7 +14,6 @@ import com.thellex.payments.data.model.NotificationEntity
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.data.model.WalletWebhookEventEnum
 import com.thellex.payments.features.auth.viewModel.UserRepository
-import com.thellex.payments.features.auth.viewModel.UserViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -26,19 +23,26 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
-class FirebaseManager : FirebaseMessagingService() {
-    private val tag = "Firebase"
+class FCMService : FirebaseMessagingService() {
+    private val tag = "FirebaseManager"
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val userRepository by lazy { UserRepository.getInstance(applicationContext) }
 
+    override fun onCreate() {
+        super.onCreate()
+        Log.d(tag, "FirebaseManager service started")
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        Log.d(tag, "FirebaseManager service destroyed")
         serviceScope.cancel()
     }
 
     private fun runIO(block: suspend () -> Unit) {
         serviceScope.launch {
             try {
+                Log.d(tag, "Running IO coroutine")
                 block()
             } catch (e: Exception) {
                 Log.e(tag, "Coroutine error: ${e.localizedMessage}", e)
@@ -48,30 +52,36 @@ class FirebaseManager : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
+        Log.d(tag, "Message received: $remoteMessage")
+        Log.d(tag, "Message data payload: ${remoteMessage.data}")
+        Log.d(tag, "Message notification: ${remoteMessage.notification}")
 
         remoteMessage.notification?.body?.let {
-            Log.d(tag, "Notification Body: $it")
+            Log.d(tag, "Notification body: $it")
         }
 
         if (remoteMessage.data.isNotEmpty()) {
-            Log.d(tag, "Data Payload: ${remoteMessage.data}")
+            Log.d(tag, "Processing data payload: ${remoteMessage.data}")
 
             val status = remoteMessage.data["status"]
             val event = remoteMessage.data["event"]
             val transactionJson = remoteMessage.data["transaction"]
             val notificationJson = remoteMessage.data["notification"]
 
-            Log.d(tag, "transaction is $transactionJson")
+            Log.d(tag, "Extracted event: $event")
+            Log.d(tag, "Extracted transaction JSON: $transactionJson")
+            Log.d(tag, "Extracted notification JSON: $notificationJson")
 
             if (!event.isNullOrEmpty()) {
                 try {
+                    Log.d(tag, "Attempting to parse event: $event")
                     val eventEnum = Helpers.firstMatchingEnum(
                         event,
                         NotificationEventsEnum::fromValue,
                         WalletWebhookEventEnum::fromValue,
                     )
 
-                    Log.d(tag, "event is $eventEnum")
+                    Log.d(tag, "Parsed event enum: $eventEnum")
 
                     if (eventEnum != null) {
                         when (eventEnum) {
@@ -80,8 +90,10 @@ class FirebaseManager : FirebaseMessagingService() {
                             NotificationEventsEnum.FIAT_TO_CRYPTO_DEPOSIT,
                             NotificationEventsEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> {
                                 runIO {
+                                    Log.d(tag, "Processing event in coroutine: ${eventEnum.name}")
                                     val transaction = transactionJson?.let {
                                         try {
+                                            Log.d(tag, "Parsing transaction JSON: $it")
                                             Gson().fromJson(it, ITransactionHistoryDto::class.java)
                                         } catch (e: JsonSyntaxException) {
                                             Log.e(tag, "Invalid transaction JSON: $it", e)
@@ -91,6 +103,7 @@ class FirebaseManager : FirebaseMessagingService() {
 
                                     val notification = notificationJson?.let {
                                         try {
+                                            Log.d(tag, "Parsing notification JSON: $it")
                                             Gson().fromJson(it, NotificationEntity::class.java)
                                         } catch (e: JsonSyntaxException) {
                                             Log.e(tag, "Invalid notification JSON: $it", e)
@@ -98,14 +111,17 @@ class FirebaseManager : FirebaseMessagingService() {
                                         }
                                     }
 
+                                    Log.d(tag, "Transaction parsed: $transaction")
+                                    Log.d(tag, "Notification parsed: $notification")
+
                                     transaction?.let {
                                         val existing = UserPreferences.getTransactionById(applicationContext, it.id)
                                         if (existing == null) {
                                             UserPreferences.addTransactionHistory(applicationContext, it)
-                                            Log.d(tag, "Added new transaction for event: ${eventEnum.name}")
+                                            Log.d(tag, "Added new transaction for event: ${eventEnum.name}, ID: ${it.id}")
                                         } else {
-                                            Log.d(tag, "Updated transaction for event: ${eventEnum.name}")
                                             UserPreferences.updateTransactionById(applicationContext, it.id, it)
+                                            Log.d(tag, "Updated transaction for event: ${eventEnum.name}, ID: ${it.id}")
                                         }
                                     }
 
@@ -113,8 +129,7 @@ class FirebaseManager : FirebaseMessagingService() {
                                         UserPreferences.addNotification(applicationContext, it)
                                         Log.d(tag, "Saved notification for event: ${eventEnum.name}")
                                     }
-
-                                    Log.d(tag, "Processed event: ${eventEnum.name}")
+                                    Log.d(tag, "Successfully processed event: ${eventEnum.name}")
                                 }
                             }
                             else -> {
@@ -128,21 +143,26 @@ class FirebaseManager : FirebaseMessagingService() {
                     Log.e(tag, "Failed to parse incoming data: ${e.message}", e)
                 }
             } else {
-                Log.w(tag, "Ignoring message due to invalid status or missing data: status=$status, event=$event")
+                Log.w(tag, "Ignoring message due to invalid status or missing event: status=$status, event=$event")
             }
+        } else {
+            Log.w(tag, "No data payload in message")
         }
     }
 
     override fun onNewToken(fcmToken: String) {
         super.onNewToken(fcmToken)
+        Log.d(tag, "New FCM token received: $fcmToken")
         runIO {
             try {
+                Log.d(tag, "Fetching user auth token")
                 val userAuthToken = withTimeoutOrNull(5000) {
                     userRepository.getToken().first { !it.isNullOrBlank() }
                 }
+                Log.d(tag, "User auth token: $userAuthToken")
                 if (!userAuthToken.isNullOrBlank()) {
                     sendFcmTokenToBackend(userAuthToken = userAuthToken, fcmToken = fcmToken)
-                    Log.d(tag, "FCM token sent to backend")
+                    Log.d(tag, "FCM token sent to backend successfully")
                 } else {
                     Log.w(tag, "User auth token unavailable, cannot send FCM token")
                 }
@@ -152,4 +172,3 @@ class FirebaseManager : FirebaseMessagingService() {
         }
     }
 }
-

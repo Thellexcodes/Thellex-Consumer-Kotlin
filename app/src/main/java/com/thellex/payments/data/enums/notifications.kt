@@ -47,8 +47,7 @@ enum class NotificationEventsEnum(val event: String) {
     companion object {
         fun fromValue(value: String?): NotificationEventsEnum? {
             if (value.isNullOrBlank()) return null
-            // Normalize input: replace dots with underscores and convert to uppercase
-            val normalizedValue = value.replace(".", "_").uppercase()
+            val normalizedValue = value.replace(".", "_").lowercase()
             return entries.firstOrNull { it.event == normalizedValue }
         }
     }

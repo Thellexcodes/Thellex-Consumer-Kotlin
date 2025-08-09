@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.data.model.IBankAccountDto
@@ -16,11 +17,7 @@ import com.thellex.payments.data.model.ITransactionHistoryDto
 import com.thellex.payments.data.model.KycResponseDto
 import com.thellex.payments.data.model.UserEntity
 import com.thellex.payments.data.model.UserPreferences
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -37,6 +34,8 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
 
     private val _authResult = MutableLiveData<UserEntity?>()
     val authResult: LiveData<UserEntity?> = _authResult
+    private val _notificationsEnabled = MutableLiveData<Boolean>()
+    val notificationsEnabled: LiveData<Boolean> get() = _notificationsEnabled
 
     init {
         viewModelScope.launch {
@@ -105,10 +104,35 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     fun addFiatCryptoRampTransaction(transaction: IFiatCryptoRampTransactionsDto) {
         viewModelScope.launch {
             try {
-                repository.addFiatCryptoRampTransaction(transaction)
-                Log.d(TAG, "Added fiat crypto ramp transaction: ${transaction.id}")
+                val currentUser = _authResult.value
+                if (currentUser != null) {
+                    val updatedList = currentUser.fiatCryptoRampTransactions.toMutableList()
+                    Log.w(TAG, "LIST: ${updatedList}")
+                    if (updatedList.isEmpty() || !updatedList.any { it.id == transaction.id }) {
+                        updatedList.add(transaction)
+                    } else {
+                        Log.w(TAG, "Fiat-crypto ramp transaction already exists: ${transaction.id}")
+                        return@launch
+                    }
+                    val sortedList = updatedList.sortedByDescending { it.createdAt }
+                    val updatedUser = currentUser.copy(fiatCryptoRampTransactions = sortedList)
+                    saveAuthResult(updatedUser)
+                    Log.d(TAG, "Added fiat-crypto ramp transaction: ${transaction.id}")
+
+                    // Sync with backend
+                    try {
+                        repository.addFiatCryptoRampTransaction(transaction)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to sync fiat-crypto ramp transaction ${transaction.id} with backend", e)
+                        // Notify UI of sync failure
+//                        saveAuthResult(updatedUser.copy(errorMessage = "Failed to sync transaction: ${e.message}"))
+                    }
+                } else {
+                    Log.w(TAG, "Cannot add fiat-crypto ramp transaction - user is null")
+                }
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to add fiat crypto ramp transaction", e)
+                Log.e(TAG, "Failed to add fiat-crypto ramp transaction", e)
+//                _authResult.postValue(_authResult.value?.copy(errorMessage = "Failed to add transaction: ${e.message}"))
             }
         }
     }
@@ -231,5 +255,16 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         val expiresAtInstant = getExpiresAt() ?: return false
         val nowInstant = Clock.System.now()
         return expiresAtInstant > nowInstant
+    }
+
+    fun isNotificationsDismissed(): Boolean = repository.isNotificationsDismissed()
+
+    fun setNotificationsDismissed(dismissed: Boolean) {
+        repository.setNotificationsDismissed(dismissed)
+    }
+
+    fun refreshNotificationsStatus() {
+        (notificationsEnabled as MutableLiveData).postValue(repository.areNotificationsEnabled())
+        Log.d(TAG, "Notifications status refreshed: ${repository.areNotificationsEnabled()}")
     }
 }

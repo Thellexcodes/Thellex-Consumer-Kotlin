@@ -1,6 +1,6 @@
 package com.thellex.payments.core.utils
 object Constants {
-    private const val API_VERSION = "v1.0.0"
+    private const val API_VERSION = "v1.0.1"
     private const val API_PREFIX = "api"
     private const val VERSIONED_BASE = "$API_PREFIX/$API_VERSION"
 

@@ -69,8 +69,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     private var ratesRefreshHandler: Handler? = null
     private var refreshRunnable: Runnable? = null
     private var fee: Double = 0.0
-
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +90,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         observeUser()
         setupUiListener()
         setupAmountInputListeners()
+        fetchRatesAndScheduleRefresh()
 
         walletManagerViewModel = ViewModelProvider(
             this,
@@ -158,12 +157,13 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                     )
 
                     val response = ApiClient.getAuthenticatedPaymentApi(authToken!!).fiatToCryptoOnRamp(onRampRequest)
-                    Log.d(TAG, "Response from fiatToCryptoOnRamp: ${response.body()?.result}")
 
                     val result = response.body()?.result
                     if(result != null){
-                        userViewModel.addFiatCryptoRampTransaction(result)
-                        result.transaction?.let { txn -> userViewModel.addTransaction(transaction = txn) }
+//                        Log.d(TAG, "Response from fiatToCryptoOnRamp: ${response.body()?.result}")
+                        result.let { txn ->
+                            userViewModel.addFiatCryptoRampTransaction(txn)
+                        }
                         val intent = Intent(this@FiatToCryptoOnRampActivity, OnRampFiatSummaryActivity::class.java).apply {
                             putExtra("fiatCryptoRampResultJson", Gson().toJson(result))
                         }
@@ -260,7 +260,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         binding.edittextCryptoAmount.setText("")
         updateWalletInfo()
         updateDefaultPriceText()
-        fetchRatesAndScheduleRefresh()
     }
 
     private fun setDefaultToken() {
@@ -375,9 +374,15 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                 if (!isUpdating && binding.edittextCryptoAmount.hasFocus()) {
                     isUpdating = true
                     val cryptoAmount = s.toString().toDoubleOrNull() ?: 0.0
-                    val ngnRateDto = currentRates?.rates?.firstOrNull { it.fiatCode.equals(FiatEnum.ngn.name, ignoreCase = true) }
+                    val ngnRateDto = currentRates?.rates?.firstOrNull {
+                        it.fiatCode.equals(FiatEnum.ngn.name, ignoreCase = true)
+                    }
+
                     val rate = ngnRateDto?.rate
-                    val fiatEquivalent = (cryptoAmount * rate?.buy!!) + rate.fee / rate.feeDivisor
+                    val fiatEquivalent = rate?.let {
+                        (cryptoAmount * it.buy) + (it.fee / it.feeDivisor)
+                    } ?: 0.0
+
                     val background = if (fiatEquivalent < minimumAmountInFiat) errorDrawable else normalDrawable
                     binding.edittextCryptoAmount.background = background
                     binding.edittextFiatAmount.background = background
@@ -385,6 +390,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                     isUpdating = false
                 }
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
 

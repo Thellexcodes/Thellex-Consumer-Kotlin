@@ -15,11 +15,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+    <com.thellex.payments.core.decorators.AttentionGrabberView
+            android:id="@+id/"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_uncompleted_transactions_wrapper"
             android:background="@drawable/rounded_border_bright_blue_sky"
             android:paddingHorizontal="14dp"
             app:layout_constraintTop_toBottomOf="@id/include_top_app_bar"
+            android:layout_marginTop="@dimen/dp_26"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
