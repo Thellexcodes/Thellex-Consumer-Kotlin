@@ -15,6 +15,7 @@ import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.INotificationConsumeDto
 import com.thellex.payments.data.model.ITransactionHistoryDto
 import com.thellex.payments.data.model.KycResponseDto
+import com.thellex.payments.data.model.KycValidateBvnResponse
 import com.thellex.payments.data.model.UserEntity
 import com.thellex.payments.data.model.UserPreferences
 import kotlinx.coroutines.launch
@@ -104,35 +105,41 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     fun addFiatCryptoRampTransaction(transaction: IFiatCryptoRampTransactionsDto) {
         viewModelScope.launch {
             try {
+                // Validate user
                 val currentUser = _authResult.value
-                if (currentUser != null) {
-                    val updatedList = currentUser.fiatCryptoRampTransactions.toMutableList()
-                    Log.w(TAG, "LIST: ${updatedList}")
-                    if (updatedList.isEmpty() || !updatedList.any { it.id == transaction.id }) {
-                        updatedList.add(transaction)
-                    } else {
-                        Log.w(TAG, "Fiat-crypto ramp transaction already exists: ${transaction.id}")
-                        return@launch
-                    }
-                    val sortedList = updatedList.sortedByDescending { it.createdAt }
-                    val updatedUser = currentUser.copy(fiatCryptoRampTransactions = sortedList)
-                    saveAuthResult(updatedUser)
-                    Log.d(TAG, "Added fiat-crypto ramp transaction: ${transaction.id}")
-
-                    // Sync with backend
-                    try {
-                        repository.addFiatCryptoRampTransaction(transaction)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Failed to sync fiat-crypto ramp transaction ${transaction.id} with backend", e)
-                        // Notify UI of sync failure
-//                        saveAuthResult(updatedUser.copy(errorMessage = "Failed to sync transaction: ${e.message}"))
-                    }
-                } else {
+                if (currentUser == null) {
                     Log.w(TAG, "Cannot add fiat-crypto ramp transaction - user is null")
+                    return@launch
+                }
+
+                // Check for duplicate transaction
+                val updatedList = currentUser.fiatCryptoRampTransactions.toMutableList()
+                if (updatedList.any { it.id == transaction.id }) {
+                    Log.w(TAG, "Fiat-crypto ramp transaction already exists: ${transaction.id}")
+                    return@launch
+                }
+
+                // Add and sort transactions
+                updatedList.add(transaction)
+                val sortedList = updatedList.sortedByDescending { it.createdAt }
+                val updatedUser = currentUser.copy(fiatCryptoRampTransactions = sortedList)
+                Log.d(TAG, "Added fiat-crypto ramp transaction: ${transaction.id}, Updated list: $sortedList")
+
+                // Update StateFlow and persist
+                _authResult.postValue(updatedUser)
+                saveAuthResult(updatedUser)
+
+                // Sync with backend
+                try {
+                    repository.addFiatCryptoRampTransaction(transaction)
+                    Log.d(TAG, "Successfully synced fiat-crypto ramp transaction: ${transaction.id}")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to sync fiat-crypto ramp transaction ${transaction.id} with backend", e)
+                    // Optionally notify UI of sync failure
+                    // Consider using a separate StateFlow for errors if needed
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to add fiat-crypto ramp transaction", e)
-//                _authResult.postValue(_authResult.value?.copy(errorMessage = "Failed to add transaction: ${e.message}"))
+                Log.e(TAG, "Failed to add fiat-crypto ramp transaction: ${e.message}", e)
             }
         }
     }
@@ -151,6 +158,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                     val sortedList = updatedList.sortedByDescending { it.createdAt }
                     val updatedUser = currentUser.copy(transactionHistory = sortedList)
                     saveAuthResult(updatedUser)
+                    _authResult.postValue(updatedUser)
                 } else {
                     Log.w(TAG, "Cannot add transaction - user is null")
                 }
@@ -170,6 +178,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                     }
                     val updatedUser = currentUser.copy(transactionHistory = updatedTransactions)
                     saveAuthResult(updatedUser)
+                    _authResult.postValue(updatedUser)
                 } else {
                     Log.w(TAG, "Cannot update transaction - user is null")
                 }
@@ -191,11 +200,38 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                         remainingTiers = result.remainingTiers
                     )
                     saveAuthResult(updatedUser)
+                    _authResult.postValue(updatedUser)
                 } else {
                     Log.w(TAG, "Cannot update KYC - user is null")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to update KYC", e)
+            }
+        }
+    }
+
+    fun updateUserWithBvnResult(result: KycValidateBvnResponse) {
+        viewModelScope.launch {
+            try {
+                val currentUser = _authResult.value
+                if (currentUser == null) {
+                    Log.w(TAG, "Cannot update outstandingKyc - user is null")
+                    return@launch
+                }
+
+                if (!result.isValid) {
+                    Log.w(TAG, "BVN validation failed: $result")
+                    return@launch
+                }
+
+                // Remove "BVN" from outstandingKyc
+                val updatedOutStandingKyc = currentUser.outstandingKyc.filter { it != "BVN" }
+                val updatedUser = currentUser.copy(outstandingKyc = updatedOutStandingKyc)
+                Log.d(TAG, "Updated outstandingKyc: $updatedOutStandingKyc, from payload: $result")
+                saveAuthResult(updatedUser)
+                _authResult.postValue(updatedUser) // Update StateFlow for UI
+            } catch (e: Exception) {
+                Log.e(TAG, "Error updating user with BVN result: ${e.message}", e)
             }
         }
     }

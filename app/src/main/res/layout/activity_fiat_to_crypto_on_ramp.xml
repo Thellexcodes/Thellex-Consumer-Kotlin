@@ -15,11 +15,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-    <com.thellex.payments.core.decorators.AttentionGrabberView
-            android:id="@+id/"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_uncompleted_transactions_wrapper"
             android:background="@drawable/rounded_border_bright_blue_sky"
@@ -556,6 +551,23 @@
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/requestBvnBtn"
+                android:visibility="gone"
+                android:paddingHorizontal="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_ripple_golden_yellow"
+                android:text="Submt Your Bank Verification Number"
+                android:elevation="0dp"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textColor="@color/dark_purple"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatButton
+                android:visibility="gone"
                 android:id="@+id/nextButton"
                 android:paddingHorizontal="20dp"
                 android:layout_width="match_parent"

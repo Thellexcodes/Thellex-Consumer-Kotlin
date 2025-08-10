@@ -41,6 +41,11 @@ import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.fiat.adapters.ReasonSelectionAdapter
 import com.thellex.payments.features.fiat.adapters.TokenSelectionBottomSheet
+import com.thellex.payments.features.kyc.fragments.RequestBvnModalFragment
+import com.thellex.payments.features.kyc.ui.StartKycActivity
+import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
+import com.thellex.payments.features.pos.fragments.WithdrawalOptionsModalFragment
+import com.thellex.payments.features.pos.ui.POSChooseCryptoActivity
 import com.thellex.payments.features.wallet.model.IRatesResponseDto
 import com.thellex.payments.features.wallet.model.WalletDto
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
@@ -68,6 +73,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     private var ratesExpiryTime: Long? = null
     private var ratesRefreshHandler: Handler? = null
     private var refreshRunnable: Runnable? = null
+    private lateinit var outstandingKyc: List<String>
     private var fee: Double = 0.0
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,7 +117,19 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun observeUser() {
         userViewModel.authResult.observe(this) { userDto ->
-            updatePendingTransactionsUI(userDto?.fiatCryptoRampTransactions!!)
+            if (userDto == null) return@observe
+
+            updatePendingTransactionsUI(userDto.fiatCryptoRampTransactions)
+
+            outstandingKyc = userDto.outstandingKyc ?: emptyList()
+
+            if (outstandingKyc.isNotEmpty() && outstandingKyc[0] == "BVN") {
+                binding.requestBvnBtn.visibility = View.VISIBLE
+                binding.nextButton.visibility = View.GONE
+            } else {
+                binding.requestBvnBtn.visibility = View.GONE
+                binding.nextButton.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -179,6 +197,11 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                     binding.nextButton.setSubmitting(false)
                 }
             }
+        }
+
+        binding.requestBvnBtn.setOnClickListener{
+            val modal = RequestBvnModalFragment.newInstance()
+            modal.show(supportFragmentManager, "RequestBvnModal")
         }
 
         binding.cryptoSpinner.setOnClickListener {
@@ -465,6 +488,30 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         bottomSheetDialog.show()
     }
 
+    private fun showBvnRequestModal() {
+//        val modal = RequestOptionsModalFragment.newInstance()
+//
+//        modal.setListener(object : RequestOptionsModalFragment.ReceiveOptionsListener {
+//            override fun onChainDepositClick() {
+//                startActivity(Intent(this@FiatToCryptoOnRampActivity, POSChooseCryptoActivity::class.java))
+//            }
+//            override fun onCryptoToFiatOnRampClick() {
+//                startActivity(Intent(this@, FiatToCryptoOnRampActivity::class.java))
+//            }
+//
+//            override fun onFiatDepositClick() {
+//                startActivity(Intent(this@POSHomeActivity, OnRampFiatSummaryActivity::class.java))
+//            }
+//
+//            override fun onStartKyc() {
+//                modal.dismiss()
+//                startActivity(Intent(this@POSHomeActivity, StartKycActivity::class.java))
+//            }
+//        })
+//
+//        modal.show(supportFragmentManager, "RequestOptionsModal")
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         refreshRunnable?.let { ratesRefreshHandler?.removeCallbacks(it) }
@@ -472,6 +519,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "TAGY"
+        private const val TAG = "FiatToCryptoOnRampActivity"
     }
 }

@@ -18,6 +18,7 @@ object Constants {
     // KYC and KYB
     const val KYC_ENDPOINT = "$VERSIONED_BASE/kyc/basic-nin-bvn"
     const val KYC_VERIFY_SELFIE_AND_DOCUMENT = "$VERSIONED_BASE/kyc/basic-document-verify-selfie"
+    const val KYC_VERIFY_BVN = "$VERSIONED_BASE/kyc/verify-bvn"
 
     //Notification Endpoints
     const val NOTIFICATION_CONSUME_ENDPOINT = "$VERSIONED_BASE/notifications/{id}/consume"

@@ -57,3 +57,19 @@ data class VerifySelfieWithPhotoIdDto(
     @SerializedName("photoid_image") val photoIdImageBase64: String,
 //    @SerializedName("id_type") val idType: String? = "PASSPORT"
 )
+
+
+data class SubmitBvnDto(
+    @SerializedName("bvn") val bvn: String,
+    @SerializedName("phoneNumber") val phoneNumber: PhoneNumberDto // Nested object matching PhoneDto
+)
+
+data class PhoneNumberDto(
+    @SerializedName("phone_country_code") val phoneCountryCode: String, // Matches +{1-4 digits}
+    @SerializedName("phone_number") val phoneNumber: String // Matches 6-15 digits
+)
+
+@Serializable
+data class KycValidateBvnResponse(
+    @SerializedName("isValid") val isValid: Boolean,
+)
