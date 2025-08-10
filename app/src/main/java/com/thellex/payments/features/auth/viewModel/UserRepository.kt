@@ -77,16 +77,6 @@ class UserRepository private constructor(private val context: Context) {
         return enabled
     }
 
-//    fun areNotificationsEnabled(): Boolean {
-//        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            ContextCompat.checkSelfPermission(
-//                context, Manifest.permission.POST_NOTIFICATIONS
-//            ) == PackageManager.PERMISSION_GRANTED
-//        } else {
-//            NotificationManagerCompat.from(context).areNotificationsEnabled()
-//        }
-//    }
-
     fun setNotificationsEnabled(enabled: Boolean) {
         UserPreferences.setHasEnabledNotifications(context, enabled)
     }

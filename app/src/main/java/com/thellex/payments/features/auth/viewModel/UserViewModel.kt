@@ -32,16 +32,23 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     private val prefs = application.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
     val token: LiveData<String?> = repository.getToken().asLiveData()
-
     private val _authResult = MutableLiveData<UserEntity?>()
     val authResult: LiveData<UserEntity?> = _authResult
     private val _notificationsEnabled = MutableLiveData<Boolean>()
-    val notificationsEnabled: LiveData<Boolean> get() = _notificationsEnabled
+    val notificationsEnabled: LiveData<Boolean> = _notificationsEnabled
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
 
     init {
         viewModelScope.launch {
-            repository.getAuthResult().collect { user ->
-                _authResult.postValue(user)
+            try {
+                repository.getAuthResult().collect { user ->
+                    _authResult.postValue(user)
+                    Log.d(TAG, "Initialized auth result: ${user?.fiatCryptoRampTransactions?.map { it.id }}")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to initialize auth result: ${e.message}", e)
+                _error.postValue("Failed to load user data: ${e.message}")
             }
         }
     }
@@ -50,21 +57,23 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         viewModelScope.launch {
             try {
                 repository.saveToken(token)
+                Log.d(TAG, "Saved token: $token")
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to save token", e)
+                Log.e(TAG, "Failed to save token: ${e.message}", e)
+                _error.postValue("Failed to save token: ${e.message}")
             }
         }
     }
 
-    fun getToken(): String? {
-        return token.value
-    }
+    fun getToken(): String? = token.value
 
     fun saveExpiresAt(timeString: String) {
         try {
             prefs.edit().putString("expiresAt", timeString).apply()
+            Log.d(TAG, "Saved expiresAt: $timeString")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to save expiresAt", e)
+            Log.e(TAG, "Failed to save expiresAt: ${e.message}", e)
+            _error.postValue("Failed to save expiresAt: ${e.message}")
         }
     }
 
@@ -72,8 +81,11 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         viewModelScope.launch {
             try {
                 repository.saveAuthResult(result)
+                Log.d(TAG, "Saved auth result: ${result?.fiatCryptoRampTransactions?.map { it.id }}")
+                _authResult.postValue(result) // Ensure UI updates
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to save auth result", e)
+                Log.e(TAG, "Failed to save auth result: ${e.message}", e)
+                _error.postValue("Failed to save user data: ${e.message}")
             }
         }
     }
@@ -85,7 +97,8 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 _authResult.postValue(latestUser)
                 Log.d(TAG, "Refreshed auth result: ${latestUser?.fiatCryptoRampTransactions?.map { it.id }}")
             } catch (e: Exception) {
-                Log.e(TAG, "refreshAuthResult failed", e)
+                Log.e(TAG, "refreshAuthResult failed: ${e.message}", e)
+                _error.postValue("Failed to refresh user data: ${e.message}")
             }
         }
     }
@@ -96,8 +109,10 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 repository.logout()
                 _authResult.postValue(null)
                 ActivityTracker.finishAll()
+                Log.d(TAG, "Logged out successfully")
             } catch (e: Exception) {
-                Log.e(TAG, "Logout failed", e)
+                Log.e(TAG, "Logout failed: ${e.message}", e)
+                _error.postValue("Logout failed: ${e.message}")
             }
         }
     }
@@ -105,41 +120,37 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     fun addFiatCryptoRampTransaction(transaction: IFiatCryptoRampTransactionsDto) {
         viewModelScope.launch {
             try {
-                // Validate user
                 val currentUser = _authResult.value
                 if (currentUser == null) {
                     Log.w(TAG, "Cannot add fiat-crypto ramp transaction - user is null")
+                    _error.postValue("Cannot add transaction: User not logged in")
                     return@launch
                 }
 
-                // Check for duplicate transaction
                 val updatedList = currentUser.fiatCryptoRampTransactions.toMutableList()
                 if (updatedList.any { it.id == transaction.id }) {
                     Log.w(TAG, "Fiat-crypto ramp transaction already exists: ${transaction.id}")
                     return@launch
                 }
 
-                // Add and sort transactions
                 updatedList.add(transaction)
                 val sortedList = updatedList.sortedByDescending { it.createdAt }
                 val updatedUser = currentUser.copy(fiatCryptoRampTransactions = sortedList)
                 Log.d(TAG, "Added fiat-crypto ramp transaction: ${transaction.id}, Updated list: $sortedList")
 
-                // Update StateFlow and persist
                 _authResult.postValue(updatedUser)
                 saveAuthResult(updatedUser)
 
-                // Sync with backend
                 try {
                     repository.addFiatCryptoRampTransaction(transaction)
                     Log.d(TAG, "Successfully synced fiat-crypto ramp transaction: ${transaction.id}")
                 } catch (e: Exception) {
-                    Log.e(TAG, "Failed to sync fiat-crypto ramp transaction ${transaction.id} with backend", e)
-                    // Optionally notify UI of sync failure
-                    // Consider using a separate StateFlow for errors if needed
+                    Log.e(TAG, "Failed to sync fiat-crypto ramp transaction ${transaction.id}: ${e.message}", e)
+                    _error.postValue("Failed to sync transaction ${transaction.id}: ${e.message}")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to add fiat-crypto ramp transaction: ${e.message}", e)
+                _error.postValue("Failed to add transaction: ${e.message}")
             }
         }
     }
@@ -148,22 +159,28 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         viewModelScope.launch {
             try {
                 val currentUser = _authResult.value
-                if (currentUser != null) {
-                    val updatedList = currentUser.transactionHistory.toMutableList()
-                    if (updatedList.isEmpty() || !updatedList.any { it.id == transaction.id }) {
-                        updatedList.add(transaction)
-                    } else {
-                        Log.w(TAG, "Transaction already exists: ${transaction.blockchainTxId}")
-                    }
-                    val sortedList = updatedList.sortedByDescending { it.createdAt }
-                    val updatedUser = currentUser.copy(transactionHistory = sortedList)
-                    saveAuthResult(updatedUser)
-                    _authResult.postValue(updatedUser)
-                } else {
+                if (currentUser == null) {
                     Log.w(TAG, "Cannot add transaction - user is null")
+                    _error.postValue("Cannot add transaction: User not logged in")
+                    return@launch
                 }
+
+                val updatedList = currentUser.transactionHistory.toMutableList()
+                if (updatedList.any { it.id == transaction.id }) {
+                    Log.w(TAG, "Transaction already exists: ${transaction.id}")
+                    return@launch
+                }
+
+                updatedList.add(transaction)
+                val sortedList = updatedList.sortedByDescending { it.createdAt }
+                val updatedUser = currentUser.copy(transactionHistory = sortedList)
+                Log.d(TAG, "Added transaction: ${transaction.id}, Updated list: $sortedList")
+
+                _authResult.postValue(updatedUser)
+                saveAuthResult(updatedUser)
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to add transaction", e)
+                Log.e(TAG, "Failed to add transaction: ${e.message}", e)
+                _error.postValue("Failed to add transaction: ${e.message}")
             }
         }
     }
@@ -172,18 +189,23 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         viewModelScope.launch {
             try {
                 val currentUser = _authResult.value
-                if (currentUser != null) {
-                    val updatedTransactions = currentUser.transactionHistory.map {
-                        if (it.transactionId == updatedTransaction.transactionId) updatedTransaction else it
-                    }
-                    val updatedUser = currentUser.copy(transactionHistory = updatedTransactions)
-                    saveAuthResult(updatedUser)
-                    _authResult.postValue(updatedUser)
-                } else {
+                if (currentUser == null) {
                     Log.w(TAG, "Cannot update transaction - user is null")
+                    _error.postValue("Cannot update transaction: User not logged in")
+                    return@launch
                 }
+
+                val updatedTransactions = currentUser.transactionHistory.map {
+                    if (it.id == updatedTransaction.id) updatedTransaction else it
+                }
+                val updatedUser = currentUser.copy(transactionHistory = updatedTransactions)
+                Log.d(TAG, "Updated transaction: ${updatedTransaction.id}")
+
+                _authResult.postValue(updatedUser)
+                saveAuthResult(updatedUser)
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to update transaction", e)
+                Log.e(TAG, "Failed to update transaction: ${e.message}", e)
+                _error.postValue("Failed to update transaction: ${e.message}")
             }
         }
     }
@@ -192,20 +214,25 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         viewModelScope.launch {
             try {
                 val currentUser = _authResult.value
-                if (currentUser != null) {
-                    val updatedUser = currentUser.copy(
-                        currentTier = result.currentTier,
-                        nextTier = result.nextTier,
-                        outstandingKyc = result.outstandingKyc,
-                        remainingTiers = result.remainingTiers
-                    )
-                    saveAuthResult(updatedUser)
-                    _authResult.postValue(updatedUser)
-                } else {
+                if (currentUser == null) {
                     Log.w(TAG, "Cannot update KYC - user is null")
+                    _error.postValue("Cannot update KYC: User not logged in")
+                    return@launch
                 }
+
+                val updatedUser = currentUser.copy(
+                    currentTier = result.currentTier,
+                    nextTier = result.nextTier,
+                    outstandingKyc = result.outstandingKyc,
+                    remainingTiers = result.remainingTiers
+                )
+                Log.d(TAG, "Updated KYC: currentTier=${result.currentTier}, outstandingKyc=${result.outstandingKyc}")
+
+                _authResult.postValue(updatedUser)
+                saveAuthResult(updatedUser)
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to update KYC", e)
+                Log.e(TAG, "Failed to update KYC: ${e.message}", e)
+                _error.postValue("Failed to update KYC: ${e.message}")
             }
         }
     }
@@ -216,22 +243,25 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 val currentUser = _authResult.value
                 if (currentUser == null) {
                     Log.w(TAG, "Cannot update outstandingKyc - user is null")
+                    _error.postValue("Cannot update BVN: User not logged in")
                     return@launch
                 }
 
                 if (!result.isValid) {
                     Log.w(TAG, "BVN validation failed: $result")
+                    _error.postValue("BVN validation failed")
                     return@launch
                 }
 
-                // Remove "BVN" from outstandingKyc
                 val updatedOutStandingKyc = currentUser.outstandingKyc.filter { it != "BVN" }
                 val updatedUser = currentUser.copy(outstandingKyc = updatedOutStandingKyc)
                 Log.d(TAG, "Updated outstandingKyc: $updatedOutStandingKyc, from payload: $result")
+
+                _authResult.postValue(updatedUser)
                 saveAuthResult(updatedUser)
-                _authResult.postValue(updatedUser) // Update StateFlow for UI
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating user with BVN result: ${e.message}", e)
+                _error.postValue("Failed to update BVN: ${e.message}")
             }
         }
     }
@@ -240,18 +270,23 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         viewModelScope.launch {
             try {
                 val currentUser = _authResult.value
-                if (currentUser != null) {
-                    val updatedList = currentUser.notifications.map {
-                        if (it.id == result.id) it.copy(consumed = result.consumed, kind = result.kind) else it
-                    }
-                    val updatedUser = currentUser.copy(notifications = updatedList)
-                    Log.d(TAG, "Updated notification: $updatedList, from payload: $result")
-                    saveAuthResult(updatedUser)
-                } else {
+                if (currentUser == null) {
                     Log.w(TAG, "Cannot update notification - user is null")
+                    _error.postValue("Cannot update notification: User not logged in")
+                    return@launch
                 }
+
+                val updatedList = currentUser.notifications.map {
+                    if (it.id == result.id) it.copy(consumed = result.consumed, kind = result.kind) else it
+                }
+                val updatedUser = currentUser.copy(notifications = updatedList)
+                Log.d(TAG, "Updated notification: ${result.id}, consumed=${result.consumed}")
+
+                _authResult.postValue(updatedUser)
+                saveAuthResult(updatedUser)
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to update notification consumed", e)
+                Log.e(TAG, "Failed to update notification consumed: ${e.message}", e)
+                _error.postValue("Failed to update notification: ${e.message}")
             }
         }
     }
@@ -260,17 +295,22 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         viewModelScope.launch {
             try {
                 val currentUser = _authResult.value
-                if (currentUser != null) {
-                    val updatedBankAccounts = currentUser.bankAccounts.toMutableList().apply {
-                        add(newBankAccount)
-                    }
-                    val updatedUser = currentUser.copy(bankAccounts = updatedBankAccounts)
-                    saveAuthResult(updatedUser)
-                } else {
+                if (currentUser == null) {
                     Log.w(TAG, "Cannot add bank account - user is null")
+                    _error.postValue("Cannot add bank account: User not logged in")
+                    return@launch
                 }
+
+                val updatedBankAccounts = currentUser.bankAccounts.toMutableList().apply {
+                    add(newBankAccount)
+                }
+                val updatedUser = currentUser.copy(bankAccounts = updatedBankAccounts)
+
+                _authResult.postValue(updatedUser)
+                saveAuthResult(updatedUser)
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to add bank account", e)
+                Log.e(TAG, "Failed to add bank account: ${e.message}", e)
+                _error.postValue("Failed to add bank account: ${e.message}")
             }
         }
     }
@@ -290,17 +330,21 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     fun isVerificationCodeValid(): Boolean {
         val expiresAtInstant = getExpiresAt() ?: return false
         val nowInstant = Clock.System.now()
-        return expiresAtInstant > nowInstant
+        val isValid = expiresAtInstant > nowInstant
+        Log.d(TAG, "Verification code valid: $isValid, expiresAt=$expiresAtInstant, now=$nowInstant")
+        return isValid
     }
 
     fun isNotificationsDismissed(): Boolean = repository.isNotificationsDismissed()
 
     fun setNotificationsDismissed(dismissed: Boolean) {
         repository.setNotificationsDismissed(dismissed)
+        Log.d(TAG, "Set notifications dismissed: $dismissed")
     }
 
     fun refreshNotificationsStatus() {
-        (notificationsEnabled as MutableLiveData).postValue(repository.areNotificationsEnabled())
-        Log.d(TAG, "Notifications status refreshed: ${repository.areNotificationsEnabled()}")
+        val areEnabled = repository.areNotificationsEnabled() ?: false
+        _notificationsEnabled.postValue(areEnabled)
+        Log.d(TAG, "Notifications status refreshed: $areEnabled")
     }
 }
