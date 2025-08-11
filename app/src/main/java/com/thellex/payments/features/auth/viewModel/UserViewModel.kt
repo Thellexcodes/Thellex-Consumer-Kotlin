@@ -7,17 +7,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.thellex.payments.core.utils.ActivityTracker
-import com.thellex.payments.data.model.IBankAccountDto
-import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
-import com.thellex.payments.data.model.INotificationConsumeDto
-import com.thellex.payments.data.model.ITransactionHistoryDto
-import com.thellex.payments.data.model.KycResponseDto
-import com.thellex.payments.data.model.KycValidateBvnResponse
-import com.thellex.payments.data.model.UserEntity
-import com.thellex.payments.data.model.UserPreferences
+import com.thellex.payments.data.model.*
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -38,12 +30,19 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     val notificationsEnabled: LiveData<Boolean> = _notificationsEnabled
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
+    private val _selectedTab = MutableLiveData<Int>(0) // Default to Deposits tab
+    val selectedTab: LiveData<Int> get() = _selectedTab
+    private val _depositTransactions = MutableLiveData<List<ITransactionHistoryDto>>(emptyList())
+    val depositTransactions: LiveData<List<ITransactionHistoryDto>> = _depositTransactions
+    private val _withdrawalTransactions = MutableLiveData<List<ITransactionHistoryDto>>(emptyList())
+    val withdrawalTransactions: LiveData<List<ITransactionHistoryDto>> = _withdrawalTransactions
 
     init {
         viewModelScope.launch {
             try {
                 repository.getAuthResult().collect { user ->
                     _authResult.postValue(user)
+                    updateFilteredTransactions(user)
                     Log.d(TAG, "Initialized auth result: ${user?.fiatCryptoRampTransactions?.map { it.id }}")
                 }
             } catch (e: Exception) {
@@ -51,6 +50,27 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 _error.postValue("Failed to load user data: ${e.message}")
             }
         }
+    }
+
+    private fun updateFilteredTransactions(user: UserEntity?) {
+        val transactions = user?.transactionHistory ?: emptyList()
+        val depositTransactions = transactions
+            .filter {
+                it.transactionType == TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT ||
+                        it.transactionType == TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT ||
+                        it.transactionType == TransactionTypeEnum.CRYPTO_DEPOSIT
+            }
+            .sortedByDescending { it.createdAt }
+        val withdrawalTransactions = transactions
+            .filter {
+                it.transactionType == TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL ||
+                        it.transactionType == TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL ||
+                        it.transactionType == TransactionTypeEnum.CRYPTO_WITHDRAWAL
+            }
+            .sortedByDescending { it.createdAt }
+
+        _depositTransactions.postValue(depositTransactions)
+        _withdrawalTransactions.postValue(withdrawalTransactions)
     }
 
     fun saveToken(token: String?) {
@@ -81,8 +101,9 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         viewModelScope.launch {
             try {
                 repository.saveAuthResult(result)
+                _authResult.postValue(result)
+                updateFilteredTransactions(result)
                 Log.d(TAG, "Saved auth result: ${result?.fiatCryptoRampTransactions?.map { it.id }}")
-                _authResult.postValue(result) // Ensure UI updates
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to save auth result: ${e.message}", e)
                 _error.postValue("Failed to save user data: ${e.message}")
@@ -95,6 +116,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
             try {
                 val latestUser = UserPreferences.getAuthResultSync(context)
                 _authResult.postValue(latestUser)
+                updateFilteredTransactions(latestUser)
                 Log.d(TAG, "Refreshed auth result: ${latestUser?.fiatCryptoRampTransactions?.map { it.id }}")
             } catch (e: Exception) {
                 Log.e(TAG, "refreshAuthResult failed: ${e.message}", e)
@@ -108,6 +130,8 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
             try {
                 repository.logout()
                 _authResult.postValue(null)
+                _depositTransactions.postValue(emptyList())
+                _withdrawalTransactions.postValue(emptyList())
                 ActivityTracker.finishAll()
                 Log.d(TAG, "Logged out successfully")
             } catch (e: Exception) {
@@ -140,6 +164,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
 
                 _authResult.postValue(updatedUser)
                 saveAuthResult(updatedUser)
+                updateFilteredTransactions(updatedUser)
 
                 try {
                     repository.addFiatCryptoRampTransaction(transaction)
@@ -178,6 +203,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
 
                 _authResult.postValue(updatedUser)
                 saveAuthResult(updatedUser)
+                updateFilteredTransactions(updatedUser)
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to add transaction: ${e.message}", e)
                 _error.postValue("Failed to add transaction: ${e.message}")
@@ -203,6 +229,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
 
                 _authResult.postValue(updatedUser)
                 saveAuthResult(updatedUser)
+                updateFilteredTransactions(updatedUser)
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to update transaction: ${e.message}", e)
                 _error.postValue("Failed to update transaction: ${e.message}")
@@ -346,5 +373,9 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         val areEnabled = repository.areNotificationsEnabled() ?: false
         _notificationsEnabled.postValue(areEnabled)
         Log.d(TAG, "Notifications status refreshed: $areEnabled")
+    }
+
+    fun setSelectedTab(tabIndex: Int) {
+        _selectedTab.value = tabIndex
     }
 }

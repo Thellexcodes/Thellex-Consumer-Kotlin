@@ -1,12 +1,8 @@
 package com.thellex.payments.features.pos.adapters
 
-import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -30,6 +26,10 @@ class POSTransactionAdapter(
     private val onItemClick: (PosTransaction) -> Unit
 ) : ListAdapter<PosTransaction, POSTransactionAdapter.TransactionViewHolder>(PosTransactionDiffCallback()) {
 
+    companion object {
+        private const val TAG = "POSTransactionAdapter"
+    }
+
     inner class TransactionViewHolder(
         private val binding: ItemTransactionBinding
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -38,98 +38,111 @@ class POSTransactionAdapter(
             binding.root.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    onItemClick(getItem(position))
+                    val item = getItem(position)
+                    onItemClick(item)
+                } else {
+                    Log.w(TAG, "Invalid position on click: $position")
                 }
             }
         }
 
         fun bind(item: PosTransaction) {
-            // Use default icon if iconResId is null
+            Log.d(TAG, "Binding PosTransaction: id=${item.id}, type=${item.transactionType}, status=${item.paymentStatus}")
             binding.txnIcon.setImageResource(item.iconResId ?: R.drawable.icon_txn)
-            binding.statusIcon.setImageResource(item.statusIconResId ?: R.drawable.icon_txn)
-
-            binding.txnDescription.text = item.description ?: "Unknown"
+            binding.txnDescription.text = item.description.uppercase(Locale.getDefault()) ?: "Unknown"
             binding.timeText.text = item.time ?: "N/A"
             binding.amount.text = item.amountWithSymbol ?: "0.00"
+            binding.status.text = item.paymentStatus.toString().uppercase(Locale.getDefault()) ?: "UNKNOWN"
+            binding.statusIcon.setImageResource(item.statusIconResId)
 
-            binding.status.text = item.paymentStatus?.toString()?.uppercase() ?: "UNKNOWN"
             val colorRes = Helpers.getPaymentStatusColor(item.paymentStatus ?: PaymentStatusEnum.Unknown)
             binding.status.setTextColor(ContextCompat.getColor(binding.root.context, colorRes))
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
+        Log.d(TAG, "Creating ViewHolder for viewType: $viewType")
         val binding = ItemTransactionBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TransactionViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        Log.d("POSTransactionAdapter", "Binding item at $position: ${getItem(position)}")
         val item = getItem(position)
         if (item != null) {
-            holder.bind(getItem(position))
+            Log.d(TAG, "Binding item at position $position: id=${item.id}, type=${item.transactionType}")
+            holder.bind(item)
         } else {
-            Log.w("POSTransactionAdapter", "Null item at position $position")
+            Log.w(TAG, "Null item at position $position")
         }
     }
-//    override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-//    }
 
     fun updateList(newItems: List<ITransactionHistoryDto>) {
-        Log.d("POSHOme", "this is newItems $newItems")
-        val posTransactions = newItems.map { transaction ->
+        Log.d(TAG, "Updating list with ${newItems.size} transactions")
+        val posTransactions = newItems.mapNotNull { transaction ->
             try {
-                val displayAmount = when (transaction.transactionType) {
-                    TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT,
-                    TransactionTypeEnum.CRYPTO_DEPOSIT,
-                    TransactionTypeEnum.CRYPTO_WITHDRAWAL,
-                    TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> {
-                        transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
-                    }
-                    TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT,
-                    TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL -> {
-                        transaction.mainAssetAmount.roundToTwoDecimals()
-                    }
-                    TransactionTypeEnum.FIAT_TO_FIAT_DEPOSIT,
-                    TransactionTypeEnum.FIAT_TO_FIAT_WITHDRAWAL -> {
-                        transaction.mainFiatAmount.roundToTwoDecimals()
-                    }
-                    else -> {
-                        Log.w("POSHOme", "Unknown transaction type: ${transaction.transactionType}")
-                        transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
-                    }
-                }
-
+                val displayAmount = calculateDisplayAmount(transaction)
                 PosTransaction(
                     iconResId = getIconResIdForToken(transaction.assetCode),
                     statusIconResId = getStatusIconResId(transaction.transactionType.toString()),
-                    description = transaction.assetCode.uppercase(Locale.getDefault()),
+                    description = transaction.assetCode.uppercase(Locale.getDefault()) ?: "Unknown",
                     time = formatTimestamp(transaction.createdAt),
                     amountWithSymbol = formatAmountWithSymbol(displayAmount.toString()),
-                    paymentStatus = mapToTransactionStatus(transaction.paymentStatus.toString()),
+                    paymentStatus = mapToTransactionStatus(transaction.paymentStatus?.toString() ?: "UNKNOWN"),
                     id = transaction.id,
                     transactionType = transaction.transactionType,
                     rampID = transaction.rampID,
                     amount = displayAmount.toString()
                 ).also {
-                    Log.d("POSHOme", "Mapped to PosTransaction: $it")
+                    Log.d(TAG, "Mapped transaction ${transaction.id} to PosTransaction: type=${transaction.transactionType}, amount=$displayAmount")
                 }
             } catch (e: Exception) {
-                Log.e("POSHOme", "Failed to map transaction ${transaction.id}: ${e.message}")
+                Log.e(TAG, "Failed to map transaction ${transaction.id}: ${e.message}", e)
                 null
             }
         }
-        Log.d("POSHOme", "Submitting posTransactions: $posTransactions")
+        Log.d(TAG, "Submitting ${posTransactions.size} PosTransactions")
         submitList(posTransactions)
+    }
+
+    private fun calculateDisplayAmount(transaction: ITransactionHistoryDto): Double {
+        return try {
+            when (transaction.transactionType) {
+                TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT,
+                TransactionTypeEnum.CRYPTO_DEPOSIT,
+                TransactionTypeEnum.CRYPTO_WITHDRAWAL,
+                TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> {
+                    transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
+                }
+                TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT,
+                TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL -> {
+                    transaction.mainAssetAmount?.roundToTwoDecimals() ?: 0.0
+                }
+                TransactionTypeEnum.FIAT_TO_FIAT_DEPOSIT,
+                TransactionTypeEnum.FIAT_TO_FIAT_WITHDRAWAL -> {
+                    transaction.mainFiatAmount?.roundToTwoDecimals() ?: 0.0
+                }
+                else -> {
+                    Log.w(TAG, "Unknown transaction type: ${transaction.transactionType} for id=${transaction.id}")
+                    transaction.amount.toDoubleOrNull()?.roundToTwoDecimals() ?: 0.0
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error calculating display amount for transaction ${transaction.id}: ${e.message}", e)
+            0.0
+        }
     }
 
     class PosTransactionDiffCallback : DiffUtil.ItemCallback<PosTransaction>() {
         override fun areItemsTheSame(oldItem: PosTransaction, newItem: PosTransaction): Boolean {
-            return oldItem.id == newItem.id
+            val isSame = oldItem.id == newItem.id
+            Log.v("POSTransactionAdapter", "areItemsTheSame: id=${oldItem.id}, isSame=$isSame")
+            return isSame
         }
 
         override fun areContentsTheSame(oldItem: PosTransaction, newItem: PosTransaction): Boolean {
-            return oldItem == newItem
+            val isSame = oldItem == newItem
+            Log.v("POSTransactionAdapter", "areContentsTheSame: id=${oldItem.id}, isSame=$isSame")
+            return isSame
         }
     }
 }

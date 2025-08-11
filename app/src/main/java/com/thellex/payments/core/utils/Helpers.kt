@@ -105,16 +105,37 @@ object Helpers {
     }
 
     private fun normalizeStatusForIcon(status: String?): String {
-        return when (status?.lowercase(Locale.getDefault())) {
-            "accepted", "completed", "received", "fiat_to_crypto_deposit" -> "received"
-            else -> "sent"
+        val normalized = status?.lowercase(Locale.getDefault()) ?: ""
+        Log.d("POSTransactionAdaptr", "normalizeStatusForIcon: input=$status, normalized=$normalized")
+        return when (normalized) {
+            "accepted", "completed", "received",
+            TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT.value.lowercase(Locale.getDefault()),
+            TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT.value.lowercase(Locale.getDefault()),
+            TransactionTypeEnum.CRYPTO_DEPOSIT.value.lowercase(Locale.getDefault()),
+            TransactionTypeEnum.FIAT_TO_FIAT_DEPOSIT.value.lowercase(Locale.getDefault()) -> "received"
+            TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL.value.lowercase(Locale.getDefault()),
+            TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL.value.lowercase(Locale.getDefault()),
+            TransactionTypeEnum.CRYPTO_WITHDRAWAL.value.lowercase(Locale.getDefault()),
+            TransactionTypeEnum.FIAT_TO_FIAT_WITHDRAWAL.value.lowercase(Locale.getDefault()) -> "sent"
+            else -> {
+                "sent"
+            }
         }
     }
 
     fun getStatusIconResId(status: String?): Int {
-        return when (normalizeStatusForIcon(status.toString())) {
-            "received" -> R.drawable.icon_receive_status
-            else -> R.drawable.icon_send_status
+        val normalizedStatus = normalizeStatusForIcon(status?.lowercase(Locale.getDefault()) ?: "")
+
+        return when (normalizedStatus) {
+            "received" -> {
+                R.drawable.icon_receive_status
+            }
+            "sent" -> {
+                R.drawable.icon_send_status
+            }
+            else -> {
+                R.drawable.icon_send_status
+            }
         }
     }
 

@@ -45,7 +45,7 @@ data class ITransactionHistoryDto(
 data class PosTransaction(
     @SerializedName("iconResId") val iconResId: Int?,
     @SerializedName("id") val id: String?,
-    @SerializedName("statusIconResId") val statusIconResId: Int?,
+    @SerializedName("statusIconResId") val statusIconResId: Int,
     @SerializedName("description") val description: String,
     @SerializedName("time") val time: String,
     @SerializedName("amountWithSymbol") val amountWithSymbol: String,

@@ -23,8 +23,7 @@
                         android:id="@+id/status_icon"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:layout_gravity="bottom|end"
-                        android:src="@drawable/icon_send_status" />
+                        android:layout_gravity="bottom|end" />
         </FrameLayout>
 
         <!-- Merchant Info -->

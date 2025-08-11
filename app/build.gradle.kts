@@ -44,50 +44,38 @@ android {
     buildFeatures {
         viewBinding = true
     }
-}
 
-dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-
-    implementation(libs.material)
-
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.androidx.annotation)
-
-    implementation(libs.androidx.lifecycle.livedata.ktx.v261)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx.v261)
-
-    implementation(libs.androidx.activity)
-    implementation(libs.journeyapps.zxing.android.embedded)
-
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.retrofit2.kotlinx.serialization.converter)
-    implementation(libs.logging.interceptor)
-    implementation(libs.kotlinx.datetime)
-
-    implementation(libs.otp.view)
-    implementation(libs.imagepicker)
-
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.messaging.ktx)
-    implementation(libs.firebase.crashlytics.ndk)
-
-    implementation(libs.androidx.ui.text.android)
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    implementation(libs.glide)
-    kapt("com.github.bumptech.glide:compiler:4.15.1")
-    implementation(libs.materialdatetimepicker)
-    implementation("com.google.android.material:material:1.2.0-alpha06")
-
-}
+    dependencies {
+        implementation(libs.androidx.core.ktx)
+        implementation(libs.androidx.appcompat)
+        implementation(libs.material) // Keep this, assuming it’s a newer version (e.g., 1.9.0+)
+        implementation(libs.androidx.constraintlayout)
+        implementation(libs.androidx.navigation.fragment.ktx)
+        implementation(libs.androidx.navigation.ui.ktx)
+        implementation(libs.androidx.annotation)
+        implementation(libs.androidx.lifecycle.livedata.ktx.v261)
+        implementation(libs.androidx.lifecycle.viewmodel.ktx.v261)
+        implementation(libs.androidx.activity)
+        implementation(libs.journeyapps.zxing.android.embedded)
+        implementation(libs.androidx.datastore.preferences)
+        implementation(libs.retrofit)
+        implementation(libs.converter.gson)
+        implementation(libs.kotlinx.coroutines.android)
+        implementation(libs.kotlinx.serialization.json)
+        implementation(libs.retrofit2.kotlinx.serialization.converter)
+        implementation(libs.logging.interceptor)
+        implementation(libs.kotlinx.datetime)
+        implementation(libs.otp.view)
+        implementation(libs.imagepicker)
+        implementation(platform(libs.firebase.bom))
+        implementation(libs.firebase.analytics)
+        implementation(libs.firebase.messaging.ktx)
+        implementation(libs.firebase.crashlytics.ndk)
+        implementation(libs.androidx.ui.text.android)
+        testImplementation(libs.junit)
+        androidTestImplementation(libs.androidx.junit)
+        androidTestImplementation(libs.androidx.espresso.core)
+        implementation(libs.glide)
+        kapt("com.github.bumptech.glide:compiler:4.15.1")
+        implementation(libs.materialdatetimepicker)
+    }}

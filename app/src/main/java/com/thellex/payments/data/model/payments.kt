@@ -72,7 +72,7 @@ enum class TransactionTypeEnum(val value: String) {
 
     companion object {
         fun fromValue(value: String): TransactionTypeEnum? =
-            values().find { it.value.equals(value, ignoreCase = true) }
+            entries.find { it.value.equals(value, ignoreCase = true) }
     }
 }
 
