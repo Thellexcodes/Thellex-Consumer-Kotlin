@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
@@ -53,6 +54,8 @@ import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.features.wallet.ui.WalletAssetsActivity
 import com.thellex.payments.features.wallet.ui.WithdrawToCryptoWalletActivity
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+
 
 class POSHomeActivity : AppCompatActivity() {
     lateinit var binding: ActivityPOSBinding
@@ -160,10 +163,16 @@ class POSHomeActivity : AppCompatActivity() {
     }
 
     private fun loadWalletData() {
-        walletManagerViewModel.loadWallet(
-            tokenProvider = { userViewModel.token.asFlow().first { !it.isNullOrBlank() } },
-            loadNow = false
-        )
+        lifecycleScope.launch {
+            // Get the token safely in a coroutine
+            val token = userViewModel.token.asFlow().first { !it.isNullOrBlank() }
+
+            // Load wallet data
+            walletManagerViewModel.loadWallet(
+                tokenProvider = { token },
+                loadNow = false
+            )
+        }
     }
 
     private fun setupWalletBalanceObserver() {

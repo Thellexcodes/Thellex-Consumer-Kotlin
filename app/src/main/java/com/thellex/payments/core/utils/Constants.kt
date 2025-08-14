@@ -1,13 +1,13 @@
 package com.thellex.payments.core.utils
 object Constants {
-    private const val API_VERSION = "v1.0.1"
     private const val API_PREFIX = "api"
+    private const val API_VERSION = "v1.0.1"
     private const val VERSIONED_BASE = "$API_PREFIX/$API_VERSION"
 
     const val LOGIN_ENDPOINT = "$VERSIONED_BASE/user/access"
     const val VERIFY_CODE_ENDPOINT = "$VERSIONED_BASE/user/verify"
     const val AUTH_LOGIN_ENDPOINT = "$VERSIONED_BASE/user/authenticate"
-    const val UPDATE_FCM_TOKEN_ENDPOINT = "$VERSIONED_BASE/user/update-fcm-token"
+    const val SAVE_DEVICE_INFO_ENDPOINT = "$VERSIONED_BASE/devices/save-info"
 
     // Payment Endpoints
     const val WITHDRAW_CRYPTO_PAYMENT_ENDPOINT = "$VERSIONED_BASE/payments/withdraw-crypto"

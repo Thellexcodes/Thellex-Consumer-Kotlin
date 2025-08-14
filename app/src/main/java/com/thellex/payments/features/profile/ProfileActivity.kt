@@ -54,6 +54,8 @@ class ProfileActivity : AppCompatActivity() {
             binding.userRealName.text = upperUid
             binding.userEmail.text = userEmail
         }
+
+        binding.logout.setOnClickListener{onLogout()}
     }
 
     private fun onLogout() {

@@ -11,6 +11,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Build
+import android.provider.Settings
 import android.text.InputFilter
 import android.text.Spannable
 import android.text.SpannableString
@@ -586,5 +587,9 @@ object Helpers {
     fun Double.roundToTwoDecimals(): Double {
         return String.format("%.2f", this).toDouble()
     }
+
+    @SuppressLint("HardwareIds")
+    fun deviceId(context: Context): String =
+        Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "unknown"
 }
 

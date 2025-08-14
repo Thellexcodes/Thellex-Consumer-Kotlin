@@ -20,9 +20,12 @@ data class AccessResponse(
     @SerializedName("expires_at") val expiresAt: String
 )
 
-@Serializable
-data class FcmTokenDto (
-    @SerializedName("token") val token: String
+data class DeviceRequestDto(
+    @SerializedName("fcmToken") val fcmToken: String,
+    @SerializedName("platform") val platform: String,
+    @SerializedName("deviceModel") val deviceModel: String,
+    @SerializedName("osVersion") val osVersion: String,
+    @SerializedName("deviceId") val deviceId: String,
 )
 
 @Serializable

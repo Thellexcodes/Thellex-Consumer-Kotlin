@@ -161,7 +161,7 @@ class FCMService : FirebaseMessagingService() {
                 }
                 Log.d(tag, "User auth token: $userAuthToken")
                 if (!userAuthToken.isNullOrBlank()) {
-                    sendFcmTokenToBackend(userAuthToken = userAuthToken, fcmToken = fcmToken)
+                    sendFcmTokenToBackend(applicationContext,userAuthToken = userAuthToken, fcmToken = fcmToken)
                     Log.d(tag, "FCM token sent to backend successfully")
                 } else {
                     Log.w(tag, "User auth token unavailable, cannot send FCM token")
