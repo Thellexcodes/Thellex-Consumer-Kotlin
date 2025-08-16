@@ -5,16 +5,17 @@ import android.annotation.SuppressLint
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.thellex.payments.core.utils.EventBus
 import com.thellex.payments.core.utils.FcmHelper.sendFcmTokenToBackend
 import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.deserializers.NotificationKindEnumDeserializer
 import com.thellex.payments.core.utils.deserializers.TransactionTypeEnumDeserializer
 import com.thellex.payments.data.enums.NotificationEventsEnum
 import com.thellex.payments.data.model.ITransactionHistoryDto
 import com.thellex.payments.data.model.NotificationEntity
+import com.thellex.payments.data.model.NotificationKindEnum
 import com.thellex.payments.data.model.PaymentStatusEnum
 import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.data.model.UserPreferences
@@ -90,6 +91,7 @@ class FCMService : FirebaseMessagingService() {
                                     val gson = GsonBuilder()
                                         .registerTypeAdapter(TransactionTypeEnum::class.java, TransactionTypeEnumDeserializer())
                                         .registerTypeAdapter(PaymentStatusEnum::class.java, PaymentStatusEnumDeserializer())
+                                        .registerTypeAdapter(NotificationKindEnum::class.java, NotificationKindEnumDeserializer())
                                         .create()
 
                                     val transaction = transactionJson?.let {
@@ -103,7 +105,7 @@ class FCMService : FirebaseMessagingService() {
 
                                     val notification = notificationJson?.let {
                                         try {
-                                            Gson().fromJson(it, NotificationEntity::class.java)
+                                            gson.fromJson(it, NotificationEntity::class.java)
                                         } catch (e: JsonSyntaxException) {
                                             Log.e(tag, "Invalid notification JSON: $it", e)
                                             null
@@ -111,7 +113,7 @@ class FCMService : FirebaseMessagingService() {
                                     }
 
                                     Log.d(tag, "Transaction parsed: $transaction")
-                                    Log.d(tag, "Notification parsed: $notification")
+//                                    Log.d(tag, "Notification parsed: $notification")
 
                                     transaction?.let {
                                         val existing = UserPreferences.getTransactionById(applicationContext, it.id)

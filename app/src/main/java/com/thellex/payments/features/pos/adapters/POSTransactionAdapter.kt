@@ -77,7 +77,6 @@ class POSTransactionAdapter(
     }
 
     fun updateList(newItems: List<ITransactionHistoryDto>) {
-        Log.d(TAG, "Updating list with ${newItems.size} transactions")
         val posTransactions = newItems.mapNotNull { transaction ->
             try {
                 val displayAmount = calculateDisplayAmount(transaction)
@@ -92,9 +91,7 @@ class POSTransactionAdapter(
                     transactionType = transaction.transactionType,
                     rampID = transaction.rampID,
                     amount = displayAmount.toString()
-                ).also {
-                    Log.d(TAG, "Mapped transaction ${transaction.id} to PosTransaction: type=${transaction.transactionType}, amount=$displayAmount")
-                }
+                )
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to map transaction ${transaction.id}: ${e.message}", e)
                 null

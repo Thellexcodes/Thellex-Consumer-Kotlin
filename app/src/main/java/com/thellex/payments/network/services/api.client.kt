@@ -3,6 +3,7 @@ package com.thellex.payments.network.services
 import InstantDeserializer
 import com.google.gson.GsonBuilder
 import com.thellex.payments.core.utils.Constants
+import com.thellex.payments.core.utils.deserializers.NotificationKindEnumDeserializer
 import com.thellex.payments.data.enums.TierEnum
 import com.thellex.payments.data.model.NotificationKindEnum
 import com.thellex.payments.data.model.PaymentStatusEnum

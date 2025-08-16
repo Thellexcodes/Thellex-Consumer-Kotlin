@@ -155,7 +155,7 @@ object UserPreferences {
                 if (it.id == transactionId) transaction else it
             }.sortedByDescending { it.createdAt }
             val updatedUser = currentUser.copy(transactionHistory = updatedList)
-//            saveAuthResult(context, updatedUser)
+            saveAuthResult(context, updatedUser)
         }
     }
 
