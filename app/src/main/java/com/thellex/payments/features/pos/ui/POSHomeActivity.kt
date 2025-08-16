@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -108,6 +109,19 @@ class POSHomeActivity : AppCompatActivity() {
         updateAttentionGrabber()
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_NOTIFICATIONS) {
+            val isGranted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            userViewModel.setNotificationsEnabled(isGranted)
+            userViewModel.refreshNotificationsStatus()
+        }
+    }
+
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun setupViewPager() {
         val adapter = ViewPagerAdapter(this, listOf(DepositsFragment(), WithdrawalsFragment()))
@@ -145,19 +159,19 @@ class POSHomeActivity : AppCompatActivity() {
             val filteredTransactions = if (isDepositsTab) {
                 transactions?.filter {
                     it.transactionType == TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT ||
-                            it.transactionType == TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT ||
-                            it.transactionType == TransactionTypeEnum.CRYPTO_DEPOSIT
+                    it.transactionType == TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT ||
+                    it.transactionType == TransactionTypeEnum.CRYPTO_DEPOSIT
                 } ?: emptyList()
             } else {
                 transactions?.filter {
                     it.transactionType == TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL ||
-                            it.transactionType == TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL ||
-                            it.transactionType == TransactionTypeEnum.CRYPTO_WITHDRAWAL
+                    it.transactionType == TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL ||
+                    it.transactionType == TransactionTypeEnum.CRYPTO_WITHDRAWAL
                 } ?: emptyList()
             }
             val isEmpty = filteredTransactions.isEmpty()
             binding.titleRecentTransactions.visibility = if (isEmpty) View.GONE else View.VISIBLE
-            binding.buttonViewAll.visibility = if (isEmpty) View.GONE else View.VISIBLE
+//            binding.buttonViewAll.visibility = if (isEmpty) View.GONE else View.VISIBLE
             binding.emptyTransactionsView.visibility = if (isEmpty) View.VISIBLE else View.GONE
         }
     }
@@ -303,41 +317,41 @@ class POSHomeActivity : AppCompatActivity() {
     }
 
     private fun updateAttentionGrabber() {
-        val notificationsEnabled = userViewModel.notificationsEnabled.value
+        val notificationsEnabled = userViewModel.notificationsEnabled.value ?: false
         Log.d(TAG, "notificationsEnabled: $notificationsEnabled, Dismissed: ${userViewModel.isNotificationsDismissed()}")
-        if ((notificationsEnabled == false || notificationsEnabled == null) && !userViewModel.isNotificationsDismissed()) {
+        if (!notificationsEnabled && !userViewModel.isNotificationsDismissed()) {
             binding.attentionGrabber.setAttentionGrabber(
                 message = "Enable notifications to stay updated!",
                 actionText = "Enable",
                 iconResId = R.drawable.icon_notification_gray,
                 onActionClick = {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        ActivityCompat.requestPermissions(
-                            this,
-                            arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                            REQUEST_CODE_NOTIFICATIONS
-                        )
+                        val permission = Manifest.permission.POST_NOTIFICATIONS
+                        when {
+                            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
+                                userViewModel.setNotificationsEnabled(true)
+                            }
+                            else -> {
+                                ActivityCompat.requestPermissions(
+                                    this,
+                                    arrayOf(permission),
+                                    REQUEST_CODE_NOTIFICATIONS
+                                )
+                            }
+                        }
                     } else {
-//                        val intent = Intent().apply {
-////                            action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
-////                            putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-//                        }
-//                        startActivity(intent)
+                        userViewModel.setNotificationsEnabled(true)
                     }
-                    // Persist the enabled state after user action
                     userViewModel.setNotificationsDismissed(true)
-                    if (notificationsEnabled != null) {
-                        userViewModel.refreshNotificationsStatus()
-                    }
+                    userViewModel.refreshNotificationsStatus()
                 },
                 onCloseClick = {
                     userViewModel.setNotificationsDismissed(true)
                 }
             )
-            return
+        } else {
+            binding.attentionGrabber.hide()
         }
-
-        binding.attentionGrabber.hide()
     }
 
     private fun closeAllOtherActivities() {
@@ -354,18 +368,6 @@ class POSHomeActivity : AppCompatActivity() {
     companion object {
         private val TAG = "Dashboard"
         private const val REQUEST_CODE_NOTIFICATIONS = 1001
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_NOTIFICATIONS) {
-            userViewModel.refreshNotificationsStatus()
-            updateAttentionGrabber()
-        }
     }
 }
 

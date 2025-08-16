@@ -12,9 +12,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/notification_container"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
-            android:layout_height="wrap_content"
             android:padding="@dimen/dp_6">
 
         <ImageView
@@ -36,9 +36,37 @@
                 android:textColor="@color/darkBlue"
                 android:textSize="@dimen/sp_12"
                 app:layout_constraintStart_toEndOf="@id/icon"
-                app:layout_constraintEnd_toStartOf="@id/close_button"
+                app:layout_constraintEnd_toStartOf="@id/action_container"
                 app:layout_constraintTop_toTopOf="@id/icon"
                 app:layout_constraintBottom_toBottomOf="@id/icon" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/action_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:layout_constraintEnd_toStartOf="@id/close_button"
+                app:layout_constraintTop_toTopOf="@id/icon"
+                app:layout_constraintBottom_toBottomOf="@id/icon">
+
+            <TextView
+                    android:id="@+id/action_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/dp_8"
+                    android:paddingVertical="@dimen/dp_4"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:text="Enable"
+                    android:textColor="@color/darkBlue"
+                    android:textSize="@dimen/sp_12"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageButton
                 android:id="@+id/close_button"

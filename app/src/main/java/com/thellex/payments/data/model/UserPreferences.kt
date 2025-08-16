@@ -11,15 +11,14 @@ import kotlinx.coroutines.flow.flow
 
 object UserPreferences {
     private const val PREFS_NAME = "user_prefs"
+    private const val APP_PREFS_NAME = "app_prefs"
     private const val KEY_REWARDS_COUNT = "rewards_count"
     private const val KEY_REWARDS_DISMISSED = "rewards_dismissed"
     private const val KEY_NOTIFICATIONS_DISMISSED = "notifications_dismissed"
-    private val userFlow = MutableSharedFlow<UserEntity?>(replay = 1)
-    private val _rewardsCount = MutableLiveData<Int>()
-    private const val APP_PREFS_NAME = "app_prefs" // For has_enabled_notifications
     private const val KEY_HAS_ENABLED_NOTIFICATIONS = "has_enabled_notifications"
     private const val TAG = "UserPreferences"
-
+    private val userFlow = MutableSharedFlow<UserEntity?>(replay = 1)
+    private val _rewardsCount = MutableLiveData<Int>()
 
     fun saveToken(context: Context, token: String) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -100,25 +99,21 @@ object UserPreferences {
     }
 
     fun isNotificationsDismissed(context: Context): Boolean {
-        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return context.getSharedPreferences(APP_PREFS_NAME, Context.MODE_PRIVATE)
             .getBoolean(KEY_NOTIFICATIONS_DISMISSED, false)
     }
 
     fun setNotificationsDismissed(context: Context, dismissed: Boolean) {
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        context.getSharedPreferences(APP_PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putBoolean(KEY_NOTIFICATIONS_DISMISSED, dismissed)
             .apply()
         Log.d(TAG, "Notifications dismissed set to: $dismissed")
     }
 
-    fun hasEnabledNotifications(context: Context): Boolean? {
-        val prefs = context.getSharedPreferences(APP_PREFS_NAME, Context.MODE_PRIVATE)
-        return if (prefs.contains(KEY_HAS_ENABLED_NOTIFICATIONS)) {
-            prefs.getBoolean(KEY_HAS_ENABLED_NOTIFICATIONS, false)
-        } else {
-            null // Not set yet
-        }
+    fun hasEnabledNotifications(context: Context): Boolean {
+        return context.getSharedPreferences(APP_PREFS_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_HAS_ENABLED_NOTIFICATIONS, false)
     }
 
     fun setHasEnabledNotifications(context: Context, enabled: Boolean) {
@@ -202,12 +197,6 @@ object UserPreferences {
             if (!alreadyExists) {
                 updatedList.add(transaction)
                 Log.d(TAG, "Fiat ramp Transaction added: ${transaction.id}")
-                // Increment rewards for specific fiat-crypto transactions if needed
-//                if (/* Add condition based on transaction type */) {
-//                    val currentRewards = getAvailableRewards(context)
-//                    updateRewardsCount(context, currentRewards + 1)
-//                    setRewardsDismissed(context, false)
-//                }
             } else {
                 Log.d(TAG, "Transaction already exists: ${transaction.id}")
             }

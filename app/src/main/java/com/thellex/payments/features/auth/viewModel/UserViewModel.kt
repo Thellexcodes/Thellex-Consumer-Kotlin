@@ -19,10 +19,11 @@ import kotlin.time.Instant
 class UserViewModel(application: Context) : AndroidViewModel(application as Application) {
     companion object {
         private const val TAG = "UserViewModel"
+        private const val PREFS_NAME = "user_prefs"
     }
 
     private val repository = UserRepository.getInstance(application)
-    private val prefs = application.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    private val prefs = application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     val token: LiveData<String?> = repository.getToken().asLiveData()
     private val _authResult = MutableLiveData<UserEntity?>()
@@ -339,6 +340,14 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         viewModelScope.launch {
             repository.setNotificationsDismissed(dismissed)
             Log.d(TAG, "Set notifications dismissed: $dismissed")
+        }
+    }
+
+    fun setNotificationsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            repository.setNotificationsEnabled(enabled)
+            refreshNotificationsStatus()
+            Log.d(TAG, "Set notifications enabled: $enabled")
         }
     }
 

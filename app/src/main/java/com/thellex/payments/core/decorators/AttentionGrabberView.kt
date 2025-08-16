@@ -33,11 +33,11 @@ class AttentionGrabberView @JvmOverloads constructor(
         onCloseClick: () -> Unit = {}
     ) {
         binding.message.text = message
-//        binding.actionButton.text = actionText
+        binding.actionText.text = actionText
         binding.icon.setImageResource(iconResId)
         this.onActionClick = onActionClick
         this.onCloseClick = onCloseClick
-//        binding.actionButton.setOnClickListener { onActionClick.invoke() }
+        binding.actionContainer.setOnClickListener { onActionClick.invoke() }
         visibility = View.VISIBLE
     }
 
