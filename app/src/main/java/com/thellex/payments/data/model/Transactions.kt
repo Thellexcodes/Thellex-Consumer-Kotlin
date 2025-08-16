@@ -17,7 +17,7 @@ data class Transaction(
 @Serializable()
 data class ITransactionHistoryDto(
     @SerializedName("id") val id: String,
-    @SerializedName("event") val event: String?, // Change to nullable
+    @SerializedName("event") val event: String?,
     @SerializedName("transactionId") val transactionId: String,
     @SerializedName("transactionDirection") val transactionDirection: String,
     @SerializedName("transactionType") val transactionType: TransactionTypeEnum,

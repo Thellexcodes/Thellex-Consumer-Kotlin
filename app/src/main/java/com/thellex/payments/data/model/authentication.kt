@@ -34,7 +34,6 @@ data class UserEntity(
     @SerializedName("email") val email: String,
     @SerializedName("emailVerified") val emailVerified: Boolean,
     @SerializedName("suspended") val suspended: Boolean,
-    @SerializedName("alertID") val alertID: String,
     @SerializedName("kyc") val kyc: KycInfoEntity? = null,
     @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryDto>,
     @SerializedName("notifications") val notifications: List<NotificationEntity>,

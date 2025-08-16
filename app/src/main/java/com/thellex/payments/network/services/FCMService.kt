@@ -1,16 +1,22 @@
 package com.thellex.payments.network.services
 
+import PaymentStatusEnumDeserializer
 import android.annotation.SuppressLint
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
+import com.thellex.payments.core.utils.EventBus
 import com.thellex.payments.core.utils.FcmHelper.sendFcmTokenToBackend
 import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.deserializers.TransactionTypeEnumDeserializer
 import com.thellex.payments.data.enums.NotificationEventsEnum
 import com.thellex.payments.data.model.ITransactionHistoryDto
 import com.thellex.payments.data.model.NotificationEntity
+import com.thellex.payments.data.model.PaymentStatusEnum
+import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.data.model.WalletWebhookEventEnum
 import com.thellex.payments.features.auth.viewModel.UserRepository
@@ -30,12 +36,10 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(tag, "FirebaseManager service started")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(tag, "FirebaseManager service destroyed")
         serviceScope.cancel()
     }
 
@@ -52,16 +56,12 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-        Log.d(tag, "Message received: $remoteMessage")
-        Log.d(tag, "Message data payload: ${remoteMessage.data}")
-        Log.d(tag, "Message notification: ${remoteMessage.notification}")
 
         remoteMessage.notification?.body?.let {
             Log.d(tag, "Notification body: $it")
         }
 
         if (remoteMessage.data.isNotEmpty()) {
-            Log.d(tag, "Processing data payload: ${remoteMessage.data}")
 
             val status = remoteMessage.data["status"]
             val event = remoteMessage.data["event"]
@@ -74,14 +74,11 @@ class FCMService : FirebaseMessagingService() {
 
             if (!event.isNullOrEmpty()) {
                 try {
-                    Log.d(tag, "Attempting to parse event: $event")
                     val eventEnum = Helpers.firstMatchingEnum(
                         event,
                         NotificationEventsEnum::fromValue,
                         WalletWebhookEventEnum::fromValue,
                     )
-
-                    Log.d(tag, "Parsed event enum: $eventEnum")
 
                     if (eventEnum != null) {
                         when (eventEnum) {
@@ -90,11 +87,14 @@ class FCMService : FirebaseMessagingService() {
                             NotificationEventsEnum.FIAT_TO_CRYPTO_DEPOSIT,
                             NotificationEventsEnum.CRYPTO_TO_FIAT_WITHDRAWAL -> {
                                 runIO {
-                                    Log.d(tag, "Processing event in coroutine: ${eventEnum.name}")
+                                    val gson = GsonBuilder()
+                                        .registerTypeAdapter(TransactionTypeEnum::class.java, TransactionTypeEnumDeserializer())
+                                        .registerTypeAdapter(PaymentStatusEnum::class.java, PaymentStatusEnumDeserializer())
+                                        .create()
+
                                     val transaction = transactionJson?.let {
                                         try {
-                                            Log.d(tag, "Parsing transaction JSON: $it")
-                                            Gson().fromJson(it, ITransactionHistoryDto::class.java)
+                                            gson.fromJson(it, ITransactionHistoryDto::class.java)
                                         } catch (e: JsonSyntaxException) {
                                             Log.e(tag, "Invalid transaction JSON: $it", e)
                                             null
@@ -103,7 +103,6 @@ class FCMService : FirebaseMessagingService() {
 
                                     val notification = notificationJson?.let {
                                         try {
-                                            Log.d(tag, "Parsing notification JSON: $it")
                                             Gson().fromJson(it, NotificationEntity::class.java)
                                         } catch (e: JsonSyntaxException) {
                                             Log.e(tag, "Invalid notification JSON: $it", e)
@@ -123,13 +122,13 @@ class FCMService : FirebaseMessagingService() {
                                             UserPreferences.updateTransactionById(applicationContext, it.id, it)
                                             Log.d(tag, "Updated transaction for event: ${eventEnum.name}, ID: ${it.id}")
                                         }
+                                        EventBus.postTransactionUpdate(it)
                                     }
-
+//
                                     notification?.let {
                                         UserPreferences.addNotification(applicationContext, it)
                                         Log.d(tag, "Saved notification for event: ${eventEnum.name}")
                                     }
-                                    Log.d(tag, "Successfully processed event: ${eventEnum.name}")
                                 }
                             }
                             else -> {
@@ -172,3 +171,4 @@ class FCMService : FirebaseMessagingService() {
         }
     }
 }
+

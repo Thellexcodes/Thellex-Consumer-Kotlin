@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.core.utils.EventBus
 import com.thellex.payments.data.model.*
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
@@ -37,6 +38,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     private val _withdrawalTransactions = MutableLiveData<List<ITransactionHistoryDto>>(emptyList())
     val withdrawalTransactions: LiveData<List<ITransactionHistoryDto>> = _withdrawalTransactions
 
+
     init {
         viewModelScope.launch {
             try {
@@ -47,30 +49,71 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to initialize auth result: ${e.message}", e)
-                _error.postValue("Failed to load user data: ${e.message}")
+                _error.postValue("Failed to load user data")
+            }
+        }
+        // Observe EventBus for transaction updates
+        EventBus.transactionUpdate.observeForever { transaction ->
+            viewModelScope.launch {
+                updateTransactionHistory(transaction)
             }
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        EventBus.transactionUpdate.removeObserver { /* No-op */ }
+    }
+
     private fun updateFilteredTransactions(user: UserEntity?) {
         val transactions = user?.transactionHistory ?: emptyList()
-        val depositTransactions = transactions
+        _depositTransactions.postValue(transactions
             .filter {
-                it.transactionType == TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT ||
-                        it.transactionType == TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT ||
-                        it.transactionType == TransactionTypeEnum.CRYPTO_DEPOSIT
+                it.transactionType in listOf(
+                    TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT,
+                    TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT,
+                    TransactionTypeEnum.CRYPTO_DEPOSIT
+                )
             }
-            .sortedByDescending { it.createdAt }
-        val withdrawalTransactions = transactions
+            .sortedByDescending { it.createdAt })
+        _withdrawalTransactions.postValue(transactions
             .filter {
-                it.transactionType == TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL ||
-                        it.transactionType == TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL ||
-                        it.transactionType == TransactionTypeEnum.CRYPTO_WITHDRAWAL
+                it.transactionType in listOf(
+                    TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL,
+                    TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL,
+                    TransactionTypeEnum.CRYPTO_WITHDRAWAL
+                )
             }
-            .sortedByDescending { it.createdAt }
+            .sortedByDescending { it.createdAt })
+    }
 
-        _depositTransactions.postValue(depositTransactions)
-        _withdrawalTransactions.postValue(withdrawalTransactions)
+    private fun updateTransactionHistory(transaction: ITransactionHistoryDto) {
+        val user = _authResult.value ?: run {
+            Log.w(TAG, "Cannot update transaction - user is null")
+            _error.postValue("Cannot update transaction: User not logged in")
+            return
+        }
+        val updatedList = user.transactionHistory.toMutableList()
+        val existingIndex = updatedList.indexOfFirst { it.id == transaction.id }
+        if (existingIndex >= 0) {
+            updatedList[existingIndex] = transaction
+            Log.d(TAG, "Updated transaction: ${transaction.id}")
+        } else {
+            updatedList.add(transaction)
+            Log.d(TAG, "Added transaction: ${transaction.id}")
+        }
+        val updatedUser = user.copy(transactionHistory = updatedList.sortedByDescending { it.createdAt })
+        _authResult.postValue(updatedUser)
+        viewModelScope.launch {
+            try {
+                repository.saveAuthResult(updatedUser)
+                Log.d(TAG, "Saved updated user with transaction: ${transaction.id}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to save updated user: ${e.message}", e)
+                _error.postValue("Failed to save transaction")
+            }
+        }
+        updateFilteredTransactions(updatedUser)
     }
 
     fun saveToken(token: String?) {
@@ -80,7 +123,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 Log.d(TAG, "Saved token: $token")
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to save token: ${e.message}", e)
-                _error.postValue("Failed to save token: ${e.message}")
+                _error.postValue("Failed to save token")
             }
         }
     }
@@ -88,12 +131,14 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     fun getToken(): String? = token.value
 
     fun saveExpiresAt(timeString: String) {
-        try {
-            prefs.edit().putString("expiresAt", timeString).apply()
-            Log.d(TAG, "Saved expiresAt: $timeString")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to save expiresAt: ${e.message}", e)
-            _error.postValue("Failed to save expiresAt: ${e.message}")
+        viewModelScope.launch {
+            try {
+                prefs.edit().putString("expiresAt", timeString).apply()
+                Log.d(TAG, "Saved expiresAt: $timeString")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to save expiresAt: ${e.message}", e)
+                _error.postValue("Failed to save expiresAt")
+            }
         }
     }
 
@@ -106,7 +151,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 Log.d(TAG, "Saved auth result: ${result?.fiatCryptoRampTransactions?.map { it.id }}")
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to save auth result: ${e.message}", e)
-                _error.postValue("Failed to save user data: ${e.message}")
+                _error.postValue("Failed to save user data")
             }
         }
     }
@@ -120,7 +165,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 Log.d(TAG, "Refreshed auth result: ${latestUser?.fiatCryptoRampTransactions?.map { it.id }}")
             } catch (e: Exception) {
                 Log.e(TAG, "refreshAuthResult failed: ${e.message}", e)
-                _error.postValue("Failed to refresh user data: ${e.message}")
+                _error.postValue("Failed to refresh user data")
             }
         }
     }
@@ -136,7 +181,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 Log.d(TAG, "Logged out successfully")
             } catch (e: Exception) {
                 Log.e(TAG, "Logout failed: ${e.message}", e)
-                _error.postValue("Logout failed: ${e.message}")
+                _error.postValue("Logout failed")
             }
         }
     }
@@ -144,122 +189,58 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     fun addFiatCryptoRampTransaction(transaction: IFiatCryptoRampTransactionsDto) {
         viewModelScope.launch {
             try {
-                val currentUser = _authResult.value
-                if (currentUser == null) {
+                val user = _authResult.value ?: run {
                     Log.w(TAG, "Cannot add fiat-crypto ramp transaction - user is null")
                     _error.postValue("Cannot add transaction: User not logged in")
                     return@launch
                 }
-
-                val updatedList = currentUser.fiatCryptoRampTransactions.toMutableList()
+                val updatedList = user.fiatCryptoRampTransactions.toMutableList()
                 if (updatedList.any { it.id == transaction.id }) {
                     Log.w(TAG, "Fiat-crypto ramp transaction already exists: ${transaction.id}")
                     return@launch
                 }
-
                 updatedList.add(transaction)
-                val sortedList = updatedList.sortedByDescending { it.createdAt }
-                val updatedUser = currentUser.copy(fiatCryptoRampTransactions = sortedList)
-                Log.d(TAG, "Added fiat-crypto ramp transaction: ${transaction.id}, Updated list: $sortedList")
-
+                val updatedUser = user.copy(fiatCryptoRampTransactions = updatedList.sortedByDescending { it.createdAt })
                 _authResult.postValue(updatedUser)
-                saveAuthResult(updatedUser)
+                repository.saveAuthResult(updatedUser)
                 updateFilteredTransactions(updatedUser)
-
-                try {
-                    repository.addFiatCryptoRampTransaction(transaction)
-                    Log.d(TAG, "Successfully synced fiat-crypto ramp transaction: ${transaction.id}")
-                } catch (e: Exception) {
-                    Log.e(TAG, "Failed to sync fiat-crypto ramp transaction ${transaction.id}: ${e.message}", e)
-                    _error.postValue("Failed to sync transaction ${transaction.id}: ${e.message}")
-                }
+                Log.d(TAG, "Added fiat-crypto ramp transaction: ${transaction.id}")
+                repository.addFiatCryptoRampTransaction(transaction)
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to add fiat-crypto ramp transaction: ${e.message}", e)
-                _error.postValue("Failed to add transaction: ${e.message}")
+                _error.postValue("Failed to add transaction")
             }
         }
     }
 
     fun addTransaction(transaction: ITransactionHistoryDto) {
-        viewModelScope.launch {
-            try {
-                val currentUser = _authResult.value
-                if (currentUser == null) {
-                    Log.w(TAG, "Cannot add transaction - user is null")
-                    _error.postValue("Cannot add transaction: User not logged in")
-                    return@launch
-                }
-
-                val updatedList = currentUser.transactionHistory.toMutableList()
-                if (updatedList.any { it.id == transaction.id }) {
-                    Log.w(TAG, "Transaction already exists: ${transaction.id}")
-                    return@launch
-                }
-
-                updatedList.add(transaction)
-                val sortedList = updatedList.sortedByDescending { it.createdAt }
-                val updatedUser = currentUser.copy(transactionHistory = sortedList)
-                Log.d(TAG, "Added transaction: ${transaction.id}, Updated list: $sortedList")
-
-                _authResult.postValue(updatedUser)
-                saveAuthResult(updatedUser)
-                updateFilteredTransactions(updatedUser)
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to add transaction: ${e.message}", e)
-                _error.postValue("Failed to add transaction: ${e.message}")
-            }
-        }
+        updateTransactionHistory(transaction)
     }
 
     fun updateTransaction(updatedTransaction: ITransactionHistoryDto) {
-        viewModelScope.launch {
-            try {
-                val currentUser = _authResult.value
-                if (currentUser == null) {
-                    Log.w(TAG, "Cannot update transaction - user is null")
-                    _error.postValue("Cannot update transaction: User not logged in")
-                    return@launch
-                }
-
-                val updatedTransactions = currentUser.transactionHistory.map {
-                    if (it.id == updatedTransaction.id) updatedTransaction else it
-                }
-                val updatedUser = currentUser.copy(transactionHistory = updatedTransactions)
-                Log.d(TAG, "Updated transaction: ${updatedTransaction.id}")
-
-                _authResult.postValue(updatedUser)
-                saveAuthResult(updatedUser)
-                updateFilteredTransactions(updatedUser)
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to update transaction: ${e.message}", e)
-                _error.postValue("Failed to update transaction: ${e.message}")
-            }
-        }
+        updateTransactionHistory(updatedTransaction)
     }
 
     fun updateUserWithKycResult(result: KycResponseDto) {
         viewModelScope.launch {
             try {
-                val currentUser = _authResult.value
-                if (currentUser == null) {
+                val user = _authResult.value ?: run {
                     Log.w(TAG, "Cannot update KYC - user is null")
                     _error.postValue("Cannot update KYC: User not logged in")
                     return@launch
                 }
-
-                val updatedUser = currentUser.copy(
+                val updatedUser = user.copy(
                     currentTier = result.currentTier,
                     nextTier = result.nextTier,
                     outstandingKyc = result.outstandingKyc,
                     remainingTiers = result.remainingTiers
                 )
-                Log.d(TAG, "Updated KYC: currentTier=${result.currentTier}, outstandingKyc=${result.outstandingKyc}")
-
                 _authResult.postValue(updatedUser)
-                saveAuthResult(updatedUser)
+                repository.saveAuthResult(updatedUser)
+                Log.d(TAG, "Updated KYC: currentTier=${result.currentTier}")
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to update KYC: ${e.message}", e)
-                _error.postValue("Failed to update KYC: ${e.message}")
+                _error.postValue("Failed to update KYC")
             }
         }
     }
@@ -267,28 +248,23 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     fun updateUserWithBvnResult(result: KycValidateBvnResponse) {
         viewModelScope.launch {
             try {
-                val currentUser = _authResult.value
-                if (currentUser == null) {
-                    Log.w(TAG, "Cannot update outstandingKyc - user is null")
+                val user = _authResult.value ?: run {
+                    Log.w(TAG, "Cannot update BVN - user is null")
                     _error.postValue("Cannot update BVN: User not logged in")
                     return@launch
                 }
-
                 if (!result.isValid) {
-                    Log.w(TAG, "BVN validation failed: $result")
+                    Log.w(TAG, "BVN validation failed")
                     _error.postValue("BVN validation failed")
                     return@launch
                 }
-
-                val updatedOutStandingKyc = currentUser.outstandingKyc.filter { it != "BVN" }
-                val updatedUser = currentUser.copy(outstandingKyc = updatedOutStandingKyc)
-                Log.d(TAG, "Updated outstandingKyc: $updatedOutStandingKyc, from payload: $result")
-
+                val updatedUser = user.copy(outstandingKyc = user.outstandingKyc.filter { it != "BVN" })
                 _authResult.postValue(updatedUser)
-                saveAuthResult(updatedUser)
+                repository.saveAuthResult(updatedUser)
+                Log.d(TAG, "Updated BVN")
             } catch (e: Exception) {
-                Log.e(TAG, "Error updating user with BVN result: ${e.message}", e)
-                _error.postValue("Failed to update BVN: ${e.message}")
+                Log.e(TAG, "Failed to update BVN: ${e.message}", e)
+                _error.postValue("Failed to update BVN")
             }
         }
     }
@@ -296,24 +272,21 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     fun updateNotificationConsumed(result: INotificationConsumeDto) {
         viewModelScope.launch {
             try {
-                val currentUser = _authResult.value
-                if (currentUser == null) {
+                val user = _authResult.value ?: run {
                     Log.w(TAG, "Cannot update notification - user is null")
                     _error.postValue("Cannot update notification: User not logged in")
                     return@launch
                 }
-
-                val updatedList = currentUser.notifications.map {
+                val updatedList = user.notifications.map {
                     if (it.id == result.id) it.copy(consumed = result.consumed, kind = result.kind) else it
                 }
-                val updatedUser = currentUser.copy(notifications = updatedList)
-                Log.d(TAG, "Updated notification: ${result.id}, consumed=${result.consumed}")
-
+                val updatedUser = user.copy(notifications = updatedList)
                 _authResult.postValue(updatedUser)
-                saveAuthResult(updatedUser)
+                repository.saveAuthResult(updatedUser)
+                Log.d(TAG, "Updated notification: ${result.id}")
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to update notification consumed: ${e.message}", e)
-                _error.postValue("Failed to update notification: ${e.message}")
+                Log.e(TAG, "Failed to update notification: ${e.message}", e)
+                _error.postValue("Failed to update notification")
             }
         }
     }
@@ -321,31 +294,27 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     fun addBankAccountToUser(newBankAccount: IBankAccountDto) {
         viewModelScope.launch {
             try {
-                val currentUser = _authResult.value
-                if (currentUser == null) {
+                val user = _authResult.value ?: run {
                     Log.w(TAG, "Cannot add bank account - user is null")
                     _error.postValue("Cannot add bank account: User not logged in")
                     return@launch
                 }
-
-                val updatedBankAccounts = currentUser.bankAccounts.toMutableList().apply {
-                    add(newBankAccount)
-                }
-                val updatedUser = currentUser.copy(bankAccounts = updatedBankAccounts)
-
+                val updatedBankAccounts = user.bankAccounts.toMutableList().apply { add(newBankAccount) }
+                val updatedUser = user.copy(bankAccounts = updatedBankAccounts)
                 _authResult.postValue(updatedUser)
-                saveAuthResult(updatedUser)
+                repository.saveAuthResult(updatedUser)
+                Log.d(TAG, "Added bank account")
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to add bank account: ${e.message}", e)
-                _error.postValue("Failed to add bank account: ${e.message}")
+                _error.postValue("Failed to add bank account")
             }
         }
     }
 
     @OptIn(ExperimentalTime::class)
-    fun getExpiresAt(): Instant? {
+    fun getExpiresAt(): Instant? = viewModelScope.run {
         val timeString = prefs.getString("expiresAt", null) ?: return null
-        return try {
+        try {
             Instant.parse(timeString)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to parse expiresAt", e)
@@ -354,25 +323,31 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     }
 
     @OptIn(ExperimentalTime::class)
-    fun isVerificationCodeValid(): Boolean {
+    fun isVerificationCodeValid(): Boolean = viewModelScope.run {
         val expiresAtInstant = getExpiresAt() ?: return false
         val nowInstant = Clock.System.now()
         val isValid = expiresAtInstant > nowInstant
-        Log.d(TAG, "Verification code valid: $isValid, expiresAt=$expiresAtInstant, now=$nowInstant")
-        return isValid
+        Log.d(TAG, "Verification code valid: $isValid")
+        isValid
     }
 
-    fun isNotificationsDismissed(): Boolean = repository.isNotificationsDismissed()
+    fun isNotificationsDismissed(): Boolean = viewModelScope.run {
+        repository.isNotificationsDismissed()
+    }
 
     fun setNotificationsDismissed(dismissed: Boolean) {
-        repository.setNotificationsDismissed(dismissed)
-        Log.d(TAG, "Set notifications dismissed: $dismissed")
+        viewModelScope.launch {
+            repository.setNotificationsDismissed(dismissed)
+            Log.d(TAG, "Set notifications dismissed: $dismissed")
+        }
     }
 
     fun refreshNotificationsStatus() {
-        val areEnabled = repository.areNotificationsEnabled() ?: false
-        _notificationsEnabled.postValue(areEnabled)
-        Log.d(TAG, "Notifications status refreshed: $areEnabled")
+        viewModelScope.launch {
+            val areEnabled = repository.areNotificationsEnabled() ?: false
+            _notificationsEnabled.postValue(areEnabled)
+            Log.d(TAG, "Notifications status refreshed: $areEnabled")
+        }
     }
 
     fun setSelectedTab(tabIndex: Int) {
