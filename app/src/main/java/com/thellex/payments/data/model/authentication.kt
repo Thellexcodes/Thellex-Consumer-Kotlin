@@ -1,6 +1,7 @@
 package com.thellex.payments.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.thellex.payments.features.fiat.adapters.NGBankDto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -44,5 +45,24 @@ data class UserEntity(
     @SerializedName("nextTier") val nextTier: TierInfo? = null,
     @SerializedName("remainingTiers") val remainingTiers: List<TierInfo> = emptyList(),
     @SerializedName("outstandingKyc") val outstandingKyc: List<String> = emptyList(),
-    @SerializedName("transactionSettings") val transactionSettings: ITransactionSettingsDto
+    @SerializedName("transactionSettings") val transactionSettings: ITransactionSettingsDto,
+    @SerializedName("banks") val banks: List<NGBankDto> = emptyList()
 )
+//
+//@Serializable
+//data class NGBankDto(
+//    @SerializedName("name")
+//    val name: String,
+//
+//    @SerializedName("slug")
+//    val slug: String,
+//
+//    @SerializedName("code")
+//    val code: String,
+//
+//    @SerializedName("ussd")
+//    val ussd: String,
+//
+//    @SerializedName("logo")
+//    val logo: String
+//)

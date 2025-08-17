@@ -51,7 +51,7 @@ class RequestOptionsModalFragment : BottomSheetDialogFragment() {
 
         userViewModel.authResult.observe(viewLifecycleOwner) { userDto ->
 
-             isKycDone = userDto?.currentTier?.name != TierEnum.NONE && userDto?.kyc != null
+             isKycDone = userDto?.currentTier?.name != TierEnum.NONE
             val kycFlags = userDto?.transactionSettings
 
             val isCryptoDepositAllowed = kycFlags?.cryptoDepositAllowed == true

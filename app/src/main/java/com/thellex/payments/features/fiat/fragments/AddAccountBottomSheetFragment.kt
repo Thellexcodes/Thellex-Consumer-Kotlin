@@ -28,7 +28,7 @@ import com.thellex.payments.databinding.TopAppBarBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.fiat.CryptoToFiatOffRampActivity
-import com.thellex.payments.features.fiat.adapters.Bank
+import com.thellex.payments.features.fiat.adapters.NGBankDto
 import com.thellex.payments.network.services.ApiClient
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -37,7 +37,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 class AddAccountBottomSheetFragment : BottomSheetDialogFragment() {
 
-    private var selectedBank: Bank? = null
+    private var selectedBank: NGBankDto? = null
     private var _binding: BottomSheetAddAccountBinding? = null
     private val binding get() = _binding!!
     private lateinit var userViewModel: UserViewModel
@@ -102,7 +102,7 @@ class AddAccountBottomSheetFragment : BottomSheetDialogFragment() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun setupFragmentResultListener() {
         parentFragmentManager.setFragmentResultListener(BANK_SELECTED_KEY, viewLifecycleOwner) { _, bundle ->
-            val bank = bundle.getSerializable(SELECTED_BANK_NAME, Bank::class.java)
+            val bank = bundle.getSerializable(SELECTED_BANK_NAME, NGBankDto::class.java)
             bank?.let {
                 binding.selectBankLabel.text = it.name
                 selectedBank = it

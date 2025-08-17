@@ -50,7 +50,7 @@ class WithdrawalOptionsModalFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         userViewModel.authResult.observe(viewLifecycleOwner) { userDto ->
-            isKycDone = userDto?.currentTier?.name != TierEnum.NONE && userDto?.kyc != null
+            isKycDone = userDto?.currentTier?.name != TierEnum.NONE
             val kycFlags = userDto?.transactionSettings
 
             val isCryptoWithdrawalAllowed = kycFlags?.cryptoWithdrawalAllowed == true

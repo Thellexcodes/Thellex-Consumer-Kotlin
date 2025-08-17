@@ -87,7 +87,6 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         restoreSavedData()
         observeRates()
 
-        // Set fragment result listener once
         supportFragmentManager.setFragmentResultListener(
             TokenSelectionBottomSheet.RESULT_KEY,
             this

@@ -9,11 +9,11 @@ import com.thellex.payments.databinding.ItemBankBinding
 import java.io.Serializable
 
 class BankSearchAdapter(
-    private var banks: List<Bank>,
-    private val onBankSelected: (Bank) -> Unit
+    private var banks: List<NGBankDto>,
+    private val onBankSelected: (NGBankDto) -> Unit
 ) : RecyclerView.Adapter<BankSearchAdapter.BankViewHolder>() {
 
-    private var filteredBanks: List<Bank> = banks
+    private var filteredBanks: List<NGBankDto> = banks
 
     class BankViewHolder(val binding: ItemBankBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -45,7 +45,7 @@ class BankSearchAdapter(
         notifyDataSetChanged()
     }
 
-    fun updateData(newBanks: List<Bank>) {
+    fun updateData(newBanks: List<NGBankDto>) {
         banks = newBanks
         filteredBanks = newBanks
         notifyDataSetChanged()
@@ -54,7 +54,7 @@ class BankSearchAdapter(
 
 
 @kotlinx.serialization.Serializable
-data class Bank(
+data class NGBankDto(
     @SerializedName("name") val name: String,
     @SerializedName("slug") val slug: String,
     @SerializedName("code") val code: String,
