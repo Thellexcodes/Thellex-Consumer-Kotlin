@@ -471,7 +471,6 @@
     </LinearLayout>
 
 
-    <!-- Sign Up Text -->
     <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/submitBtn"
             android:layout_width="match_parent"

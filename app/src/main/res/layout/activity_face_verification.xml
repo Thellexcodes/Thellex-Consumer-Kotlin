@@ -28,22 +28,10 @@
             android:layout_marginTop="16dp"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/face_verification_top_app_bar">
-
-        <TextView
-                android:id="@+id/verification_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/kumbhsans_bold"
-                android:text="Face Verification"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="@dimen/sp_12" />
-
         <TextView
                 android:id="@+id/verification_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_5"
                 android:fontFamily="@font/kumbhsans_regular"
                 android:paddingTop="8dp"
                 android:text="Verify your identity"
@@ -132,16 +120,14 @@
 
     <!-- Upload Button -->
     <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/upload_photo_button"
+            android:id="@+id/next_photo_button"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_marginHorizontal="18dp"
-            android:layout_marginTop="32dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/button_ripple_golden_yellow"
             android:elevation="2dp"
             android:fontFamily="@font/kumbhsans_bold"
-            android:text="Upload photo"
+            android:text="Next"
             android:textColor="@color/dark_purple"
             android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -49,7 +49,7 @@ class PassportActivity : AppCompatActivity() {
         topBar = Helpers.setupTopAppBar(
             activity = this,
             rootView = findViewById(R.id.passport_include_top_app_bar),
-            title = "UPLOAD INTERNATIONAL PASSPORT"
+            title = "UPLOAD ID"
         )
 
         userViewModel = ViewModelProvider(

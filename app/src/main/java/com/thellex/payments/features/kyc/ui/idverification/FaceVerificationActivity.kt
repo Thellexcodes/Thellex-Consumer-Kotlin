@@ -6,55 +6,44 @@ import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.lifecycleScope
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.databinding.ActivityFaceVerificationBinding
-import com.thellex.payments.network.services.ApiClient
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import java.io.ByteArrayOutputStream
 import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
-import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
-import com.thellex.payments.core.utils.Helpers.setSubmitting
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
-import com.thellex.payments.data.enums.UserErrorEnum
-import com.thellex.payments.data.model.VerifySelfieWithPhotoIdDto
-import com.thellex.payments.features.kyc.ui.basic.KycSuccessActivity
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
-import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 class FaceVerificationActivity : AppCompatActivity() {
     private lateinit var topBar: Helpers.TopAppBarController
     private lateinit var binding: ActivityFaceVerificationBinding
-    private lateinit var photoIdImageBase64: String
+    private var photoIdImageBase64: String? = null // Changed to nullable
     private lateinit var userViewModel: UserViewModel
-
-    // Store the selfie base64 after photo is captured
     private var selfieImageBase64: String? = null
 
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             result.data?.data?.let { uri ->
-                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-                selfieImageBase64 = encodeBitmapToBase64(bitmap)
-                binding.capturedImagePreview.setImageBitmap(bitmap)  // show captured selfie preview on ImageView
-                CustomToast.show(this, "Success", "Selfie captured successfully")
-                binding.uploadPhotoButton.isEnabled = true
+                try {
+                    val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+                    selfieImageBase64 = encodeBitmapToBase64(bitmap)
+                    binding.capturedImagePreview.setImageBitmap(bitmap)
+                    CustomToast.show(this, "Success", "Selfie captured successfully")
+                    binding.nextPhotoButton.isEnabled = true
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to process captured image", e)
+                    CustomToast.show(this, "Failed", "Error processing image")
+                }
             } ?: run {
-                CustomToast.show(this, "Failed", "Failed to capture image")
+                CustomToast.show(this, "Failed", "No image data received")
             }
         } else {
             CustomToast.show(this, "Failed", "Camera cancelled or failed")
@@ -80,103 +69,61 @@ class FaceVerificationActivity : AppCompatActivity() {
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
 
-        photoIdImageBase64 = intent.getStringExtra("photoid_image") ?: ""
+        photoIdImageBase64 = intent.getStringExtra("photoid_image")
 
-        // Launch camera on ImageView click
+        // Launch camera on retake photo button click
         binding.takePhotoButton.setOnClickListener {
             launchCamera()
         }
 
-        // Submit verification on button click
-//        binding.startButton.setOnClickListener {
-//            selfieImageBase64?.let { selfieBase64 ->
-//                verifySelfie(selfieBase64, photoIdImageBase64)
-//            } ?: run {
-//                CustomToast.show(this, "Error", "Please capture a selfie first")
-//            }
-//        }
-    }
+        binding.nextPhotoButton.setOnClickListener {
+            if (selfieImageBase64.isNullOrBlank() || photoIdImageBase64.isNullOrBlank()) {
+                CustomToast.show(this, "Error", "Please capture a selfie and ensure an ID photo is provided")
+                return@setOnClickListener
+            }
 
-    private fun launchCamera() {
-        ImagePicker.with(this)
-            .cameraOnly()
-            .compress(1024)
-            .createIntent { intent -> cameraLauncher.launch(intent) }
-    }
+            try {
+//                 Validate Base64 strings
+                Base64.decode(selfieImageBase64, Base64.DEFAULT)
+                Base64.decode(photoIdImageBase64, Base64.DEFAULT)
 
-    private fun encodeBitmapToBase64(bitmap: Bitmap): String {
-        return ByteArrayOutputStream().use { stream ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
-            Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
+                // Create KycImageData object and pass via Intent
+                val kycImageData = KycImageData(
+                    photoIdImageBase64 = photoIdImageBase64,
+                    selfieImageBase64 = selfieImageBase64
+                )
+                val intent = Intent(this, IDVerificationAttestation::class.java).apply {
+                    putExtra("kyc_image_data", kycImageData)
+                }
+                startActivity(intent)
+            } catch (e: IllegalArgumentException) {
+                Log.e(TAG, "Invalid Base64 string", e)
+                CustomToast.show(this, "Error", "Invalid image data. Please recapture photos.")
+            }
         }
     }
 
-    private fun verifySelfie(selfieBase64: String, photoIdBase64: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                withContext(Dispatchers.Main) {
-                    binding.uploadPhotoButton.setSubmitting(true)
-                }
+    private fun launchCamera() {
+        try {
+            ImagePicker.with(this)
+                .cameraOnly()
+                .compress(1024)
+                .createIntent { intent -> cameraLauncher.launch(intent) }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to launch camera", e)
+            CustomToast.show(this, "Error", "Unable to open camera")
+        }
+    }
 
-                val token = withTimeoutOrNull(5000) {
-                    userViewModel.token.asFlow().first { !it.isNullOrBlank() }
-                }
-
-                if (token.isNullOrEmpty()) {
-                    Log.e(TAG, "Token is null or empty - user not authenticated")
-                    withContext(Dispatchers.Main) {
-                        CustomToast.show(this@FaceVerificationActivity, "Error", "User not authenticated")
-                    }
-                    return@launch
-                }
-
-                Log.d(TAG, "Starting KYC verification")
-
-                val api = ApiClient.getAuthenticatedKycApi(token)
-                val response = api.verifySelfieWithPhotoId(
-                    VerifySelfieWithPhotoIdDto(
-                        selfieImageBase64 = selfieBase64,
-                        photoIdImageBase64 = photoIdBase64
-                    )
-                )
-
-                if (response.isSuccessful) {
-                    val result = response.body()?.result
-                    Log.d(TAG, "KYC verification successful. Result: $result")
-
-                    if (result != null) {
-                        userViewModel.updateUserWithKycResult(result)
-                        startActivity(Intent(this@FaceVerificationActivity, KycSuccessActivity::class.java))
-                    } else {
-                        Log.e(TAG, "Verification success but result body is null")
-                        CustomToast.show(this@FaceVerificationActivity, "Error", "❌ Verification returned empty result")
-                    }
-                } else {
-                    val errorBodyString = response.errorBody()?.string()
-                    Log.e(TAG, "Verification failed with status code: ${response.code()} - error: $errorBodyString")
-
-                    val code = try {
-                        JSONObject(errorBodyString ?: "").optString("message")
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Failed to parse error body JSON", e)
-                        null
-                    }
-
-                    val userError = UserErrorEnum.fromCode(code)
-                    ErrorHandler.handle(this@FaceVerificationActivity, "Error", userError)
-                }
-
-            } catch (e: Exception) {
-                Log.e(TAG, "Exception during KYC verification", e)
-                withContext(Dispatchers.Main) {
-                    val userError = UserErrorEnum.fromCode(e.message)
-                    ErrorHandler.handle(this@FaceVerificationActivity, "Error", userError)
-                }
-            } finally {
-                withContext(Dispatchers.Main) {
-//                    binding.startButton.setSubmitting(false)
-                }
+    private fun encodeBitmapToBase64(bitmap: Bitmap): String? {
+        return try {
+            ByteArrayOutputStream().use { stream ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, stream)
+                Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to encode bitmap to Base64", e)
+            null
         }
     }
 
@@ -184,3 +131,8 @@ class FaceVerificationActivity : AppCompatActivity() {
         private const val TAG = "FaceVerification"
     }
 }
+
+data class KycImageData(
+    val photoIdImageBase64: String?,
+    val selfieImageBase64: String?
+) : java.io.Serializable
