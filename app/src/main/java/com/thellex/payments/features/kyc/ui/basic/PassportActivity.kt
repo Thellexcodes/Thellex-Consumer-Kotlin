@@ -11,7 +11,7 @@ import com.github.dhaval2404.imagepicker.ImagePicker
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.databinding.ActivityPassportBinding
-import com.thellex.payments.features.kyc.ui.FaceVerificationActivity
+import com.thellex.payments.features.kyc.ui.idverification.FaceVerificationActivity
 import android.util.Base64
 import android.util.Log
 import android.view.View

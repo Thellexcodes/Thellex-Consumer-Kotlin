@@ -1,4 +1,4 @@
-package com.thellex.payments.features.kyc.ui
+package com.thellex.payments.features.kyc.ui.idverification
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import com.github.dhaval2404.imagepicker.ImagePicker
@@ -22,8 +20,10 @@ import java.io.ByteArrayOutputStream
 import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
+import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.ErrorHandler
+import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setSubmitting
@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 class FaceVerificationActivity : AppCompatActivity() {
-
+    private lateinit var topBar: Helpers.TopAppBarController
     private lateinit var binding: ActivityFaceVerificationBinding
     private lateinit var photoIdImageBase64: String
     private lateinit var userViewModel: UserViewModel
@@ -50,9 +50,9 @@ class FaceVerificationActivity : AppCompatActivity() {
             result.data?.data?.let { uri ->
                 val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
                 selfieImageBase64 = encodeBitmapToBase64(bitmap)
-                binding.ivSelfieCapture.setImageBitmap(bitmap)  // show captured selfie preview on ImageView
+                binding.capturedImagePreview.setImageBitmap(bitmap)  // show captured selfie preview on ImageView
                 CustomToast.show(this, "Success", "Selfie captured successfully")
-                binding.startButton.isEnabled = true  // enable submit button after selfie captured
+                binding.uploadPhotoButton.isEnabled = true
             } ?: run {
                 CustomToast.show(this, "Failed", "Failed to capture image")
             }
@@ -68,7 +68,12 @@ class FaceVerificationActivity : AppCompatActivity() {
         ActivityTracker.add(this)
         disableDecorFitsSystemWindows()
         setTransparentStatusBarWithWhiteIcons()
-        binding.main.applyAdvancedSystemBarInsets()
+        binding.faceVerificationRoot.applyAdvancedSystemBarInsets()
+        topBar = Helpers.setupTopAppBar(
+            activity = this,
+            rootView = findViewById(R.id.face_verification_top_app_bar),
+            title = "FACE VERIFICATION"
+        )
 
         userViewModel = ViewModelProvider(
             this,
@@ -78,18 +83,18 @@ class FaceVerificationActivity : AppCompatActivity() {
         photoIdImageBase64 = intent.getStringExtra("photoid_image") ?: ""
 
         // Launch camera on ImageView click
-        binding.ivSelfieCapture.setOnClickListener {
+        binding.takePhotoButton.setOnClickListener {
             launchCamera()
         }
 
         // Submit verification on button click
-        binding.startButton.setOnClickListener {
-            selfieImageBase64?.let { selfieBase64 ->
-                verifySelfie(selfieBase64, photoIdImageBase64)
-            } ?: run {
-                CustomToast.show(this, "Error", "Please capture a selfie first")
-            }
-        }
+//        binding.startButton.setOnClickListener {
+//            selfieImageBase64?.let { selfieBase64 ->
+//                verifySelfie(selfieBase64, photoIdImageBase64)
+//            } ?: run {
+//                CustomToast.show(this, "Error", "Please capture a selfie first")
+//            }
+//        }
     }
 
     private fun launchCamera() {
@@ -110,7 +115,7 @@ class FaceVerificationActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 withContext(Dispatchers.Main) {
-                    binding.startButton.setSubmitting(true)
+                    binding.uploadPhotoButton.setSubmitting(true)
                 }
 
                 val token = withTimeoutOrNull(5000) {
@@ -169,7 +174,7 @@ class FaceVerificationActivity : AppCompatActivity() {
                 }
             } finally {
                 withContext(Dispatchers.Main) {
-                    binding.startButton.setSubmitting(false)
+//                    binding.startButton.setSubmitting(false)
                 }
             }
         }

@@ -16,10 +16,9 @@ import com.thellex.payments.data.model.TierInfo
 import com.thellex.payments.databinding.ActivityKycSuccessBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
-import com.thellex.payments.features.kyc.ui.FaceVerificationActivity
+import com.thellex.payments.features.kyc.ui.idverification.FaceVerificationActivity
 import com.thellex.payments.features.kyc.ui.StartKycActivity
 import com.thellex.payments.features.pos.ui.POSHomeActivity
-import com.thellex.payments.settings.FiatTickers
 
 class KycSuccessActivity : AppCompatActivity() {
 

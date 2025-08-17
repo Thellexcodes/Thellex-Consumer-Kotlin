@@ -79,3 +79,9 @@ android {
         kapt("com.github.bumptech.glide:compiler:4.15.1")
         implementation(libs.materialdatetimepicker)
     }}
+dependencies {
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+}

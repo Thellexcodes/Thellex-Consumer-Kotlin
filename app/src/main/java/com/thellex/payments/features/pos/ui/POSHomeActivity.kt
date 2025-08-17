@@ -325,25 +325,25 @@ class POSHomeActivity : AppCompatActivity() {
                 actionText = "Enable",
                 iconResId = R.drawable.icon_notification_gray,
                 onActionClick = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        val permission = Manifest.permission.POST_NOTIFICATIONS
-                        when {
-                            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
-                                userViewModel.setNotificationsEnabled(true)
-                            }
-                            else -> {
-                                ActivityCompat.requestPermissions(
-                                    this,
-                                    arrayOf(permission),
-                                    REQUEST_CODE_NOTIFICATIONS
-                                )
-                            }
-                        }
-                    } else {
-                        userViewModel.setNotificationsEnabled(true)
-                    }
-                    userViewModel.setNotificationsDismissed(true)
-                    userViewModel.refreshNotificationsStatus()
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                        val permission = Manifest.permission.POST_NOTIFICATIONS
+//                        when {
+//                            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
+//                                userViewModel.setNotificationsEnabled(true)
+//                            }
+//                            else -> {
+//                                ActivityCompat.requestPermissions(
+//                                    this,
+//                                    arrayOf(permission),
+//                                    REQUEST_CODE_NOTIFICATIONS
+//                                )
+//                            }
+//                        }
+//                    } else {
+//                        userViewModel.setNotificationsEnabled(true)
+//                    }
+//                    userViewModel.setNotificationsDismissed(true)
+//                    userViewModel.refreshNotificationsStatus()
                 },
                 onCloseClick = {
                     userViewModel.setNotificationsDismissed(true)
