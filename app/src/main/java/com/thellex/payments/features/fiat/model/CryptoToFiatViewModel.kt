@@ -13,13 +13,15 @@ class CryptoToFiatViewModel(application: Application) : AndroidViewModel(applica
     val sourceAddress = MutableLiveData<String?>()
     val assetCode = MutableLiveData<String?>()
     val country = MutableLiveData<String?>()
-    val fiatCode = MutableLiveData<String?>( "NGN")
+    val fiatCode = MutableLiveData( "NGN")
     val fiatAmount = MutableLiveData<Double?>()
     val currentRate = MutableLiveData<IRateDto?>()
     val fee = MutableLiveData<Double?>()
-    val bankInfo = MutableLiveData<IBankInfoRequestDto?>() // ✅ Add this line
+    val bankInfo = MutableLiveData<IBankInfoRequestDto?>()
+    val mainAssetAmount = MutableLiveData<Double?>()
+    val mainFiatAmount = MutableLiveData<Double?>()
 
-    fun setOffRampData(
+    fun setRampData(
         paymentReason: String,
         network: String,
         sourceAddress: String,
@@ -27,7 +29,9 @@ class CryptoToFiatViewModel(application: Application) : AndroidViewModel(applica
         country: String,
         fiatCode: String,
         fiatAmount: Double,
-        bankInfo: IBankInfoRequestDto? = null
+        bankInfo: IBankInfoRequestDto? = null,
+        mainFiatAmount: Double? = null,
+        mainAssetAmount: Double? = null
     ) {
         this.paymentReason.value = paymentReason
         this.network.value = network
@@ -37,6 +41,8 @@ class CryptoToFiatViewModel(application: Application) : AndroidViewModel(applica
         this.fiatCode.value = fiatCode
         this.fiatAmount.value = fiatAmount
         this.bankInfo.value = bankInfo
+        this.mainFiatAmount.value = mainFiatAmount
+        this.mainAssetAmount.value = mainAssetAmount
     }
 
     // Update rate and fee based on rates from RateViewModel
@@ -57,5 +63,7 @@ class CryptoToFiatViewModel(application: Application) : AndroidViewModel(applica
         currentRate.value = null
         fee.value = null
         bankInfo.value = null
+        mainFiatAmount.value = null
+        mainAssetAmount.value = null
     }
 }

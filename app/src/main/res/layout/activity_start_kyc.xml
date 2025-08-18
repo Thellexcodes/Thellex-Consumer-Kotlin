@@ -44,7 +44,7 @@
                             android:fontFamily="@font/kumbhsans_regular"
                             android:layout_marginTop="19dp"
                             android:textColor="@color/steelBlueGrey"
-                            android:text="With each KYC level, you gain access to bigger transaction limits and lower fees."
+                            android:text="With each KYC level, you gain access to bigger fiat transaction limits and lower fees."
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
                 </LinearLayout>

@@ -48,12 +48,15 @@ enum class PaymentStatusEnum(val value: String) {
     PendingRiskScreening("PENDING_RISK_SCREENING"),
     Queued("QUEUED"),
     Sent("SENT"),
-    Rejected("Rejected");
+    Rejected("Rejected"),
+    Failed("failed"),
+    Unknown("unknown");
 
     companion object {
         fun fromValue(value: String): PaymentStatusEnum? = entries.find { it.value.equals(value, ignoreCase = true) }
     }
 }
+
 
 enum class TransactionTypeEnum(val value: String) {
     CRYPTO_DEPOSIT("crypto_deposit"),
@@ -70,7 +73,7 @@ enum class TransactionTypeEnum(val value: String) {
 
     companion object {
         fun fromValue(value: String): TransactionTypeEnum? =
-            values().find { it.value.equals(value, ignoreCase = true) }
+            entries.find { it.value.equals(value, ignoreCase = true) }
     }
 }
 
@@ -153,12 +156,14 @@ data class CryptoToFiatOffRampRequestDto(
     @SerializedName("paymentMethod") val paymentMethod: String? = null,
     @SerializedName("paymentReason") val paymentReason: String,
     @SerializedName("sourceAddress") val sourceAddress: String,
-    @SerializedName("bankInfo") val bankInfo: IBankInfoRequestDto
+    @SerializedName("bankInfo") val bankInfo: IBankInfoRequestDto,
+    @SerializedName("mainAssetAmount") val mainAssetAmount: Double? = null,
+    @SerializedName("mainFiatAmount") val mainFiatAmount: Double? = null
 )
 
 data class CreateBankAccountDto(
     @SerializedName("bankName") val bankName: String,
-    @SerializedName("accountNumber") val accountNumber: Number,
+    @SerializedName("accountNumber") val accountNumber: String,
     @SerializedName("bankCode") val bankCode: String,
     @SerializedName("accountName") val accountName: String? = null,
     @SerializedName("swiftCode") val swiftCode: String? = null,

@@ -13,6 +13,12 @@
         <item name="android:windowTranslucentStatus">false</item>
     </style>
 
+    <style name="CustomTabTextStyle" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">@dimen/sp_10</item>
+        <item name="android:fontFamily">@font/kumbhsans_bold</item>
+        <item name="textAllCaps">true</item>
+    </style>
+
     <style name="BottomNavText" parent="TextAppearance.AppCompat.Caption">
         <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">@font/kumbhsans_bold</item>
@@ -81,14 +87,22 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
-    <style name="FullScreenDialog" parent="Theme.Material3.Light.NoActionBar">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowIsTranslucent">false</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:backgroundDimEnabled">false</item>
+    <style name="CustomTabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="tabTextAppearance">@style/CustomTabTextAppearance</item>
     </style>
-dd
+
+    <style name="CustomTabTextAppearance" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:fontFamily">@font/kumbhsans_bold</item>
+        <item name="android:textSize">@dimen/sp_10</item> <!-- Custom font size -->
+    </style>
+
+<!--    <style name="FullScreenDialog" parent="Theme.Material3.Light.NoActionBar">-->
+<!--        <item name="android:windowFullscreen">true</item>-->
+<!--        <item name="android:windowIsTranslucent">false</item>-->
+<!--        <item name="android:windowNoTitle">true</item>-->
+<!--        <item name="android:windowIsFloating">false</item>-->
+<!--        <item name="android:backgroundDimEnabled">false</item>-->
+<!--    </style>-->
 
 </resources>
 

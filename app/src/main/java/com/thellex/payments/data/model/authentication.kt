@@ -1,6 +1,7 @@
 package com.thellex.payments.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.thellex.payments.features.fiat.adapters.NGBankDto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -20,9 +21,12 @@ data class AccessResponse(
     @SerializedName("expires_at") val expiresAt: String
 )
 
-@Serializable
-data class FcmTokenDto (
-    @SerializedName("token") val token: String
+data class DeviceRequestDto(
+    @SerializedName("fcmToken") val fcmToken: String,
+    @SerializedName("platform") val platform: String,
+    @SerializedName("deviceModel") val deviceModel: String,
+    @SerializedName("osVersion") val osVersion: String,
+    @SerializedName("deviceId") val deviceId: String,
 )
 
 @Serializable
@@ -31,7 +35,6 @@ data class UserEntity(
     @SerializedName("email") val email: String,
     @SerializedName("emailVerified") val emailVerified: Boolean,
     @SerializedName("suspended") val suspended: Boolean,
-    @SerializedName("alertID") val alertID: String,
     @SerializedName("kyc") val kyc: KycInfoEntity? = null,
     @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryDto>,
     @SerializedName("notifications") val notifications: List<NotificationEntity>,
@@ -42,5 +45,24 @@ data class UserEntity(
     @SerializedName("nextTier") val nextTier: TierInfo? = null,
     @SerializedName("remainingTiers") val remainingTiers: List<TierInfo> = emptyList(),
     @SerializedName("outstandingKyc") val outstandingKyc: List<String> = emptyList(),
-    @SerializedName("transactionSettings") val transactionSettings: ITransactionSettingsDto
+    @SerializedName("transactionSettings") val transactionSettings: ITransactionSettingsDto,
+    @SerializedName("banks") val banks: List<NGBankDto> = emptyList()
 )
+//
+//@Serializable
+//data class NGBankDto(
+//    @SerializedName("name")
+//    val name: String,
+//
+//    @SerializedName("slug")
+//    val slug: String,
+//
+//    @SerializedName("code")
+//    val code: String,
+//
+//    @SerializedName("ussd")
+//    val ussd: String,
+//
+//    @SerializedName("logo")
+//    val logo: String
+//)

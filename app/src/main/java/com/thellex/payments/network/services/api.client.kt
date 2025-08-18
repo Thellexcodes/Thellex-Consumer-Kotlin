@@ -3,6 +3,7 @@ package com.thellex.payments.network.services
 import InstantDeserializer
 import com.google.gson.GsonBuilder
 import com.thellex.payments.core.utils.Constants
+import com.thellex.payments.core.utils.deserializers.NotificationKindEnumDeserializer
 import com.thellex.payments.data.enums.TierEnum
 import com.thellex.payments.data.model.NotificationKindEnum
 import com.thellex.payments.data.model.PaymentStatusEnum
@@ -82,5 +83,7 @@ object ApiClient {
     fun getAuthenticatedKycApi(token: String): KycService = getRetrofitWithToken(token).create(KycService::class.java)
 
     // Authenticated API for NotificationService
-    fun  getAuthenticatedNotificationApi(token: String): NotificationService = getRetrofitWithToken(token).create(NotificationService::class.java)
+    fun getAuthenticatedNotificationApi(token: String): NotificationService = getRetrofitWithToken(token).create(NotificationService::class.java)
+
+    fun getPublicCrashReportApi(): CrashReportService = retrofitWithoutToken.create(CrashReportService::class.java)
 }

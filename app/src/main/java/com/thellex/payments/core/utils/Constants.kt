@@ -1,13 +1,13 @@
 package com.thellex.payments.core.utils
 object Constants {
-    private const val API_VERSION = "v1.0.0"
     private const val API_PREFIX = "api"
+    private const val API_VERSION = "v1.0.1"
     private const val VERSIONED_BASE = "$API_PREFIX/$API_VERSION"
 
     const val LOGIN_ENDPOINT = "$VERSIONED_BASE/user/access"
     const val VERIFY_CODE_ENDPOINT = "$VERSIONED_BASE/user/verify"
     const val AUTH_LOGIN_ENDPOINT = "$VERSIONED_BASE/user/authenticate"
-    const val UPDATE_FCM_TOKEN_ENDPOINT = "$VERSIONED_BASE/user/update-fcm-token"
+    const val SAVE_DEVICE_INFO_ENDPOINT = "$VERSIONED_BASE/devices/save-info"
 
     // Payment Endpoints
     const val WITHDRAW_CRYPTO_PAYMENT_ENDPOINT = "$VERSIONED_BASE/payments/withdraw-crypto"
@@ -18,6 +18,7 @@ object Constants {
     // KYC and KYB
     const val KYC_ENDPOINT = "$VERSIONED_BASE/kyc/basic-nin-bvn"
     const val KYC_VERIFY_SELFIE_AND_DOCUMENT = "$VERSIONED_BASE/kyc/basic-document-verify-selfie"
+    const val KYC_VERIFY_BVN = "$VERSIONED_BASE/kyc/verify-bvn"
 
     //Notification Endpoints
     const val NOTIFICATION_CONSUME_ENDPOINT = "$VERSIONED_BASE/notifications/{id}/consume"
@@ -30,6 +31,8 @@ object Constants {
     //Banking
     const val ADD_BANK_ACCOUNT_ENDPOINT = "${VERSIONED_BASE}/settings/bank-account/add"
 
+    //Crash endpoint
+    const val CRASH_REPORT_ENDPOINT = "${VERSIONED_BASE}/crash-report"
 
     val BASE_URL: String
         get() = if (isEmulator()) {

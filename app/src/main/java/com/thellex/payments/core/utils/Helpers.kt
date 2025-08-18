@@ -11,10 +11,12 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Build
+import android.provider.Settings
 import android.text.InputFilter
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.Button
@@ -34,6 +36,7 @@ import com.thellex.payments.R
 import com.thellex.payments.data.model.PaymentStatusEnum
 import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.features.dashboard.ui.MainActivity
+import com.thellex.payments.settings.FiatTickers
 import com.thellex.payments.settings.SupportedBlockchainEnum
 import org.json.JSONException
 import org.json.JSONObject
@@ -54,12 +57,6 @@ import java.util.regex.Pattern
 import kotlin.time.Duration
 
 object Helpers {
-    public fun getNavigationBarHeight(context: Context): Int {
-        val resources = context.resources
-        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        return if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
-    }
-
     fun parseBackendErrorEnum(errorBody: String?): String? {
         return try {
             val json = JSONObject(errorBody ?: "{}")
@@ -96,6 +93,8 @@ object Helpers {
             PaymentStatusEnum.Queued -> ContextCompat.getColor(context, R.color.darkBlue)
             PaymentStatusEnum.Sent -> ContextCompat.getColor(context, R.color.green)
             PaymentStatusEnum.Rejected -> ContextCompat.getColor(context, R.color.pinkRed)
+            PaymentStatusEnum.Failed -> ContextCompat.getColor(context, R.color.pinkRed)
+            PaymentStatusEnum.Unknown -> ContextCompat.getColor(context, R.color.orange)
         }
     }
 
@@ -106,10 +105,38 @@ object Helpers {
         }
     }
 
+    private fun normalizeStatusForIcon(status: String?): String {
+        val normalized = status?.lowercase(Locale.getDefault()) ?: ""
+        Log.d("POSTransactionAdaptr", "normalizeStatusForIcon: input=$status, normalized=$normalized")
+        return when (normalized) {
+            "accepted", "completed", "received",
+            TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT.value.lowercase(Locale.getDefault()),
+            TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT.value.lowercase(Locale.getDefault()),
+            TransactionTypeEnum.CRYPTO_DEPOSIT.value.lowercase(Locale.getDefault()),
+            TransactionTypeEnum.FIAT_TO_FIAT_DEPOSIT.value.lowercase(Locale.getDefault()) -> "received"
+            TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL.value.lowercase(Locale.getDefault()),
+            TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL.value.lowercase(Locale.getDefault()),
+            TransactionTypeEnum.CRYPTO_WITHDRAWAL.value.lowercase(Locale.getDefault()),
+            TransactionTypeEnum.FIAT_TO_FIAT_WITHDRAWAL.value.lowercase(Locale.getDefault()) -> "sent"
+            else -> {
+                "sent"
+            }
+        }
+    }
+
     fun getStatusIconResId(status: String?): Int {
-        return when (normalizeStatusForIcon(status)) {
-            "received" -> R.drawable.icon_receive_status
-            else -> R.drawable.icon_send_status
+        val normalizedStatus = normalizeStatusForIcon(status?.lowercase(Locale.getDefault()) ?: "")
+
+        return when (normalizedStatus) {
+            "received" -> {
+                R.drawable.icon_receive_status
+            }
+            "sent" -> {
+                R.drawable.icon_send_status
+            }
+            else -> {
+                R.drawable.icon_send_status
+            }
         }
     }
 
@@ -119,7 +146,7 @@ object Helpers {
             parser.timeZone = TimeZone.getTimeZone("UTC")
             val date = parser.parse(timestamp)
             val formatter = SimpleDateFormat("MMM dd, hh:mm a", Locale.getDefault())
-            formatter.format(date)
+            formatter.format(date!!)
         } catch (e: Exception) {
             timestamp
         }
@@ -142,16 +169,8 @@ object Helpers {
             "done" -> PaymentStatusEnum.Complete
             "rejected" -> PaymentStatusEnum.Rejected
             "pending" -> PaymentStatusEnum.Processing
+            "failed" -> PaymentStatusEnum.Failed
             else -> PaymentStatusEnum.Processing
-        }
-    }
-
-    private fun normalizeStatusForIcon(status: String?): String {
-        return when (status?.lowercase(Locale.getDefault())) {
-            "accepted" -> "received"
-            "completed" -> "received"
-            "received" -> "received"
-            else -> "sent"
         }
     }
 
@@ -224,21 +243,44 @@ object Helpers {
         }
     }
 
+    fun getPaymentStatusColor(status: PaymentStatusEnum): Int {
+        return when (status) {
+            PaymentStatusEnum.Complete,
+            PaymentStatusEnum.Confirmed,
+            PaymentStatusEnum.Accepted,
+            PaymentStatusEnum.Done,
+            PaymentStatusEnum.Sent -> R.color.green
+
+            PaymentStatusEnum.Processing,
+            PaymentStatusEnum.Outbound,
+            PaymentStatusEnum.Inbound,
+            PaymentStatusEnum.PendingRiskScreening,
+            PaymentStatusEnum.Queued -> R.color.goldenYellow
+
+            PaymentStatusEnum.Rejected -> R.color.pinkRed
+            PaymentStatusEnum.Failed -> R.color.pinkRed
+
+            PaymentStatusEnum.Unknown,
+            PaymentStatusEnum.None -> R.color.gray
+        }
+    }
+
     private fun parseErrorMessage(errorBody: String?): String? {
         if (errorBody == null) return null
         return try {
             val json = JSONObject(errorBody)
-            json.optString("message", null)
+            json.optString("message", null.toString())
         } catch (ex: Exception) {
             null
         }
     }
 
     fun formatCurrencyWithNGN(number: Int?): String {
+        val currencySymbol = FiatTickers.getByCodeOrCountry("ngn")?.symbol ?: "NGN"
         return if (number != null) {
-            "NGN " + NumberFormat.getNumberInstance(Locale.US).format(number)
+            "$currencySymbol${NumberFormat.getNumberInstance(Locale.US).format(number)}"
         } else {
-            "NGN N/A"
+            "$currencySymbol N/A"
         }
     }
 
@@ -532,5 +574,22 @@ object Helpers {
             SupportedBlockchainEnum.lisk -> "Lisk"
         }
     }
+
+    fun abbreviateAddress(address: String?, startLength: Int = 4, endLength: Int = 4): String {
+        if (address.isNullOrBlank()) return ""
+        if (address.length <= startLength + endLength) return address
+        val start = address.take(startLength)
+        val end = address.takeLast(endLength)
+        return "$start...$end"
+    }
+
+    @SuppressLint("DefaultLocale")
+    fun Double.roundToTwoDecimals(): Double {
+        return String.format("%.2f", this).toDouble()
+    }
+
+    @SuppressLint("HardwareIds")
+    fun deviceId(context: Context): String =
+        Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "unknown"
 }
 

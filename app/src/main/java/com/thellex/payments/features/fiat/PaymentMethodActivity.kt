@@ -3,13 +3,11 @@ package com.thellex.payments.features.fiat
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.gson.Gson
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers
@@ -28,7 +26,6 @@ import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 
 class PaymentMethodActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityPaymentMethodBinding
     private lateinit var adapter: PaymentMethodAdapter
     private lateinit var topBar: Helpers.TopAppBarController
@@ -51,18 +48,17 @@ class PaymentMethodActivity : AppCompatActivity() {
         topBar = Helpers.setupTopAppBar(
             activity = this,
             rootView = findViewById(R.id.included_top_app_bar),
-            title = "PAYMENT METHOD"
+            title = "SELECT PAYMENT METHOD"
         )
 
         adapter = PaymentMethodAdapter { selectedMethod ->
-            Log.d("PaymentMethodActivity", "Selected payment method: $selectedMethod")
             val bankInfo = IBankInfoRequestDto(
                 accountHolder = selectedMethod.accountName,
                 accountNumber = selectedMethod.accountNumber,
                 bankName = selectedMethod.bankName,
             )
             cryptoToFiatViewModel.bankInfo.value = bankInfo
-            startActivity(Intent(this, RampSummaryActivity::class.java))
+            startActivity(Intent(this, OffRampSummaryActivity::class.java))
         }
 
         binding.paymentMethodsRecycler.apply {
@@ -118,12 +114,9 @@ class PaymentMethodActivity : AppCompatActivity() {
             if (list.isNullOrEmpty()) {
                 paymentMethodsRecycler.visibility = View.GONE
                 emptyStateContainer.visibility = View.VISIBLE
-                title.visibility = View.GONE
-
             } else {
                 paymentMethodsRecycler.visibility = View.VISIBLE
                 emptyStateContainer.visibility = View.GONE
-                title.visibility = View.VISIBLE
                 adapter.submitList(list)
             }
         }

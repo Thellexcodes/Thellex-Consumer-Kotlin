@@ -62,4 +62,7 @@
     <string name="log_out">Log out</string>
     <string name="close">Close</string>
     <string name="select_cryptocurrency">Select cryptocurrency</string>
+    <string name="transaction_details">TRANSACTION DETAILS</string>
+    <string name="bank_verification_number_caps">BANK VERIFICATION NUMBER</string>
+    <string name="recent_transactions">Recent Transactions</string>
 </resources>

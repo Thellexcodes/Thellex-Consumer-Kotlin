@@ -20,8 +20,8 @@
 
         <ImageView
                 android:id="@+id/btn_close"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:src="@drawable/icon_close_white"
                 android:contentDescription="@string/close"
                 app:layout_constraintEnd_toEndOf="parent"

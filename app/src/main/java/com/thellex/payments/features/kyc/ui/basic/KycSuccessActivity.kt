@@ -10,12 +10,13 @@ import com.google.gson.Gson
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.formatCurrencyWithNGN
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.model.TierInfo
 import com.thellex.payments.databinding.ActivityKycSuccessBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
-import com.thellex.payments.features.kyc.ui.FaceVerificationActivity
+import com.thellex.payments.features.kyc.ui.idverification.FaceVerificationActivity
 import com.thellex.payments.features.kyc.ui.StartKycActivity
 import com.thellex.payments.features.pos.ui.POSHomeActivity
 
@@ -75,11 +76,11 @@ class KycSuccessActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun updateUI(currentTier: TierInfo) {
         val limits = currentTier.transactionLimits
-        val withdrawalFee = currentTier.txnFee.feePercentage.toString()
-        binding.dailyCreditLimitText.text = "${limits.dailyCreditLimit} NGN"
-        binding.dailyDebitLimitText.text = "${limits.dailyDebitLimit} NGN"
-        binding.singleDebitLimitText.text = "${limits.singleDebitLimit} NGN"
-        binding.feePercentageText.text = withdrawalFee
+//        val withdrawalFee = currentTier.txnFee.feePercentage.toString()
+        binding.dailyCreditLimitText.text = "UNLIMITED"
+        binding.dailyDebitLimitText.text = "${formatCurrencyWithNGN(limits.dailyDebitLimit)}"
+        binding.singleDebitLimitText.text = "${formatCurrencyWithNGN(limits.singleDebitLimit)}"
+        binding.feePercentageText.text = "2%"
     }
 
     private fun setupListeners() {

@@ -40,7 +40,6 @@ class BasicKycStep2Activity : AppCompatActivity() {
         setTransparentStatusBarWithWhiteIcons()
         binding.main.applyAdvancedSystemBarInsets()
 
-        // Setup top app bar
         topBar = Helpers.setupTopAppBar(
             activity = this,
             rootView = findViewById(R.id.verifyIdentityTopAppBar),
@@ -79,13 +78,13 @@ class BasicKycStep2Activity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val nin = s.toString().trim()
-                if (nin.isNotEmpty()) {
+                binding.fragmentKycStep2EtNin.setBackgroundResource(
+                    if (nin.isNotEmpty()) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
+                )
+                if (nin.isNotEmpty() && nin.length >= 7) { // Show error only after sufficient input
                     val (isValid, errorOrFormatted) = formatAndValidateIdNumber(nin, "NIN", 11)
                     if (!isValid) {
-//                        Toast.makeText(this@BasicKycStep2Activity, errorOrFormatted, Toast.LENGTH_SHORT).show()
                     }
-                } else {
-                    binding.fragmentKycStep2EtNin.setBackgroundResource(R.drawable.bg_edittext_error)
                 }
             }
         })
@@ -96,89 +95,61 @@ class BasicKycStep2Activity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val bvn = s.toString().trim()
-                if (bvn.isNotEmpty()) {
+                binding.fragmentKycStep2EtBvn.setBackgroundResource(
+                    if (bvn.isNotEmpty()) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
+                )
+                if (bvn.isNotEmpty() && bvn.length >= 7) { // Show error only after sufficient input
                     val (isValid, errorOrFormatted) = formatAndValidateIdNumber(bvn, "BVN", 11)
                     if (!isValid) {
-//                        Toast.makeText(this@BasicKycStep2Activity, errorOrFormatted, Toast.LENGTH_SHORT).show()
                     }
-                } else {
-                    binding.fragmentKycStep2EtBvn.setBackgroundResource(R.drawable.bg_edittext_error)
                 }
             }
         })
 
-        // Real-time validation for House Number (if visible)
+        // Real-time validation for House Number
         binding.fragmentKycStep2EtHouseNumber.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 if (binding.fragmentKycStep2LlHouseNumberGroup.visibility == View.VISIBLE) {
                     val houseNumber = s.toString().trim()
-                    if (houseNumber.isNotEmpty()) {
-                        val (isValid, errorOrFormatted) = validateNonEmptyText(houseNumber, "House Number")
-                        if (!isValid) {
-//                            Toast.makeText(this@BasicKycStep2Activity, errorOrFormatted, Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        binding.fragmentKycStep2EtHouseNumber.setBackgroundResource(R.drawable.bg_edittext_error)
-                    }
+                    validateNonEmptyText(houseNumber, "House Number", binding.fragmentKycStep2EtHouseNumber)
                 }
             }
         })
 
-        // Real-time validation for Street Name (if visible)
+        // Real-time validation for Street Name
         binding.fragmentKycStep2EtStreetName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 if (binding.fragmentKycStep2LlStreetNameGroup.visibility == View.VISIBLE) {
                     val streetName = s.toString().trim()
-                    if (streetName.isNotEmpty()) {
-                        val (isValid, errorOrFormatted) = validateNonEmptyText(streetName, "Street Name")
-                        if (!isValid) {
-//                            Toast.makeText(this@BasicKycStep2Activity, errorOrFormatted, Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        binding.fragmentKycStep2EtStreetName.setBackgroundResource(R.drawable.bg_edittext_error)
-                    }
+                    validateNonEmptyText(streetName, "Street Name", binding.fragmentKycStep2EtStreetName)
                 }
             }
         })
 
-        // Real-time validation for State (if visible)
+        // Real-time validation for State
         binding.fragmentKycStep2EtState.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 if (binding.fragmentKycStep2LlStateGroup.visibility == View.VISIBLE) {
                     val state = s.toString().trim()
-                    if (state.isNotEmpty()) {
-                        val (isValid, errorOrFormatted) = validateNonEmptyText(state, "State")
-                        if (!isValid) {
-//                            Toast.makeText(this@BasicKycStep2Activity, errorOrFormatted, Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        binding.fragmentKycStep2EtState.setBackgroundResource(R.drawable.bg_edittext_error)
-                    }
+                    validateNonEmptyText(state, "State", binding.fragmentKycStep2EtState)
                 }
             }
         })
 
-        // Real-time validation for LGA (if visible)
+        // Real-time validation for LGA
         binding.fragmentKycStep2EtLga.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 if (binding.fragmentKycStep2LlLgaGroup.visibility == View.VISIBLE) {
                     val lga = s.toString().trim()
-                    if (lga.isNotEmpty()) {
-                        val (isValid, errorOrFormatted) = validateNonEmptyText(lga, "Local Government Area")
-                        if (!isValid) {
-//                            Toast.makeText(this@BasicKycStep2Activity, errorOrFormatted, Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        binding.fragmentKycStep2EtLga.setBackgroundResource(R.drawable.bg_edittext_error)
-                    }
+                    validateNonEmptyText(lga, "Local Government Area", binding.fragmentKycStep2EtLga)
                 }
             }
         })
@@ -197,40 +168,40 @@ class BasicKycStep2Activity : AppCompatActivity() {
         // Validate NIN
         val (ninValid, ninResult) = formatAndValidateIdNumber(nin, "NIN", 11)
         isValid = ninValid && isValid
+        binding.fragmentKycStep2EtNin.setBackgroundResource(
+            if (ninValid) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
+        )
         if (!ninValid) {
-//            Toast.makeText(this, ninResult, Toast.LENGTH_SHORT).show()
         }
 
         // Validate BVN
         val (bvnValid, bvnResult) = formatAndValidateIdNumber(bvn, "BVN", 11)
         isValid = bvnValid && isValid
+        binding.fragmentKycStep2EtBvn.setBackgroundResource(
+            if (bvnValid) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
+        )
         if (!bvnValid) {
-//            Toast.makeText(this, bvnResult, Toast.LENGTH_SHORT).show()
         }
 
         // Validate address fields if visible
         val houseNumberResult = if (binding.fragmentKycStep2LlHouseNumberGroup.visibility == View.VISIBLE) {
-            val (valid, result) = validateNonEmptyText(houseNumber, "House Number")
+            val (valid, result) = validateNonEmptyText(houseNumber, "House Number", binding.fragmentKycStep2EtHouseNumber)
             isValid = valid && isValid
-//            if (!valid) Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
             result
         } else ""
         val streetNameResult = if (binding.fragmentKycStep2LlStreetNameGroup.visibility == View.VISIBLE) {
-            val (valid, result) = validateNonEmptyText(streetName, "Street Name")
+            val (valid, result) = validateNonEmptyText(streetName, "Street Name", binding.fragmentKycStep2EtStreetName)
             isValid = valid && isValid
-//            if (!valid) Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
             result
         } else ""
         val stateResult = if (binding.fragmentKycStep2LlStateGroup.visibility == View.VISIBLE) {
-            val (valid, result) = validateNonEmptyText(state, "State")
+            val (valid, result) = validateNonEmptyText(state, "State", binding.fragmentKycStep2EtState)
             isValid = valid && isValid
-//            if (!valid) Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
             result
         } else ""
         val lgaResult = if (binding.fragmentKycStep2LlLgaGroup.visibility == View.VISIBLE) {
-            val (valid, result) = validateNonEmptyText(lga, "Local Government Area")
+            val (valid, result) = validateNonEmptyText(lga, "Local Government Area", binding.fragmentKycStep2EtLga)
             isValid = valid && isValid
-//            if (!valid) Toast.makeText(this, result, Toast.LENGTH_SHORT).show()
             result
         } else ""
 
@@ -263,60 +234,31 @@ class BasicKycStep2Activity : AppCompatActivity() {
 
             // Check if the input is empty
             if (cleaned.isEmpty()) {
-                runOnUiThread {
-                    val editText = if (fieldName == "NIN") binding.fragmentKycStep2EtNin else binding.fragmentKycStep2EtBvn
-                    editText.setBackgroundResource(R.drawable.bg_edittext_error)
-                }
                 return Pair(false, "$fieldName is required")
             }
 
             // Validate that the input contains only digits
             if (!cleaned.matches(Regex("\\d+"))) {
-                runOnUiThread {
-                    val editText = if (fieldName == "NIN") binding.fragmentKycStep2EtNin else binding.fragmentKycStep2EtBvn
-                    editText.setBackgroundResource(R.drawable.bg_edittext_error)
-                }
                 return Pair(false, "$fieldName must contain only digits")
             }
 
             // Validate length
             if (cleaned.length != expectedLength) {
-                runOnUiThread {
-                    val editText = if (fieldName == "NIN") binding.fragmentKycStep2EtNin else binding.fragmentKycStep2EtBvn
-                    editText.setBackgroundResource(R.drawable.bg_edittext_error)
-                }
                 return Pair(false, "$fieldName must be $expectedLength digits")
-            }
-
-            // Update UI on the main thread
-            runOnUiThread {
-                val editText = if (fieldName == "NIN") binding.fragmentKycStep2EtNin else binding.fragmentKycStep2EtBvn
-                editText.setBackgroundResource(R.drawable.rounded_edittext)
             }
 
             Pair(true, cleaned)
         } catch (e: Exception) {
             Log.e("KYC", "$fieldName validation error: ${e.message}")
-            runOnUiThread {
-                val editText = if (fieldName == "NIN") binding.fragmentKycStep2EtNin else binding.fragmentKycStep2EtBvn
-                editText.setBackgroundResource(R.drawable.bg_edittext_error)
-            }
             Pair(false, "Validation error for $fieldName")
         }
     }
 
-    private fun validateNonEmptyText(input: String, fieldName: String): Pair<Boolean, String> {
+    private fun validateNonEmptyText(input: String, fieldName: String, editText: EditText): Pair<Boolean, String> {
         val cleaned = input.trim()
         val isValid = cleaned.isNotEmpty()
         runOnUiThread {
-            val editText = when (fieldName) {
-                "House Number" -> binding.fragmentKycStep2EtHouseNumber
-                "Street Name" -> binding.fragmentKycStep2EtStreetName
-                "State" -> binding.fragmentKycStep2EtState
-                "Local Government Area" -> binding.fragmentKycStep2EtLga
-                else -> null
-            }
-            editText?.setBackgroundResource(
+            editText.setBackgroundResource(
                 if (isValid) R.drawable.rounded_edittext else R.drawable.bg_edittext_error
             )
         }

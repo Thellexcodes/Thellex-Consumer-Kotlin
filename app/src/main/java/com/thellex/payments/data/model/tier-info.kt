@@ -15,7 +15,7 @@ data class TierInfo(
 
 @Serializable
 data class TransactionLimits(
-    @SerializedName("dailyCreditLimit") val dailyCreditLimit: Int,
+    @SerializedName("dailyCreditLimit") val dailyCreditLimit: Int?,
     @SerializedName("dailyDebitLimit") val dailyDebitLimit: Int,
     @SerializedName("singleDebitLimit") val singleDebitLimit: Int,
 )

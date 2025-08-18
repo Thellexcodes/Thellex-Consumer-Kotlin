@@ -3,6 +3,8 @@ package com.thellex.payments.features.fiat.fragments
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -26,15 +28,16 @@ import com.thellex.payments.databinding.TopAppBarBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.fiat.CryptoToFiatOffRampActivity
-import com.thellex.payments.features.fiat.adapters.Bank
+import com.thellex.payments.features.fiat.adapters.NGBankDto
 import com.thellex.payments.network.services.ApiClient
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 class AddAccountBottomSheetFragment : BottomSheetDialogFragment() {
 
-    private var selectedBank: Bank? = null
+    private var selectedBank: NGBankDto? = null
     private var _binding: BottomSheetAddAccountBinding? = null
     private val binding get() = _binding!!
     private lateinit var userViewModel: UserViewModel
@@ -99,7 +102,7 @@ class AddAccountBottomSheetFragment : BottomSheetDialogFragment() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun setupFragmentResultListener() {
         parentFragmentManager.setFragmentResultListener(BANK_SELECTED_KEY, viewLifecycleOwner) { _, bundle ->
-            val bank = bundle.getSerializable(SELECTED_BANK_NAME, Bank::class.java)
+            val bank = bundle.getSerializable(SELECTED_BANK_NAME, NGBankDto::class.java)
             bank?.let {
                 binding.selectBankLabel.text = it.name
                 selectedBank = it
@@ -110,9 +113,10 @@ class AddAccountBottomSheetFragment : BottomSheetDialogFragment() {
     private fun setupAddAccountButton() {
         binding.addNewAccountButton.setOnClickListener {
             val numberText = binding.textAccountNumberInput.text.toString().trim()
-            val accountNumber: Long? = numberText.toLongOrNull()
+            val accountNumber = numberText.toLongOrNull()
 
             if (selectedBank == null || accountNumber == null || !validateInputs(selectedBank!!.name, numberText)) {
+                CustomToast.show(requireContext(), "Missing Info", "Please fill in all fields correctly.")
                 return@setOnClickListener
             }
 
@@ -120,43 +124,46 @@ class AddAccountBottomSheetFragment : BottomSheetDialogFragment() {
 
             lifecycleScope.launch {
                 try {
-                    // Safely get auth token with timeout
                     val authToken = withTimeoutOrNull(5000) {
                         userViewModel.token.asFlow().first { !it.isNullOrBlank() }
                     }
 
                     if (authToken.isNullOrEmpty()) {
-                        Log.w("AddAccount", "Auth token is missing")
+                        CustomToast.show(requireContext(), "Auth Error", "Authorization token is missing.")
                         return@launch
                     }
 
-                    // Build payload
                     val payload = CreateBankAccountDto(
                         bankName = selectedBank!!.name,
-                        accountNumber = accountNumber,
+                        accountNumber = accountNumber.toString(),
                         bankCode = selectedBank!!.code
                     )
 
-                    // API request
                     val response = ApiClient.getAuthenticatedPaymentApi(authToken)
                         .addBankAccount(payload)
 
-                    if (response.isSuccessful) {
-                        response.body()?.result?.let { newBankAccount ->
-                            userViewModel.addBankAccountToUser(newBankAccount)
-                            CustomToast.show(
-                                requireContext(),
-                                "Bank Account Linked",
-                                "Your bank account has been successfully added!"
-                            )
-                            // Redirect to a new activity
-                            requireActivity().finish()
-                            dismiss()
-                            val intent = Intent(requireContext(), CryptoToFiatOffRampActivity::class.java)
-                            startActivity(intent)
-                        }
-                    } else {
-                        Log.e("AddAccount", "API failed: ${response.errorBody()?.string()}")
+                    if (!response.isSuccessful) {
+                        val errorBody = response.errorBody()?.string()
+                        Log.e("AddAccount", "API call failed: $errorBody")
+                        CustomToast.show(requireContext(), "Failed", "Failed to link your bank account.")
+                        return@launch
+                    }
+
+                    response.body()?.result?.let { newBankAccount ->
+                        userViewModel.addBankAccountToUser(newBankAccount)
+
+                        CustomToast.show(
+                            requireContext(),
+                            "Bank Account Linked",
+                            "Successfully linked. Redirecting in 5 seconds..."
+                        )
+
+                        delay(5000)
+
+                        val intent = Intent(requireContext(), CryptoToFiatOffRampActivity::class.java)
+                        startActivity(intent)
+                        requireActivity().finish()
+                        dismiss()
                     }
 
                 } catch (e: Exception) {

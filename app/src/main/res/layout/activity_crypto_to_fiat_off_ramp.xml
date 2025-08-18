@@ -161,6 +161,7 @@
                     android:id="@+id/bank_account_info"
                     android:background="@drawable/rounded_border"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     android:paddingVertical="5dp"
                     android:paddingHorizontal="15dp"
                     android:gravity="center_vertical"
@@ -177,7 +178,7 @@
                         android:fontFamily="@font/kumbhsans_regular"
                         android:layout_marginLeft="@dimen/margin_7dp"
                         android:textColor="@color/white"
-                        android:text="Funds are only sent to a bank account that matches your verified name on Thelle."
+                        android:text="Funds are only sent to a bank account that matches your verified name on Thellex."
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
             </LinearLayout>
@@ -187,7 +188,6 @@
                     android:id="@+id/crypto_input_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
                     android:background="@drawable/rounded_border_midnight">
 
                 <TextView
@@ -473,7 +473,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_ripple_golden_yellow"
-                android:text="Next"
+                android:text="Spend"
                 android:elevation="0dp"
                 android:fontFamily="@font/kumbhsans_bold"
                 android:textColor="@color/dark_purple"

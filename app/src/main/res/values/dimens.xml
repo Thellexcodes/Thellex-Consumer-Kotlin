@@ -85,7 +85,13 @@
     <dimen name="dp_323">323dp</dimen>
 
     <!-- Text Sizes (sp) -->
-    <dimen name="sp_8">8sp</dimen>
+    <dimen name="sp_1">8sp</dimen>
+    <dimen name="sp_2">8sp</dimen>
+    <dimen name="sp_3">8sp</dimen>
+    <dimen name="sp_4">8sp</dimen>
+    <dimen name="sp_5">8sp</dimen>
+    <dimen name="sp_6">8sp</dimen>
+    <dimen name="sp_7">8sp</dimen>
     <dimen name="sp_9">9sp</dimen>
     <dimen name="sp_10">10sp</dimen>
     <dimen name="sp_11">11sp</dimen>
@@ -101,6 +107,8 @@
     <dimen name="sp_26">26sp</dimen>
     <dimen name="sp_28">28sp</dimen>
     <dimen name="sp_30">30sp</dimen>
+    <dimen name="sp_31">31sp</dimen>
+    <dimen name="sp_32">32sp</dimen>
 
     <dimen name="border_radius">12dp</dimen>
 </resources>

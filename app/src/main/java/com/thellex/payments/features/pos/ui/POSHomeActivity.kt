@@ -1,23 +1,36 @@
 package com.thellex.payments.features.pos.ui
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.thellex.payments.core.decorators.ItemSpacingDecoration
-import com.thellex.payments.features.pos.adapters.POSTransactionAdapter
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayoutMediator
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
-import com.thellex.payments.data.model.UserPreferences
+import com.thellex.payments.data.model.ITransactionHistoryDto
+import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.databinding.ActivityPOSBinding
 import com.thellex.payments.features.auth.ui.AuthVerificationActivity
 import com.thellex.payments.features.kyc.ui.basic.KycSuccessActivity
@@ -25,7 +38,7 @@ import com.thellex.payments.features.auth.ui.LoginActivity
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.dashboard.ui.MainActivity
 import com.thellex.payments.features.fiat.CryptoToFiatOffRampActivity
-import com.thellex.payments.features.fiat.FiatDepositActivity
+import com.thellex.payments.features.fiat.OnRampFiatSummaryActivity
 import com.thellex.payments.features.fiat.FiatRampTransactionsActivity
 import com.thellex.payments.features.fiat.FiatToCryptoOnRampActivity
 import com.thellex.payments.features.fiat.FiatWithdrawActivity
@@ -41,19 +54,17 @@ import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.features.wallet.ui.WalletAssetsActivity
 import com.thellex.payments.features.wallet.ui.WithdrawToCryptoWalletActivity
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+
 
 class POSHomeActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityPOSBinding
+    lateinit var binding: ActivityPOSBinding
     private lateinit var userViewModel: UserViewModel
     private lateinit var walletManagerViewModel: WalletManagerViewModel
-    private lateinit var transactionRecyclerView: RecyclerView
-    private lateinit var transactionAdapter: POSTransactionAdapter
     private var isBalanceVisible = true
     private var currentBalance = "0.00"
+    private val emptyStateMediator = MediatorLiveData<Pair<Int, List<ITransactionHistoryDto>?>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,32 +85,108 @@ class POSHomeActivity : AppCompatActivity() {
             WalletManagerModelFactory(applicationContext)
         )[WalletManagerViewModel::class.java]
 
-        setupRecyclerView()
-        observeUserTransactions()
         setupClickListeners()
         setupWalletBalanceObserver()
         loadWalletData()
         observeUserUid()
         observeNotification()
         closeAllOtherActivities()
+        try {
+            setupViewPager()
+            setupEmptyState()
+        } catch (e: Exception) {
+            Log.e("POSHomeActivity", "Error inflating layout: ${e.message}", e)
+            throw e
+        }
+        if (!areNotificationsEnabled(this@POSHomeActivity)) {
+            Log.d("POSHOme", "notifications are ${areNotificationsEnabled(this)}")
+        }
     }
 
-    private fun setupRecyclerView() {
-        transactionRecyclerView = binding.recyclerRecentTransactions
-        transactionRecyclerView.layoutManager = LinearLayoutManager(this)
+    override fun onResume() {
+        super.onResume()
+        userViewModel.refreshNotificationsStatus()
+        updateAttentionGrabber()
+    }
 
-        transactionAdapter = POSTransactionAdapter() {}
-        transactionRecyclerView.adapter = transactionAdapter
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_NOTIFICATIONS) {
+            val isGranted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            userViewModel.setNotificationsEnabled(isGranted)
+            userViewModel.refreshNotificationsStatus()
+        }
+    }
 
-        val itemSpacing = resources.getDimensionPixelSize(R.dimen.txn_margin)
-        transactionRecyclerView.addItemDecoration(ItemSpacingDecoration(itemSpacing))
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun setupViewPager() {
+        val adapter = ViewPagerAdapter(this, listOf(DepositsFragment(), WithdrawalsFragment()))
+        binding.viewPager.adapter = adapter
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = if (position == 0) "REQUEST" else "WITHDRAW"
+            tab.view.background = resources.getDrawable(
+                if (position == 0) R.drawable.tab_deposits_background
+                else R.drawable.tab_withdrawals_background, theme
+            )
+            val horizontalPadding = (16 * resources.displayMetrics.density).toInt()
+            val verticalPadding = (8 * resources.displayMetrics.density).toInt()
+            tab.view.setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
+        }.attach()
+
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                userViewModel.setSelectedTab(position)
+                emptyStateMediator.value = Pair(position, userViewModel.authResult.value?.transactionHistory)
+            }
+        })
+    }
+
+    private fun setupEmptyState() {
+        emptyStateMediator.addSource(userViewModel.selectedTab) { tab ->
+            emptyStateMediator.value = Pair(tab, userViewModel.authResult.value?.transactionHistory)
+        }
+        emptyStateMediator.addSource(userViewModel.authResult) { dto ->
+            emptyStateMediator.value = Pair(userViewModel.selectedTab.value ?: 0, dto?.transactionHistory)
+        }
+
+        emptyStateMediator.observe(this) { (tabPosition, transactions) ->
+            val isDepositsTab = tabPosition == 0
+            val filteredTransactions = if (isDepositsTab) {
+                transactions?.filter {
+                    it.transactionType == TransactionTypeEnum.CRYPTO_TO_FIAT_DEPOSIT ||
+                    it.transactionType == TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT ||
+                    it.transactionType == TransactionTypeEnum.CRYPTO_DEPOSIT
+                } ?: emptyList()
+            } else {
+                transactions?.filter {
+                    it.transactionType == TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL ||
+                    it.transactionType == TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL ||
+                    it.transactionType == TransactionTypeEnum.CRYPTO_WITHDRAWAL
+                } ?: emptyList()
+            }
+            val isEmpty = filteredTransactions.isEmpty()
+            binding.titleRecentTransactions.visibility = if (isEmpty) View.GONE else View.VISIBLE
+//            binding.buttonViewAll.visibility = if (isEmpty) View.GONE else View.VISIBLE
+            binding.emptyTransactionsView.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        }
     }
 
     private fun loadWalletData() {
-        walletManagerViewModel.loadWallet(
-            tokenProvider = { userViewModel.token.asFlow().first { !it.isNullOrBlank() } },
-            loadNow = false
-        )
+        lifecycleScope.launch {
+            // Get the token safely in a coroutine
+            val token = userViewModel.token.asFlow().first { !it.isNullOrBlank() }
+
+            // Load wallet data
+            walletManagerViewModel.loadWallet(
+                tokenProvider = { token },
+                loadNow = false
+            )
+        }
     }
 
     private fun setupWalletBalanceObserver() {
@@ -128,28 +215,6 @@ class POSHomeActivity : AppCompatActivity() {
 
     private fun updateBalanceText(balance: String) {
         binding.tvBalance.text = if (isBalanceVisible) "$$balance" else "•••••"
-    }
-
-    private fun observeUserTransactions() {
-        lifecycleScope.launch {
-            UserPreferences.getAuthResult(applicationContext).collect { userEntity ->
-                val transactions = userEntity?.transactionHistory ?: emptyList()
-                val sortedTransactions = transactions.sortedByDescending { it.createdAt }
-                withContext(Dispatchers.Main) {
-                    transactionAdapter.updateList(sortedTransactions)
-
-                    if (sortedTransactions.isEmpty()) {
-                        binding.recyclerRecentTransactions.visibility = View.GONE
-                        binding.titleRecentTransactions.visibility = View.GONE
-                        binding.emptyTransactionsView.visibility = View.VISIBLE
-                    } else {
-                        binding.recyclerRecentTransactions.visibility = View.VISIBLE
-                        binding.titleRecentTransactions.visibility = View.VISIBLE
-                        binding.emptyTransactionsView.visibility = View.GONE
-                    }
-                }
-            }
-        }
     }
 
     private fun observeNotification() {
@@ -204,7 +269,7 @@ class POSHomeActivity : AppCompatActivity() {
             }
 
             override fun onFiatDepositClick() {
-                startActivity(Intent(this@POSHomeActivity, FiatDepositActivity::class.java))
+                startActivity(Intent(this@POSHomeActivity, OnRampFiatSummaryActivity::class.java))
             }
 
             override fun onStartKyc() {
@@ -241,6 +306,54 @@ class POSHomeActivity : AppCompatActivity() {
         modal.show(supportFragmentManager, "WithdrawalOptionsModal")
     }
 
+    private fun areNotificationsEnabled(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                context, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            NotificationManagerCompat.from(context).areNotificationsEnabled()
+        }
+    }
+
+    private fun updateAttentionGrabber() {
+        val notificationsEnabled = userViewModel.notificationsEnabled.value ?: false
+        Log.d(TAG, "notificationsEnabled: $notificationsEnabled, Dismissed: ${userViewModel.isNotificationsDismissed()}")
+        if (!notificationsEnabled && !userViewModel.isNotificationsDismissed()) {
+            binding.attentionGrabber.setAttentionGrabber(
+                message = "Enable notifications to stay updated!",
+                actionText = "Enable",
+                iconResId = R.drawable.icon_notification_gray,
+                onActionClick = {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                        val permission = Manifest.permission.POST_NOTIFICATIONS
+//                        when {
+//                            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
+//                                userViewModel.setNotificationsEnabled(true)
+//                            }
+//                            else -> {
+//                                ActivityCompat.requestPermissions(
+//                                    this,
+//                                    arrayOf(permission),
+//                                    REQUEST_CODE_NOTIFICATIONS
+//                                )
+//                            }
+//                        }
+//                    } else {
+//                        userViewModel.setNotificationsEnabled(true)
+//                    }
+//                    userViewModel.setNotificationsDismissed(true)
+//                    userViewModel.refreshNotificationsStatus()
+                },
+                onCloseClick = {
+                    userViewModel.setNotificationsDismissed(true)
+                }
+            )
+        } else {
+            binding.attentionGrabber.hide()
+        }
+    }
+
     private fun closeAllOtherActivities() {
         ActivityTracker.finishActivity(MainActivity::class.java)
         ActivityTracker.finishActivity(LauncherActivity::class.java)
@@ -252,4 +365,16 @@ class POSHomeActivity : AppCompatActivity() {
         ActivityTracker.finishActivity(FiatRampTransactionsActivity::class.java)
     }
 
+    companion object {
+        private val TAG = "Dashboard"
+        private const val REQUEST_CODE_NOTIFICATIONS = 1001
+    }
+}
+
+class ViewPagerAdapter(
+    fragmentActivity: FragmentActivity,
+    private val fragments: List<Fragment>
+) : FragmentStateAdapter(fragmentActivity) {
+    override fun getItemCount(): Int = fragments.size
+    override fun createFragment(position: Int): Fragment = fragments[position]
 }

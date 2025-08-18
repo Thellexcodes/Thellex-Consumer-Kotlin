@@ -11,12 +11,17 @@ import com.github.dhaval2404.imagepicker.ImagePicker
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.databinding.ActivityPassportBinding
-import com.thellex.payments.features.kyc.ui.FaceVerificationActivity
+import com.thellex.payments.features.kyc.ui.idverification.FaceVerificationActivity
 import android.util.Base64
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.thellex.payments.R
+import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import kotlinx.coroutines.Dispatchers
@@ -26,12 +31,7 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 class PassportActivity : AppCompatActivity() {
-
-    companion object {
-        private const val TAG = "PassportActivity"
-        private const val REQUEST_CODE_IMAGE_PICKER = 1001
-    }
-
+    private lateinit var topBar: Helpers.TopAppBarController
     private lateinit var binding: ActivityPassportBinding
     private var frontBase64: String? = null
     private lateinit var userViewModel: UserViewModel
@@ -41,6 +41,16 @@ class PassportActivity : AppCompatActivity() {
         binding = ActivityPassportBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ActivityTracker.add(this)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.main.applyAdvancedSystemBarInsets()
+
+        // Initialize data from intent
+        topBar = Helpers.setupTopAppBar(
+            activity = this,
+            rootView = findViewById(R.id.passport_include_top_app_bar),
+            title = "UPLOAD ID"
+        )
 
         userViewModel = ViewModelProvider(
             this,
@@ -129,6 +139,11 @@ class PassportActivity : AppCompatActivity() {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
         val byteArray = outputStream.toByteArray()
         return Base64.encodeToString(byteArray, Base64.NO_WRAP)
+    }
+
+    companion object {
+        private const val TAG = "PassportActivity"
+        private const val REQUEST_CODE_IMAGE_PICKER = 1001
     }
 }
 

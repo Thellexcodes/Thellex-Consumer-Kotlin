@@ -31,7 +31,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31" >
         <activity
-            android:name=".features.fiat.RampSummaryActivity"
+            android:name=".features.kyc.ui.idverification.IDVerificationAttestation"
+            android:exported="false" />
+        <activity
+            android:name=".features.fiat.FiatRampTransactionsDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".features.fiat.OffRampSummaryActivity"
             android:exported="false" />
         <activity
             android:name=".features.fiat.PaymentMethodActivity"
@@ -44,7 +50,7 @@
             android:name=".features.fiat.FiatWithdrawActivity"
             android:exported="false" />
         <activity
-            android:name=".features.fiat.FiatDepositActivity"
+            android:name=".features.fiat.OnRampFiatSummaryActivity"
             android:exported="false" />
         <activity
             android:name=".features.onboarding.NotificationPermissionActivity"
@@ -82,7 +88,7 @@
             android:exported="false"
             android:screenOrientation="portrait" /> <!-- KYC -->
         <activity
-            android:name=".features.kyc.ui.FaceVerificationActivity"
+            android:name=".features.kyc.ui.idverification.FaceVerificationActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
@@ -185,7 +191,7 @@
             android:screenOrientation="fullSensor"
             tools:replace="screenOrientation" /> <!-- Firebase service -->
         <service
-            android:name=".network.services.FirebaseManager"
+            android:name=".network.services.FCMService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

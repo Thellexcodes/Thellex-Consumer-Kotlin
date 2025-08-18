@@ -2,69 +2,33 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/general_gradient_background"
-        android:padding="20dp">
+        android:background="@drawable/general_gradient_background">
 
-    <!-- Top Bar with Back Button -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/fragment_basic_kyc_fragmentKycStep1Root"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/fragment_basic_kyc_fragmentKycStep1_activity_wallet_top_app_bar_container"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:paddingBottom="12dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-                <ImageView
-                        android:id="@+id/fragment_basic_kyc_fragmentKycStep1_activity_wallet_back_button"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:src="@drawable/icon_back"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <include layout="@layout/top_app_bar" android:id="@+id/basicKycReviewTopAppBar"/>
 
     <!-- Attestation Section -->
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/fragment_basic_kyc_constraintLayout3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/fragment_basic_kyc_fragmentKycStep1Root"
+            android:layout_marginTop="@dimen/dp_26"
+            app:layout_constraintTop_toBottomOf="@+id/basicKycReviewTopAppBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-
-        <TextView
-                android:id="@+id/fragment_basic_kyc_first"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ATTESTATION"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:fontFamily="@font/kumbhsans_bold"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Review the following information and attest to it below."
-                android:textColor="@color/steelBlueGrey"
-                android:textSize="14sp"
-                android:fontFamily="@font/kumbhsans_regular"
-                app:layout_constraintTop_toBottomOf="@id/fragment_basic_kyc_first"
-                app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Review the following information and attest to it below."
+                    android:textColor="@color/steelBlueGrey"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Personal Information Section -->
@@ -507,7 +471,6 @@
     </LinearLayout>
 
 
-    <!-- Sign Up Text -->
     <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/submitBtn"
             android:layout_width="match_parent"

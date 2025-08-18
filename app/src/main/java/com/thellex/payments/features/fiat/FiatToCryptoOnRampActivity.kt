@@ -33,6 +33,7 @@ import com.thellex.payments.core.utils.reasonList
 import com.thellex.payments.data.model.FiatToCryptoOnRampRequestDto
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.PaymentStatusEnum
+import com.thellex.payments.data.model.UserPreferences
 import com.thellex.payments.databinding.ActivityFiatToCryptoOnRampBinding
 import com.thellex.payments.databinding.DialogReasonSelectionBinding
 import com.thellex.payments.features.auth.viewModel.UserRepository
@@ -40,12 +41,18 @@ import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.fiat.adapters.ReasonSelectionAdapter
 import com.thellex.payments.features.fiat.adapters.TokenSelectionBottomSheet
+import com.thellex.payments.features.kyc.fragments.RequestBvnModalFragment
+import com.thellex.payments.features.kyc.ui.StartKycActivity
+import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
+import com.thellex.payments.features.pos.fragments.WithdrawalOptionsModalFragment
+import com.thellex.payments.features.pos.ui.POSChooseCryptoActivity
 import com.thellex.payments.features.wallet.model.IRatesResponseDto
 import com.thellex.payments.features.wallet.model.WalletDto
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.settings.FiatEnum
+import com.thellex.payments.settings.minimumAmountInFiat
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.math.RoundingMode
@@ -66,10 +73,8 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     private var ratesExpiryTime: Long? = null
     private var ratesRefreshHandler: Handler? = null
     private var refreshRunnable: Runnable? = null
-    private val minimumAmountInFiat = 5000.0
+    private lateinit var outstandingKyc: List<String>
     private var fee: Double = 0.0
-
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +96,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         observeUser()
         setupUiListener()
         setupAmountInputListeners()
+        fetchRatesAndScheduleRefresh()
 
         walletManagerViewModel = ViewModelProvider(
             this,
@@ -111,7 +117,19 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun observeUser() {
         userViewModel.authResult.observe(this) { userDto ->
-            updatePendingTransactionsUI(userDto?.fiatCryptoRampTransactions!!)
+            if (userDto == null) return@observe
+
+            updatePendingTransactionsUI(userDto.fiatCryptoRampTransactions)
+
+            outstandingKyc = userDto.outstandingKyc ?: emptyList()
+
+            if (outstandingKyc.isNotEmpty() && outstandingKyc[0] == "BVN") {
+                binding.requestBvnBtn.visibility = View.VISIBLE
+                binding.nextButton.visibility = View.GONE
+            } else {
+                binding.requestBvnBtn.visibility = View.GONE
+                binding.nextButton.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -148,7 +166,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
 
                     val onRampRequest = FiatToCryptoOnRampRequestDto(
                         userAmount = fiatAmount,
-                        fiatCode = FiatEnum.NGN.code,
+                        fiatCode = FiatEnum.ngn.code,
                         assetCode = selectedToken.assetCode.name,
                         country = "ng",
                         paymentReason = reason.lowercase(),
@@ -158,15 +176,17 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
 
                     val response = ApiClient.getAuthenticatedPaymentApi(authToken!!).fiatToCryptoOnRamp(onRampRequest)
 
-                    response.body()?.result?.let { result ->
-                        Log.d(TAG, "Response from fiatToCryptoOnRamp: $result")
-                        userViewModel.addFiatCryptoRampTransaction(result)
-
-                        val intent = Intent(this@FiatToCryptoOnRampActivity, FiatDepositActivity::class.java).apply {
+                    val result = response.body()?.result
+                    if(result != null){
+//                        Log.d(TAG, "Response from fiatToCryptoOnRamp: ${response.body()?.result}")
+                        result.let { txn ->
+                            userViewModel.addFiatCryptoRampTransaction(txn)
+                        }
+                        val intent = Intent(this@FiatToCryptoOnRampActivity, OnRampFiatSummaryActivity::class.java).apply {
                             putExtra("fiatCryptoRampResultJson", Gson().toJson(result))
                         }
                         startActivity(intent)
-                    } ?: run {
+                    } else  {
                         Log.w(TAG, "No result in response: $response")
                         CustomToast.show(this@FiatToCryptoOnRampActivity, "Error", "Unexpected response")
                     }
@@ -177,6 +197,11 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                     binding.nextButton.setSubmitting(false)
                 }
             }
+        }
+
+        binding.requestBvnBtn.setOnClickListener{
+            val modal = RequestBvnModalFragment.newInstance()
+            modal.show(supportFragmentManager, "RequestBvnModal")
         }
 
         binding.cryptoSpinner.setOnClickListener {
@@ -206,42 +231,42 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun updatePendingTransactionsUI(transactions: List<IFiatCryptoRampTransactionsDto>) {
-    val now = Instant.now()
+        val now = Instant.now()
 
-    if (transactions.isEmpty()) {
-        // No transactions at all
-        binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
-        binding.textPendingTransactionsCount.text = "Ramp Transaction History"
-        binding.iconPendingClock.visibility = View.GONE
-        return
-    }
-
-    // Filter pending transactions that have not expired yet
-    val pendingTransactions = transactions.filter {
-        try {
-            val expiresInstant = Instant.parse(it.expiresAt)
-            !it.seen && it.paymentStatus != PaymentStatusEnum.Complete && expiresInstant.isAfter(now)
-        } catch (e: DateTimeParseException) {
-            false
+        if (transactions.isEmpty()) {
+            // No transactions at all
+            binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
+            binding.textPendingTransactionsCount.text = "Funding & Spending History"
+            binding.iconPendingClock.visibility = View.GONE
+            return
         }
-    }
 
-    if (pendingTransactions.isNotEmpty()) {
-        // Show count of pending transactions (not expired)
-        val count = pendingTransactions.size
-        binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
-        binding.textPendingTransactionsCount.text = if (count == 1) "1 PENDING TRANSACTION" else "$count PENDING TRANSACTIONS"
-        binding.iconPendingClock.visibility = View.VISIBLE
-    } else {
-        // Either all transactions are completed or expired -> show transaction history text
-        binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
-        binding.textPendingTransactionsCount.text = "Funding & Spending History"
-        binding.iconPendingClock.visibility = View.GONE
-    }
+        // Filter pending transactions that have not expired yet
+        val pendingTransactions = transactions.filter {
+            try {
+                val expiresInstant = Instant.parse(it.expiresAt)
+                !it.seen && it.paymentStatus != PaymentStatusEnum.Complete && expiresInstant.isAfter(now)
+            } catch (e: DateTimeParseException) {
+                false
+            }
+        }
 
-    binding.layoutUncompletedTransactionsWrapper.setOnClickListener {
-        startActivity(Intent(this, FiatRampTransactionsActivity::class.java))
-    }
+        if (pendingTransactions.isNotEmpty()) {
+            // Show count of pending transactions (not expired)
+            val count = pendingTransactions.size
+            binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
+            binding.textPendingTransactionsCount.text = if (count == 1) "1 PENDING TRANSACTION" else "$count PENDING TRANSACTIONS"
+            binding.iconPendingClock.visibility = View.VISIBLE
+        } else {
+            // Either all transactions are completed or expired -> show transaction history text
+            binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
+            binding.textPendingTransactionsCount.text = "Funding & Spending History"
+            binding.iconPendingClock.visibility = View.GONE
+        }
+
+        binding.layoutUncompletedTransactionsWrapper.setOnClickListener {
+            startActivity(Intent(this, FiatRampTransactionsActivity::class.java))
+        }
     }
 
     private fun updateDefaultPriceText() {
@@ -258,7 +283,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         binding.edittextCryptoAmount.setText("")
         updateWalletInfo()
         updateDefaultPriceText()
-        fetchRatesAndScheduleRefresh()
     }
 
     private fun setDefaultToken() {
@@ -266,28 +290,26 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         val defaultToken = walletBalance?.wallets?.get("usdc") ?: walletBalance?.wallets?.values?.firstOrNull()
 
         defaultToken?.let {
-            Log.d(TAG, "Setting default token: ${it.assetCode}, balance: ${it.totalBalance}")
             updateTokenSpinner(it)
         } ?: run {
-                Log.w(TAG, "No default token available")
                 updateDefaultPriceText()
                 updateWalletInfo() // Set default UI for balanceOverview
         }
     }
 
     private fun updateWalletInfo() {
-    selectedToken?.let { token ->
-        binding.textCryptoWalletName.text = "${token.assetCode.name.uppercase(Locale.getDefault())} WALLET"
-        binding.assetFlag.setImageResource(getIconResIdForToken(token.assetCode.toString()))
-    val formattedBalance = token.totalBalance.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toPlainString()
-    binding.textBalanceAmount.text = "${formattedBalance} ${token.assetCode.name.uppercase(Locale.getDefault())}"
-    } ?: run {
-        //            binding.textCryptoWalletName.text = "TOKEN Wallet"
-        //            binding.assetFlag.setImageResource(getIconResIdForToken())
-        //            binding.textBalanceAmount.text = "0.00"
-        //            Log.d(TAG, "No selected token, set default wallet info")
+        selectedToken?.let { token ->
+            binding.textCryptoWalletName.text = "${token.assetCode.name.uppercase(Locale.getDefault())} WALLET"
+            binding.assetFlag.setImageResource(getIconResIdForToken(token.assetCode.toString()))
+            val formattedBalance = token.totalBalance.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toPlainString()
+            binding.textBalanceAmount.text = "${formattedBalance} ${token.assetCode.name.uppercase(Locale.getDefault())}"
+            } ?: run {
+            //            binding.textCryptoWalletName.text = "TOKEN Wallet"
+            //            binding.assetFlag.setImageResource(getIconResIdForToken())
+            //            binding.textBalanceAmount.text = "0.00"
+            //            Log.d(TAG, "No selected token, set default wallet info")
+            }
         }
-    }
 
     private fun fetchRatesAndScheduleRefresh() {
         lifecycleScope.launch {
@@ -296,7 +318,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                 val response = ApiClient.getAuthenticatedPaymentApi(authToken).getRates()
 
                 response.result?.let { result ->
-                    val ngnRateDto = result.rates.firstOrNull { it.fiatCode.equals(FiatEnum.NGN.code, ignoreCase = true) }
+                    val ngnRateDto = result.rates.firstOrNull { it.fiatCode.equals(FiatEnum.ngn.code, ignoreCase = true) }
                     if (ngnRateDto == null) {
                         updateDefaultPriceText()
                         return@let
@@ -375,9 +397,15 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                 if (!isUpdating && binding.edittextCryptoAmount.hasFocus()) {
                     isUpdating = true
                     val cryptoAmount = s.toString().toDoubleOrNull() ?: 0.0
-                    val ngnRateDto = currentRates?.rates?.firstOrNull { it.fiatCode.equals(FiatEnum.NGN.name, ignoreCase = true) }
+                    val ngnRateDto = currentRates?.rates?.firstOrNull {
+                        it.fiatCode.equals(FiatEnum.ngn.name, ignoreCase = true)
+                    }
+
                     val rate = ngnRateDto?.rate
-                    val fiatEquivalent = (cryptoAmount * rate?.buy!!) + rate.fee / rate.feeDivisor
+                    val fiatEquivalent = rate?.let {
+                        (cryptoAmount * it.buy) + (it.fee / it.feeDivisor)
+                    } ?: 0.0
+
                     val background = if (fiatEquivalent < minimumAmountInFiat) errorDrawable else normalDrawable
                     binding.edittextCryptoAmount.background = background
                     binding.edittextFiatAmount.background = background
@@ -385,6 +413,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                     isUpdating = false
                 }
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
 
@@ -397,9 +426,9 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         val fiatText = binding.edittextFiatAmount.text.toString()
         val cryptoText = binding.edittextCryptoAmount.text.toString()
         val tokenSymbol = selectedToken?.assetCode?.name?.uppercase(Locale.getDefault()) ?: "TOKEN"
-        val ngnRateDto = currentRates?.rates?.firstOrNull { it.fiatCode.equals(FiatEnum.NGN.code, ignoreCase = true) }
+        val ngnRateDto = currentRates?.rates?.firstOrNull { it.fiatCode.equals(FiatEnum.ngn.code, ignoreCase = true) }
         val rate = ngnRateDto?.rate?.buy ?: 0.0
-        val fiatCode = ngnRateDto?.fiatCode ?: FiatEnum.NGN.code
+        val fiatCode = ngnRateDto?.fiatCode ?: FiatEnum.ngn.code
         val fee = ngnRateDto?.rate?.fee?.div(ngnRateDto.rate.feeDivisor) ?: 0.0
 
         if (fiatText.isEmpty() && cryptoText.isEmpty()) {
@@ -414,7 +443,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                 if (fiatAmount <= fee) {
                     if (!binding.edittextCryptoAmount.hasFocus()) binding.edittextCryptoAmount.setText("")
                     binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
-                    Toast.makeText(this, "Fiat amount must be greater than fee ($fee $fiatCode)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Fiat amount must be greater than fee ($minimumAmountInFiat $fiatCode)", Toast.LENGTH_SHORT).show()
                     return
                 }
                 val cryptoAmount = (fiatAmount - fee) / rate
@@ -441,7 +470,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                 binding.textPriceValue.text = "≅ ${fiatAmount.toBigDecimal().setScale(2, RoundingMode.HALF_UP)} $fiatCode/$tokenSymbol"
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Calculation error: ${e.message}", e)
             binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
             Toast.makeText(this, "Invalid input", Toast.LENGTH_SHORT).show()
         }
@@ -460,6 +488,30 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         bottomSheetDialog.show()
     }
 
+    private fun showBvnRequestModal() {
+//        val modal = RequestOptionsModalFragment.newInstance()
+//
+//        modal.setListener(object : RequestOptionsModalFragment.ReceiveOptionsListener {
+//            override fun onChainDepositClick() {
+//                startActivity(Intent(this@FiatToCryptoOnRampActivity, POSChooseCryptoActivity::class.java))
+//            }
+//            override fun onCryptoToFiatOnRampClick() {
+//                startActivity(Intent(this@, FiatToCryptoOnRampActivity::class.java))
+//            }
+//
+//            override fun onFiatDepositClick() {
+//                startActivity(Intent(this@POSHomeActivity, OnRampFiatSummaryActivity::class.java))
+//            }
+//
+//            override fun onStartKyc() {
+//                modal.dismiss()
+//                startActivity(Intent(this@POSHomeActivity, StartKycActivity::class.java))
+//            }
+//        })
+//
+//        modal.show(supportFragmentManager, "RequestOptionsModal")
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         refreshRunnable?.let { ratesRefreshHandler?.removeCallbacks(it) }
@@ -467,6 +519,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "TAGY"
+        private const val TAG = "FiatToCryptoOnRampActivity"
     }
 }
