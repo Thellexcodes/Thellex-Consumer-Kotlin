@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
@@ -27,9 +28,9 @@ import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.getIconResIdForToken
 import com.thellex.payments.core.utils.Helpers.setLoading
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
-import com.thellex.payments.core.utils.reasonList
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.PaymentStatusEnum
+import com.thellex.payments.data.model.reasonList
 import com.thellex.payments.data.viewModels.rates.RateViewModel
 import com.thellex.payments.databinding.ActivityCryptoToFiatOffRampBinding
 import com.thellex.payments.databinding.DialogReasonSelectionBinding
@@ -41,6 +42,7 @@ import com.thellex.payments.features.fiat.model.CryptoToFiatViewModel
 import com.thellex.payments.features.wallet.model.WalletDto
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
+import com.thellex.payments.settings.FiatEnum
 import com.thellex.payments.settings.minimumAmountInFiat
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -124,8 +126,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         // Restore rate and fee
         cryptoToFiatViewModel.currentRate.value?.let {
             cryptoToFiatViewModel.fee.value?.let { fee ->
-                binding.textPriceValue.text = "${fee}%"
-                binding.nextButton.setLoading(false) // Enable button if rate is restored
+                binding.nextButton.setLoading(false)
                 calculateAndDisplayPrice()
             }
         }
@@ -140,10 +141,6 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
             walletManagerViewModel.walletBalance.value?.wallets?.values?.find { it.address == address }
                 ?.let { updateTokenSpinner(it) }
         }
-
-        cryptoToFiatViewModel.fee.observe(this) { fee ->
-            binding.textPriceValue.text = "${fee}%"
-        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -151,9 +148,10 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
     private fun observeRates() {
         lifecycleScope.launch {
             rateViewModel.rates.collectLatest { rates ->
+                Log.d(TAG, "rate is $rates")
                 if (rates.isNotEmpty()) {
                     cryptoToFiatViewModel.updateRate(rates)
-                    binding.textPriceValue.text = "${cryptoToFiatViewModel.fee.value ?: 0.0}%"
+                    binding.textRateValue.text = "${cryptoToFiatViewModel.currentRate.value?.sell ?: 0.0}%"
                     binding.nextButton.setLoading(false) // Enable button when rates are available
                     calculateAndDisplayPrice()
                 } else {
@@ -168,7 +166,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun updateDefaultPriceText() {
         val tokenSymbol = selectedToken?.assetCode?.name?.uppercase(Locale.getDefault()) ?: "TOKEN"
-        binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
+        binding.textRateValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
     }
 
     private fun setupAmountInputListeners() {
@@ -204,7 +202,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                 if (!isUpdating && binding.edittextCryptoAmount.hasFocus()) {
                     isUpdating = true
                     val cryptoAmount = s.toString().toDoubleOrNull() ?: 0.0
-                    val fiatEquivalent = calculateFiatFromCrypto(cryptoAmount)
+                    val fiatEquivalent = calculateFiatFromCrypto(cryptoAmount, cryptoToFiatViewModel.currentRate.value?.feeDivisor!!)
                     val background = if (fiatEquivalent < minimumAmountInFiat) errorDrawable else normalDrawable
                     binding.edittextCryptoAmount.background = background
                     binding.edittextFiatAmount.background = background
@@ -227,6 +225,19 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
             binding.cryptoIcon.setImageResource(getIconResIdForToken(token.assetCode.toString()))
             val formattedBalance = token.totalBalance.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toPlainString()
             binding.textCryptoBalance.text = "$formattedBalance ${token.assetCode.name.uppercase(Locale.getDefault())}"
+
+            binding.textAvailableBalance.text = "Available: $formattedBalance ${token.assetCode.name.uppercase()}"
+
+            binding.buttonMax.setOnClickListener {
+                selectedToken?.let {
+                    val maxAmount = it.totalBalance
+                    val editableAmount = Editable.Factory.getInstance().newEditable(maxAmount.toString())
+                    binding.edittextCryptoAmount.text = editableAmount
+                } ?: run {
+                    CustomToast.show(this, "Warning", "Balance not available")
+                }
+            }
+
         } ?: run {
             binding.textCryptoWalletName.text = "No Wallet Selected"
             binding.cryptoIcon.setImageResource(Helpers.getIconResIdForToken(""))
@@ -255,19 +266,18 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
             updateWalletInfo()
         }
     }
-
-    private fun calculateFiatFromCrypto(cryptoAmount: Double): Double {
+    private fun calculateFiatFromCrypto(cryptoAmount: Double, feeDivisor: Double): Double {
         // Fiat = (Crypto * Buy Rate) * (1 - Fee Percentage)
-        val rate = cryptoToFiatViewModel.currentRate.value?.buy ?: 0.0
-        val feePercentage = cryptoToFiatViewModel.fee.value?.div(100.0) ?: 0.0
+        val rate = cryptoToFiatViewModel.currentRate.value?.sell ?: 0.0
+        val feePercentage = cryptoToFiatViewModel.fee.value?.div(feeDivisor) ?: 0.0
         return if (cryptoAmount <= 0.0 || rate <= 0.0) 0.0 else (cryptoAmount * rate) * (1.0 - feePercentage)
     }
 
-    private fun calculateCryptoFromFiat(fiatAmount: Double): Double {
-        // Crypto = Fiat / (Buy Rate * (1 - Fee Percentage))
-        val rate = cryptoToFiatViewModel.currentRate.value?.buy ?: 1.0
-        val feePercentage = cryptoToFiatViewModel.fee.value?.div(100.0) ?: 0.0
-        return if (fiatAmount <= 0.0 || rate <= 0.0 || (1.0 - feePercentage) <= 0.0) 0.0 else fiatAmount / (rate * (1.0 - feePercentage))
+    private fun calculateCryptoFromFiat(fiatAmount: Double, feeDivisor: Double): Double {
+        // Crypto = Fiat / (Buy Rate * (1 + Fee Percentage))
+        val rate = cryptoToFiatViewModel.currentRate.value?.sell ?: 1.0
+        val feePercentage = cryptoToFiatViewModel.fee.value?.div(feeDivisor) ?: 0.0
+        return if (fiatAmount <= 0.0 || rate <= 0.0 || (1.0 + feePercentage) <= 0.0) 0.0 else fiatAmount / (rate * (1.0 + feePercentage))
     }
 
     @SuppressLint("SetTextI18n")
@@ -277,7 +287,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         val tokenSymbol = selectedToken?.assetCode?.name?.uppercase(Locale.getDefault()) ?: "TOKEN"
 
         if (fiatText.isEmpty() && cryptoText.isEmpty()) {
-            binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
+            binding.textRateValue.text = "≅ ${cryptoToFiatViewModel.currentRate.value?.buy} $fiatCode/$tokenSymbol"
             binding.edittextFiatAmount.setText("")
             binding.edittextCryptoAmount.setText("")
             return
@@ -288,28 +298,24 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                 // Fiat input changed
                 val fiatAmount = fiatText.toDoubleOrNull() ?: 0.0
                 if (fiatAmount <= minimumAmountInFiat) {
-                    binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
                     if (!binding.edittextCryptoAmount.hasFocus()) binding.edittextCryptoAmount.setText("")
                     return
                 }
-                val cryptoAmount = calculateCryptoFromFiat(fiatAmount)
+                val cryptoAmount = calculateCryptoFromFiat(fiatAmount, cryptoToFiatViewModel.currentRate.value?.feeDivisor!!)
                 val formattedCrypto = cryptoAmount.toBigDecimal().setScale(6, RoundingMode.HALF_UP).toPlainString()
                 if (!binding.edittextCryptoAmount.hasFocus()) {
                     binding.edittextCryptoAmount.setText(formattedCrypto)
                     binding.edittextCryptoAmount.setSelection(formattedCrypto.length)
                 }
-                binding.textPriceValue.text = "≅ ${fiatAmount.toBigDecimal().setScale(2, RoundingMode.HALF_UP)} $fiatCode"
             } else {
                 // Crypto input changed
                 val cryptoAmount = cryptoText.toDoubleOrNull() ?: 0.0
                 if (cryptoAmount <= 0.0) {
-                    binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
                     if (!binding.edittextFiatAmount.hasFocus()) binding.edittextFiatAmount.setText("")
                     return
                 }
-                val fiatAmount = calculateFiatFromCrypto(cryptoAmount)
+                val fiatAmount = calculateFiatFromCrypto(cryptoAmount, cryptoToFiatViewModel.currentRate.value?.feeDivisor!!)
                 if (fiatAmount <= minimumAmountInFiat) {
-                    binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
                     if (!binding.edittextFiatAmount.hasFocus()) binding.edittextFiatAmount.setText("")
                     return
                 }
@@ -318,11 +324,9 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                     binding.edittextFiatAmount.setText(formattedFiat)
                     binding.edittextFiatAmount.setSelection(formattedFiat.length)
                 }
-                binding.textPriceValue.text = "≅ $formattedFiat $fiatCode"
             }
         } catch (e: Exception) {
-            binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
-            Toast.makeText(this, "Invalid input", Toast.LENGTH_SHORT).show()
+            CustomToast.show(this, "Input","Invalid input", Toast.LENGTH_SHORT)
         }
     }
 

@@ -186,7 +186,8 @@ class BasicKycAttestationActivity : AppCompatActivity() {
 
                             val updatedUser = currentUser.copy(
                                 currentTier = kycResult.nextTier,
-                                nextTier = kycResult.nextTier
+                                nextTier = kycResult.nextTier,
+                                banks = kycResult.banks
                             )
                             Log.d(TAG, "Updating user with new tier: ${kycResult.nextTier}")
 

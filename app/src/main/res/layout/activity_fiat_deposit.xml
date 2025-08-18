@@ -96,7 +96,7 @@
     <include
             android:id="@+id/onramp_expiration_container"
             layout="@layout/expiration_timer"
-            app:layout_constraintBottom_toTopOf="@id/onramp_confirm_payment"
+            app:layout_constraintBottom_toTopOf="@id/onramp_go_to_dashboard_btn"
             android:layout_width="match_parent"
             android:layout_marginBottom="@dimen/dp_23"
             android:layout_height="wrap_content"
@@ -104,12 +104,12 @@
             app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/onramp_confirm_payment"
+            android:id="@+id/onramp_go_to_dashboard_btn"
             android:paddingHorizontal="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/button_ripple_golden_yellow"
-            android:text="confirm payment"
+            android:text="GO TO DASHBOARD"
             android:elevation="0dp"
             android:fontFamily="@font/kumbhsans_bold"
             android:textColor="@color/dark_purple"

@@ -1,6 +1,7 @@
 package com.thellex.payments.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.thellex.payments.features.fiat.adapters.NGBankDto
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -50,6 +51,7 @@ data class KycResponseDto(
     @SerializedName("nextTier") val nextTier: TierInfo,
     @SerializedName("outstandingKyc") val outstandingKyc: List<String> = emptyList(),
     @SerializedName("remainingTiers") val remainingTiers: List<TierInfo> = emptyList(),
+    @SerializedName("banks") val banks: List<NGBankDto>?
 )
 
 data class VerifySelfieWithPhotoIdDto(

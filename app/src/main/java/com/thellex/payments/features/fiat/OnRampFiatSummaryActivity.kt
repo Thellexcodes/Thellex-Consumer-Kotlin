@@ -56,7 +56,7 @@ class OnRampFiatSummaryActivity : AppCompatActivity() {
             renderTransactionUI(it)
         } ?: finishWithError("Failed to load transaction details")
 
-        binding.onrampConfirmPayment.setOnClickListener{ finish()
+        binding.onrampGoToDashboardBtn.setOnClickListener{ finish()
             startActivity(Intent(this@OnRampFiatSummaryActivity, POSHomeActivity::class.java))
             finish()
         }
