@@ -15,4 +15,11 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="Theme.Thellex.Launcher" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/midnight</item>
+        <item name="windowSplashScreenBackground">@color/white</item> <!-- background color -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/thellex_logo_dark</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/white</item> <!-- optional circle behind icon -->
+        <item name="postSplashScreenTheme">@style/Theme.Thellex</item> <!-- theme after splash ends -->
+    </style>
 </resources>

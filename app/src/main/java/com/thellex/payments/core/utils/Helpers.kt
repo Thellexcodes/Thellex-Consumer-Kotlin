@@ -591,5 +591,28 @@ object Helpers {
     @SuppressLint("HardwareIds")
     fun deviceId(context: Context): String =
         Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "unknown"
+
+    fun ImageView.setScaledImage(resource: Int) {
+        // Set the image first
+        this.setImageResource(resource)
+
+        // Wait until the view is laid out
+        this.post {
+            val drawable = this.drawable ?: return@post
+            val imageWidth = drawable.intrinsicWidth
+            val imageHeight = drawable.intrinsicHeight
+
+            // Get ImageView width
+            val viewWidth = this.width
+
+            // Calculate height to maintain aspect ratio
+            val scaledHeight = (imageHeight * viewWidth) / imageWidth
+
+            // Apply new height
+            val params = this.layoutParams
+            params.height = scaledHeight
+            this.layoutParams = params
+        }
+    }
 }
 
