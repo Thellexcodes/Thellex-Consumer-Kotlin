@@ -57,6 +57,7 @@ enum class PaymentStatusEnum(val value: String) {
     }
 }
 
+
 enum class TransactionTypeEnum(val value: String) {
     CRYPTO_DEPOSIT("crypto_deposit"),
     CRYPTO_WITHDRAWAL("crypto_withdrawal"),

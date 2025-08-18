@@ -25,6 +25,8 @@ data class IFiatCryptoRampTransactionsDto(
     @SerializedName("transactionType") val transactionType: TransactionTypeEnum,
     @SerializedName("createdAt") val createdAt: String,
     @SerializedName("paymentReason") val paymentReason: String,
+    @SerializedName("transactionMessage") val transactionMessage: String? = null,
+    @SerializedName("transaction") val transaction: ITransactionHistoryDto? = null,
 )
 
 @Serializable

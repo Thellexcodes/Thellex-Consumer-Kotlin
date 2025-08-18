@@ -39,7 +39,6 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     private val _withdrawalTransactions = MutableLiveData<List<ITransactionHistoryDto>>(emptyList())
     val withdrawalTransactions: LiveData<List<ITransactionHistoryDto>> = _withdrawalTransactions
 
-
     init {
         viewModelScope.launch {
             try {
@@ -59,11 +58,19 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 updateTransactionHistory(transaction)
             }
         }
+
+        EventBus.fiatCryptoTransactionUpdate.observeForever { transaction ->
+            viewModelScope.launch {
+                addFiatCryptoRampTransaction(transaction)
+                Log.d(TAG, "Processed EventBus fiat-crypto transaction update: ${transaction.id}")
+            }
+        }
     }
 
     override fun onCleared() {
         super.onCleared()
         EventBus.transactionUpdate.removeObserver { /* No-op */ }
+        EventBus.fiatCryptoTransactionUpdate.removeObserver { /* No-op */ }
     }
 
     private fun updateFilteredTransactions(user: UserEntity?) {
@@ -195,20 +202,63 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                     _error.postValue("Cannot add transaction: User not logged in")
                     return@launch
                 }
+
                 val updatedList = user.fiatCryptoRampTransactions.toMutableList()
                 if (updatedList.any { it.id == transaction.id }) {
                     Log.w(TAG, "Fiat-crypto ramp transaction already exists: ${transaction.id}")
                     return@launch
                 }
+
                 updatedList.add(transaction)
-                val updatedUser = user.copy(fiatCryptoRampTransactions = updatedList.sortedByDescending { it.createdAt })
-                _authResult.postValue(updatedUser)
-                repository.saveAuthResult(updatedUser)
+                val updatedUser = user.copy(fiatCryptoRampTransactions = updatedList)
+
+                // Save to repository and verify
+                try {
+                    repository.saveAuthResult(updatedUser)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to save auth result for transaction: ${transaction.id}, error: ${e.message}", e)
+                    _error.postValue("Failed to save transaction: Repository error")
+                    return@launch
+                }
+
+                // Add transaction to repository
+                try {
+                    repository.addFiatCryptoRampTransaction(transaction)
+                    Log.d(TAG, "Successfully called addFiatCryptoRampTransaction for: ${transaction.id}")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to add fiat-crypto ramp transaction to repository: ${transaction.id}, error: ${e.message}", e)
+                    _error.postValue("Failed to save transaction: Repository error")
+                    return@launch
+                }
+
+                // Update filtered transactions
                 updateFilteredTransactions(updatedUser)
+
+                // Post to LiveData
+                _authResult.postValue(updatedUser)
                 Log.d(TAG, "Added fiat-crypto ramp transaction: ${transaction.id}")
-                repository.addFiatCryptoRampTransaction(transaction)
+
+                // Post to EventBus for fiat-crypto transaction
+                EventBus.postFiatCryptoTransactionUpdate(transaction)
+                Log.d(TAG, "Posted fiat-crypto transaction to EventBus: ${transaction.id}")
+
+                // Handle associated transaction history
+                transaction.transaction?.let { historyTransaction ->
+                    EventBus.postTransactionUpdate(historyTransaction)
+                    Log.d(TAG, "Posted associated transaction history to EventBus: ${historyTransaction.id}")
+                }
+
+                // Log final user state
+                Log.d(TAG, "Updated user state, fiatCryptoRampTransactions count: ${updatedUser.fiatCryptoRampTransactions.size}")
+                updatedUser.fiatCryptoRampTransactions.forEachIndexed { index, txn ->
+                    Log.d(
+                        TAG,
+                        "Post-save Transaction [$index]: id=${txn.id}, type=${txn.transactionType?.value ?: "Unknown"}, " +
+                                "status=${txn.paymentStatus?.toString() ?: "Unknown"}, amount=${txn.netCryptoAmount ?: txn.mainAssetAmount ?: "Unknown"}"
+                    )
+                }
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to add fiat-crypto ramp transaction: ${e.message}", e)
+                Log.e(TAG, "Failed to add fiat-crypto ramp transaction: ${transaction.id}, error: ${e.message}", e)
                 _error.postValue("Failed to add transaction")
             }
         }

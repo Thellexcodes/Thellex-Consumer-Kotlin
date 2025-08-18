@@ -31,7 +31,7 @@ class UserRepository private constructor(private val context: Context) {
         return UserPreferences.getAuthResult(context)
     }
 
-    suspend fun saveToken(token: String?) {
+    fun saveToken(token: String?) {
         if (token != null) {
             UserPreferences.saveToken(context, token)
         } else {
@@ -39,7 +39,7 @@ class UserRepository private constructor(private val context: Context) {
         }
     }
 
-    suspend fun saveAuthResult(result: UserEntity?) {
+    fun saveAuthResult(result: UserEntity?) {
         UserPreferences.saveAuthResult(context, result)
     }
 
@@ -61,7 +61,7 @@ class UserRepository private constructor(private val context: Context) {
         UserPreferences.setHasEnabledNotifications(context, enabled)
     }
 
-    suspend fun logout() {
+    fun logout() {
         UserPreferences.clearToken(context)
         UserPreferences.clearAuthResult(context)
         walletPreferences.clearWalletCache()

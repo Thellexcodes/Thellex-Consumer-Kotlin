@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.thellex.payments.R
+import com.thellex.payments.core.utils.EventBus
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.formatTimestamp
@@ -21,11 +22,16 @@ import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.settings.FiatTickers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 class FiatRampTransactionsDetailActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "FiatRampTransactionsDetail"
-        private const val EXTRA_RAMP_ID = "ramp_id"
+        private const val RAMP_ID = "ramp_id"
     }
 
     private lateinit var rampID: String
@@ -39,7 +45,8 @@ class FiatRampTransactionsDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Validate rampID
-        rampID = intent.getStringExtra(EXTRA_RAMP_ID) ?: run {
+        rampID = intent.getStringExtra(RAMP_ID) ?: run {
+            Log.e(TAG, "No rampID provided, finishing activity")
             finish()
             return
         }
@@ -61,8 +68,71 @@ class FiatRampTransactionsDetailActivity : AppCompatActivity() {
             this,
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
-//        userViewModel.refreshAuthResult(this)
+
         observeUser()
+        observeFiatCryptoTransactionUpdate()
+    }
+
+    private fun observeUser() {
+        userViewModel.authResult.observe(this) { user ->
+            if (user == null) {
+                Log.w(TAG, "User is null, cannot display transaction details for rampID: $rampID")
+                binding.onRampTransactionDetails.root.visibility = View.GONE
+                binding.offRampTransactionDetails.root.visibility = View.GONE
+                return@observe
+            }
+
+            // Log all fiatCryptoRampTransactions
+            Log.d(TAG, "All fiatCryptoRampTransactions for user ${user.uid} (rampID: $rampID):")
+            user.fiatCryptoRampTransactions.forEachIndexed { index, transaction ->
+                Log.d(
+                    TAG,
+                    "Transaction [$index]: id=${transaction.id}, type=${transaction.transactionType?.value ?: "Unknown"}, " +
+                            "status=${transaction.paymentStatus?.toString() ?: "Unknown"}, assetCode=${transaction.recipientInfo?.assetCode ?: "Unknown"}, " +
+                            "amount=${transaction.netCryptoAmount ?: transaction.mainAssetAmount ?: "Unknown"}"
+                )
+            }
+
+            // Try finding the transaction immediately
+            var transaction = user.fiatCryptoRampTransactions.find { it.id == rampID }
+
+            if (transaction != null) {
+                Log.d(TAG, "Found transaction for rampID: $rampID, type: ${transaction.transactionType?.value ?: "Unknown"}")
+                updateUI(transaction)
+            } else {
+                // Retry with a 500ms delay
+                CoroutineScope(Dispatchers.Main).launch {
+                    Log.d(TAG, "Transaction not found for rampID: $rampID, retrying with 500ms delay")
+                    withTimeoutOrNull(500) {
+                        delay(500)
+                        val updatedUser = userViewModel.authResult.value
+                        if (updatedUser != null) {
+                            transaction = updatedUser.fiatCryptoRampTransactions.find { it.id == rampID }
+                            if (transaction != null) {
+                                Log.d(TAG, "Found transaction after delay for rampID: $rampID, type: ${transaction!!.transactionType?.value ?: "Unknown"}")
+                                updateUI(transaction!!)
+                            }
+                        }
+                    }
+                    if (transaction == null) {
+                        Log.w(TAG, "Transaction still not found for rampID: $rampID after delay")
+                        binding.onRampTransactionDetails.root.visibility = View.GONE
+                        binding.offRampTransactionDetails.root.visibility = View.GONE
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeFiatCryptoTransactionUpdate() {
+        EventBus.fiatCryptoTransactionUpdate.observe(this) { transaction ->
+            if (transaction.id == rampID) {
+                Log.d(TAG, "Received EventBus update for rampID: $rampID, type: ${transaction.transactionType?.value ?: "Unknown"}")
+                updateUI(transaction)
+            } else {
+                Log.d(TAG, "Received EventBus update for transaction ${transaction.id}, but rampID is $rampID")
+            }
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -122,29 +192,6 @@ class FiatRampTransactionsDetailActivity : AppCompatActivity() {
             }
             else -> {
                 Log.w(TAG, "Unknown transaction type: ${transaction.transactionType}")
-                binding.onRampTransactionDetails.root.visibility = View.GONE
-                binding.offRampTransactionDetails.root.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun observeUser() {
-        userViewModel.authResult.observe(this) { user ->
-            if (user == null) {
-                Log.w(TAG, "User is null, cannot display transaction details for rampID: $rampID")
-                binding.onRampTransactionDetails.root.visibility = View.GONE
-                binding.offRampTransactionDetails.root.visibility = View.GONE
-                return@observe
-            }
-
-            Log.d(TAG, "Ramp Txns: ${user.fiatCryptoRampTransactions}")
-
-            val transaction = user.fiatCryptoRampTransactions.find { it.id == rampID }
-            if (transaction != null) {
-                Log.d(TAG, "Found transaction for rampID: $rampID")
-                updateUI(transaction)
-            } else {
-                Log.w(TAG, "Transaction not found for rampID: $rampID")
                 binding.onRampTransactionDetails.root.visibility = View.GONE
                 binding.offRampTransactionDetails.root.visibility = View.GONE
             }

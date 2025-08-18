@@ -32,9 +32,10 @@ data class ITransactionHistoryDto(
     @SerializedName("destinationAddress") val destinationAddress: String,
     @SerializedName("paymentNetwork") val paymentNetwork: String,
     @SerializedName("createdAt") val createdAt: String,
-    @SerializedName("rampID") val rampID: String,
+    @SerializedName("rampID") val rampID: String? = null,
     @SerializedName("mainFiatAmount") val mainFiatAmount: Double,
     @SerializedName("mainAssetAmount") val mainAssetAmount: Double,
+    @SerializedName("transactionMessage") val transactionMessage: String? = null,
 )
 
  enum class TransactionType {

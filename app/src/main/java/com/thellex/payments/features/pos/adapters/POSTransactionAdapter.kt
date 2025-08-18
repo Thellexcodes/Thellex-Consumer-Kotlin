@@ -83,7 +83,13 @@ class POSTransactionAdapter(
                 PosTransaction(
                     iconResId = getIconResIdForToken(transaction.assetCode),
                     statusIconResId = getStatusIconResId(transaction.transactionType.toString()),
-                    description = transaction.assetCode.uppercase(Locale.getDefault()) ?: "Unknown",
+                    description = when (transaction.transactionType) {
+                            TransactionTypeEnum.CRYPTO_DEPOSIT,
+                            TransactionTypeEnum.CRYPTO_WITHDRAWAL ->
+                                transaction.assetCode?.uppercase(Locale.getDefault()) ?: "Unknown"
+                            else ->
+                                transaction.transactionMessage?.takeIf { it.isNotEmpty() } ?: "Unknown"
+                    },
                     time = formatTimestamp(transaction.createdAt),
                     amountWithSymbol = formatAmountWithSymbol(displayAmount.toString()),
                     paymentStatus = mapToTransactionStatus(transaction.paymentStatus?.toString() ?: "UNKNOWN"),

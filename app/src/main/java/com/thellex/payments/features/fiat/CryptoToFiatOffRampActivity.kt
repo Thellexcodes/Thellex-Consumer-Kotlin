@@ -357,7 +357,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                         return@launch
                     }
 
-//                    // Validate crypto amount against wallet balance
+                    // Validate crypto amount against wallet balance
 //                    if (cryptoAmount > selectedToken.totalBalance) {
 //                        CustomToast.show(this@CryptoToFiatOffRampActivity, "Error", "Insufficient balance in ${selectedToken.assetCode.name.uppercase()}")
 //                        return@launch

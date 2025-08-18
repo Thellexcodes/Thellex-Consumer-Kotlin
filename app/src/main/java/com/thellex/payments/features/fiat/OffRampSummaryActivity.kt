@@ -133,7 +133,7 @@ class OffRampSummaryActivity : AppCompatActivity() {
         val fiatCode = cryptoToFiatViewModel.fiatCode.value ?: "NGN"
         val rate = cryptoToFiatViewModel.currentRate.value
         val fee = cryptoToFiatViewModel.fee.value ?: 0.0
-        val feeDivisor = rate?.feeDivisor ?: 100.0  // Fallback to 100 if feeDivisor is not available
+        val feeDivisor = rate?.feeDivisor ?: 100.0
 
         if (amount != null && amount > 0.0) {
             binding.offrampFiatAmount.text = "${amount.roundToTwoDecimals()} $fiatCode"
@@ -178,8 +178,12 @@ class OffRampSummaryActivity : AppCompatActivity() {
 
                 val result = response.body()?.result
                 if (result != null) {
-                    result.let { txn -> userViewModel.addFiatCryptoRampTransaction(txn) }
-                    ActivityTracker.finishActivity(PaymentMethodActivity::class.java)
+                    result.let { txn ->
+                        userViewModel.addFiatCryptoRampTransaction(txn)
+                        userViewModel.addTransaction(txn.transaction!!)
+                    }
+                    Log.d(TAG, "this is response with txn: ${result.transaction}")
+//                    ActivityTracker.finishActivity(PaymentMethodActivity::class.java)
                     startActivity(Intent(context, POSHomeActivity::class.java))
                 } else {
                     CustomToast.show(context, "Error", "Unexpected response")
@@ -240,5 +244,9 @@ class OffRampSummaryActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         ActivityTracker.remove(this)
+    }
+
+    companion object {
+        private val TAG = "OffRampSummaryActivity"
     }
 }

@@ -231,42 +231,42 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun updatePendingTransactionsUI(transactions: List<IFiatCryptoRampTransactionsDto>) {
-    val now = Instant.now()
+        val now = Instant.now()
 
-    if (transactions.isEmpty()) {
-        // No transactions at all
-        binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
-        binding.textPendingTransactionsCount.text = "Funding & Spending History"
-        binding.iconPendingClock.visibility = View.GONE
-        return
-    }
-
-    // Filter pending transactions that have not expired yet
-    val pendingTransactions = transactions.filter {
-        try {
-            val expiresInstant = Instant.parse(it.expiresAt)
-            !it.seen && it.paymentStatus != PaymentStatusEnum.Complete && expiresInstant.isAfter(now)
-        } catch (e: DateTimeParseException) {
-            false
+        if (transactions.isEmpty()) {
+            // No transactions at all
+            binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
+            binding.textPendingTransactionsCount.text = "Funding & Spending History"
+            binding.iconPendingClock.visibility = View.GONE
+            return
         }
-    }
 
-    if (pendingTransactions.isNotEmpty()) {
-        // Show count of pending transactions (not expired)
-        val count = pendingTransactions.size
-        binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
-        binding.textPendingTransactionsCount.text = if (count == 1) "1 PENDING TRANSACTION" else "$count PENDING TRANSACTIONS"
-        binding.iconPendingClock.visibility = View.VISIBLE
-    } else {
-        // Either all transactions are completed or expired -> show transaction history text
-        binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
-        binding.textPendingTransactionsCount.text = "Funding & Spending History"
-        binding.iconPendingClock.visibility = View.GONE
-    }
+        // Filter pending transactions that have not expired yet
+        val pendingTransactions = transactions.filter {
+            try {
+                val expiresInstant = Instant.parse(it.expiresAt)
+                !it.seen && it.paymentStatus != PaymentStatusEnum.Complete && expiresInstant.isAfter(now)
+            } catch (e: DateTimeParseException) {
+                false
+            }
+        }
 
-    binding.layoutUncompletedTransactionsWrapper.setOnClickListener {
-        startActivity(Intent(this, FiatRampTransactionsActivity::class.java))
-    }
+        if (pendingTransactions.isNotEmpty()) {
+            // Show count of pending transactions (not expired)
+            val count = pendingTransactions.size
+            binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
+            binding.textPendingTransactionsCount.text = if (count == 1) "1 PENDING TRANSACTION" else "$count PENDING TRANSACTIONS"
+            binding.iconPendingClock.visibility = View.VISIBLE
+        } else {
+            // Either all transactions are completed or expired -> show transaction history text
+            binding.layoutUncompletedTransactionsWrapper.visibility = View.VISIBLE
+            binding.textPendingTransactionsCount.text = "Funding & Spending History"
+            binding.iconPendingClock.visibility = View.GONE
+        }
+
+        binding.layoutUncompletedTransactionsWrapper.setOnClickListener {
+            startActivity(Intent(this, FiatRampTransactionsActivity::class.java))
+        }
     }
 
     private fun updateDefaultPriceText() {
