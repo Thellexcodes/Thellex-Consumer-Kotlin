@@ -46,23 +46,5 @@ data class UserEntity(
     @SerializedName("remainingTiers") val remainingTiers: List<TierInfo> = emptyList(),
     @SerializedName("outstandingKyc") val outstandingKyc: List<String> = emptyList(),
     @SerializedName("transactionSettings") val transactionSettings: ITransactionSettingsDto,
-    @SerializedName("banks") val banks: List<NGBankDto> = emptyList()
+    @SerializedName("banks") val banks: List<NGBankDto>?
 )
-//
-//@Serializable
-//data class NGBankDto(
-//    @SerializedName("name")
-//    val name: String,
-//
-//    @SerializedName("slug")
-//    val slug: String,
-//
-//    @SerializedName("code")
-//    val code: String,
-//
-//    @SerializedName("ussd")
-//    val ussd: String,
-//
-//    @SerializedName("logo")
-//    val logo: String
-//)

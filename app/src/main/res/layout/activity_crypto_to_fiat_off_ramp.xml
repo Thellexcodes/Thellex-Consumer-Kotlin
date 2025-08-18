@@ -78,6 +78,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+            android:visibility="gone"
             android:id="@+id/crypto_fiat_balance_overview"
             app:layout_constraintTop_toBottomOf="@id/layout_pending_transactions_wrapper"
             android:layout_width="match_parent"
@@ -266,6 +267,42 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintBottom_toBottomOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        app:layout_constraintTop_toBottomOf="@id/crypto_amount_input_wrapper"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp">
+
+                    <TextView
+                            android:id="@+id/textAvailableBalance"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="AVAILABLE BALANCE: 0.00"
+                            android:textColor="@color/white"
+                            android:textSize="10sp"
+                            android:fontFamily="@font/kumbhsans_light"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/buttonMax"
+                            app:layout_constraintHorizontal_bias="0" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/buttonMax"
+                            android:layout_width="41dp"
+                            android:layout_height="22dp"
+                            android:text="MAX"
+                            android:textAllCaps="true"
+                            android:textSize="10sp"
+                            android:textColor="@color/white"
+                            android:background="@drawable/rounded_badge_primary_bg"
+                            android:fontFamily="@font/kumbhsans_regular"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

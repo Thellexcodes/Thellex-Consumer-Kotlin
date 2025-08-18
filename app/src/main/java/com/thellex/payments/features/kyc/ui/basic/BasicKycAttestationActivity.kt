@@ -32,6 +32,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import org.json.JSONObject
+import retrofit2.HttpException
+import java.io.IOException
 
 class BasicKycAttestationActivity : AppCompatActivity() {
     private lateinit var topBar: Helpers.TopAppBarController
@@ -126,76 +128,116 @@ class BasicKycAttestationActivity : AppCompatActivity() {
             binding.submitBtn.setSubmitting(true)
 
             lifecycleScope.launch {
-                try {
-                    val token = withTimeoutOrNull(5000) {
-                        userViewModel.token.asFlow().first { !it.isNullOrBlank() }
-                    }
-
-                    if (token.isNullOrBlank()) {
-                        CustomToast.show(
-                            this@BasicKycAttestationActivity,
-                            "Authentication Failed",
-                            "Unable to authenticate. Please try again."
-                        )
-                        return@launch
-                    }
-
-                    val requestDto = BasicKycFormModelDto(
-                        idType = IdTypeEnum.NIN.name,
-                        additionalIdType = IdTypeEnum.BVN.name,
-                        firstName = formData.firstName,
-                        middleName = formData.middleName,
-                        lastName = formData.lastName,
-                        phoneNumber = formData.phoneNumber,
-                        dob = formData.dob,
-                        bvn = formData.bvn,
-                        nin = formData.nin,
-                        houseNumber = formData.houseNumber,
-                        streetName = formData.streetName,
-                        state = formData.state,
-                        lga = formData.lga
-                    )
-
-                    val api = ApiClient.getAuthenticatedKycApi(token)
-                    val response = api.verifyBasic(requestDto)
-
-                    val kycResult = response.body()?.result
-                    Log.d("KYC", "the kyc result is $kycResult")
-                    if (response.isSuccessful && kycResult?.isVerified == true) {
-                        val currentUser = userViewModel.authResult.value
-                        val updatedUser = currentUser?.copy(
-                            currentTier = kycResult.nextTier,
-                            nextTier = kycResult.nextTier
-                        )
-                        // Save updated user directly via UserRepository
-                        if (updatedUser != null) {
-                            userRepository.saveAuthResult(updatedUser)
+                    try {
+                        // Retrieve token with timeout
+                        val token = withTimeoutOrNull(5000) {
+                            userViewModel.token.asFlow().first { !it.isNullOrBlank() }
                         }
-                        // Pass currentTier to KycSuccessActivity
-                        val intent = Intent(this@BasicKycAttestationActivity, KycSuccessActivity::class.java)
-                        kycResult.nextTier.let { tier ->
-                            intent.putExtra("CURRENT_TIER_JSON", gson.toJson(tier))
+
+                        if (token.isNullOrBlank()) {
+                            Log.e(TAG, "Authentication failed: Token is null or blank")
+                            CustomToast.show(
+                                this@BasicKycAttestationActivity,
+                                "Authentication Failed",
+                                "Unable to authenticate. Please try again."
+                            )
+                            binding.submitBtn.setSubmitting(false)
+                            return@launch
                         }
-                        startActivity(Intent(this@BasicKycAttestationActivity, KycSuccessActivity::class.java))
-                        finish()
-                    } else {
-                        val errorBody = response.errorBody()?.string()
-                        val code = JSONObject(errorBody ?: "").optString("message")
-                        val userError = UserErrorEnum.fromCode(code)
-                        ErrorHandler.handle(this@BasicKycAttestationActivity, "Verification Error", userError)
+                        Log.d(TAG, "Retrieved token: $token")
+
+                        // Build KYC request
+                        val requestDto = BasicKycFormModelDto(
+                            idType = IdTypeEnum.NIN.name,
+                            additionalIdType = IdTypeEnum.BVN.name,
+                            firstName = formData.firstName,
+                            middleName = formData.middleName,
+                            lastName = formData.lastName,
+                            phoneNumber = formData.phoneNumber,
+                            dob = formData.dob,
+                            bvn = formData.bvn,
+                            nin = formData.nin,
+                            houseNumber = formData.houseNumber,
+                            streetName = formData.streetName,
+                            state = formData.state,
+                            lga = formData.lga
+                        )
+                        Log.d(TAG, "KYC request: idType=${requestDto.idType}, bvn=${requestDto.bvn}, nin=${requestDto.nin}")
+
+                        // Make API call
+                        val api = ApiClient.getAuthenticatedKycApi(token)
+                        val response = api.verifyBasic(requestDto)
+
+                        // Handle response
+                        val kycResult = response.body()?.result
+                        Log.d(TAG, "KYC result: isVerified=${kycResult?.isVerified}, nextTier=${kycResult?.nextTier}")
+
+                        if (response.isSuccessful && kycResult?.isVerified == true) {
+                            val currentUser = userViewModel.authResult.value
+                            if (currentUser == null) {
+                                Log.e(TAG, "Current user is null, cannot update KYC tier")
+                                CustomToast.show(
+                                    this@BasicKycAttestationActivity,
+                                    "KYC Error",
+                                    "User data not found. Please try again."
+                                )
+                                return@launch
+                            }
+
+                            val updatedUser = currentUser.copy(
+                                currentTier = kycResult.nextTier,
+                                nextTier = kycResult.nextTier
+                            )
+                            Log.d(TAG, "Updating user with new tier: ${kycResult.nextTier}")
+
+                            // Save updated user
+                            try {
+                                userRepository.saveAuthResult(updatedUser)
+                                Log.d(TAG, "Successfully saved updated user with tier: ${updatedUser.currentTier}")
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Failed to save updated user: ${e.message}", e)
+                                CustomToast.show(
+                                    this@BasicKycAttestationActivity,
+                                    "KYC Error",
+                                    "Failed to save user data. Please try again."
+                                )
+                                return@launch
+                            }
+
+                            // Navigate to success activity
+                            val intent = Intent(this@BasicKycAttestationActivity, KycSuccessActivity::class.java)
+                            kycResult.nextTier.let { tier ->
+                                intent.putExtra("CURRENT_TIER_JSON", gson.toJson(tier))
+                            }
+                            Log.d(TAG, "Navigating to KycSuccessActivity with tier: ${kycResult.nextTier}")
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            val errorBody = response.errorBody()?.string()
+                            val code = JSONObject(errorBody ?: "{}").optString("message")
+                            val userError = UserErrorEnum.fromCode(code)
+                            Log.e(TAG, "KYC API failed: code=$code, errorBody=$errorBody, userError=$userError")
+                            ErrorHandler.handle(this@BasicKycAttestationActivity, "Verification Error", userError)
+                        }
+                    } catch (e: IOException) {
+                        Log.e(TAG, "Network error during KYC submission: ${e.message}", e)
+                        ErrorHandler.handle(this@BasicKycAttestationActivity, "Network Error", UserErrorEnum.UNKNOWN_ERROR)
+                    } catch (e: HttpException) {
+                        Log.e(TAG, "HTTP error during KYC submission: code=${e.code()}, message=${e.message()}", e)
+                        ErrorHandler.handle(this@BasicKycAttestationActivity, "Server Error", UserErrorEnum.fromCode(e.code().toString()))
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Unexpected error during KYC submission: ${e.message}", e)
+                        ErrorHandler.handle(this@BasicKycAttestationActivity, "Unexpected Error", UserErrorEnum.fromCode(e.message))
+                    } finally {
+                        Log.d(TAG, "KYC submission completed, resetting submit button")
+                        binding.submitBtn.setSubmitting(false)
                     }
-                } catch (e: Exception) {
-                    val userError = UserErrorEnum.fromCode(e.message)
-                    ErrorHandler.handle(this@BasicKycAttestationActivity, "Unexpected Error", userError)
-                } finally {
-                    binding.submitBtn.setSubmitting(false)
-                }
             }
         }
     }
 
     companion object {
-        private const val TAG = "TAG"
+        private const val TAG = "BasicKycAttestationActivity"
     }
 }
 
