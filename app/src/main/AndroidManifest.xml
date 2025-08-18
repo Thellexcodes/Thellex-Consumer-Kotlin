@@ -57,18 +57,17 @@
             android:exported="false" /> <!-- Launcher activity -->
         <activity
             android:name=".features.onboarding.LauncherActivity"
-            android:exported="true" >
+            android:exported="true"
+            android:theme="@style/Theme.Thellex.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- Main Dashboard -->
         <activity
             android:name=".features.dashboard.ui.MainActivity"
             android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.Thellex" /> <!-- Onboarding -->
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".features.onboarding.OnboardingActivity"
             android:exported="false"

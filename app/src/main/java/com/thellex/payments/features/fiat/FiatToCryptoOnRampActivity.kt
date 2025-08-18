@@ -29,11 +29,10 @@ import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.getIconResIdForToken
 import com.thellex.payments.core.utils.Helpers.setSubmitting
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
-import com.thellex.payments.core.utils.reasonList
 import com.thellex.payments.data.model.FiatToCryptoOnRampRequestDto
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.PaymentStatusEnum
-import com.thellex.payments.data.model.UserPreferences
+import com.thellex.payments.data.model.reasonList
 import com.thellex.payments.databinding.ActivityFiatToCryptoOnRampBinding
 import com.thellex.payments.databinding.DialogReasonSelectionBinding
 import com.thellex.payments.features.auth.viewModel.UserRepository
@@ -42,10 +41,6 @@ import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.fiat.adapters.ReasonSelectionAdapter
 import com.thellex.payments.features.fiat.adapters.TokenSelectionBottomSheet
 import com.thellex.payments.features.kyc.fragments.RequestBvnModalFragment
-import com.thellex.payments.features.kyc.ui.StartKycActivity
-import com.thellex.payments.features.pos.fragments.RequestOptionsModalFragment
-import com.thellex.payments.features.pos.fragments.WithdrawalOptionsModalFragment
-import com.thellex.payments.features.pos.ui.POSChooseCryptoActivity
 import com.thellex.payments.features.wallet.model.IRatesResponseDto
 import com.thellex.payments.features.wallet.model.WalletDto
 import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
@@ -175,12 +170,13 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                     )
 
                     val response = ApiClient.getAuthenticatedPaymentApi(authToken!!).fiatToCryptoOnRamp(onRampRequest)
-
                     val result = response.body()?.result
+
                     if(result != null){
 //                        Log.d(TAG, "Response from fiatToCryptoOnRamp: ${response.body()?.result}")
                         result.let { txn ->
                             userViewModel.addFiatCryptoRampTransaction(txn)
+                            userViewModel.addTransaction(transaction = txn.transaction!!)
                         }
                         val intent = Intent(this@FiatToCryptoOnRampActivity, OnRampFiatSummaryActivity::class.java).apply {
                             putExtra("fiatCryptoRampResultJson", Gson().toJson(result))
@@ -271,7 +267,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
 
     private fun updateDefaultPriceText() {
         val tokenSymbol = selectedToken?.assetCode?.name?.uppercase(Locale.getDefault()) ?: "TOKEN"
-        binding.textPriceValue.text = "≅ 0.00 NGN/$tokenSymbol"
+        binding.textRateValue.text = "≅ 0.00 NGN/$tokenSymbol"
     }
 
     fun updateTokenSpinner(token: WalletDto) {
@@ -430,9 +426,10 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         val rate = ngnRateDto?.rate?.buy ?: 0.0
         val fiatCode = ngnRateDto?.fiatCode ?: FiatEnum.ngn.code
         val fee = ngnRateDto?.rate?.fee?.div(ngnRateDto.rate.feeDivisor) ?: 0.0
+        Log.d(TAG, "FEE is $fee ${ngnRateDto?.rate?.fee}")
 
         if (fiatText.isEmpty() && cryptoText.isEmpty()) {
-            binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
+            binding.textRateValue.text = "≅ $rate $fiatCode/$tokenSymbol"
             return
         }
 
@@ -440,37 +437,35 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
             if (!cryptoChanged) {
                 // Fiat input changed
                 val fiatAmount = fiatText.toDoubleOrNull() ?: 0.0
-                if (fiatAmount <= fee) {
+                if (fiatAmount <= minimumAmountInFiat) {
                     if (!binding.edittextCryptoAmount.hasFocus()) binding.edittextCryptoAmount.setText("")
-                    binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
-                    Toast.makeText(this, "Fiat amount must be greater than fee ($minimumAmountInFiat $fiatCode)", Toast.LENGTH_SHORT).show()
+                    binding.textRateValue.text = "≅ $rate $fiatCode/$tokenSymbol"
+                    CustomToast.show(this, "Amount Alert","Fiat amount must be greater than fee ($minimumAmountInFiat $fiatCode)")
                     return
                 }
-                val cryptoAmount = (fiatAmount - fee) / rate
+                // Fiat includes fee: fiat = crypto * rate * (1 + fee%) → crypto = fiat / (rate * (1 + fee%))
+                val cryptoAmount = fiatAmount / (rate * (1 + fee / ngnRateDto?.rate?.feeDivisor!!))
                 val formattedCrypto = cryptoAmount.takeIf { it.isFinite() }?.toBigDecimal()?.setScale(6, RoundingMode.HALF_UP)?.toPlainString() ?: "0.0"
                 if (!binding.edittextCryptoAmount.hasFocus()) {
                     binding.edittextCryptoAmount.setText(formattedCrypto)
                     binding.edittextCryptoAmount.setSelection(formattedCrypto.length)
                 }
-                binding.textPriceValue.text = "≅ ${fiatAmount.toBigDecimal().setScale(2, RoundingMode.HALF_UP)} $fiatCode/$tokenSymbol"
             } else {
                 // Crypto input changed
                 val cryptoAmount = cryptoText.toDoubleOrNull() ?: 0.0
                 if (cryptoAmount == 0.0) {
                     if (!binding.edittextFiatAmount.hasFocus()) binding.edittextFiatAmount.setText("")
-                    binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
                     return
                 }
-                val fiatAmount = (cryptoAmount * rate) + fee
+                // Net fiat after fee: fiat = (crypto * rate) * (1 - fee%)
+                val fiatAmount = (cryptoAmount * rate) * (1 - fee / ngnRateDto?.rate?.feeDivisor!!)
                 val formattedFiat = fiatAmount.takeIf { it.isFinite() }?.toBigDecimal()?.setScale(2, RoundingMode.HALF_UP)?.toPlainString() ?: "0.0"
                 if (!binding.edittextFiatAmount.hasFocus()) {
                     binding.edittextFiatAmount.setText(formattedFiat)
                     binding.edittextFiatAmount.setSelection(formattedFiat.length)
                 }
-                binding.textPriceValue.text = "≅ ${fiatAmount.toBigDecimal().setScale(2, RoundingMode.HALF_UP)} $fiatCode/$tokenSymbol"
             }
         } catch (e: Exception) {
-            binding.textPriceValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
             Toast.makeText(this, "Invalid input", Toast.LENGTH_SHORT).show()
         }
     }
@@ -486,30 +481,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         dialogBinding.recyclerviewReasonList.layoutManager = LinearLayoutManager(this)
         dialogBinding.recyclerviewReasonList.adapter = adapter
         bottomSheetDialog.show()
-    }
-
-    private fun showBvnRequestModal() {
-//        val modal = RequestOptionsModalFragment.newInstance()
-//
-//        modal.setListener(object : RequestOptionsModalFragment.ReceiveOptionsListener {
-//            override fun onChainDepositClick() {
-//                startActivity(Intent(this@FiatToCryptoOnRampActivity, POSChooseCryptoActivity::class.java))
-//            }
-//            override fun onCryptoToFiatOnRampClick() {
-//                startActivity(Intent(this@, FiatToCryptoOnRampActivity::class.java))
-//            }
-//
-//            override fun onFiatDepositClick() {
-//                startActivity(Intent(this@POSHomeActivity, OnRampFiatSummaryActivity::class.java))
-//            }
-//
-//            override fun onStartKyc() {
-//                modal.dismiss()
-//                startActivity(Intent(this@POSHomeActivity, StartKycActivity::class.java))
-//            }
-//        })
-//
-//        modal.show(supportFragmentManager, "RequestOptionsModal")
     }
 
     override fun onDestroy() {

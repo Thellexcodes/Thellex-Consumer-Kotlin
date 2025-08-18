@@ -78,6 +78,7 @@ android {
         implementation(libs.glide)
         kapt("com.github.bumptech.glide:compiler:4.15.1")
         implementation(libs.materialdatetimepicker)
+        implementation("androidx.core:core-splashscreen:1.0.1")
     }}
 dependencies {
     implementation(libs.androidx.appcompat)

@@ -10,8 +10,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -56,7 +56,6 @@ import com.thellex.payments.features.wallet.ui.WalletAssetsActivity
 import com.thellex.payments.features.wallet.ui.WithdrawToCryptoWalletActivity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-
 
 class POSHomeActivity : AppCompatActivity() {
     lateinit var binding: ActivityPOSBinding
@@ -109,18 +108,6 @@ class POSHomeActivity : AppCompatActivity() {
         updateAttentionGrabber()
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_NOTIFICATIONS) {
-            val isGranted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
-            userViewModel.setNotificationsEnabled(isGranted)
-            userViewModel.refreshNotificationsStatus()
-        }
-    }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun setupViewPager() {
@@ -316,41 +303,74 @@ class POSHomeActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun updateAttentionGrabber() {
         val notificationsEnabled = userViewModel.notificationsEnabled.value ?: false
         Log.d(TAG, "notificationsEnabled: $notificationsEnabled, Dismissed: ${userViewModel.isNotificationsDismissed()}")
+
         if (!notificationsEnabled && !userViewModel.isNotificationsDismissed()) {
+            val permission = Manifest.permission.POST_NOTIFICATIONS
             binding.attentionGrabber.setAttentionGrabber(
                 message = "Enable notifications to stay updated!",
                 actionText = "Enable",
                 iconResId = R.drawable.icon_notification_gray,
                 onActionClick = {
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                        val permission = Manifest.permission.POST_NOTIFICATIONS
-//                        when {
-//                            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
-//                                userViewModel.setNotificationsEnabled(true)
-//                            }
-//                            else -> {
-//                                ActivityCompat.requestPermissions(
-//                                    this,
-//                                    arrayOf(permission),
-//                                    REQUEST_CODE_NOTIFICATIONS
-//                                )
-//                            }
-//                        }
-//                    } else {
-//                        userViewModel.setNotificationsEnabled(true)
-//                    }
-//                    userViewModel.setNotificationsDismissed(true)
-//                    userViewModel.refreshNotificationsStatus()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+                            Log.d(TAG, "Notifications already granted")
+                            userViewModel.setNotificationsEnabled(true)
+                            userViewModel.setNotificationsDismissed(true)
+                            userViewModel.refreshNotificationsStatus()
+                            binding.attentionGrabber.hide()
+                        } else {
+                            Log.d(TAG, "Requesting notification permission")
+                            ActivityCompat.requestPermissions(
+                                this@POSHomeActivity,
+                                arrayOf(permission),
+                                REQUEST_CODE_NOTIFICATIONS
+                            )
+                        }
+                    } else {
+                        Log.d(TAG, "Notifications enabled by default (< Android 13)")
+                        userViewModel.setNotificationsEnabled(true)
+                        userViewModel.setNotificationsDismissed(true)
+                        userViewModel.refreshNotificationsStatus()
+                        binding.attentionGrabber.hide()
+                    }
                 },
                 onCloseClick = {
-                    userViewModel.setNotificationsDismissed(true)
+                    Log.d(TAG, "Notification prompt closed without enabling")
+                    userViewModel.setNotificationsDismissed(false)
+                    userViewModel.refreshNotificationsStatus()
+                    binding.attentionGrabber.hide()
                 }
             )
         } else {
+            Log.d(TAG, "Notifications already enabled or dismissed, hiding attention grabber")
             binding.attentionGrabber.hide()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE_NOTIFICATIONS) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "Notification permission granted by user")
+                userViewModel.setNotificationsEnabled(true)
+                userViewModel.setNotificationsDismissed(true)
+                userViewModel.refreshNotificationsStatus()
+                binding.attentionGrabber.hide()
+            } else {
+                Log.d(TAG, "Notification permission denied by user")
+                userViewModel.setNotificationsEnabled(false)
+                userViewModel.setNotificationsDismissed(true)
+                userViewModel.refreshNotificationsStatus()
+                binding.attentionGrabber.hide()
+            }
         }
     }
 

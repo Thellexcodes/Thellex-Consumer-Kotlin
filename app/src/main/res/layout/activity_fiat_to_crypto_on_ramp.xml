@@ -468,10 +468,10 @@
                                 android:layout_marginEnd="4dp" />
 
                         <TextView
-                                android:id="@+id/text_price_label"
+                                android:id="@+id/text_rate_label"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Price"
+                                android:text="Rate"
                                 android:textSize="10sp"
                                 android:textColor="@color/white"
                                 android:fontFamily="@font/kumbhsans_light" />
@@ -479,7 +479,7 @@
 
 
                     <TextView
-                            android:id="@+id/text_price_value"
+                            android:id="@+id/text_rate_value"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="≅ "
