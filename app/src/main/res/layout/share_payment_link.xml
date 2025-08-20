@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ramp_share_payment_link_container"
+        android:visibility="gone"
+        android:background="@drawable/rounded_golden_yellow_shape"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:paddingVertical="15dp">
+
+    <ImageView
+            android:id="@+id/ramp_share_icon"
+            android:src="@drawable/icon_share"
+            android:layout_marginRight="10dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp" />
+
+    <TextView
+            android:id="@+id/ramp_share_payment_link_label"
+            android:textSize="12sp"
+            android:fontFamily="@font/kumbhsans_bold"
+            android:text="SHARE PAYMENT LINK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+</LinearLayout>

@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ramp_transaction_details_container"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_border"
+        android:padding="@dimen/dp_15"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ramp_transaction_type_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/ramp_transaction_type_label"
+                android:textColor="@color/steelBlueGrey"
+                android:text="Transaction Type"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="@dimen/sp_12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+                android:id="@+id/ramp_transaction_type_value"
+                android:text="WITHDRAW"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:background="@drawable/rounded_golden_yellow_15pct"
+                android:paddingVertical="@dimen/dp_3"
+                android:paddingHorizontal="@dimen/dp_6"
+                android:textSize="@dimen/sp_10"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ramp_amount_sent_section"
+            android:layout_marginTop="@dimen/dp_15"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/ramp_amount_sent_label"
+                android:textColor="@color/steelBlueGrey"
+                android:text="Amount Sent"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="@dimen/sp_12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+                android:id="@+id/ramp_amount_sent_value"
+                android:text="0.00"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="@dimen/sp_12"
+                android:textColor="@color/steelBlueGrey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ramp_service_fee_section"
+            android:layout_marginTop="@dimen/dp_15"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/ramp_service_fee_label"
+                android:textColor="@color/steelBlueGrey"
+                android:text="Service Fee"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="@dimen/sp_12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+                android:id="@+id/ramp_service_fee_value"
+                android:text="750 NGN | 0.56 USD"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="@dimen/sp_12"
+                android:textColor="@color/steelBlueGrey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ramp_network_section"
+            android:layout_marginTop="@dimen/dp_15"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/ramp_network_label"
+                android:textColor="@color/steelBlueGrey"
+                android:text="Network"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="@dimen/sp_12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+        <LinearLayout
+                android:id="@+id/ramp_network_value_container"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="6dp">
+
+            <ImageView
+                    android:id="@+id/ramp_network_icon"
+                    android:src="@drawable/icon_bitcoin"
+                    android:layout_width="@dimen/dp_13"
+                    android:layout_height="@dimen/dp_13"/>
+
+            <TextView
+                    android:id="@+id/ramp_network_value"
+                    android:text="Network Name"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:layout_marginStart="@dimen/dp_7"
+                    android:textSize="@dimen/sp_10"
+                    android:textColor="@color/steelBlueGrey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ramp_transaction_hash_section"
+            android:layout_marginTop="@dimen/dp_15"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/ramp_transaction_hash_label"
+                android:textColor="@color/steelBlueGrey"
+                android:text="Transaction Hash"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="@dimen/sp_12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <LinearLayout
+                android:id="@+id/ramp_transaction_hash_value_container"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                    android:id="@+id/ramp_transaction_hash_value"
+                    android:text="View on Explorer"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="@dimen/sp_12"
+                    android:textColor="@color/steelBlueGrey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <ImageView
+                    android:id="@+id/ramp_transaction_hash_explorer_icon"
+                    android:layout_marginStart="@dimen/dp_7"
+                    android:src="@drawable/icon_external_link"
+                    android:layout_width="@dimen/dp_16"
+                    android:layout_height="@dimen/dp_16"/>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ramp_network_fee_section"
+            android:layout_marginTop="@dimen/dp_15"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/ramp_network_fee_label"
+                android:textColor="@color/steelBlueGrey"
+                android:text="Network Fee"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="@dimen/sp_12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+                android:id="@+id/ramp_network_fee_value"
+                android:text="0.00 Ticker"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="@dimen/sp_12"
+                android:textColor="@color/steelBlueGrey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:visibility="gone"
+            android:id="@+id/ramp_reason_section"
+            android:layout_marginTop="@dimen/dp_15"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/ramp_reason_label"
+                android:textColor="@color/steelBlueGrey"
+                android:text="Reason"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:textSize="@dimen/sp_12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+                android:id="@+id/ramp_reason_value"
+                android:background="@drawable/rounded_border_bright_blue_sky"
+                android:text="Reason Text"
+                android:paddingVertical="@dimen/dp_3"
+                android:paddingHorizontal="@dimen/dp_6"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textSize="@dimen/sp_10"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+            android:id="@+id/ramp_sender_details_container"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_border_midnight"
+            android:layout_marginTop="@dimen/dp_15"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/ramp_sender_details_title"
+                android:text="SENDER DETAILS"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textSize="@dimen/sp_10"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ramp_sender_address_section"
+                android:layout_marginTop="@dimen/dp_15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:id="@+id/ramp_sender_address_label"
+                    android:textColor="@color/steelBlueGrey"
+                    android:text="Address"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="@dimen/sp_12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            <TextView
+                    android:id="@+id/ramp_sender_address_value"
+                    android:text="0x..."
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="@dimen/sp_12"
+                    android:textColor="@color/steelBlueGrey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/ramp_receiver_details_container"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_border_midnight"
+            android:layout_marginTop="@dimen/dp_15"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/ramp_receiver_details_title"
+                android:text="RECEIVER DETAILS"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textSize="@dimen/sp_10"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ramp_receiver_amount_section"
+                android:layout_marginTop="@dimen/dp_15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:id="@+id/ramp_receiver_amount_label"
+                    android:textColor="@color/steelBlueGrey"
+                    android:text="Amount Received"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="@dimen/sp_12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            <TextView
+                    android:id="@+id/ramp_receiver_amount_value"
+                    android:text="N0.00"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="@dimen/sp_12"
+                    android:textColor="@color/steelBlueGrey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ramp_receiver_bank_name_section"
+                android:layout_marginTop="@dimen/dp_15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:id="@+id/ramp_receiver_bank_name_label"
+                    android:textColor="@color/steelBlueGrey"
+                    android:text="Bank Name"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="@dimen/sp_12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            <TextView
+                    android:id="@+id/ramp_receiver_bank_name_value"
+                    android:text="Bank"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="@dimen/sp_12"
+                    android:textColor="@color/steelBlueGrey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ramp_receiver_account_number_section"
+                android:layout_marginTop="@dimen/dp_15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:id="@+id/ramp_receiver_account_number_label"
+                    android:textColor="@color/steelBlueGrey"
+                    android:text="Account Number"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="@dimen/sp_12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            <TextView
+                    android:id="@+id/ramp_receiver_account_number_value"
+                    android:text="1234567890"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="@dimen/sp_12"
+                    android:textColor="@color/steelBlueGrey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ramp_receiver_account_name_section"
+                android:layout_marginTop="@dimen/dp_15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:id="@+id/ramp_receiver_account_name_label"
+                    android:textColor="@color/steelBlueGrey"
+                    android:text="Account Name"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="@dimen/sp_12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            <TextView
+                    android:id="@+id/ramp_receiver_account_name_value"
+                    android:text="John Deo"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="@dimen/sp_12"
+                    android:textColor="@color/steelBlueGrey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</LinearLayout>

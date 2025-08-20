@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_kyc_overview_layout_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/general_gradient_background"
+        tools:context=".features.kyc.ui.basic.BasicKycRequirementsActivity">
+
+    <include layout="@layout/top_app_bar" android:id="@+id/inKycOverviewTopAppBar"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/activity_kyc_overview_layout_kyc_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp"
+            android:background="@drawable/rounded_border_midnight"
+            app:layout_constraintTop_toBottomOf="@id/inKycOverviewTopAppBar">
+
+        <TextView
+                android:id="@+id/activity_kyc_overview_tv_kyc_start_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:text="START YOUR KYC"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/activity_kyc_overview_tv_kyc_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Complete your KYC to start transacting up to $1,000,000.00"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:fontFamily="@font/kumbhsans_regular"
+                app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_tv_kyc_start_header"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/activity_kyc_overview_layout_start_kyc_button"
+                android:layout_width="126dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="11dp"
+                android:background="@drawable/rounded_border_button_golden"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_tv_kyc_description"
+                app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                    android:id="@+id/activity_kyc_overview_tv_start_kyc_button_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Start KYC"
+                    android:textAllCaps="true"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:textSize="10sp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/activity_kyc_overview_layout_kyc_requirements"
+            android:padding="17dp"
+            android:layout_marginTop="13dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_border_midnight"
+            app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_layout_kyc_card">
+
+            <TextView
+                    android:id="@+id/activity_kyc_overview_tv_requirements_header"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:text="REQUIREMENTS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvRequirements"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/activity_kyc_overview_tv_requirements_header"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="8dp"
+                    android:scrollbars="vertical" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

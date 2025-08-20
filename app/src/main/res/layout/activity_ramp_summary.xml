@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ramp_summary_root_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/general_gradient_background"
+        tools:context=".features.fiat.OffRampSummaryActivity">
+
+    <include
+            android:id="@+id/offramp_top_app_bar"
+            layout="@layout/top_app_bar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+            android:id="@+id/offramp_request_amount_container"
+            app:layout_constraintTop_toBottomOf="@id/offramp_top_app_bar"
+            android:orientation="vertical"
+            android:layout_marginTop="37dp"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/offramp_request_label"
+                android:fontFamily="@font/kumbhsans_bold"
+                android:textSize="@dimen/sp_12"
+                android:textColor="@color/steelBlueGrey"
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <TextView
+                android:id="@+id/offramp_usd_amount"
+                android:fontFamily="@font/outfit_bold"
+                android:layout_marginTop="@dimen/dp_4"
+                android:textSize="@dimen/sp_32"
+                android:textColor="@color/white"
+                android:text="0.00"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <TextView
+                android:id="@+id/offramp_fiat_amount"
+                android:fontFamily="@font/kumbhsans_regular"
+                android:layout_marginTop="@dimen/dp_2"
+                android:textSize="@dimen/sp_12"
+                android:textColor="@color/white"
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <include
+            android:id="@+id/offramp_transaction_details"
+            layout="@layout/transaction_details"
+            app:layout_constraintTop_toBottomOf="@id/offramp_request_amount_container"
+            android:layout_marginTop="@dimen/dp_54"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    <TextView
+            android:id="@+id/offramp_receive_naira_label"
+            android:text="RECEIVE NAIRA IN"
+            android:fontFamily="@font/kumbhsans_bold"
+            android:textSize="@dimen/sp_12"
+            android:textColor="@color/steelBlueGrey"
+            android:layout_marginVertical="@dimen/dp_19"
+            app:layout_constraintTop_toBottomOf="@id/offramp_transaction_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    <include
+            android:id="@+id/offramp_bank_account_info"
+            layout="@layout/bank_account_info"
+            app:layout_constraintTop_toBottomOf="@id/offramp_receive_naira_label"
+            android:layout_marginTop="21dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    <include
+            android:id="@+id/offramp_share_payment_link"
+            layout="@layout/share_payment_link"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/offramp_expiration_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    <include
+            android:id="@+id/offramp_expiration_container"
+            android:visibility="gone"
+            layout="@layout/expiration_timer"
+            app:layout_constraintBottom_toTopOf="@id/offramp_submit_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/offramp_submit_button"
+            android:paddingHorizontal="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_ripple_golden_yellow"
+            android:text="Submit"
+            android:elevation="0dp"
+            android:fontFamily="@font/kumbhsans_bold"
+            android:textColor="@color/dark_purple"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

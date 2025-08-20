@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ramp_bank_account_info_container"
+        android:layout_width="match_parent"
+        android:background="@drawable/rounded_border_midnight"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="13dp"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:id="@+id/ramp_bank_details_container"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+                android:id="@+id/ramp_bank_account_number_label"
+                android:fontFamily="@font/kumbhsans_light"
+                android:textSize="10sp"
+                android:textColor="@color/steelBlueGrey"
+                android:text="BANK ACCOUNT NUMBER"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ramp_bank_account_number_row"
+                android:paddingTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:id="@+id/ramp_bank_account_number"
+                    android:textSize="24dp"
+                    android:fontFamily="@font/outfit_bold"
+                    android:textColor="@color/white"
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            <ImageView
+                    android:id="@+id/ramp_copy_bank_details_icon"
+                    android:src="@drawable/icon_copy"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+                android:id="@+id/ramp_account_holder_name"
+                android:textSize="10sp"
+                android:fontFamily="@font/kumbhsans_light"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:text="FIRST_NAME LAST_NAME"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        <TextView
+                android:id="@+id/ramp_bank_name_label"
+                android:textSize="10sp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/kumbhsans_light"
+                android:textColor="@color/steelBlueGrey"
+                android:text="BANK"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        <TextView
+                android:id="@+id/ramp_bank_name"
+                android:textSize="24sp"
+                android:fontFamily="@font/outfit_bold"
+                android:textColor="@color/white"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nav_graph"
+        app:startDestination="@id/home_graph">
+
+        <!-- Home Graph -->
+        <navigation
+                android:id="@+id/home_graph"
+                app:startDestination="@id/dashboardFragment">
+
+                <fragment
+                        android:id="@+id/dashboardFragment"
+                        android:name="com.thellex.payments.UserDashboard"
+                        android:label="Dashboard"
+                        tools:layout="@layout/fragment_user_dashboard">
+                        <action
+                                android:id="@+id/action_dashboardFragment_to_posFragment"
+                                app:destination="@id/posFragment" />
+                </fragment>
+        </navigation>
+
+        <!-- POS Graph -->
+        <navigation
+                android:id="@+id/pos_graph"
+                app:startDestination="@id/posFragment">
+
+                <fragment
+                        android:id="@+id/posFragment"
+                        android:name="com.thellex.payments.features.pos.ui.POSHomeActivity"
+                        android:label="POS"
+                        tools:layout="@layout/activity_p_o_s">
+                        <action
+                                android:id="@+id/action_posFragment_to_requestAccessFragment"
+                                app:destination="@id/requestAccessFragment" />
+                </fragment>
+
+                <!-- POS Sub Routes -->
+                <fragment
+                        android:id="@+id/requestAccessFragment"
+                        android:name="com.thellex.payments.RequestAssets"
+                        android:label="Request Access"
+                        tools:layout="@layout/activity_request_assets">
+                        <action
+                                android:id="@+id/action_requestAccessFragment_to_posReceiverTypeFragment"
+                                app:destination="@id/posReceiverTypeFragment" />
+                </fragment>
+
+                <fragment
+                        android:id="@+id/posReceiverTypeFragment"
+                        android:name="com.thellex.payments.POSReceiverType"
+                        android:label="Request Access"
+                        tools:layout="@layout/activity_pos_receiver_type">
+                        <action
+                                android:id="@+id/action_posReceiverTypeFragment_to_posChooseCryptoFragment"
+                                app:destination="@id/posChooseCryptoFragment" />
+                </fragment>
+
+                <fragment
+                        android:id="@+id/posChooseCryptoFragment"
+                        android:name="com.thellex.payments.POSchoosecrypto"
+                        android:label="Request Access"
+                        tools:layout="@layout/activity_pos_choose_crypto">
+                        <action
+                                android:id="@+id/action_posChooseCryptoFragment_to_posAddressGeneratorFragment"
+                                app:destination="@id/posAddressGeneratorFragment" />
+                </fragment>
+
+                <fragment
+                        android:id="@+id/posAddressGeneratorFragment"
+                        android:name="com.thellex.payments.POSAddressGenerator"
+                        android:label="Generate Address"
+                        tools:layout="@layout/activity_pos_address_generator">
+                </fragment>
+        </navigation>
+</navigation>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pos_address_generator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/general_gradient_background"
+        tools:context=".features.pos.ui.GeneratePOSAddressActivity">
+
+    <!-- Top App Bar -->
+    <include
+            android:id="@+id/pos_address_top_app_bar"
+            layout="@layout/top_app_bar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Network Information -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            app:layout_goneMarginTop="@dimen/dp_34"
+            android:id="@+id/network_info_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_34"
+            android:paddingVertical="@dimen/dp_9"
+            android:paddingHorizontal="@dimen/dp_17"
+            android:background="@drawable/rounded_border"
+            app:layout_constraintTop_toBottomOf="@id/pos_address_top_app_bar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+                android:id="@+id/network_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/kumbhsans_light"
+                android:textSize="@dimen/sp_10"
+                android:textColor="@color/white"
+                android:text="BEP20 NETWORKS"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- QR Code Section -->
+    <FrameLayout
+            android:id="@+id/qr_code_container"
+            android:layout_width="@dimen/dp_323"
+            android:layout_height="@dimen/dp_323"
+            android:clipChildren="true"
+            android:clipToPadding="true"
+            android:background="@drawable/qr_container_background"
+            android:layout_marginTop="@dimen/dp_34"
+            app:layout_constraintTop_toBottomOf="@id/network_info_container"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                    android:id="@+id/qr_code_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/qr_code_border"
+                    android:clipToOutline="true"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true" />
+
+            <ImageView
+                    android:id="@+id/qr_code_logo"
+                    android:layout_width="@dimen/dp_55"
+                    android:layout_height="@dimen/dp_55"
+                    android:layout_gravity="center"
+            android:contentDescription="QR Code Logo" />
+</FrameLayout>
+
+<!--    &lt;!&ndash; QR Code Section &ndash;&gt;-->
+<!--    <FrameLayout-->
+<!--            android:id="@+id/qr_code_container"-->
+<!--            android:layout_width="@dimen/dp_323"-->
+<!--            android:layout_height="@dimen/dp_323"-->
+<!--            android:clipChildren="true"-->
+<!--            android:clipToPadding="true"-->
+<!--            android:background="@drawable/rounded_border"-->
+<!--            android:layout_marginTop="@dimen/dp_34"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/network_info_container"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent">-->
+
+<!--            <ImageView-->
+<!--                    android:id="@+id/qr_code_image"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:background="@drawable/qr_code_border"-->
+<!--                    android:clipToOutline="true"-->
+<!--                    android:scaleType="centerCrop"/>-->
+
+<!--            <ImageView-->
+<!--                    android:id="@+id/qr_code_logo"-->
+<!--                    android:layout_width="@dimen/dp_55"-->
+<!--                    android:layout_height="@dimen/dp_55"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:contentDescription="QR Code Logo" />-->
+<!--    </FrameLayout>-->
+
+    <!-- Wallet Address and Copy Action -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/wallet_address_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_34"
+            android:padding="@dimen/dp_13"
+            android:background="@drawable/rounded_border"
+            app:layout_constraintTop_toBottomOf="@id/qr_code_container"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+                android:id="@+id/wallet_address_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                    android:id="@+id/wallet_address_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:textSize="@dimen/sp_12"
+                    android:textColor="@color/white"
+                    android:text="Wallet Address" />
+
+            <TextView
+                    android:id="@+id/wallet_address_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:fontFamily="@font/kumbhsans_regular"
+                    android:textSize="@dimen/sp_12"
+                    android:textColor="@color/white"
+                    android:text="31j1oifuwfajsdlfuoaifasuoi" />
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/copy_address_action_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+            <TextView
+                    android:id="@+id/copy_address_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/kumbhsans_bold"
+                    android:textSize="@dimen/sp_10"
+                    android:textColor="@color/goldenYellow"
+                    android:text="Copy" />
+
+            <ImageView
+                    android:id="@+id/copy_address_icon"
+                    android:layout_width="@dimen/dp_16"
+                    android:layout_height="@dimen/dp_16"
+                    android:layout_marginStart="@dimen/dp_13"
+                    android:src="@drawable/icon_copy" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

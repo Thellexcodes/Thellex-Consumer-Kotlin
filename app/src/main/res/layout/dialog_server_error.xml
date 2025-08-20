@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/general_gradient_background"
+        android:clickable="true"
+        android:focusable="true">
+                <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:background="@drawable/rounded_border"
+                android:layout_gravity="center"
+                android:elevation="4dp"
+                android:gravity="center">
+
+                <TextView
+                        android:id="@+id/tv_error_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Server Unavailable"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        android:textStyle="bold"
+                        android:paddingBottom="8dp"/>
+
+                <TextView
+                        android:id="@+id/tv_error_message"
+                        android:layout_width="wrap_content"
+                        android:textColor="@color/steelBlueGrey"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        android:layout_height="wrap_content"
+                        android:text="The server is currently not reachable. Please try again later."
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:paddingBottom="16dp"
+                        android:gravity="center"/>
+
+                <androidx.appcompat.widget.AppCompatButton
+                        android:background="@drawable/rounded_golden_yellow_shape"
+                        android:id="@+id/btn_retry"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/kumbhsans_regular"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Retry" />
+
+                </LinearLayout>
+        </FrameLayout>
