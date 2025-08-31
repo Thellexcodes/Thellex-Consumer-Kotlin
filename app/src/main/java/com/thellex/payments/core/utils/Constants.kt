@@ -21,9 +21,9 @@ object DeviceUtils {
                 Build.HARDWARE.contains("vbox86", ignoreCase = true) ||
                 SystemProperties.get("ro.kernel.qemu") == "1" ||
                 SystemProperties.get("ro.product.device") == "emulator")
-        Log.d(TAG, "isEmulator: $isEmulator (FINGERPRINT=${Build.FINGERPRINT}, MODEL=${Build.MODEL}, " +
-                "MANUFACTURER=${Build.MANUFACTURER}, BRAND=${Build.BRAND}, DEVICE=${Build.DEVICE}, " +
-                "PRODUCT=${Build.PRODUCT}, HARDWARE=${Build.HARDWARE}, qemu=${SystemProperties.get("ro.kernel.qemu")})")
+//        Log.d(TAG, "isEmulator: $isEmulator (FINGERPRINT=${Build.FINGERPRINT}, MODEL=${Build.MODEL}, " +
+//                "MANUFACTURER=${Build.MANUFACTURER}, BRAND=${Build.BRAND}, DEVICE=${Build.DEVICE}, " +
+//                "PRODUCT=${Build.PRODUCT}, HARDWARE=${Build.HARDWARE}, qemu=${SystemProperties.get("ro.kernel.qemu")})")
         return isEmulator
     }
 
@@ -77,6 +77,16 @@ object Constants {
 
     // Crash endpoint
     const val CRASH_REPORT_ENDPOINT = "$VERSIONED_BASE/crash-report"
+    const val ERROR_REPORT_ENDPOINT = "$VERSIONED_BASE/error-report"
+
+    // Admin
+    const val ADMIN_GET_ALL_REVENUES_ENDPOINT = "$VERSIONED_BASE/admin/revenues"
+    const val ADMIN_GET_ALL_RAMP_TRANSACTIONS_ENDPOINT = "$VERSIONED_BASE/admin/ramp_transactions"
+
+    // User
+    const val GET_ALL_USER_TRANSACTION_HISTORY = "$VERSIONED_BASE/user/transactions"
+    const val GET_ALL_USER_RAMP_TRANSACTIONS = "$VERSIONED_BASE/user/ramp_transactions"
+    const val GET_ALL_USER_NOTIFICATIONS = "$VERSIONED_BASE/user/notifications"
 
     val BASE_URL: String
         get() {
@@ -84,9 +94,9 @@ object Constants {
             val url = if (isEmulator) {
                 "https://goat-touched-mite.ngrok-free.app/" // For Android Emulator
             } else {
-                "https://thellex-sandbox-backend.onrender.com/" // Physical device
+//                "https://thellex-sandbox-backend.onrender.com/" // Physical device
+                "https://goat-touched-mite.ngrok-free.app/" // For Android Emulator
             }
-            Log.d(TAG, "Selected BASE_URL: $url (isEmulator: $isEmulator)")
             return url
         }
 }

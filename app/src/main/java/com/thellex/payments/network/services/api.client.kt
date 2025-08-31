@@ -2,22 +2,23 @@ package com.thellex.payments.network.services
 
 import InstantDeserializer
 import android.content.Context
-import android.util.Log
+import com.google.firebase.crashlytics.internal.model.CrashlyticsReport.Session.User
 import com.google.gson.GsonBuilder
-import com.thellex.payments.core.utils.AuthUtils
 import com.thellex.payments.core.utils.Constants
 import com.thellex.payments.core.utils.deserializers.NotificationKindEnumDeserializer
+import com.thellex.payments.data.enums.RoleEnum
+import com.thellex.payments.data.enums.RoleTypeDeserializer
 import com.thellex.payments.data.enums.TierEnum
 import com.thellex.payments.data.model.NotificationKindEnum
 import com.thellex.payments.data.model.PaymentStatusEnum
 import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.settings.SupportedBlockchainEnum
-import okhttp3.Interceptor
+import okhttp3.Cache
+import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -29,96 +30,87 @@ object ApiClient {
         appContext = context.applicationContext
     }
 
-    private fun getCommonInterceptor(token: String = ""): Interceptor {
-        return Interceptor { chain ->
-            val originalRequest = chain.request()
-            val requestBuilder = originalRequest.newBuilder()
-
-            // Authorization header if available
-            if (token.isNotBlank()) {
-                requestBuilder.addHeader("Authorization", "Bearer $token")
-            }
-
-            val context = appContext ?: throw IllegalStateException("ApiClient not initialized with context")
-
-            // Root detection
-            if (AuthUtils.isDeviceRooted()) {
-                Log.e("ApiClient", "Rooted device detected, aborting request")
-                throw SecurityException("Rooted device detected")
-            }
-
-            // Timestamp
-            val timestamp = (System.currentTimeMillis() / 1000).toString()
-
-            // Request body payload
-            val payload = originalRequest.body?.let { body ->
-                val buffer = okio.Buffer()
-                body.writeTo(buffer)
-                buffer.readString(StandardCharsets.UTF_8)
-            } ?: "{}"
-
-            // Certificate fingerprint
-            val fingerprint = AuthUtils.getCertificateFingerprint(context)
-                ?: throw IllegalStateException("Certificate fingerprint not found")
-
-            // HMAC signature
-            val signature = AuthUtils.generateRequestSignature(context, payload, timestamp)
-                ?: throw IllegalStateException("Failed to generate signature")
-
-            // Add headers
-            requestBuilder
-                .addHeader("X-Certificate-Fingerprint", fingerprint)
-                .addHeader("X-Signature", signature)
-                .addHeader("X-Timestamp", timestamp)
-                .addHeader("X-Client-Type", "mobile")
-
-            chain.proceed(requestBuilder.build())
+    // --- OkHttpClient factory ---
+    private fun buildClient(token: String = "", enableLogging: Boolean = true): OkHttpClient {
+        val dispatcher = Dispatcher().apply {
+            maxRequests = 64
+            maxRequestsPerHost = 16
         }
+
+        val cacheSize = (10 * 1024 * 1024).toLong() // 10 MB
+        val cache = Cache(appContext!!.cacheDir, cacheSize)
+
+        val builder = OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS) // allow slower backend responses
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true) // auto retry transient failures
+            .dispatcher(dispatcher)
+            .cache(cache)
+            .addInterceptor { chain ->
+                val original = chain.request()
+                val requestBuilder = original.newBuilder()
+
+                if (token.isNotBlank()) {
+                    requestBuilder.addHeader("Authorization", "Bearer $token")
+                }
+
+                chain.proceed(requestBuilder.build())
+            }
+
+        if (enableLogging) {
+            val logging = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BASIC
+            }
+            builder.addInterceptor(logging)
+        }
+
+        return builder.build()
     }
 
-    private fun getClient(token: String = ""): OkHttpClient {
-        val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.HEADERS
-        }
-
-        return OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(90, TimeUnit.SECONDS)
-            .writeTimeout(90, TimeUnit.SECONDS)
-            .addInterceptor(getCommonInterceptor(token)) // shared logic
-            .addInterceptor(logging)
+    // --- Retrofit caches ---
+    private val retrofitWithoutToken: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .client(buildClient(enableLogging = true))
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
-    private val retrofitWithoutToken: Retrofit = Retrofit.Builder()
-        .baseUrl(Constants.BASE_URL)
-        .client(getClient()) // ✅ now also has fingerprint + headers
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    private val retrofitWithTokenCache = mutableMapOf<String, Retrofit>()
 
     @OptIn(ExperimentalTime::class)
     private fun getRetrofitWithToken(token: String): Retrofit {
-        val enumGson = GsonBuilder()
-            .registerTypeAdapter(NotificationKindEnum::class.java, NotificationKindEnumDeserializer())
-            .registerTypeAdapter(TierEnum::class.java, TierEnumDeserializer())
-            .registerTypeAdapter(SupportedBlockchainEnum::class.java, SupportedBlockchainDeserializer())
-            .registerTypeAdapter(PaymentStatusEnum::class.java, PaymentStatusDeserializer())
-            .registerTypeAdapter(TransactionTypeEnum::class.java, TransactionTypeDeserializer())
-            .registerTypeAdapter(Instant::class.java, InstantDeserializer())
-            .create()
+        return retrofitWithTokenCache.getOrPut(token) {
+            val enumGson = GsonBuilder()
+                .registerTypeAdapter(NotificationKindEnum::class.java, NotificationKindEnumDeserializer())
+                .registerTypeAdapter(TierEnum::class.java, TierEnumDeserializer())
+                .registerTypeAdapter(SupportedBlockchainEnum::class.java, SupportedBlockchainDeserializer())
+                .registerTypeAdapter(PaymentStatusEnum::class.java, PaymentStatusDeserializer())
+                .registerTypeAdapter(TransactionTypeEnum::class.java, TransactionTypeDeserializer())
+                .registerTypeAdapter(RoleEnum::class.java, RoleTypeDeserializer())
+                .registerTypeAdapter(Instant::class.java, InstantDeserializer())
+                .create()
 
-        return Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .client(getClient(token))
-            .addConverterFactory(GsonConverterFactory.create(enumGson))
-            .build()
+            Retrofit.Builder()
+                .baseUrl(Constants.BASE_URL)
+                .client(buildClient(token, enableLogging = true))
+                .addConverterFactory(GsonConverterFactory.create(enumGson))
+                .build()
+        }
     }
 
-    // Public APIs (still have fingerprint/signature headers)
-    fun getPublicApi(): AuthService = retrofitWithoutToken.create(AuthService::class.java)
-    fun getPublicCrashReportApi(): CrashReportService = retrofitWithoutToken.create(CrashReportService::class.java)
+    // --- Public APIs ---
+    fun getPublicApi(): AuthService =
+        retrofitWithoutToken.create(AuthService::class.java)
 
-    // Authenticated APIs
+    fun getPublicCrashReportApi(): CrashReportService =
+        retrofitWithoutToken.create(CrashReportService::class.java)
+
+    fun getPublicErrorReportApi(): ErrorService =
+        retrofitWithoutToken.create(ErrorService::class.java)
+
+    // --- Authenticated APIs ---
     fun getAuthenticatedApi(token: String): AuthService =
         getRetrofitWithToken(token).create(AuthService::class.java)
 
@@ -133,4 +125,10 @@ object ApiClient {
 
     fun getAuthenticatedNotificationApi(token: String): NotificationService =
         getRetrofitWithToken(token).create(NotificationService::class.java)
+
+    fun getAuthenticatedAdminApi(token: String): AdminService =
+        getRetrofitWithToken(token).create(AdminService::class.java)
+
+    fun getAuthenticatedUserApi(token: String): UserService =
+        getRetrofitWithToken(token).create(UserService::class.java)
 }

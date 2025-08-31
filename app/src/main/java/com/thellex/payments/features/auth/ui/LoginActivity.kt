@@ -30,6 +30,7 @@ import com.thellex.payments.data.model.LoginRequestDto
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.profile.ProfileActivity
+import com.thellex.payments.network.services.BackendErrorRequestDto
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -152,8 +153,6 @@ class LoginActivity : AppCompatActivity() {
                     val code = JSONObject(errorBody ?: "").optString("message")
                     val userError = UserErrorEnum.fromCode(code)
 
-                    Log.d(TAG, userError.toString())
-
                     if (userError == UserErrorEnum.CODE_ALREADY_SENT) {
                         val accessToken = withTimeoutOrNull(5000) {
                             userModel.token.asFlow().first { !it.isNullOrBlank() }
@@ -170,6 +169,16 @@ class LoginActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 val userError = UserErrorEnum.fromCode(e.message)
                 ErrorHandler.handle(this@LoginActivity, "Error", userError)
+                Log.d(TAG, "Error in LoginActivity: ${e.message}, code: ${userError.name}")
+
+                ApiClient.getPublicErrorReportApi().reportError(
+                        BackendErrorRequestDto(
+                            screen = TAG,
+                            errorType = "EXCEPTION",
+                            message = e.message ?: "Unknown error",
+                            code = userError.name
+                        )
+                )
             } finally {
                 setSubmitting(false)
             }
@@ -193,7 +202,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "TAGY"
+        private const val TAG = "LoginActivity"
     }
 }
 

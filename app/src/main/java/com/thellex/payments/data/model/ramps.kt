@@ -46,3 +46,26 @@ data class IBankInfoRequestDto(
     @SerializedName("accountBank") val accountBank: String? = null,
     @SerializedName("networkName") val networkName: String? = null
 )
+
+
+@Serializable
+data class RampTransactionDTO(
+    @SerializedName("rampId") val rampId: String,
+    @SerializedName("txnID") val txnID: String,
+    @SerializedName("mainCryptoAmount") val mainCryptoAmount: Double,
+    @SerializedName("mainFiatAmount") val mainFiatAmount: Double,
+    @SerializedName("transactionType") val transactionType: TransactionTypeEnum,
+    @SerializedName("userUID") val userUID: Int,
+    @SerializedName("approved") val approved: Boolean,
+    @SerializedName("paymentStatus") val paymentStatus: PaymentStatusEnum,
+    @SerializedName("sequenceId") val sequenceId: String,
+    @SerializedName("createdAt") val createdAt: String
+)
+
+@Serializable
+data class RampTransactionsResponseDTO(
+    @SerializedName("data") val data: List<RampTransactionDTO>,
+    @SerializedName("lastPage") val lastPage: Int,
+    @SerializedName("pageNumber") val pageNumber: Int,
+    @SerializedName("total") val total: Int
+)

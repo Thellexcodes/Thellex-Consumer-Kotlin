@@ -31,6 +31,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31" >
         <activity
+            android:name=".features.admin.RevenueActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Thellex" />
+        <activity
+            android:name=".features.admin.IncomingRampTransactionsActivity"
+            android:exported="false" />
+        <activity
             android:name=".features.kyc.ui.idverification.IDVerificationAttestation"
             android:exported="false" />
         <activity
@@ -58,16 +65,17 @@
         <activity
             android:name=".features.onboarding.LauncherActivity"
             android:exported="true"
-            android:theme="@style/Theme.Thellex.Launcher">
+            android:theme="@style/Theme.Thellex.Launcher" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- Main Dashboard -->
         <activity
             android:name=".features.dashboard.ui.MainActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".features.onboarding.OnboardingActivity"
             android:exported="false"

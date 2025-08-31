@@ -29,7 +29,11 @@ import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
+import com.thellex.payments.data.enums.RoleEnum
+import com.thellex.payments.data.model.ApiResponse
 import com.thellex.payments.data.model.ITransactionHistoryDto
+import com.thellex.payments.data.model.RampTransactionDTO
+import com.thellex.payments.data.model.RampTransactionsResponseDTO
 import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.databinding.ActivityPOSBinding
 import com.thellex.payments.features.auth.ui.AuthVerificationActivity
@@ -54,6 +58,11 @@ import com.thellex.payments.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.features.wallet.ui.WalletAssetsActivity
 import com.thellex.payments.features.wallet.ui.WithdrawToCryptoWalletActivity
+import com.thellex.payments.network.services.ApiClient
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -86,6 +95,7 @@ class POSHomeActivity : AppCompatActivity() {
 
         setupClickListeners()
         setupWalletBalanceObserver()
+        loadAppData()
         loadWalletData()
         observeUserUid()
         observeNotification()
@@ -94,14 +104,12 @@ class POSHomeActivity : AppCompatActivity() {
             setupViewPager()
             setupEmptyState()
         } catch (e: Exception) {
-            Log.e("POSHomeActivity", "Error inflating layout: ${e.message}", e)
+            Log.e(TAG, "Error inflating layout: ${e.message}", e)
             throw e
-        }
-        if (!areNotificationsEnabled(this@POSHomeActivity)) {
-            Log.d("POSHOme", "notifications are ${areNotificationsEnabled(this)}")
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onResume() {
         super.onResume()
         userViewModel.refreshNotificationsStatus()
@@ -114,7 +122,7 @@ class POSHomeActivity : AppCompatActivity() {
         val adapter = ViewPagerAdapter(this, listOf(DepositsFragment(), WithdrawalsFragment()))
         binding.viewPager.adapter = adapter
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            tab.text = if (position == 0) "REQUEST" else "WITHDRAW"
+            tab.text = if (position == 0) "DEPOSIT" else "WITHDRAW"
             tab.view.background = resources.getDrawable(
                 if (position == 0) R.drawable.tab_deposits_background
                 else R.drawable.tab_withdrawals_background, theme
@@ -162,6 +170,43 @@ class POSHomeActivity : AppCompatActivity() {
             binding.emptyTransactionsView.visibility = if (isEmpty) View.VISIBLE else View.GONE
         }
     }
+
+    private fun loadAppData() {
+        lifecycleScope.launch {
+            val token = userViewModel.token.asFlow().first { !it.isNullOrBlank() } ?: return@launch
+            val adminApi = ApiClient.getAuthenticatedAdminApi(token)
+            val userApi = ApiClient.getAuthenticatedUserApi(token)
+
+            userViewModel.authResult.asFlow()
+                .filterNotNull()
+                .first()
+                .let { user ->
+                    try {
+                        // Store Deferred results
+                        val adminRampDeferred: Deferred<ApiResponse<RampTransactionsResponseDTO>>? =
+                            if (user.role == RoleEnum.SUPER_ADMIN) {
+                                async { adminApi.fetchAllRampTransactions() }
+                            } else null
+
+                        val userRampDeferred = async { userApi.fetchRampTransactions() }
+                        val userTxnHistoryDeferred = async { userApi.fetchTransactionHistory() }
+
+                        // Await results
+                        val adminRamp = adminRampDeferred?.await()
+                        val userRamp = userRampDeferred.await()
+                        val userTxnHistory = userTxnHistoryDeferred.await()
+
+                        // Now you can access each response individually
+                        Log.d(TAG, "Admin Ramp Transactions: $adminRamp")
+                        Log.d(TAG,"User Ramp Transactions: $userRamp")
+                        Log.d(TAG,"User Transaction History: $userTxnHistory")
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+        }
+    }
+
 
     private fun loadWalletData() {
         lifecycleScope.launch {

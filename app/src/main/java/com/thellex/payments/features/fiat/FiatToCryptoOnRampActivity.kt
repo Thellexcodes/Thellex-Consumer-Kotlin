@@ -73,7 +73,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityFiatToCryptoOnRampBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ActivityTracker.add(this)
@@ -440,7 +439,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                 if (fiatAmount <= minimumAmountInFiat) {
                     if (!binding.edittextCryptoAmount.hasFocus()) binding.edittextCryptoAmount.setText("")
                     binding.textRateValue.text = "≅ $rate $fiatCode/$tokenSymbol"
-                    CustomToast.show(this, "Amount Alert","Fiat amount must be greater than fee ($minimumAmountInFiat $fiatCode)")
                     return
                 }
                 // Fiat includes fee: fiat = crypto * rate * (1 + fee%) → crypto = fiat / (rate * (1 + fee%))

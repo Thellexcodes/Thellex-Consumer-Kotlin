@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.thellex.payments" />
-                  <option name="mobileSdkAppId" value="1:738329047222:android:f5beeb9aa7304f77043617" />
-                  <option name="projectId" value="thellex-development" />
-                  <option name="projectNumber" value="738329047222" />
+                  <option name="mobileSdkAppId" value="1:30201908784:android:22698ffd78fbefc757a7f5" />
+                  <option name="projectId" value="thellex-87466" />
+                  <option name="projectNumber" value="30201908784" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

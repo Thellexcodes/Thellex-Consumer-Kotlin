@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:text="PAGE TITLE"
             android:textColor="@color/white"
+            android:textAllCaps="true"
             android:textSize="14sp"
             android:fontFamily="@font/kumbhsans_bold"
             android:ellipsize="end"
