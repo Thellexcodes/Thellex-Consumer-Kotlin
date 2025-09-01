@@ -50,6 +50,7 @@ import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteI
 import com.thellex.payments.data.model.AdminData
 import com.thellex.payments.data.model.AdminRampTransactionDTO
 import com.thellex.payments.data.model.AdminRampTransactionsResponse
+import com.thellex.payments.data.model.ApproveRampRequest
 import com.thellex.payments.data.model.PaginatedResponse
 import com.thellex.payments.data.model.PaymentStatusEnum
 import com.thellex.payments.data.model.TransactionTypeEnum
@@ -86,7 +87,7 @@ fun TransactionItem(
                     .padding(horizontal = 5.5.dp, vertical = 3.dp)
             ) {
                 Text(
-                    text = if (transaction.approved) "Approved" else "Pending",
+                    text = if (transaction.approved) "Approved".uppercase() else "Pending".uppercase(),
                     color = White,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
@@ -143,12 +144,12 @@ fun TransactionItem(
         // Approve Button
         if (!transaction.approved) {
             Button(
-                onClick = { onApproveClick?.invoke(ApproveResult(approved = true, txId = transaction.txnID)) },
+                onClick = { onApproveClick?.invoke(ApproveResult(approved = true, txId = transaction.txnID, sequenceId = transaction.sequenceId)) },
                 modifier = Modifier.fillMaxWidth().height(40.dp),
                 shape = RoundedCornerShape(15.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = GoldenYellow)
             ) {
-                Text("APPROVE", fontFamily = KumbhSansFontFamily, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                Text("APPROVE".uppercase(), fontFamily = KumbhSansFontFamily, fontSize = 10.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -265,7 +266,11 @@ class IncomingRampTransactionsActivity : ComponentActivity() {
                                 val token = userViewModel.token.asFlow().first { !it.isNullOrBlank() } ?: return@launch
                                 val adminApi = ApiClient.getAuthenticatedAdminApi(token)
                                 Log.d("IncomingRampTransactionsScreen", "result is $result")
-//                                val response = adminApi.approveTransaction(result.txId)
+                                val response = adminApi.approveTransaction(ApproveRampRequest(
+                                    approved = result.approved,
+                                    txId = result.txId,
+                                    sequenceId = result.sequenceId
+                                ))
 //                                if (response.success) {
 //                                    // Refresh admin data
 //                                    val refreshedData = adminApi.fetchAllRampTransactions()
@@ -336,5 +341,6 @@ fun PreviewIncomingRampTransactionsScreen() {
 // -------------------- Approve Result --------------------
 data class ApproveResult(
     val approved: Boolean,
-    val txId: String
+    val txId: String,
+    val sequenceId: String
 )

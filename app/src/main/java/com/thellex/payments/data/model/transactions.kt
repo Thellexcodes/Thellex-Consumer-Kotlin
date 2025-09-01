@@ -74,3 +74,4 @@ data class TokenListDto(
 ) {
     override fun toString(): String = assetCode.name
 }
+

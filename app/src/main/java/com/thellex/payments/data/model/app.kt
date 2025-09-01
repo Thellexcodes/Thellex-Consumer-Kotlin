@@ -15,3 +15,9 @@ data class PaginatedResponse<T>(
 data class AdminData(
     @SerializedName("rampTransactions") val rampTransactions: AdminRampTransactionsResponse? = null,
 )
+
+data class ApproveRampRequest(
+    @SerializedName("approved") val approved: Boolean,
+    @SerializedName("txId") val txId: String,
+    @SerializedName("sequenceId") val sequenceId: String
+)

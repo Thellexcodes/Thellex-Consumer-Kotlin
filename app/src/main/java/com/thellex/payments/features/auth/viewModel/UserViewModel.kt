@@ -34,7 +34,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     val notificationsEnabled: LiveData<Boolean> = _notificationsEnabled
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
-    private val _selectedTab = MutableLiveData<Int>(0) // Default to Deposits tab
+    private val _selectedTab = MutableLiveData<Int>(0)
     val selectedTab: LiveData<Int> get() = _selectedTab
     private val _depositTransactions = MutableLiveData<List<ITransactionHistoryDto>>(emptyList())
     val depositTransactions: LiveData<List<ITransactionHistoryDto>> = _depositTransactions
@@ -52,19 +52,17 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 Log.e(TAG, "Failed to initialize auth result: ${e.message}", e)
                 _error.postValue("Failed to load user data")
             }
-
-            viewModelScope.launch {
-                try {
-                    repository.getAdminData().collect { admin ->
-                        Log.d(TAG, "Initialized admin data: ${admin?.rampTransactions?.data?.map { it.txnID }}")
-                        _adminData.postValue(admin)
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Failed to initialize admin data: ${e.message}", e)
-                    _error.postValue("Failed to load admin data")
-                }
-            }
-
+//            viewModelScope.launch {
+//                try {
+//                    repository.getAdminData().collect { admin ->
+//                        Log.d(TAG, "Initialized admin data: ${admin?.rampTransactions?.data?.map { it.txnID }}")
+//                        _adminData.postValue(admin)
+//                    }
+//                } catch (e: Exception) {
+//                    Log.e(TAG, "Failed to initialize admin data: ${e.message}", e)
+//                    _error.postValue("Failed to load admin data")
+//                }
+//            }
         }
         // Observe EventBus for transaction updates
         EventBus.transactionUpdate.observeForever { transaction ->
@@ -115,7 +113,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
             _error.postValue("Cannot update transaction: User not logged in")
             return
         }
-        val updatedList = user.transactionHistory.toMutableList()
+        val updatedList = (user.transactionHistory ?: emptyList()).toMutableList()
         val existingIndex = updatedList.indexOfFirst { it.id == transaction.id }
         if (existingIndex >= 0) {
             updatedList[existingIndex] = transaction
@@ -205,22 +203,6 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         }
     }
 
-    fun logout() {
-        viewModelScope.launch {
-            try {
-                repository.logout()
-                _authResult.postValue(null)
-                _depositTransactions.postValue(emptyList())
-                _withdrawalTransactions.postValue(emptyList())
-                ActivityTracker.finishAll()
-                Log.d(TAG, "Logged out successfully")
-            } catch (e: Exception) {
-                Log.e(TAG, "Logout failed: ${e.message}", e)
-                _error.postValue("Logout failed")
-            }
-        }
-    }
-
     fun addFiatCryptoRampTransaction(transaction: IFiatCryptoRampTransactionsDto) {
         viewModelScope.launch {
             try {
@@ -230,13 +212,15 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                     return@launch
                 }
 
-                val updatedList = user.fiatCryptoRampTransactions.toMutableList()
-                if (updatedList.any { it.id == transaction.id }) {
-                    Log.w(TAG, "Fiat-crypto ramp transaction already exists: ${transaction.id}")
-                    return@launch
+                val updatedList = user.fiatCryptoRampTransactions?.toMutableList()
+                if (updatedList != null) {
+                    if (updatedList.any { it.id == transaction.id }) {
+                        Log.w(TAG, "Fiat-crypto ramp transaction already exists: ${transaction.id}")
+                        return@launch
+                    }
                 }
 
-                updatedList.add(transaction)
+                updatedList?.add(transaction)
                 val updatedUser = user.copy(fiatCryptoRampTransactions = updatedList)
 
                 // Save to repository and verify
@@ -276,8 +260,8 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 }
 
                 // Log final user state
-                Log.d(TAG, "Updated user state, fiatCryptoRampTransactions count: ${updatedUser.fiatCryptoRampTransactions.size}")
-                updatedUser.fiatCryptoRampTransactions.forEachIndexed { index, txn ->
+                Log.d(TAG, "Updated user state, fiatCryptoRampTransactions count: ${updatedUser.fiatCryptoRampTransactions?.size}")
+                updatedUser.fiatCryptoRampTransactions?.forEachIndexed { index, txn ->
                     Log.d(
                         TAG,
                         "Post-save Transaction [$index]: id=${txn.id}, type=${txn.transactionType?.value ?: "Unknown"}, " +
@@ -293,10 +277,6 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
 
     fun addTransaction(transaction: ITransactionHistoryDto) {
         updateTransactionHistory(transaction)
-    }
-
-    fun updateTransaction(updatedTransaction: ITransactionHistoryDto) {
-        updateTransactionHistory(updatedTransaction)
     }
 
     fun updateUserWithKycResult(result: KycResponseDto) {
@@ -336,7 +316,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                     _error.postValue("BVN validation failed")
                     return@launch
                 }
-                val updatedUser = user.copy(outstandingKyc = user.outstandingKyc.filter { it != "BVN" })
+                val updatedUser = user.copy(outstandingKyc = user.outstandingKyc?.filter { it != "BVN" })
                 _authResult.postValue(updatedUser)
                 repository.saveAuthResult(updatedUser)
                 Log.d(TAG, "Updated BVN")
@@ -355,7 +335,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                     _error.postValue("Cannot update notification: User not logged in")
                     return@launch
                 }
-                val updatedList = user.notifications.map {
+                val updatedList = user.notifications?.map {
                     if (it.id == result.id) it.copy(consumed = result.consumed, kind = result.kind) else it
                 }
                 val updatedUser = user.copy(notifications = updatedList)
@@ -377,7 +357,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                     _error.postValue("Cannot add bank account: User not logged in")
                     return@launch
                 }
-                val updatedBankAccounts = user.bankAccounts.toMutableList().apply { add(newBankAccount) }
+                val updatedBankAccounts = user.bankAccounts?.toMutableList()?.apply { add(newBankAccount) }
                 val updatedUser = user.copy(bankAccounts = updatedBankAccounts)
                 _authResult.postValue(updatedUser)
                 repository.saveAuthResult(updatedUser)
@@ -438,5 +418,21 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
 
     fun setSelectedTab(tabIndex: Int) {
         _selectedTab.value = tabIndex
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                repository.logout()
+                _authResult.postValue(null)
+                _depositTransactions.postValue(emptyList())
+                _withdrawalTransactions.postValue(emptyList())
+                ActivityTracker.finishAll()
+                Log.d(TAG, "Logged out successfully")
+            } catch (e: Exception) {
+                Log.e(TAG, "Logout failed: ${e.message}", e)
+                _error.postValue("Logout failed")
+            }
+        }
     }
 }

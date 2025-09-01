@@ -113,7 +113,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         userViewModel.authResult.observe(this) { userDto ->
             if (userDto == null) return@observe
 
-            updatePendingTransactionsUI(userDto.fiatCryptoRampTransactions)
+            userDto.fiatCryptoRampTransactions?.let { updatePendingTransactionsUI(it) }
 
             outstandingKyc = userDto.outstandingKyc ?: emptyList()
 

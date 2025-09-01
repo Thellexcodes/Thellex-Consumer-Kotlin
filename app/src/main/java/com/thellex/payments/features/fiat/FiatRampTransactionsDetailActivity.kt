@@ -84,7 +84,7 @@ class FiatRampTransactionsDetailActivity : AppCompatActivity() {
 
             // Log all fiatCryptoRampTransactions
             Log.d(TAG, "All fiatCryptoRampTransactions for user ${user.uid} (rampID: $rampID):")
-            user.fiatCryptoRampTransactions.forEachIndexed { index, transaction ->
+            user.fiatCryptoRampTransactions?.forEachIndexed { index, transaction ->
                 Log.d(
                     TAG,
                     "Transaction [$index]: id=${transaction.id}, type=${transaction.transactionType?.value ?: "Unknown"}, " +
@@ -94,7 +94,7 @@ class FiatRampTransactionsDetailActivity : AppCompatActivity() {
             }
 
             // Try finding the transaction immediately
-            var transaction = user.fiatCryptoRampTransactions.find { it.id == rampID }
+            var transaction = user.fiatCryptoRampTransactions?.find { it.id == rampID }
 
             if (transaction != null) {
                 Log.d(TAG, "Found transaction for rampID: $rampID, type: ${transaction.transactionType?.value ?: "Unknown"}")
@@ -107,7 +107,7 @@ class FiatRampTransactionsDetailActivity : AppCompatActivity() {
                         delay(500)
                         val updatedUser = userViewModel.authResult.value
                         if (updatedUser != null) {
-                            transaction = updatedUser.fiatCryptoRampTransactions.find { it.id == rampID }
+                            transaction = updatedUser.fiatCryptoRampTransactions?.find { it.id == rampID }
                             if (transaction != null) {
                                 Log.d(TAG, "Found transaction after delay for rampID: $rampID, type: ${transaction!!.transactionType?.value ?: "Unknown"}")
                                 updateUI(transaction!!)

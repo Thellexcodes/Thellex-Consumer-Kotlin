@@ -82,6 +82,7 @@ object Constants {
     // Admin
     const val ADMIN_GET_ALL_REVENUES_ENDPOINT = "$VERSIONED_BASE/admin/revenues"
     const val ADMIN_GET_ALL_RAMP_TRANSACTIONS_ENDPOINT = "$VERSIONED_BASE/admin/ramp_transactions"
+    const val ADMIN_APPROVE_RAMP_TRANSACTION_ENDPOINT = "$VERSIONED_BASE/admin/approve_ramp_transactions"
 
     // User
     const val GET_ALL_USER_TRANSACTION_HISTORY = "$VERSIONED_BASE/user/transactions"

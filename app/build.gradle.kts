@@ -102,6 +102,7 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.core.ktx)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.navigation.compose.jvmstubs)
     kapt("com.github.bumptech.glide:compiler:4.15.1")
 
     // DateTime Picker

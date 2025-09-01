@@ -151,7 +151,7 @@ object UserPreferences {
     fun addTransactionHistory(context: Context, transaction: ITransactionHistoryDto) {
         val currentUser = getAuthResultSync(context)
         if (currentUser != null) {
-            val updatedList = currentUser.transactionHistory.toMutableList().apply {
+            val updatedList = currentUser.transactionHistory?.toMutableList()?.apply {
                 if (none { it.id == transaction.id }) {
                     add(transaction)
                     if (transaction.transactionType == TransactionTypeEnum.FIAT_TO_CRYPTO_DEPOSIT) {
@@ -160,7 +160,7 @@ object UserPreferences {
                         setRewardsDismissed(context, false)
                     }
                 }
-            }.sortedByDescending { it.createdAt }
+            }?.sortedByDescending { it.createdAt }
             val updatedUser = currentUser.copy(transactionHistory = updatedList)
             Log.w(TAG, "Transaction $transaction and updatedUser: $updatedUser")
             saveAuthResult(context, updatedUser)
@@ -170,9 +170,9 @@ object UserPreferences {
     fun updateTransactionById(context: Context, transactionId: String, transaction: ITransactionHistoryDto) {
         val currentUser = getAuthResultSync(context)
         if (currentUser != null) {
-            val updatedList = currentUser.transactionHistory.map {
+            val updatedList = currentUser.transactionHistory?.map {
                 if (it.id == transactionId) transaction else it
-            }.sortedByDescending { it.createdAt }
+            }?.sortedByDescending { it.createdAt }
             val updatedUser = currentUser.copy(transactionHistory = updatedList)
             saveAuthResult(context, updatedUser)
         }
@@ -181,7 +181,7 @@ object UserPreferences {
     fun addNotification(context: Context, notification: NotificationEntity) {
         val currentUser = getAuthResultSync(context)
         if (currentUser != null) {
-            val updatedList = currentUser.notifications.toMutableList().apply {
+            val updatedList = currentUser.notifications?.toMutableList()?.apply {
                 add(notification)
             }
             val updatedUser = currentUser.copy(notifications = updatedList)
@@ -202,7 +202,7 @@ object UserPreferences {
     ) {
         val currentUser = getAuthResultSync(context)
         if (currentUser != null) {
-            val updatedList = currentUser.fiatCryptoRampTransactions.map {
+            val updatedList = currentUser.fiatCryptoRampTransactions?.map {
                 if (it.id == transactionId) updatedTransaction else it
             }
             val updatedUser = currentUser.copy(fiatCryptoRampTransactions = updatedList)
@@ -216,9 +216,9 @@ object UserPreferences {
     ) {
         val currentUser = getAuthResultSync(context)
         if (currentUser != null) {
-            val updatedList = currentUser.fiatCryptoRampTransactions.toMutableList()
-            val alreadyExists = updatedList.any { it.id == transaction.id }
-            if (!alreadyExists) {
+            val updatedList = currentUser.fiatCryptoRampTransactions?.toMutableList()
+            val alreadyExists = updatedList?.any { it.id == transaction.id }
+            if (!alreadyExists!!) {
                 updatedList.add(transaction)
                 Log.d(TAG, "Fiat ramp Transaction added: ${transaction.id}")
             } else {

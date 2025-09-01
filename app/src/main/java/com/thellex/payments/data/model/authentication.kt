@@ -32,21 +32,21 @@ data class DeviceRequestDto(
 
 @Serializable
 data class UserEntity(
-    @SerializedName("uid") val uid: Int,
-    @SerializedName("email") val email: String,
-    @SerializedName("emailVerified") val emailVerified: Boolean,
-    @SerializedName("suspended") val suspended: Boolean,
+    @SerializedName("uid") val uid: Int? = null,
+    @SerializedName("email") val email: String? = null,
+    @SerializedName("emailVerified") val emailVerified: Boolean? = null,
+    @SerializedName("suspended") val suspended: Boolean? = null,
     @SerializedName("kyc") val kyc: KycInfoEntity? = null,
-    @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryDto>,
-    @SerializedName("notifications") val notifications: List<NotificationEntity>,
-    @SerializedName("settings") val settings: List<IStoreSettingsEntityDto>,
-    @SerializedName("bankAccounts") val bankAccounts: List<IBankAccountDto>,
-    @SerializedName("fiatCryptoRampTransactions") val fiatCryptoRampTransactions: List<IFiatCryptoRampTransactionsDto> = emptyList(),
+    @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryDto>? = emptyList(),
+    @SerializedName("notifications") val notifications: List<NotificationEntity>? = emptyList(),
+    @SerializedName("settings") val settings: List<IStoreSettingsEntityDto>? = emptyList(),
+    @SerializedName("bankAccounts") val bankAccounts: List<IBankAccountDto>? = emptyList(),
+    @SerializedName("fiatCryptoRampTransactions") val fiatCryptoRampTransactions: List<IFiatCryptoRampTransactionsDto>? = emptyList(),
     @SerializedName("currentTier") val currentTier: TierInfo? = null,
     @SerializedName("nextTier") val nextTier: TierInfo? = null,
-    @SerializedName("remainingTiers") val remainingTiers: List<TierInfo> = emptyList(),
-    @SerializedName("outstandingKyc") val outstandingKyc: List<String> = emptyList(),
-    @SerializedName("transactionSettings") val transactionSettings: ITransactionSettingsDto,
-    @SerializedName("banks") val banks: List<NGBankDto>?,
-    @SerializedName("role") val role: RoleEnum
+    @SerializedName("remainingTiers") val remainingTiers: List<TierInfo>? = emptyList(),
+    @SerializedName("outstandingKyc") val outstandingKyc: List<String>? = emptyList(),
+    @SerializedName("transactionSettings") val transactionSettings: ITransactionSettingsDto? = null,
+    @SerializedName("banks") val banks: List<NGBankDto>? = emptyList(),
+    @SerializedName("role") val role: RoleEnum? = null
 )

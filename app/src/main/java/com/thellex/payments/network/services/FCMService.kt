@@ -62,7 +62,6 @@ class FCMService : FirebaseMessagingService() {
     override fun onDestroy() {
         super.onDestroy()
         serviceScope.cancel()
-        Log.d(tag, "FCMService destroyed")
     }
 
     private fun createNotificationChannel() {

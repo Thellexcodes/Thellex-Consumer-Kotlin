@@ -60,5 +60,3 @@ data class AdminRampTransactionDTO(
     @SerializedName("sequenceId") val sequenceId: String,
     @SerializedName("createdAt") val createdAt: String
 )
-
-typealias AdminRampTransactionsResponse = PaginatedResponse<List<AdminRampTransactionDTO>>

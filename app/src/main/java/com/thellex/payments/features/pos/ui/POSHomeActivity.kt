@@ -172,56 +172,73 @@ class POSHomeActivity : AppCompatActivity() {
 
     private fun loadAppData() {
         lifecycleScope.launch {
-            // 1️⃣ Get token
-            val token = userViewModel.token.asFlow().first { !it.isNullOrBlank() } ?: return@launch
-            val adminApi = ApiClient.getAuthenticatedAdminApi(token)
-            val userApi = ApiClient.getAuthenticatedUserApi(token)
+            try {
+                // Wait for a valid token
+                val token = userViewModel.token.asFlow().first { !it.isNullOrBlank() }
+                    ?: run {
+                        Log.e(TAG, "No valid token found")
+                        return@launch
+                    }
 
-            // 2️⃣ Get current user and adminData
-            val user = userViewModel.authResult.asFlow().filterNotNull().first()
-            val currentAdminData = userViewModel.adminData.value ?: AdminData()
+                // Initialize APIs
+                val adminApi = ApiClient.getAuthenticatedAdminApi(token)
+                val userApi = ApiClient.getAuthenticatedUserApi(token)
 
-            // 3️⃣ Launch async API calls
-            val adminRampDeferred: Deferred<ApiResponse<AdminRampTransactionsResponse>>? =
-                if (user.role == RoleEnum.SUPER_ADMIN) async { adminApi.fetchAllRampTransactions() } else null
+                // Get current user and admin data
+                val currentUser = userViewModel.authResult.asFlow().filterNotNull().first()
+                val currentAdminData = userViewModel.adminData.value ?: AdminData()
 
-            val userRampDeferred = async { userApi.fetchRampTransactions() }
-            val userTxnHistoryDeferred = async { userApi.fetchTransactionHistory() }
+                // Launch concurrent API calls
+                val adminRampDeferred: Deferred<ApiResponse<AdminRampTransactionsResponse>>? =
+                    if (currentUser.role == RoleEnum.SUPER_ADMIN) {
+                        async { adminApi.fetchAllRampTransactions() }
+                    } else null
+                val userRampDeferred = async { userApi.fetchRampTransactions() }
+                val userTxnHistoryDeferred = async { userApi.fetchTransactionHistory() }
+                val userNotificationsDeferred = async { userApi.fetchNotifications() }
 
-            // 4️⃣ Collect results with error handling
-            val updatedAdminData = try {
-                val adminRampTransactions = try {
-                    adminRampDeferred?.await()?.result
+                // Collect admin data
+                val updatedAdminData = try {
+                    val adminRampTransactions = adminRampDeferred?.await()?.result
+                    currentAdminData.copy(rampTransactions = adminRampTransactions)
                 } catch (e: Exception) {
-                    Log.e(TAG, "❌ Error fetching Admin Ramp Transactions", e)
-                    null
+                    Log.e(TAG, "Error fetching admin ramp transactions", e)
+                    currentAdminData
                 }
 
-//                val userRampTransactions = try {
-//                    userRampDeferred.await()?.result
-//                } catch (e: Exception) {
-//                    Log.e(TAG, "❌ Error fetching User Ramp Transactions", e)
-//                    null
-//                }
-//
-//                val userTxnHistory = try {
-//                    userTxnHistoryDeferred.await()?.result
-//                } catch (e: Exception) {
-//                    Log.e(TAG, "❌ Error fetching User Transaction History", e)
-//                    null
-//                }
+                // Collect user data with emptyList() fallback
+                val userRampTransactions = try {
+                    userRampDeferred.await().result?.data ?: emptyList()
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error fetching user ramp transactions", e)
+                    emptyList()
+                }
+                val userTxnHistory = try {
+                    userTxnHistoryDeferred.await().result?.data ?: emptyList()
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error fetching transaction history", e)
+                    emptyList()
+                }
+                val userNotifications = try {
+                    userNotificationsDeferred.await().result?.data ?: emptyList()
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error fetching notifications", e)
+                    emptyList()
+                }
+                var mergedUser = currentUser
 
-                // 5️⃣ Update AdminData object
-                currentAdminData.copy(
-                    rampTransactions = adminRampTransactions,
-                )
+                mergedUser = mergedUser.copy(fiatCryptoRampTransactions = userRampTransactions)
+
+                mergedUser = mergedUser.copy(transactionHistory = userTxnHistory)
+
+                mergedUser = mergedUser.copy(notifications = userNotifications)
+
+               // Save results to ViewModel
+                userViewModel.saveAdminResult(updatedAdminData)
+                userViewModel.saveAuthResult(mergedUser)
             } catch (e: Exception) {
-                Log.e(TAG, "❌ Error updating AdminData", e)
-                currentAdminData
+                Log.e(TAG, "Error in loadAppData", e)
             }
-
-            // 6️⃣ Save updated AdminData to ViewModel
-            userViewModel.saveAdminResult(updatedAdminData)
         }
     }
 
