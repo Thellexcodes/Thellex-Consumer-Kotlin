@@ -1,11 +1,13 @@
 package com.thellex.payments.features.admin
 
+import android.content.ClipboardManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,6 +29,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +50,7 @@ import com.thellex.payments.core.decorators.KumbhSansFontFamily
 import com.thellex.payments.core.decorators.Midnight
 import com.thellex.payments.core.decorators.SteelBlueGrey
 import com.thellex.payments.core.decorators.White
+import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.model.AdminData
@@ -69,13 +75,16 @@ fun TransactionItem(
     transaction: AdminRampTransactionDTO,
     onApproveClick: ((ApproveResult) -> Unit)? = null
 ) {
+    val clipboardManager: androidx.compose.ui.platform.ClipboardManager = LocalClipboardManager.current
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(DarkBlue, RoundedCornerShape(8.dp))
             .padding(16.dp)
     ) {
-        // Status & Date
+        // Status + Created At
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -94,6 +103,7 @@ fun TransactionItem(
                     fontFamily = KumbhSansFontFamily
                 )
             }
+
             Text(
                 text = transaction.createdAt ?: "N/A",
                 color = SteelBlueGrey,
@@ -139,18 +149,51 @@ fun TransactionItem(
             }
         }
 
+        Spacer(modifier = Modifier.height(4.dp))
+
+        // Wallet Address (copyable)
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Wallet Address", color = SteelBlueGrey, fontFamily = KumbhSansFontFamily, fontSize = 12.sp)
+            Box(
+                modifier = Modifier
+                    .background(SteelBlueGrey, shape = RoundedCornerShape(6.dp))
+                    .padding(horizontal = 5.5.dp, vertical = 3.dp)
+                    .clickable {
+                        clipboardManager.setText(AnnotatedString(transaction.recipientInfo.destinationAddress))
+                        CustomToast.show(context, "Copied","Address copied!")
+                    }
+            ) {
+                Text(transaction.recipientInfo.destinationAddress.uppercase(), color = White, fontSize = 10.sp, fontFamily = KumbhSansFontFamily, fontWeight = FontWeight.Bold)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        // Network
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Network", color = SteelBlueGrey, fontFamily = KumbhSansFontFamily, fontSize = 12.sp)
+            Box(
+                modifier = Modifier
+                    .background(SteelBlueGrey, shape = RoundedCornerShape(6.dp))
+                    .padding(horizontal = 5.5.dp, vertical = 3.dp)
+            ) {
+                Text(transaction.recipientInfo.network.uppercase(), color = White, fontSize = 10.sp, fontFamily = KumbhSansFontFamily, fontWeight = FontWeight.Bold)
+            }
+        }
+
         Spacer(modifier = Modifier.height(8.dp))
 
         // Approve Button
-        if (!transaction.approved) {
-            Button(
-                onClick = { onApproveClick?.invoke(ApproveResult(approved = true, txId = transaction.txnID, sequenceId = transaction.sequenceId)) },
-                modifier = Modifier.fillMaxWidth().height(40.dp),
-                shape = RoundedCornerShape(15.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = GoldenYellow)
-            ) {
-                Text("APPROVE".uppercase(), fontFamily = KumbhSansFontFamily, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-            }
+        Button(
+            onClick = { onApproveClick?.invoke(ApproveResult(approved = true, txId = transaction.txnID, sequenceId = transaction.sequenceId)) },
+            enabled = !transaction.approved, // dynamically disabled
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp),
+            shape = RoundedCornerShape(15.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = GoldenYellow)
+        ) {
+            Text("APPROVE".uppercase(), fontFamily = KumbhSansFontFamily, fontSize = 10.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -293,50 +336,50 @@ class IncomingRampTransactionsActivity : ComponentActivity() {
             }
     }
 }
-
-// -------------------- Preview --------------------
-@Preview(showBackground = true, widthDp = 360, heightDp = 640)
-@Composable
-fun PreviewIncomingRampTransactionsScreen() {
-    val dummyTransactions = AdminRampTransactionsResponse(
-        data = listOf(
-            AdminRampTransactionDTO(
-                rampId = "ramp_001",
-                txnID = "txn_2039hd832k",
-                mainCryptoAmount = 1.5,
-                mainFiatAmount = 200.0,
-                transactionType = TransactionTypeEnum.CRYPTO_DEPOSIT,
-                userUID = 12345,
-                approved = true,
-                paymentStatus = PaymentStatusEnum.Complete,
-                sequenceId = "seq_001",
-                createdAt = "2025-08-31T12:00:00Z"
-            ),
-            AdminRampTransactionDTO(
-                rampId = "ramp_002",
-                txnID = "txn_482jd9f72",
-                mainCryptoAmount = 2.0,
-                mainFiatAmount = 300.0,
-                transactionType = TransactionTypeEnum.CRYPTO_DEPOSIT,
-                userUID = 67890,
-                approved = false,
-                paymentStatus = PaymentStatusEnum.Complete,
-                sequenceId = "seq_002",
-                createdAt = "2025-08-31T12:05:00Z"
-            )
-        ),
-        pageNumber = 1,
-        lastPage = 1,
-        total = 2
-    )
-
-    MaterialTheme {
-        IncomingRampTransactionsScreen(
-            onBackClick = {},
-            adminRampTransactions = dummyTransactions
-        )
-    }
-}
+//
+//// -------------------- Preview --------------------
+//@Preview(showBackground = true, widthDp = 360, heightDp = 640)
+//@Composable
+//fun PreviewIncomingRampTransactionsScreen() {
+//    val dummyTransactions = AdminRampTransactionsResponse(
+//        data = listOf(
+//            AdminRampTransactionDTO(
+//                rampId = "ramp_001",
+//                txnID = "txn_2039hd832k",
+//                mainCryptoAmount = 1.5,
+//                mainFiatAmount = 200.0,
+//                transactionType = TransactionTypeEnum.CRYPTO_DEPOSIT,
+//                userUID = 12345,
+//                approved = true,
+//                paymentStatus = PaymentStatusEnum.Complete,
+//                sequenceId = "seq_001",
+//                createdAt = "2025-08-31T12:00:00Z"
+//            ),
+//            AdminRampTransactionDTO(
+//                rampId = "ramp_002",
+//                txnID = "txn_482jd9f72",
+//                mainCryptoAmount = 2.0,
+//                mainFiatAmount = 300.0,
+//                transactionType = TransactionTypeEnum.CRYPTO_DEPOSIT,
+//                userUID = 67890,
+//                approved = false,
+//                paymentStatus = PaymentStatusEnum.Complete,
+//                sequenceId = "seq_002",
+//                createdAt = "2025-08-31T12:05:00Z"
+//            )
+//        ),
+//        pageNumber = 1,
+//        lastPage = 1,
+//        total = 2
+//    )
+//
+//    MaterialTheme {
+//        IncomingRampTransactionsScreen(
+//            onBackClick = {},
+//            adminRampTransactions = dummyTransactions
+//        )
+//    }
+//}
 
 // -------------------- Approve Result --------------------
 data class ApproveResult(

@@ -124,7 +124,7 @@
                     android:id="@+id/allTransactionsText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="All Transactions"
+                    android:text="Ramp Transactions"
                     android:textColor="@color/white"
                     android:drawableStart="@drawable/icon_exit"
                     android:drawablePadding="20dp"

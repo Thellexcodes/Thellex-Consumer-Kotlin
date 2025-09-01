@@ -58,5 +58,6 @@ data class AdminRampTransactionDTO(
     @SerializedName("approved") val approved: Boolean,
     @SerializedName("paymentStatus") val paymentStatus: PaymentStatusEnum,
     @SerializedName("sequenceId") val sequenceId: String,
-    @SerializedName("createdAt") val createdAt: String
+    @SerializedName("createdAt") val createdAt: String,
+    @SerializedName("recipientInfo") val recipientInfo: RecipientInfo,
 )

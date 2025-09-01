@@ -95,8 +95,8 @@ object Constants {
             val url = if (isEmulator) {
                 "https://goat-touched-mite.ngrok-free.app/" // For Android Emulator
             } else {
-//                "https://thellex-sandbox-backend.onrender.com/" // Physical device
-                "https://goat-touched-mite.ngrok-free.app/" // For Android Emulator
+                "https://thellex-sandbox-backend.onrender.com/" // Physical device
+//                "https://goat-touched-mite.ngrok-free.app/" // For Android Emulator
             }
             return url
         }
