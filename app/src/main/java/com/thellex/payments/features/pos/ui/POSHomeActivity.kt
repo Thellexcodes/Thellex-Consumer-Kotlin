@@ -30,10 +30,10 @@ import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.RoleEnum
+import com.thellex.payments.data.model.AdminData
+import com.thellex.payments.data.model.AdminRampTransactionsResponse
 import com.thellex.payments.data.model.ApiResponse
 import com.thellex.payments.data.model.ITransactionHistoryDto
-import com.thellex.payments.data.model.RampTransactionDTO
-import com.thellex.payments.data.model.RampTransactionsResponseDTO
 import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.databinding.ActivityPOSBinding
 import com.thellex.payments.features.auth.ui.AuthVerificationActivity
@@ -61,7 +61,6 @@ import com.thellex.payments.features.wallet.ui.WithdrawToCryptoWalletActivity
 import com.thellex.payments.network.services.ApiClient
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -173,40 +172,58 @@ class POSHomeActivity : AppCompatActivity() {
 
     private fun loadAppData() {
         lifecycleScope.launch {
+            // 1️⃣ Get token
             val token = userViewModel.token.asFlow().first { !it.isNullOrBlank() } ?: return@launch
             val adminApi = ApiClient.getAuthenticatedAdminApi(token)
             val userApi = ApiClient.getAuthenticatedUserApi(token)
 
-            userViewModel.authResult.asFlow()
-                .filterNotNull()
-                .first()
-                .let { user ->
-                    try {
-                        // Store Deferred results
-                        val adminRampDeferred: Deferred<ApiResponse<RampTransactionsResponseDTO>>? =
-                            if (user.role == RoleEnum.SUPER_ADMIN) {
-                                async { adminApi.fetchAllRampTransactions() }
-                            } else null
+            // 2️⃣ Get current user and adminData
+            val user = userViewModel.authResult.asFlow().filterNotNull().first()
+            val currentAdminData = userViewModel.adminData.value ?: AdminData()
 
-                        val userRampDeferred = async { userApi.fetchRampTransactions() }
-                        val userTxnHistoryDeferred = async { userApi.fetchTransactionHistory() }
+            // 3️⃣ Launch async API calls
+            val adminRampDeferred: Deferred<ApiResponse<AdminRampTransactionsResponse>>? =
+                if (user.role == RoleEnum.SUPER_ADMIN) async { adminApi.fetchAllRampTransactions() } else null
 
-                        // Await results
-                        val adminRamp = adminRampDeferred?.await()
-                        val userRamp = userRampDeferred.await()
-                        val userTxnHistory = userTxnHistoryDeferred.await()
+            val userRampDeferred = async { userApi.fetchRampTransactions() }
+            val userTxnHistoryDeferred = async { userApi.fetchTransactionHistory() }
 
-                        // Now you can access each response individually
-                        Log.d(TAG, "Admin Ramp Transactions: $adminRamp")
-                        Log.d(TAG,"User Ramp Transactions: $userRamp")
-                        Log.d(TAG,"User Transaction History: $userTxnHistory")
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+            // 4️⃣ Collect results with error handling
+            val updatedAdminData = try {
+                val adminRampTransactions = try {
+                    adminRampDeferred?.await()?.result
+                } catch (e: Exception) {
+                    Log.e(TAG, "❌ Error fetching Admin Ramp Transactions", e)
+                    null
                 }
+
+//                val userRampTransactions = try {
+//                    userRampDeferred.await()?.result
+//                } catch (e: Exception) {
+//                    Log.e(TAG, "❌ Error fetching User Ramp Transactions", e)
+//                    null
+//                }
+//
+//                val userTxnHistory = try {
+//                    userTxnHistoryDeferred.await()?.result
+//                } catch (e: Exception) {
+//                    Log.e(TAG, "❌ Error fetching User Transaction History", e)
+//                    null
+//                }
+
+                // 5️⃣ Update AdminData object
+                currentAdminData.copy(
+                    rampTransactions = adminRampTransactions,
+                )
+            } catch (e: Exception) {
+                Log.e(TAG, "❌ Error updating AdminData", e)
+                currentAdminData
+            }
+
+            // 6️⃣ Save updated AdminData to ViewModel
+            userViewModel.saveAdminResult(updatedAdminData)
         }
     }
-
 
     private fun loadWalletData() {
         lifecycleScope.launch {

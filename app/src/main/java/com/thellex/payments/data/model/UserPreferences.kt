@@ -18,6 +18,7 @@ object UserPreferences {
     private const val KEY_HAS_ENABLED_NOTIFICATIONS = "has_enabled_notifications"
     private const val TAG = "UserPreferences"
     private val userFlow = MutableSharedFlow<UserEntity?>(replay = 1)
+    private val adminDataFlow = MutableSharedFlow<AdminData?>(replay = 1)
     private val _rewardsCount = MutableLiveData<Int>()
 
     fun saveToken(context: Context, token: String) {
@@ -45,6 +46,29 @@ object UserPreferences {
             .putString("user", if (user != null) Gson().toJson(user) else null)
             .apply()
         userFlow.tryEmit(user)
+    }
+
+    // --- AdminData ---
+    fun saveAdminResult(context: Context, adminData: AdminData?) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putString("admin_data", if (adminData != null) Gson().toJson(adminData) else null).apply()
+        adminDataFlow.tryEmit(adminData)
+    }
+
+    fun getAdminResult(context: Context): Flow<AdminData?> = flow {
+        emit(getAdminResultSync(context))
+        emitAll(adminDataFlow)
+    }
+
+    fun getAdminResultSync(context: Context): AdminData? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val json = prefs.getString("admin_data", null)
+        return try {
+            if (json != null) Gson().fromJson(json, AdminData::class.java) else null
+        } catch (e: Exception) {
+            Log.e(TAG, "Error parsing AdminData: ${e.message}")
+            null
+        }
     }
 
     fun clearAuthResult(context: Context) {

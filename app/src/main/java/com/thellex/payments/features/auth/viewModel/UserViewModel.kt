@@ -28,6 +28,8 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     val token: LiveData<String?> = repository.getToken().asLiveData()
     private val _authResult = MutableLiveData<UserEntity?>()
     val authResult: LiveData<UserEntity?> = _authResult
+    private val _adminData = MutableLiveData<AdminData?>()
+    val adminData : LiveData<AdminData?> = _adminData
     private val _notificationsEnabled = MutableLiveData<Boolean>()
     val notificationsEnabled: LiveData<Boolean> = _notificationsEnabled
     private val _error = MutableLiveData<String?>()
@@ -45,12 +47,24 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 repository.getAuthResult().collect { user ->
                     _authResult.postValue(user)
                     updateFilteredTransactions(user)
-                    Log.d(TAG, "Initialized auth result: ${user?.fiatCryptoRampTransactions?.map { it.id }}")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to initialize auth result: ${e.message}", e)
                 _error.postValue("Failed to load user data")
             }
+
+            viewModelScope.launch {
+                try {
+                    repository.getAdminData().collect { admin ->
+                        Log.d(TAG, "Initialized admin data: ${admin?.rampTransactions?.data?.map { it.txnID }}")
+                        _adminData.postValue(admin)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to initialize admin data: ${e.message}", e)
+                    _error.postValue("Failed to load admin data")
+                }
+            }
+
         }
         // Observe EventBus for transaction updates
         EventBus.transactionUpdate.observeForever { transaction ->
@@ -159,6 +173,19 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                 Log.d(TAG, "Saved auth result: ${result?.fiatCryptoRampTransactions?.map { it.id }}")
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to save auth result: ${e.message}", e)
+                _error.postValue("Failed to save user data")
+            }
+        }
+    }
+
+    fun saveAdminResult(result: AdminData?) {
+        viewModelScope.launch {
+            try {
+                repository.saveAdminResult(result)
+                _adminData.postValue(result)
+                Log.d(TAG, "Saved admin result")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to save ramp transactions result: ${e.message}", e)
                 _error.postValue("Failed to save user data")
             }
         }

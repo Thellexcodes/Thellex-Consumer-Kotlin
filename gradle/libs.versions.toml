@@ -32,6 +32,8 @@ firebaseMessagingKtxVersion = "24.1.2"
 materialVersion = "1.12.0"
 compose = "1.7.0"
 activityCompose = "1.9.0"
+coreKtxVersion = "1.7.0"
+runtimeLivedata = "1.9.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -65,7 +67,9 @@ retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtxVersion" }
-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }  # Added
+compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
+androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }  # Added
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

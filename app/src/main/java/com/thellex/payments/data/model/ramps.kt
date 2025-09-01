@@ -47,9 +47,8 @@ data class IBankInfoRequestDto(
     @SerializedName("networkName") val networkName: String? = null
 )
 
-
 @Serializable
-data class RampTransactionDTO(
+data class AdminRampTransactionDTO(
     @SerializedName("rampId") val rampId: String,
     @SerializedName("txnID") val txnID: String,
     @SerializedName("mainCryptoAmount") val mainCryptoAmount: Double,
@@ -62,10 +61,4 @@ data class RampTransactionDTO(
     @SerializedName("createdAt") val createdAt: String
 )
 
-@Serializable
-data class RampTransactionsResponseDTO(
-    @SerializedName("data") val data: List<RampTransactionDTO>,
-    @SerializedName("lastPage") val lastPage: Int,
-    @SerializedName("pageNumber") val pageNumber: Int,
-    @SerializedName("total") val total: Int
-)
+typealias AdminRampTransactionsResponse = PaginatedResponse<List<AdminRampTransactionDTO>>

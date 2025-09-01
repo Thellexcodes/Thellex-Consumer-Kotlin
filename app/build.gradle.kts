@@ -100,6 +100,8 @@ dependencies {
 
     // Glide
     implementation(libs.glide)
+    implementation(libs.core.ktx)
+    implementation(libs.androidx.runtime.livedata)
     kapt("com.github.bumptech.glide:compiler:4.15.1")
 
     // DateTime Picker
@@ -119,6 +121,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.4")
+    implementation ("com.google.accompanist:accompanist-swiperefresh:0.30.1") // latest version
 
     // Debug tools
     debugImplementation("androidx.compose.ui:ui-tooling")

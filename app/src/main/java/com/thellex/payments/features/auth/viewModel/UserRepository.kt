@@ -2,6 +2,9 @@ package com.thellex.payments.features.auth.viewModel
 
 import android.annotation.SuppressLint
 import android.content.Context
+import com.thellex.payments.data.model.AdminData
+import com.thellex.payments.data.model.AdminRampTransactionDTO
+import com.thellex.payments.data.model.AdminRampTransactionsResponse
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.UserEntity
 import com.thellex.payments.data.model.UserPreferences
@@ -60,6 +63,10 @@ class UserRepository private constructor(private val context: Context) {
     fun setNotificationsEnabled(enabled: Boolean) {
         UserPreferences.setHasEnabledNotifications(context, enabled)
     }
+
+    // --- AdminData ---
+    fun getAdminData(): Flow<AdminData?> = UserPreferences.getAdminResult(context)
+    fun saveAdminResult(adminData: AdminData?) = UserPreferences.saveAdminResult(context, adminData)
 
     fun logout() {
         UserPreferences.clearToken(context)
