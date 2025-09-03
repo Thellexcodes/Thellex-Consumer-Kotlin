@@ -614,5 +614,9 @@ object Helpers {
             this.layoutParams = params
         }
     }
+
+    fun Double.truncateToTwoDecimals(): Double {
+        return (this * 100).toInt() / 100.0
+    }
 }
 

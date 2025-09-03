@@ -83,7 +83,7 @@ class PaymentMethodActivity : AppCompatActivity() {
             WalletManagerModelFactory(applicationContext)
         )[WalletManagerViewModel::class.java]
 
-        // Scope to CryptoToFiatOffRampActivity to share ViewModel
+//         Scope to CryptoToFiatOffRampActivity to share ViewModel
         cryptoToFiatViewModel = ViewModelProvider(
             owner = findActivity(CryptoToFiatOffRampActivity::class.java)
                 ?: run {

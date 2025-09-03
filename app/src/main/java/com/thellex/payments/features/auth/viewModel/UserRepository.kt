@@ -3,16 +3,16 @@ package com.thellex.payments.features.auth.viewModel
 import android.annotation.SuppressLint
 import android.content.Context
 import com.thellex.payments.data.model.AdminData
-import com.thellex.payments.data.model.AdminRampTransactionDTO
-import com.thellex.payments.data.model.AdminRampTransactionsResponse
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.UserEntity
 import com.thellex.payments.data.model.UserPreferences
+import com.thellex.payments.data.viewModels.rates.RatePreferences
 import com.thellex.payments.features.wallet.prefrences.WalletManagerPreferences
 import kotlinx.coroutines.flow.Flow
 
 class UserRepository private constructor(private val context: Context) {
     private val walletPreferences = WalletManagerPreferences(context)
+    private val ratePreferences = RatePreferences(context)
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -72,5 +72,6 @@ class UserRepository private constructor(private val context: Context) {
         UserPreferences.clearToken(context)
         UserPreferences.clearAuthResult(context)
         walletPreferences.clearWalletCache()
+        ratePreferences.clearRates()
     }
 }

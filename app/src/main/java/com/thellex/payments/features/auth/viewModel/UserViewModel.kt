@@ -423,6 +423,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     fun logout() {
         viewModelScope.launch {
             try {
+
                 repository.logout()
                 _authResult.postValue(null)
                 _depositTransactions.postValue(emptyList())

@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var userModel: UserViewModel
     private lateinit var rateViewModel: RateViewModel
-
     private var hasShownErrorToast = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +51,6 @@ class MainActivity : AppCompatActivity() {
         disableDecorFitsSystemWindows()
         setTransparentStatusBarWithWhiteIcons()
         binding.main.applyAdvancedSystemBarInsets()
-        ApiClient.initialize(this)
 
         userModel = ViewModelProvider(
             this,
@@ -68,12 +66,6 @@ class MainActivity : AppCompatActivity() {
         CrashLogger.init(this)
         CoroutineScope(Dispatchers.IO).launch {
             CrashLogger.sendStoredCrashes(this@MainActivity)
-        }
-        try {
-            FirebaseApp.initializeApp(this)
-            Log.d("FirebaseInit", "Firebase initialized successfully")
-        } catch (e: Exception) {
-            Log.e("FirebaseInit", "Firebase initialization failed: ${e.message}", e)
         }
     }
 

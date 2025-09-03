@@ -67,4 +67,5 @@
     <string name="recent_transactions">Recent Transactions</string>
     <string name="email">Email</string>
     <string name="revenue">REVENUE</string>
+    <string name="fee_values">Fee Values</string>
 </resources>

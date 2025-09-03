@@ -5,11 +5,15 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
 import com.thellex.payments.core.utils.CustomToast
@@ -17,9 +21,9 @@ import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.capitalizeFirst
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
-import com.thellex.payments.core.utils.Helpers.roundToTwoDecimals
 import com.thellex.payments.core.utils.Helpers.setSubmitting
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
+import com.thellex.payments.core.utils.Helpers.truncateToTwoDecimals
 import com.thellex.payments.data.model.CryptoToFiatOffRampRequestDto
 import com.thellex.payments.data.model.IBankInfoRequestDto
 import com.thellex.payments.databinding.ActivityRampSummaryBinding
@@ -35,7 +39,6 @@ import com.thellex.payments.settings.TokensEnum
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
-import java.math.BigDecimal
 
 @RequiresApi(Build.VERSION_CODES.O)
 class OffRampSummaryActivity : AppCompatActivity() {
@@ -84,8 +87,13 @@ class OffRampSummaryActivity : AppCompatActivity() {
         }
 
         cryptoToFiatViewModel = ViewModelProvider(
-            parentActivity,
-            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+            owner = findActivity(CryptoToFiatOffRampActivity::class.java)
+                ?: run {
+                    startActivity(Intent(this, CryptoToFiatOffRampActivity::class.java))
+                    finish()
+                    return@setupViewModels
+                },
+            factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
         )[CryptoToFiatViewModel::class.java]
     }
 
@@ -99,24 +107,32 @@ class OffRampSummaryActivity : AppCompatActivity() {
     private fun setupTransactionSummary() = with(binding.offrampTransactionDetails) {
         val viewModel = cryptoToFiatViewModel
 
-        rampTransactionReasonValue.text = viewModel.paymentReason.value?.uppercase().orEmpty()
-        rampBlockchainNetworkName.text = viewModel.network.value?.uppercase().orEmpty()
+        rampServiceFeeValue.text = "${viewModel.feeFiat.value} NGN | ${viewModel.feeUSD.value} USD"
+
         rampBlockchainNetworkIcon.setImageResource(
             Helpers.getIconResIdForBlockchain(viewModel.network.value.orEmpty())
         )
+        rampBlockchainNetworkName.text = viewModel.network.value?.uppercase().orEmpty()
+        rampTransactionReasonValue.text = viewModel.paymentReason.value?.uppercase().orEmpty()
 
         viewModel.assetCode.value?.let { assetCode ->
-
-            viewModel.currentRate.value?.buy?.let { rate ->
+            viewModel.currentRate.value?.sell?.let { rate ->
                 val fiatCode = FiatTickers.getByCodeOrCountry("ngn")?.currencyCode.orEmpty()
                 rampExchangeRateValue.text = "$rate $fiatCode/${assetCode.uppercase()}"
             }
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun observeLiveUpdates() {
+        cryptoToFiatViewModel.mainAssetAmount.observe(this){
+            val assetCode = cryptoToFiatViewModel.assetCode.value?.uppercase()
+            binding.offrampUsdAmount.text = "${it.truncateToTwoDecimals()} $assetCode"
+        }
+
         cryptoToFiatViewModel.fiatAmount.observe(this) {
-            updateFiatAndCryptoAmount(it)
+            val fiatCode = cryptoToFiatViewModel.fiatCode.value ?: "NGN"
+            binding.offrampFiatAmount.text = "${it.truncateToTwoDecimals()} $fiatCode"
         }
 
         cryptoToFiatViewModel.bankInfo.observe(this) {
@@ -125,27 +141,6 @@ class OffRampSummaryActivity : AppCompatActivity() {
 
         cryptoToFiatViewModel.currentRate.observe(this) {
             setupTransactionSummary()
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun updateFiatAndCryptoAmount(amount: Double?) {
-        val fiatCode = cryptoToFiatViewModel.fiatCode.value ?: "NGN"
-        val rate = cryptoToFiatViewModel.currentRate.value
-        val fee = cryptoToFiatViewModel.fee.value ?: 0.0
-        val feeDivisor = rate?.feeDivisor ?: 100.0
-
-        if (amount != null && amount > 0.0) {
-            binding.offrampFiatAmount.text = "${amount.roundToTwoDecimals()} $fiatCode"
-
-            val cryptoAmount = if (rate != null) {
-                (amount / (rate.buy * (1.0 - (fee / feeDivisor)))).roundToTwoDecimals()
-            } else {
-                BigDecimal.ZERO
-            }
-
-            val assetCode = cryptoToFiatViewModel.assetCode.value?.uppercase()
-            binding.offrampUsdAmount.text = "$cryptoAmount $assetCode"
         }
     }
 
@@ -182,7 +177,6 @@ class OffRampSummaryActivity : AppCompatActivity() {
                         userViewModel.addFiatCryptoRampTransaction(txn)
                         userViewModel.addTransaction(txn.transaction!!)
                     }
-                    Log.d(TAG, "this is response with txn: ${result.transaction}")
 //                    ActivityTracker.finishActivity(PaymentMethodActivity::class.java)
                     startActivity(Intent(context, POSHomeActivity::class.java))
                 } else {
@@ -206,7 +200,7 @@ class OffRampSummaryActivity : AppCompatActivity() {
         val asset = vm.assetCode.value
         val country = vm.country.value
         val fiat = vm.fiatCode.value
-        val amount = vm.fiatAmount.value
+        val amount = vm.mainFiatAmount.value
         val bank = vm.bankInfo.value
         val cryptoAmount = vm.mainAssetAmount.value
 
@@ -247,6 +241,6 @@ class OffRampSummaryActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val TAG = "OffRampSummaryActivity"
+        private const val TAG = "OffRampSummaryActivity"
     }
 }

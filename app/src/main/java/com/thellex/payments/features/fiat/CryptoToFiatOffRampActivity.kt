@@ -11,9 +11,13 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.savedinstancestate.savedInstanceState
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.AbstractSavedStateViewModelFactory
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +32,7 @@ import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.getIconResIdForToken
 import com.thellex.payments.core.utils.Helpers.setLoading
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
+import com.thellex.payments.core.utils.Helpers.truncateToTwoDecimals
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.PaymentStatusEnum
 import com.thellex.payments.data.model.reasonList
@@ -58,8 +63,10 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
     private lateinit var userViewModel: UserViewModel
     private lateinit var walletManagerViewModel: WalletManagerViewModel
     private var fiatCode: String = "NGN"
+    private val rateViewModel: RateViewModel by viewModels {
+        ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+    }
     private lateinit var cryptoToFiatViewModel: CryptoToFiatViewModel
-    private lateinit var rateViewModel: RateViewModel
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,6 +108,26 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
+    private fun observeRates() {
+        lifecycleScope.launch {
+            rateViewModel.rates.collectLatest { rates ->
+                Log.d(TAG, "Rate iss $rates")
+                if (rates.isNotEmpty()) {
+                    cryptoToFiatViewModel.updateRate(rates)
+                    binding.textRateValue.text = "${cryptoToFiatViewModel.currentRate.value?.sell ?: 0.0}%"
+                    binding.nextButton.setLoading(false)
+                    calculateAndDisplayPrice()
+                } else {
+                    updateRatePriceText()
+                    binding.nextButton.setLoading(true)
+                    cryptoToFiatViewModel.updateRate(emptyList())
+                }
+            }
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun restoreSavedData() {
         // Restore payment reason
         cryptoToFiatViewModel.paymentReason.value?.let { reason ->
@@ -113,18 +140,16 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         }
 
         // Restore fiat amount and recalculate UI if valid
-        cryptoToFiatViewModel.fiatAmount.value?.let { amount ->
+        cryptoToFiatViewModel.netFiatAmount.value?.let { amount ->
             if (amount > minimumAmountInFiat) {
-                binding.edittextFiatAmount.setText(
-                    amount.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toPlainString()
-                )
+                binding.edittextFiatAmount.setText("{${amount.truncateToTwoDecimals()}}")
                 calculateAndDisplayPrice(cryptoChanged = false)
             }
         }
 
         // Restore rate and fee
         cryptoToFiatViewModel.currentRate.value?.let {
-            cryptoToFiatViewModel.fee.value?.let { fee ->
+            cryptoToFiatViewModel.feePercentage.value?.let { fee ->
                 binding.nextButton.setLoading(false)
                 calculateAndDisplayPrice()
             }
@@ -142,35 +167,38 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun observeRates() {
-        lifecycleScope.launch {
-            rateViewModel.rates.collectLatest { rates ->
-                Log.d(TAG, "rate is $rates")
-                if (rates.isNotEmpty()) {
-                    cryptoToFiatViewModel.updateRate(rates)
-                    binding.textRateValue.text = "${cryptoToFiatViewModel.currentRate.value?.sell ?: 0.0}%"
-                    binding.nextButton.setLoading(false) // Enable button when rates are available
-                    calculateAndDisplayPrice()
-                } else {
-                    updateDefaultPriceText()
-                    binding.nextButton.setLoading(true) // Disable button if no rates
-                    cryptoToFiatViewModel.updateRate(emptyList()) // Clear rate if none available
-                }
-            }
-        }
-    }
 
     @SuppressLint("SetTextI18n")
-    private fun updateDefaultPriceText() {
+    private fun updateRatePriceText() {
         val tokenSymbol = selectedToken?.assetCode?.name?.uppercase(Locale.getDefault()) ?: "TOKEN"
-        binding.textRateValue.text = "≅ 0.00 $fiatCode/$tokenSymbol"
+        binding.textRateValue.text = "≅ 0.00 ${fiatCode.uppercase()}/$tokenSymbol"
     }
 
     private fun setupAmountInputListeners() {
         val errorDrawable = ContextCompat.getDrawable(this, R.drawable.bg_edittext_error)
         val normalDrawable = ContextCompat.getDrawable(this, R.drawable.bg_edittext_normal)
+
+        binding.edittextCryptoAmount.addTextChangedListener(object : TextWatcher {
+            private var isUpdating = false
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!isUpdating && binding.edittextCryptoAmount.hasFocus()) {
+                    isUpdating = true
+                    val cryptoAmount = s.toString().toDoubleOrNull() ?: 0.0
+                    val (fiatAmount, feeFiat, feeUSD) = calculateFiatFromCrypto(cryptoAmount, cryptoToFiatViewModel.currentRate.value?.feeDivisor!!)
+                    val background = if (fiatAmount < minimumAmountInFiat) errorDrawable else normalDrawable
+                    cryptoToFiatViewModel.updateAmounts(feeFiat = feeFiat, feeUSD = feeUSD, fiatAmount = 149.352, cryptoAmount = cryptoAmount, fiatAmount)
+                    binding.edittextCryptoAmount.background = background
+                    binding.edittextFiatAmount.background = background
+                    calculateAndDisplayPrice(cryptoChanged = true)
+                    isUpdating = false
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
         binding.edittextFiatAmount.addTextChangedListener(object : TextWatcher {
             private var isUpdating = false
@@ -192,26 +220,6 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        binding.edittextCryptoAmount.addTextChangedListener(object : TextWatcher {
-            private var isUpdating = false
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (!isUpdating && binding.edittextCryptoAmount.hasFocus()) {
-                    isUpdating = true
-                    val cryptoAmount = s.toString().toDoubleOrNull() ?: 0.0
-                    val fiatEquivalent = calculateFiatFromCrypto(cryptoAmount, cryptoToFiatViewModel.currentRate.value?.feeDivisor!!)
-                    val background = if (fiatEquivalent < minimumAmountInFiat) errorDrawable else normalDrawable
-                    binding.edittextCryptoAmount.background = background
-                    binding.edittextFiatAmount.background = background
-                    calculateAndDisplayPrice(cryptoChanged = true)
-                    isUpdating = false
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
 
         binding.edittextPaymentReason.setOnClickListener {
             showReasonSelectionBottomSheet(binding.edittextPaymentReason)
@@ -239,7 +247,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
 
         } ?: run {
             binding.textCryptoWalletName.text = "No Wallet Selected"
-            binding.cryptoIcon.setImageResource(Helpers.getIconResIdForToken(""))
+            binding.cryptoIcon.setImageResource(getIconResIdForToken(""))
             binding.textCryptoBalance.text = "0.00"
         }
     }
@@ -251,7 +259,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         binding.edittextFiatAmount.setText("")
         binding.edittextCryptoAmount.setText("")
         updateWalletInfo()
-        updateDefaultPriceText()
+        updateRatePriceText()
     }
 
     private fun setDefaultToken() {
@@ -261,71 +269,77 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         defaultToken?.let {
             updateTokenSpinner(it)
         } ?: run {
-            updateDefaultPriceText()
+            updateRatePriceText()
             updateWalletInfo()
         }
     }
-    private fun calculateFiatFromCrypto(cryptoAmount: Double, feeDivisor: Double): Double {
-        // Fiat = (Crypto * Buy Rate) * (1 - Fee Percentage)
+
+    private fun calculateFiatFromCrypto(cryptoAmount: Double, feeDivisor: Double): Triple<Double, Double, Double> {
+        // Get current sell rate
         val rate = cryptoToFiatViewModel.currentRate.value?.sell ?: 0.0
-        val feePercentage = cryptoToFiatViewModel.fee.value?.div(feeDivisor) ?: 0.0
-        return if (cryptoAmount <= 0.0 || rate <= 0.0) 0.0 else (cryptoAmount * rate) * (1.0 - feePercentage)
+        // Fee percentage in decimal
+        val feePercentage = cryptoToFiatViewModel.feePercentage.value
+
+        if (cryptoAmount <= 0.0 || rate <= 0.0) return Triple(0.0, 0.0, 0.0)
+
+        // Total fiat before fee
+        val totalFiat = cryptoAmount * rate
+        // Fee in fiat
+        val feeFiat = totalFiat * feePercentage?.toDouble()!!
+        // Net fiat user receives
+        val netFiat = totalFiat - feeFiat
+        // Fee in crypto asset
+        val feeCrypto = cryptoAmount * feePercentage
+
+        return Triple(netFiat, feeFiat, feeCrypto)
     }
 
-    private fun calculateCryptoFromFiat(fiatAmount: Double, feeDivisor: Double): Double {
-        // Crypto = Fiat / (Buy Rate * (1 + Fee Percentage))
-        val rate = cryptoToFiatViewModel.currentRate.value?.sell ?: 1.0
-        val feePercentage = cryptoToFiatViewModel.fee.value?.div(feeDivisor) ?: 0.0
-        return if (fiatAmount <= 0.0 || rate <= 0.0 || (1.0 + feePercentage) <= 0.0) 0.0 else fiatAmount / (rate * (1.0 + feePercentage))
-    }
-
+//    private fun calculateCryptoFromFiat(fiatAmount: Double, feeDivisor: Double): Double {
+//        // Crypto = Fiat / (Buy Rate * (1 + Fee Percentage))
+//        val rate = cryptoToFiatViewModel.currentRate.value?.sell ?: 1.0
+//        val feePercentage = cryptoToFiatViewModel.fee.value?.div(feeDivisor) ?: 0.0
+//        return if (fiatAmount <= 0.0 || rate <= 0.0 || (1.0 + feePercentage) <= 0.0) 0.0 else fiatAmount / (rate * (1.0 + feePercentage))
+//    }
     @SuppressLint("SetTextI18n")
     private fun calculateAndDisplayPrice(cryptoChanged: Boolean = false) {
         val fiatText = binding.edittextFiatAmount.text.toString().trim()
         val cryptoText = binding.edittextCryptoAmount.text.toString().trim()
         val tokenSymbol = selectedToken?.assetCode?.name?.uppercase(Locale.getDefault()) ?: "TOKEN"
+        val currentRate = cryptoToFiatViewModel.currentRate.value
+        val fiatCode = cryptoToFiatViewModel.fiatCode.value ?: "NGN"
 
+        // Show base rate if no input
         if (fiatText.isEmpty() && cryptoText.isEmpty()) {
-            binding.textRateValue.text = "≅ ${cryptoToFiatViewModel.currentRate.value?.buy} $fiatCode/$tokenSymbol"
-            binding.edittextFiatAmount.setText("")
-            binding.edittextCryptoAmount.setText("")
+            binding.textRateValue.text = "≅ ${currentRate?.sell ?: "--"} $fiatCode/$tokenSymbol"
+            binding.edittextFiatAmount.text?.clear()
+            binding.edittextCryptoAmount.text?.clear()
             return
         }
 
         try {
-            if (!cryptoChanged) {
-                // Fiat input changed
-                val fiatAmount = fiatText.toDoubleOrNull() ?: 0.0
-                if (fiatAmount <= minimumAmountInFiat) {
-                    if (!binding.edittextCryptoAmount.hasFocus()) binding.edittextCryptoAmount.setText("")
-                    return
-                }
-                val cryptoAmount = calculateCryptoFromFiat(fiatAmount, cryptoToFiatViewModel.currentRate.value?.feeDivisor!!)
-                val formattedCrypto = cryptoAmount.toBigDecimal().setScale(6, RoundingMode.HALF_UP).toPlainString()
-                if (!binding.edittextCryptoAmount.hasFocus()) {
-                    binding.edittextCryptoAmount.setText(formattedCrypto)
-                    binding.edittextCryptoAmount.setSelection(formattedCrypto.length)
-                }
-            } else {
-                // Crypto input changed
+            if (cryptoChanged) {
                 val cryptoAmount = cryptoText.toDoubleOrNull() ?: 0.0
                 if (cryptoAmount <= 0.0) {
-                    if (!binding.edittextFiatAmount.hasFocus()) binding.edittextFiatAmount.setText("")
+                    if (!binding.edittextFiatAmount.hasFocus()) binding.edittextFiatAmount.text?.clear()
                     return
                 }
-                val fiatAmount = calculateFiatFromCrypto(cryptoAmount, cryptoToFiatViewModel.currentRate.value?.feeDivisor!!)
+
+                val feeDivisor = currentRate?.feeDivisor ?: return
+                val (fiatAmount, feeFiat, feeUSD) = calculateFiatFromCrypto(cryptoAmount, feeDivisor)
+
                 if (fiatAmount <= minimumAmountInFiat) {
-                    if (!binding.edittextFiatAmount.hasFocus()) binding.edittextFiatAmount.setText("")
+                    if (!binding.edittextFiatAmount.hasFocus()) binding.edittextFiatAmount.text?.clear()
                     return
                 }
-                val formattedFiat = fiatAmount.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toPlainString()
+
                 if (!binding.edittextFiatAmount.hasFocus()) {
-                    binding.edittextFiatAmount.setText(formattedFiat)
-                    binding.edittextFiatAmount.setSelection(formattedFiat.length)
+                    val formattedFiat = fiatAmount.truncateToTwoDecimals()
+                    binding.edittextFiatAmount.setText("$formattedFiat")
                 }
             }
+            // else → fiat input branch (can be added later if needed)
         } catch (e: Exception) {
-            CustomToast.show(this, "Input","Invalid input", Toast.LENGTH_SHORT)
+            CustomToast.show(this, "Input", "Invalid input", Toast.LENGTH_SHORT)
         }
     }
 
@@ -381,8 +395,6 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                         assetCode = selectedToken.assetCode.toString(),
                         country = userViewModel.authResult.value?.kyc?.country ?: "ng",
                         fiatCode = fiatCode,
-                        fiatAmount = fiatAmount,
-                        mainAssetAmount = cryptoAmount
                     )
 
                     val intent = Intent(this@CryptoToFiatOffRampActivity, PaymentMethodActivity::class.java)
@@ -421,11 +433,6 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
             this,
             ViewModelProvider.AndroidViewModelFactory.getInstance(application)
         )[CryptoToFiatViewModel::class.java]
-
-        rateViewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-        )[RateViewModel::class.java]
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -497,6 +504,6 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "TAGY"
+        private const val TAG = "CryptoToFiatOffRampActivity"
     }
 }

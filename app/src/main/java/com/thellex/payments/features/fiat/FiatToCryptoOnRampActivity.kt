@@ -65,11 +65,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     private lateinit var walletManagerViewModel: WalletManagerViewModel
     private var selectedToken: WalletDto? = null
     private var currentRates: IRatesResponseDto? = null
-    private var ratesExpiryTime: Long? = null
-    private var ratesRefreshHandler: Handler? = null
-    private var refreshRunnable: Runnable? = null
     private lateinit var outstandingKyc: List<String>
-    private var fee: Double = 0.0
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,7 +86,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         observeUser()
         setupUiListener()
         setupAmountInputListeners()
-        fetchRatesAndScheduleRefresh()
 
         walletManagerViewModel = ViewModelProvider(
             this,
@@ -306,59 +301,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
             }
         }
 
-    private fun fetchRatesAndScheduleRefresh() {
-        lifecycleScope.launch {
-            try {
-                val authToken = userRepository.getToken().first() ?: throw IllegalStateException("No auth token available")
-                val response = ApiClient.getAuthenticatedPaymentApi(authToken).getRates()
-
-                response.result?.let { result ->
-                    val ngnRateDto = result.rates.firstOrNull { it.fiatCode.equals(FiatEnum.ngn.code, ignoreCase = true) }
-                    if (ngnRateDto == null) {
-                        updateDefaultPriceText()
-                        return@let
-                    }
-                    currentRates = result
-                    fee = ngnRateDto.rate.fee / ngnRateDto.rate.feeDivisor
-                    ratesExpiryTime = parseExpiresAt(result.expiresAt)
-                    calculateAndDisplayPrice()
-                    scheduleRatesRefresh(ratesExpiryTime ?: (System.currentTimeMillis() + 60000))
-                } ?: run {
-                    Toast.makeText(this@FiatToCryptoOnRampActivity, "Error fetching rates", Toast.LENGTH_SHORT).show()
-                    updateDefaultPriceText()
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error fetching rates: ${e.message}", e)
-                Toast.makeText(this@FiatToCryptoOnRampActivity, "Error fetching rates", Toast.LENGTH_SHORT).show()
-                updateDefaultPriceText()
-            }
-        }
-    }
-
-    private fun parseExpiresAt(expiresAt: String): Long {
-        return try {
-            val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-            format.timeZone = TimeZone.getTimeZone("UTC")
-            format.parse(expiresAt)?.time ?: System.currentTimeMillis() + 60000
-        } catch (e: Exception) {
-            Log.e(TAG, "Error parsing expiresAt: ${e.message}", e)
-            System.currentTimeMillis() + 60000 // Fallback: 1 minute
-        }
-    }
-
-    private fun scheduleRatesRefresh(expiresAt: Long) {
-        val now = System.currentTimeMillis()
-        val delayMillis = (expiresAt - now - 5000).coerceAtLeast(1000)
-
-        if (ratesRefreshHandler == null) {
-            ratesRefreshHandler = Handler(Looper.getMainLooper())
-        }
-
-        refreshRunnable?.let { ratesRefreshHandler?.removeCallbacks(it) }
-        refreshRunnable = Runnable { fetchRatesAndScheduleRefresh() }
-        ratesRefreshHandler?.postDelayed(refreshRunnable!!, delayMillis)
-    }
-
     private fun setupAmountInputListeners() {
         val errorDrawable = ContextCompat.getDrawable(this, R.drawable.bg_edittext_error)
         val normalDrawable = ContextCompat.getDrawable(this, R.drawable.bg_edittext_normal)
@@ -483,8 +425,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        refreshRunnable?.let { ratesRefreshHandler?.removeCallbacks(it) }
-        ratesRefreshHandler = null
     }
 
     companion object {

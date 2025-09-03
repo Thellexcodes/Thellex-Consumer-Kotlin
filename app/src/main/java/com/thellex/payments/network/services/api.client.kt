@@ -2,6 +2,7 @@ package com.thellex.payments.network.services
 
 import InstantDeserializer
 import android.content.Context
+import android.util.Log
 import com.google.firebase.crashlytics.internal.model.CrashlyticsReport.Session.User
 import com.google.gson.GsonBuilder
 import com.thellex.payments.core.utils.Constants
@@ -24,11 +25,6 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 object ApiClient {
-    private var appContext: Context? = null
-
-    fun initialize(context: Context) {
-        appContext = context.applicationContext
-    }
 
     // --- OkHttpClient factory ---
     private fun buildClient(token: String = "", enableLogging: Boolean = true): OkHttpClient {
@@ -37,16 +33,12 @@ object ApiClient {
             maxRequestsPerHost = 16
         }
 
-        val cacheSize = (10 * 1024 * 1024).toLong() // 10 MB
-        val cache = Cache(appContext!!.cacheDir, cacheSize)
-
         val builder = OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS) // allow slower backend responses
+            .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
-            .retryOnConnectionFailure(true) // auto retry transient failures
+            .retryOnConnectionFailure(true)
             .dispatcher(dispatcher)
-            .cache(cache)
             .addInterceptor { chain ->
                 val original = chain.request()
                 val requestBuilder = original.newBuilder()
@@ -55,12 +47,19 @@ object ApiClient {
                     requestBuilder.addHeader("Authorization", "Bearer $token")
                 }
 
-                chain.proceed(requestBuilder.build())
+                try {
+                    chain.proceed(requestBuilder.build())
+                } catch (e: Exception) {
+                    Log.e("ApiClient", "Network request failed: ${e.localizedMessage}", e)
+                    throw e
+                }
             }
 
         if (enableLogging) {
-            val logging = HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BASIC
+            val logging = HttpLoggingInterceptor { message ->
+                Log.d("ApiClient", message)
+            }.apply {
+                level = HttpLoggingInterceptor.Level.BODY
             }
             builder.addInterceptor(logging)
         }
@@ -132,3 +131,4 @@ object ApiClient {
     fun getAuthenticatedUserApi(token: String): UserService =
         getRetrofitWithToken(token).create(UserService::class.java)
 }
+
