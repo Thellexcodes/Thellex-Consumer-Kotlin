@@ -166,10 +166,10 @@ class OffRampSummaryActivity : AppCompatActivity() {
                     return@launch
                 }
 
-                val request = buildOffRampRequest() ?: return@launch
+                val requestData = buildOffRampRequest() ?: return@launch
 
                 val api = ApiClient.getAuthenticatedPaymentApi(token)
-                val response = api.cryptoToFiatOffRamp(request)
+                val response = api.cryptoToFiatOffRamp(requestData)
 
                 val result = response.body()?.result
                 if (result != null) {
@@ -177,7 +177,6 @@ class OffRampSummaryActivity : AppCompatActivity() {
                         userViewModel.addFiatCryptoRampTransaction(txn)
                         userViewModel.addTransaction(txn.transaction!!)
                     }
-//                    ActivityTracker.finishActivity(PaymentMethodActivity::class.java)
                     startActivity(Intent(context, POSHomeActivity::class.java))
                 } else {
                     CustomToast.show(context, "Error", "Unexpected response")
@@ -200,7 +199,7 @@ class OffRampSummaryActivity : AppCompatActivity() {
         val asset = vm.assetCode.value
         val country = vm.country.value
         val fiat = vm.fiatCode.value
-        val amount = vm.mainFiatAmount.value
+        val amount = vm.fiatAmount.value
         val bank = vm.bankInfo.value
         val cryptoAmount = vm.mainAssetAmount.value
 
@@ -227,7 +226,8 @@ class OffRampSummaryActivity : AppCompatActivity() {
             fiatCode = fiatEnum,
             userAmount = amount,
             bankInfo = bank,
-            mainAssetAmount = cryptoAmount
+            mainAssetAmount = cryptoAmount,
+            mainFiatAmount = amount
         )
     }
 

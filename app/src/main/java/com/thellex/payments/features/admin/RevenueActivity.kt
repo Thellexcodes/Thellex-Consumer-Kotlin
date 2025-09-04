@@ -164,13 +164,13 @@ class RevenueActivity : ComponentActivity() {
 
                 result?.let {
                     val items = listOf(
-                        RevenueItem(
-                            title = it.totalRevenue.title.uppercase(),
-                            total = it.totalRevenue.total,
-                            titleColor = White,
-                            backgroundColor = DarkBlue,
-                            descColor = SteelBlueGrey
-                        ),
+//                        RevenueItem(
+//                            title = it.totalRevenue!!.title.uppercase(),
+//                            total = it.totalRevenue.total,
+//                            titleColor = White,
+//                            backgroundColor = DarkBlue,
+//                            descColor = SteelBlueGrey
+//                        ),
                         RevenueItem(
                             title = it.fiatRevenue.title.uppercase(),
                             total = it.fiatRevenue.total,
@@ -212,7 +212,7 @@ class RevenueActivity : ComponentActivity() {
 @Composable
 fun PreviewAllRevenueScreen() {
     val previewData = listOf(
-        RevenueItem(title = "TOTAL REVENUE", total = "8,000 USD", White, DarkBlue, SteelBlueGrey),
+//        RevenueItem(title = "TOTAL REVENUE", total = "8,000 USD", White, DarkBlue, SteelBlueGrey),
         RevenueItem(title = "FIAT REVENUE", total = "50,000 NGN", White, GoldenYellow, Midnight),
         RevenueItem(title = "CRYPTO REVENUE", total = "100,000 USD", White, BrightSkyBlue, Midnight)
     )

@@ -11,7 +11,7 @@ data class Revenue(
 
 @Serializable
 data class RevenueResponseDto(
-    @SerializedName("totalRevenue") val totalRevenue: Revenue,
+    @SerializedName("totalRevenue") val totalRevenue: Revenue? = null,
     @SerializedName("fiatRevenue") val fiatRevenue: Revenue,
     @SerializedName("cryptoRevenue") val cryptoRevenue: Revenue
 )

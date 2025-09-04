@@ -45,6 +45,7 @@
                     app:layout_constraintBottom_toBottomOf="parent" />
 
             <ImageView
+                    android:visibility="gone"
                     android:id="@+id/ramp_copy_bank_details_icon"
                     android:src="@drawable/icon_copy"
                     android:layout_width="18dp"
