@@ -1,5 +1,6 @@
 package com.thellex.payments.features.dashboard.ui
 
+import android.app.Application
 import android.app.Dialog
 import com.thellex.payments.features.auth.viewModel.UserViewModel
 import android.content.Intent
@@ -7,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -39,8 +41,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var userModel: UserViewModel
-    private lateinit var rateViewModel: RateViewModel
     private var hasShownErrorToast = false
+    private val rateModel: RateViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,10 +59,10 @@ class MainActivity : AppCompatActivity() {
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
 
-        rateViewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-        )[RateViewModel::class.java]
+//        rateViewModel = ViewModelProvider(
+//            this,
+//            ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+//        )[RateViewModel::class.java]
 
         FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
         CrashLogger.init(this)
@@ -87,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                 return@launch
             }
 
-            rateViewModel.startPolling()
+            rateModel.startPolling()
 
             try {
                 val api = ApiClient.getAuthenticatedApi(token)

@@ -67,7 +67,7 @@
 
         <TextView
                 android:id="@+id/ramp_exchange_rate_value"
-                android:text="3,477.94 NGN/USDC"
+                android:text="0.00 NGN/USDC"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/kumbhsans_regular"

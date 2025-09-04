@@ -10,14 +10,22 @@ class RatePreferences(context: Context) {
     private val sharedPreferences = context.getSharedPreferences("RateCache", Context.MODE_PRIVATE)
     private val gson = Gson()
 
-    fun saveRates(rates: List<IRatesDto>) {
+    fun saveRates(rates: List<IRatesDto>, expiresAt: String) {
         try {
             val json = gson.toJson(rates)
-            sharedPreferences.edit().putString("rates", json).apply()
-            Log.d("RatePreferences", "Saved rates: $rates")
+            sharedPreferences.edit()
+                .putString("rates", json)
+                .putString("expiresAt", expiresAt)
+                .apply()
+            Log.d("RatePreferences", "Saved rates: $rates with expiresAt: $expiresAt")
         } catch (e: Exception) {
             Log.e("RatePreferences", "Failed to save rates: ${e.message}", e)
         }
+    }
+
+
+    fun loadExpiresAt(): String {
+        return sharedPreferences.getString("expiresAt", "") ?: ""
     }
 
     fun loadRates(): List<IRatesDto> {

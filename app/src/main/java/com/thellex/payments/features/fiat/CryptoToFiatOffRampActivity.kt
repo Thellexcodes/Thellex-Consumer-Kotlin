@@ -63,9 +63,7 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
     private lateinit var userViewModel: UserViewModel
     private lateinit var walletManagerViewModel: WalletManagerViewModel
     private var fiatCode: String = "NGN"
-    private val rateViewModel: RateViewModel by viewModels {
-        ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-    }
+    private val rateModel: RateViewModel by viewModels()
     private lateinit var cryptoToFiatViewModel: CryptoToFiatViewModel
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -110,10 +108,10 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun observeRates() {
         lifecycleScope.launch {
-            rateViewModel.rates.collectLatest { rates ->
-                Log.d(TAG, "Rate iss $rates")
-                if (rates.isNotEmpty()) {
-                    cryptoToFiatViewModel.updateRate(rates)
+            rateModel.currentRates.collectLatest { rates ->
+                rates.rates
+                if (rates.rates.isNotEmpty()) {
+                    cryptoToFiatViewModel.updateRate(rates.rates)
                     binding.textRateValue.text = "${cryptoToFiatViewModel.currentRate.value?.sell ?: 0.0}%"
                     binding.nextButton.setLoading(false)
                     calculateAndDisplayPrice()

@@ -7,9 +7,10 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.thellex.payments.features.auth.viewModel.UserRepository
-import com.thellex.payments.features.wallet.model.IRatesDto
+import com.thellex.payments.features.wallet.model.IRatesResponseDto
 import com.thellex.payments.network.services.ApiClient
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,73 +25,74 @@ class RateViewModel(application: Application) : AndroidViewModel(application) {
     private val userRepository = UserRepository.getInstance(application)
     private val ratePreferences = RatePreferences(application)
 
-    private val _rates = MutableStateFlow<List<IRatesDto>>(emptyList())
-    val rates: StateFlow<List<IRatesDto>> = _rates.asStateFlow()
-
     private var pollJob: Job? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     private val dateFmt = DateTimeFormatter.ISO_DATE_TIME
 
+    // StateFlow holding both rates and expiresAt together
+    private val _currentRates = MutableStateFlow(IRatesResponseDto(emptyList(), ""))
+    val currentRates: StateFlow<IRatesResponseDto> = _currentRates.asStateFlow()
+
+    // Fallback interval if expiresAt is invalid
+    private val fallbackIntervalMs: Long = 60_000L
+
     init {
-        // Restore cached rates on initialization
-        val cached = ratePreferences.loadRates()
-        if (cached.isNotEmpty()) {
-            _rates.value = cached
-            Log.d("RateViewModel", "Restored cached rates: $cached")
+        // Restore cached rates and expiration
+        val cachedRates = ratePreferences.loadRates()
+        val cachedExpiresAt = ratePreferences.loadExpiresAt()
+        if (cachedRates.isNotEmpty()) {
+            _currentRates.value = IRatesResponseDto(cachedRates, cachedExpiresAt)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun startPolling(intervalFallbackMs: Long = 60_000L) {
-        if (pollJob != null) {
-            Log.d("RateViewModel", "Polling already running")
+    fun startPolling() {
+        // If polling job is active, do nothing
+        if (pollJob?.isActive == true) {
             return
         }
 
-        pollJob = viewModelScope.launch {
-            Log.d("RateViewModel", "Starting rate polling")
+        pollJob = viewModelScope.launch(SupervisorJob()) {
             while (isActive) {
-                val authToken = userRepository.getToken().firstOrNull()
-                if (authToken.isNullOrBlank()) {
-                    Log.w("RateViewModel", "No auth token, retrying in ${intervalFallbackMs}ms")
-                    delay(intervalFallbackMs)
-                    continue
-                }
-
                 try {
+                    val authToken = userRepository.getToken().firstOrNull()
+                    if (authToken.isNullOrBlank()) {
+                        Log.w("RateViewModel", "No auth token, retrying in $fallbackIntervalMs ms")
+                        delay(fallbackIntervalMs)
+                        continue
+                    }
+
                     val response = ApiClient.getAuthenticatedPaymentApi(authToken).getRates()
                     val result = response.result
 
                     if (result?.rates.isNullOrEmpty()) {
-                        Log.w("RateViewModel", "Rates empty, retrying in ${intervalFallbackMs}ms")
-                        delay(intervalFallbackMs)
+                        Log.w("RateViewModel", "Rates empty, retrying in $fallbackIntervalMs ms")
+                        delay(fallbackIntervalMs)
                         continue
                     }
 
-                    _rates.value = result!!.rates
-                    ratePreferences.saveRates(result.rates)
+                    // Update StateFlow and cache
+                    if (result != null) {
+                        _currentRates.value = IRatesResponseDto(result.rates, result.expiresAt)
+                    }
+                    ratePreferences.saveRates(result!!.rates, result.expiresAt)
 
-                    // Compute delay
-                    val expiresStr = result.expiresAt
-                    val delayMs = if (expiresStr.isNotBlank()) {
-                        try {
-                            val expiresMs = ZonedDateTime.parse(expiresStr, dateFmt).toInstant().toEpochMilli()
-                            (expiresMs - System.currentTimeMillis() - 5_000L).coerceAtLeast(5_000L)
-                        } catch (e: Exception) {
-                            Log.e("RateViewModel", "Invalid expiresAt: $expiresStr", e)
-                            intervalFallbackMs
-                        }
-                    } else {
-                        intervalFallbackMs
+                    // Compute next delay based on expiresAt
+                    val delayMs = try {
+                        val expiresMs = ZonedDateTime.parse(result.expiresAt, dateFmt)
+                            .toInstant().toEpochMilli()
+                        (expiresMs - System.currentTimeMillis() - 5_000L).coerceAtLeast(5_000L)
+                    } catch (e: Exception) {
+                        Log.e("RateViewModel", "Invalid expiresAt: ${result.expiresAt}, using fallback", e)
+                        fallbackIntervalMs
                     }
 
-                    Log.d("RateViewModel", "Next poll in ${delayMs}ms")
                     delay(delayMs)
 
                 } catch (e: Exception) {
-                    Log.e("RateViewModel", "Error fetching rates: ${e.message}", e)
-                    delay(intervalFallbackMs)
+                    Log.e("RateViewModel", "Polling error: ${e.message}, retrying in $fallbackIntervalMs ms", e)
+                    delay(fallbackIntervalMs)
                 }
             }
         }
@@ -98,7 +100,7 @@ class RateViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         pollJob?.cancel()
-        Log.d("RateViewModel", "Polling stopped")
         super.onCleared()
     }
 }
+

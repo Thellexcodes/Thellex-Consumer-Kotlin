@@ -17,8 +17,8 @@ import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.copyToClipboard
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
-import com.thellex.payments.core.utils.Helpers.roundToTwoDecimals
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
+import com.thellex.payments.core.utils.Helpers.truncateToTwoDecimals
 import com.thellex.payments.data.model.IBankInfoRequestDto
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.databinding.ActivityFiatDepositBinding
@@ -111,7 +111,7 @@ class OnRampFiatSummaryActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun displayTransactionInfo(result: IFiatCryptoRampTransactionsDto) {
-        binding.onrampUsdAmount.text = result.netCryptoAmount.roundToTwoDecimals().toString()
+        binding.onrampUsdAmount.text = "${result.netCryptoAmount.truncateToTwoDecimals().toString()} ${result.recipientInfo.assetCode.uppercase()}"
         binding.onrampFiatAmount.text = "${FiatTickers.getByCodeOrCountry("ngn")?.symbol}${result.mainFiatAmount}"
 
         binding.onrampTransactionDetails.run {

@@ -47,8 +47,8 @@ data class IRatesDto(
 
 data class IRatesResponseDto(
     @SerializedName("rates")
-    val rates: List<IRatesDto>,
+    var rates: List<IRatesDto>,
 
     @SerializedName("expiresAt")
-    val expiresAt: String
+    var expiresAt: String
 )

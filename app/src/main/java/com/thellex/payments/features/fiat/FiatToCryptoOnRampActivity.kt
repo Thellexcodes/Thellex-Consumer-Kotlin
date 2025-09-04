@@ -12,11 +12,14 @@ import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
@@ -33,6 +36,7 @@ import com.thellex.payments.data.model.FiatToCryptoOnRampRequestDto
 import com.thellex.payments.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.payments.data.model.PaymentStatusEnum
 import com.thellex.payments.data.model.reasonList
+import com.thellex.payments.data.viewModels.rates.RateViewModel
 import com.thellex.payments.databinding.ActivityFiatToCryptoOnRampBinding
 import com.thellex.payments.databinding.DialogReasonSelectionBinding
 import com.thellex.payments.features.auth.viewModel.UserRepository
@@ -48,6 +52,7 @@ import com.thellex.payments.features.wallet.utils.WalletManagerViewModel
 import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.settings.FiatEnum
 import com.thellex.payments.settings.minimumAmountInFiat
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.math.RoundingMode
@@ -64,8 +69,10 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
     private val userRepository by lazy { UserRepository.getInstance(applicationContext) }
     private lateinit var walletManagerViewModel: WalletManagerViewModel
     private var selectedToken: WalletDto? = null
-    private var currentRates: IRatesResponseDto? = null
+    private var currentRates: IRatesResponseDto = IRatesResponseDto(emptyList(), "")
     private lateinit var outstandingKyc: List<String>
+    private val rateModel: RateViewModel by viewModels()
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +98,15 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
             this,
             WalletManagerModelFactory(applicationContext)
         )[WalletManagerViewModel::class.java]
+
+        lifecycleScope.launch {
+            rateModel.currentRates.collect {
+                currentRates.rates = it.rates
+                currentRates.expiresAt = it.expiresAt
+            }
+        }
+
+        rateModel.startPolling()
 
         setDefaultToken()
         updateDefaultPriceText()
@@ -167,7 +183,6 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                     val result = response.body()?.result
 
                     if(result != null){
-//                        Log.d(TAG, "Response from fiatToCryptoOnRamp: ${response.body()?.result}")
                         result.let { txn ->
                             userViewModel.addFiatCryptoRampTransaction(txn)
                             userViewModel.addTransaction(transaction = txn.transaction!!)
@@ -261,7 +276,10 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
 
     private fun updateDefaultPriceText() {
         val tokenSymbol = selectedToken?.assetCode?.name?.uppercase(Locale.getDefault()) ?: "TOKEN"
-        binding.textRateValue.text = "≅ 0.00 NGN/$tokenSymbol"
+        val ngnRateDto = currentRates?.rates?.firstOrNull { it.fiatCode.equals(FiatEnum.ngn.code, ignoreCase = true) }
+        val rate = ngnRateDto?.rate?.buy ?: 0.0
+        val fiatCode = ngnRateDto?.fiatCode ?: FiatEnum.ngn.code
+        binding.textRateValue.text = "≅ $rate $fiatCode/$tokenSymbol"
     }
 
     fun updateTokenSpinner(token: WalletDto) {
@@ -325,34 +343,34 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        binding.edittextCryptoAmount.addTextChangedListener(object : TextWatcher {
-            private var isUpdating = false
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (!isUpdating && binding.edittextCryptoAmount.hasFocus()) {
-                    isUpdating = true
-                    val cryptoAmount = s.toString().toDoubleOrNull() ?: 0.0
-                    val ngnRateDto = currentRates?.rates?.firstOrNull {
-                        it.fiatCode.equals(FiatEnum.ngn.name, ignoreCase = true)
-                    }
-
-                    val rate = ngnRateDto?.rate
-                    val fiatEquivalent = rate?.let {
-                        (cryptoAmount * it.buy) + (it.fee / it.feeDivisor)
-                    } ?: 0.0
-
-                    val background = if (fiatEquivalent < minimumAmountInFiat) errorDrawable else normalDrawable
-                    binding.edittextCryptoAmount.background = background
-                    binding.edittextFiatAmount.background = background
-                    calculateAndDisplayPrice(cryptoChanged = true)
-                    isUpdating = false
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
+//        binding.edittextCryptoAmount.addTextChangedListener(object : TextWatcher {
+//            private var isUpdating = false
+//
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                if (!isUpdating && binding.edittextCryptoAmount.hasFocus()) {
+//                    isUpdating = true
+//                    val cryptoAmount = s.toString().toDoubleOrNull() ?: 0.0
+//                    val ngnRateDto = currentRates?.rates?.firstOrNull {
+//                        it.fiatCode.equals(FiatEnum.ngn.name, ignoreCase = true)
+//                    }
+//
+//                    val rate = ngnRateDto?.rate
+//                    val fiatEquivalent = rate?.let {
+//                        (cryptoAmount * it.buy) + (it.fee / it.feeDivisor)
+//                    } ?: 0.0
+//
+//                    val background = if (fiatEquivalent < minimumAmountInFiat) errorDrawable else normalDrawable
+//                    binding.edittextCryptoAmount.background = background
+//                    binding.edittextFiatAmount.background = background
+//                    calculateAndDisplayPrice(cryptoChanged = true)
+//                    isUpdating = false
+//                }
+//            }
+//
+//            override fun afterTextChanged(s: Editable?) {}
+//        })
 
         binding.edittextReasonName.setOnClickListener {
             showReasonSelectionBottomSheet(binding.edittextReasonName)
@@ -363,6 +381,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         val fiatText = binding.edittextFiatAmount.text.toString()
         val cryptoText = binding.edittextCryptoAmount.text.toString()
         val tokenSymbol = selectedToken?.assetCode?.name?.uppercase(Locale.getDefault()) ?: "TOKEN"
+        Log.d(TAG, "currecnt rate is $currentRates")
         val ngnRateDto = currentRates?.rates?.firstOrNull { it.fiatCode.equals(FiatEnum.ngn.code, ignoreCase = true) }
         val rate = ngnRateDto?.rate?.buy ?: 0.0
         val fiatCode = ngnRateDto?.fiatCode ?: FiatEnum.ngn.code
