@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.thellex.payments.core.decorators.PinkRed
 import com.thellex.payments.core.routes.ComposeRoutes
 import com.thellex.payments.features.fiat.RampTransactionDetailScreen
 import com.thellex.payments.features.fiat.RampTransactionsScreen
@@ -27,28 +28,23 @@ class ComposeHostActivity : ComponentActivity() {
         val startDestination = intent.getStringExtra(EXTRA_START_DESTINATION) ?: ComposeRoutes.PaymentLinks.route
 
         setContent {
-            MaterialTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = startDestination) {
-                        composable(ComposeRoutes.PaymentLinks.route) {
-                            PaymentLinksScreen(navController)
-                        }
-                        composable(ComposeRoutes.RampTransactions.route) {
-                            RampTransactionsScreen(navController)
-                        }
-                        composable(
-                            "${ComposeRoutes.RampTransactionDetail.route}/{rampId}",
-                            arguments = listOf(navArgument("rampId") { type = androidx.navigation.NavType.StringType })
-                        ) { backStackEntry ->
-                            RampTransactionDetailScreen(
-                                navController = navController,
-                                rampId = backStackEntry.arguments?.getString("rampId")
-                            )
-                        }
+            Surface( modifier = Modifier.fillMaxSize()) {
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = startDestination) {
+                    composable(ComposeRoutes.PaymentLinks.route) {
+                        PaymentLinksScreen(navController)
+                    }
+                    composable(ComposeRoutes.RampTransactions.route) {
+                        RampTransactionsScreen(navController)
+                    }
+                    composable(
+                        "${ComposeRoutes.RampTransactionDetail.route}/{rampId}",
+                        arguments = listOf(navArgument("rampId") { type = androidx.navigation.NavType.StringType })
+                    ) { backStackEntry ->
+                        RampTransactionDetailScreen(
+                            navController = navController,
+                            rampId = backStackEntry.arguments?.getString("rampId")
+                        )
                     }
                 }
             }

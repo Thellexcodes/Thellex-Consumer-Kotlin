@@ -6,14 +6,18 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -41,8 +45,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.thellex.payments.core.decorators.DarkBlue
 import com.thellex.payments.core.decorators.KumbhSansFontFamily
+import com.thellex.payments.core.decorators.Midnight
 import com.thellex.payments.core.decorators.OutfitFontFamily
+import com.thellex.payments.core.decorators.SteelBlueGrey
+import com.thellex.payments.core.decorators.White
 import com.thellex.payments.core.routes.ComposeRoutes
 import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.PaddedWrapper
@@ -237,7 +245,7 @@ fun RampTransactionItem(transaction: RampTransaction, onClick: (String) -> Unit)
         modifier = Modifier
             .clickable { onClick(transaction.rampId) }
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp),
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Icon
@@ -300,7 +308,6 @@ fun RampTransactionsScreen(
     val factory = UserViewModelFactory(application)
     val userViewModel: UserViewModel = viewModel(factory = factory)
     val authResult by userViewModel.authResult.observeAsState()
-    authResult?.fiatCryptoRampTransactions
 
 //    val authResult by userViewModel.authResult.observeAsState()
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -333,6 +340,7 @@ fun RampTransactionsScreen(
         topBar = {
             CustomTopAppBar(
                 title = "TRANSACTIONS",
+                backgroundColor = Color.Transparent,
                 onBackClick ={ navigation.popBackStack() }
             )
         },
@@ -341,20 +349,38 @@ fun RampTransactionsScreen(
                 // Tab Row
                 TabRow(
                     selectedTabIndex = selectedTabIndex,
-                    containerColor = Color(0xFF2A2A3E),
-                    contentColor = Color.White,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.Indicator(
-                            modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex])
-                        )
-                    }
+                    containerColor = Color.Transparent,
+                    contentColor = White,
+                    indicator = { /* no underline */ },
+                    divider = {} // remove bottom divider
                 ) {
                     tabs.forEachIndexed { index, title ->
                         Tab(
                             selected = selectedTabIndex == index,
                             onClick = { selectedTabIndex = index },
-                            text = { Text(title, fontSize = 16.sp) }
-                        )
+                            selectedContentColor = White,
+                            unselectedContentColor = SteelBlueGrey,
+                            modifier = Modifier
+                                .background(
+                                    if (selectedTabIndex == index) DarkBlue else Color.Transparent,
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .height(32.dp)
+                                    .padding(horizontal = 12.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    title,
+                                    fontSize = 10.sp,
+                                    fontFamily = KumbhSansFontFamily,
+                                    fontWeight = FontWeight.Bold,
+                                    color = White
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -367,12 +393,13 @@ fun RampTransactionsScreen(
                 LazyColumn {
                     filteredTransactions.groupBy { it.timestamp.split(",")[0].trim() }.forEach { (date, transactionsByDate) ->
                         item {
+                            Spacer(modifier = Modifier.height(26.dp))
                             Text(
                                 text = date,
                                 color = Color.White,
+                                fontFamily = KumbhSansFontFamily,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(16.dp)
                             )
                         }
                         items(transactionsByDate) { transaction ->

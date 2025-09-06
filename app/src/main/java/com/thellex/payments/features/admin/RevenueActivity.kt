@@ -112,9 +112,7 @@ fun AllRevenueScreen(
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    revenueData.forEach { item ->
-                        RevenueItemBox(item)
-                    }
+                    revenueData.forEach { item -> RevenueItemBox(item) }
                 }
             }
         )
