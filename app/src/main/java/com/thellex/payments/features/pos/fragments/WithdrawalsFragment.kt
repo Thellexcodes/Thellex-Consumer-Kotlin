@@ -11,10 +11,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.thellex.payments.R
 import com.thellex.payments.core.decorators.ItemSpacingDecoration
+import com.thellex.payments.core.routes.ComposeRoutes
+import com.thellex.payments.core.utils.ComposeHostActivity
 import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.databinding.FragmentWithdrawalsBinding
 import com.thellex.payments.features.auth.viewModel.UserViewModel
-import com.thellex.payments.features.fiat.FiatRampTransactionsDetailActivity
 import com.thellex.payments.features.pos.adapters.POSTransactionAdapter
 
 class WithdrawalsFragment : Fragment() {
@@ -43,7 +44,7 @@ class WithdrawalsFragment : Fragment() {
                 TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL,
                 TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL -> {
                     transaction.rampID?.let { rampId ->
-                        val intent = Intent(requireContext(), FiatRampTransactionsDetailActivity::class.java)
+                        val intent = ComposeHostActivity.newIntent(requireContext(), ComposeRoutes.RampTransactionDetail.route)
                         intent.putExtra("ramp_id", rampId)
                         startActivity(intent)
                     } ?: Log.d("WithdrawalsFragment", "No rampID for ${transaction.transactionType}")

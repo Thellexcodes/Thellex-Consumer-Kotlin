@@ -10,6 +10,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Build
 import android.provider.Settings
 import android.text.InputFilter
@@ -33,6 +34,12 @@ import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.thellex.payments.R
+import com.thellex.payments.core.decorators.Blue
+import com.thellex.payments.core.decorators.DarkBlue
+import com.thellex.payments.core.decorators.Green
+import com.thellex.payments.core.decorators.Orange
+import com.thellex.payments.core.decorators.PinkRed
+import com.thellex.payments.core.decorators.Purple
 import com.thellex.payments.data.model.PaymentStatusEnum
 import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.features.dashboard.ui.MainActivity
@@ -95,6 +102,25 @@ object Helpers {
             PaymentStatusEnum.Rejected -> ContextCompat.getColor(context, R.color.pinkRed)
             PaymentStatusEnum.Failed -> ContextCompat.getColor(context, R.color.pinkRed)
             PaymentStatusEnum.Unknown -> ContextCompat.getColor(context, R.color.orange)
+        }
+    }
+
+    fun determinePaymentStatusColor(status: PaymentStatusEnum): androidx.compose.ui.graphics.Color {
+        return when (status) {
+            PaymentStatusEnum.Complete -> Green
+            PaymentStatusEnum.None -> DarkBlue
+            PaymentStatusEnum.Confirmed -> Blue
+            PaymentStatusEnum.Accepted -> Green
+            PaymentStatusEnum.Done -> Green
+            PaymentStatusEnum.Processing -> Orange
+            PaymentStatusEnum.Outbound -> Purple
+            PaymentStatusEnum.Inbound -> DarkBlue
+            PaymentStatusEnum.PendingRiskScreening -> DarkBlue
+            PaymentStatusEnum.Queued -> DarkBlue
+            PaymentStatusEnum.Sent -> Green
+            PaymentStatusEnum.Rejected -> PinkRed
+            PaymentStatusEnum.Failed -> PinkRed
+            PaymentStatusEnum.Unknown -> Orange
         }
     }
 
@@ -617,6 +643,17 @@ object Helpers {
 
     fun Double.truncateToTwoDecimals(): Double {
         return (this * 100).toInt() / 100.0
+    }
+
+    // Helper function to convert UTC to local time (+03)
+    fun convertToLocalTime(utcTime: String): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        val date = sdf.parse(utcTime) ?: Date()
+
+        val localSdf = SimpleDateFormat("EEEE, MMMM dd, yyyy, hh:mm a", Locale.getDefault())
+        localSdf.timeZone = TimeZone.getTimeZone("GMT+03:00") // Adjust to +03
+        return localSdf.format(date)
     }
 }
 

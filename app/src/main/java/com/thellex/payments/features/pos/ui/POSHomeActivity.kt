@@ -43,7 +43,6 @@ import com.thellex.payments.features.auth.viewModel.UserViewModelFactory
 import com.thellex.payments.features.dashboard.ui.MainActivity
 import com.thellex.payments.features.fiat.CryptoToFiatOffRampActivity
 import com.thellex.payments.features.fiat.OnRampFiatSummaryActivity
-import com.thellex.payments.features.fiat.FiatRampTransactionsActivity
 import com.thellex.payments.features.fiat.FiatToCryptoOnRampActivity
 import com.thellex.payments.features.fiat.FiatWithdrawActivity
 import com.thellex.payments.features.kyc.ui.StartKycActivity
@@ -461,7 +460,7 @@ class POSHomeActivity : AppCompatActivity() {
         ActivityTracker.finishActivity(AuthVerificationActivity::class.java)
         ActivityTracker.finishActivity(TransactionSuccessActivity::class.java)
         ActivityTracker.finishActivity(KycSuccessActivity::class.java)
-        ActivityTracker.finishActivity(FiatRampTransactionsActivity::class.java)
+//        ActivityTracker.finishActivity(FiatRampTransactionsActivity::class.java)
     }
 
     companion object {

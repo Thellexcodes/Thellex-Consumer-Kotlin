@@ -24,7 +24,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.thellex.payments.R
+import com.thellex.payments.core.routes.ComposeRoutes
 import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.core.utils.ComposeHostActivity
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
@@ -270,7 +272,8 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         }
 
         binding.layoutUncompletedTransactionsWrapper.setOnClickListener {
-            startActivity(Intent(this, FiatRampTransactionsActivity::class.java))
+            val intent = ComposeHostActivity.newIntent(this, ComposeRoutes.RampTransactions.route)
+            startActivity(intent)
         }
     }
 

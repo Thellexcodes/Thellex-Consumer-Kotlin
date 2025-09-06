@@ -7,24 +7,22 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.savedinstancestate.savedInstanceState
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.AbstractSavedStateViewModelFactory
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.thellex.payments.R
+import com.thellex.payments.core.routes.ComposeRoutes
 import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.core.utils.ComposeHostActivity
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.Helpers
 import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
@@ -478,7 +476,8 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         }
 
         binding.layoutPendingTransactionsWrapper.setOnClickListener {
-            startActivity(Intent(this, FiatRampTransactionsActivity::class.java))
+            val intent = ComposeHostActivity.newIntent(this, ComposeRoutes.RampTransactions.route)
+            startActivity(intent)
         }
     }
 

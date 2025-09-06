@@ -70,11 +70,14 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.annotation)
-    implementation(libs.androidx.lifecycle.livedata.ktx.v261)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx.v261)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.ui.text.android)
+
+    // Lifecycle
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
 
     // QR / Barcode
     implementation(libs.journeyapps.zxing.android.embedded)
@@ -100,10 +103,7 @@ dependencies {
 
     // Glide
     implementation(libs.glide)
-    implementation(libs.core.ktx)
     implementation(libs.androidx.runtime.livedata)
-    implementation(libs.androidx.navigation.compose.jvmstubs)
-    implementation(libs.androidx.runtime.saved.instance.state)
     kapt("com.github.bumptech.glide:compiler:4.15.1")
 
     // DateTime Picker
@@ -117,25 +117,21 @@ dependencies {
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
-    // Compose UI, Material3 & Activity integration
-    implementation("androidx.activity:activity-compose:1.9.2")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.4")
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.30.1") // latest version
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6") // Use the latest version
-
+    // Compose UI, Material3, Navigation & Activity integration
+    implementation("androidx.activity:activity-compose:1.9.0")
+    implementation("androidx.compose.ui:ui") // BOM version
+    implementation("androidx.compose.material3:material3") // BOM version
+    implementation("androidx.compose.ui:ui-tooling-preview") // BOM version
+    implementation("androidx.navigation:navigation-compose:2.7.0")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.30.1")
 
     // Debug tools
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     // Testing
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-
-    // -------------------- Testing --------------------
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 }

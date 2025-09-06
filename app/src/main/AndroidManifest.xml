@@ -42,8 +42,12 @@
             android:name=".features.kyc.ui.idverification.IDVerificationAttestation"
             android:exported="false" />
         <activity
-            android:name=".features.fiat.FiatRampTransactionsDetailActivity"
-            android:exported="false" />
+                android:name=".core.utils.ComposeHostActivity"
+                android:exported="false"
+                android:label="Compose Host" />
+        <!--        <activity-->
+<!--            android:name=".features.fiat.FiatRampTransactionsDetailActivity"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".features.fiat.OffRampSummaryActivity"
             android:exported="false" />

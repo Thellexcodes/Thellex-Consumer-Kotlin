@@ -1,5 +1,6 @@
 package com.thellex.payments.features.admin
 
+import CustomTopAppBar
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -40,7 +41,6 @@ import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.features.auth.viewModel.UserRepository
 import com.thellex.payments.network.services.ApiClient
-import com.thellex.payments.shared.CustomTopAppBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -94,7 +94,6 @@ fun AllRevenueScreen(
     onBackClick: (() -> Unit)? = null
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-
         Scaffold(
             topBar = {
                 CustomTopAppBar(
