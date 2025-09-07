@@ -655,5 +655,11 @@ object Helpers {
         localSdf.timeZone = TimeZone.getTimeZone("GMT+03:00") // Adjust to +03
         return localSdf.format(date)
     }
+
+    fun formatFees(localFee: Double, usdFee: Double): String =
+        "${FiatTickers.getByCodeOrCountry("ngn")?.symbol}${localFee.roundToTwoDecimals()} | " +
+                "${FiatTickers.getByCodeOrCountry("usd")?.symbol}${usdFee.roundToTwoDecimals()}"
+
+    fun formatRampAmount(amount: Double, currency: String): String = "${amount.roundToTwoDecimals()} $currency"
 }
 
