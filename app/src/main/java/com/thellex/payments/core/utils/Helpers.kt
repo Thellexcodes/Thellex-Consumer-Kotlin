@@ -657,9 +657,9 @@ object Helpers {
     }
 
     fun formatFees(localFee: Double, usdFee: Double): String =
-        "${FiatTickers.getByCodeOrCountry("ngn")?.symbol}${localFee.roundToTwoDecimals()} | " +
-                "${FiatTickers.getByCodeOrCountry("usd")?.symbol}${usdFee.roundToTwoDecimals()}"
+        "${FiatTickers.getByCodeOrCountry("ngn")?.symbol}${localFee.truncateToTwoDecimals()} | " +
+                "${FiatTickers.getByCodeOrCountry("usd")?.symbol}${usdFee.truncateToTwoDecimals()}"
 
-    fun formatRampAmount(amount: Double, currency: String): String = "${amount.roundToTwoDecimals()} $currency"
+    fun formatRampAmount(amount: Double, currency: String): String = "${amount.truncateToTwoDecimals()} $currency"
 }
 

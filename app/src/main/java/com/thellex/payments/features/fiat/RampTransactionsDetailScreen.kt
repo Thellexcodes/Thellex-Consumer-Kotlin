@@ -403,7 +403,7 @@ fun RampTransactionDetailScreen(
                                            )
                                            Spacer(Modifier.height(2.dp))
                                            Text(
-                                               "${FiatTickers.getByCodeOrCountry("ngn")?.symbol} ${detail.mainFiatAmount}".uppercase(),
+                                               "${FiatTickers.getByCodeOrCountry("ngn")?.symbol} ${detail.netFiatAmount}".uppercase(),
                                                fontSize = 14.sp,
                                                fontFamily = KumbhSansFontFamily,
                                                fontWeight = FontWeight.Normal,
