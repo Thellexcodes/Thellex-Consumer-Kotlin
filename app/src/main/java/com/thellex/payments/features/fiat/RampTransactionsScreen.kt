@@ -310,11 +310,9 @@ fun RampTransactionsScreen(
     val userViewModel: UserViewModel = viewModel(factory = factory)
     val authResult by userViewModel.authResult.observeAsState()
 
-//    val authResult by userViewModel.authResult.observeAsState()
     var selectedTabIndex by rememberSaveable { mutableStateOf(0) }
     val tabs = listOf("REQUEST", "WITHDRAW")
 
-//    Log.d("TEST", "data is ${authResult?.fiatCryptoRampTransactions}")
     val transactions = authResult?.fiatCryptoRampTransactions?.mapNotNull { transaction ->
         try {
             RampTransaction(
@@ -322,7 +320,7 @@ fun RampTransactionsScreen(
                 iconRes = Helpers.getIconResIdForToken(transaction.recipientInfo.assetCode),
                 description = transaction.transactionMessage ?: "Unknown transaction",
                 timestamp = Helpers.convertToLocalTime(transaction.createdAt),
-                amount = "${transaction.netCryptoAmount ?: transaction.netFiatAmount} ${transaction.recipientInfo.assetCode.uppercase() ?: "USD"}",
+                amount = "${transaction.netCryptoAmount ?: transaction.mainAssetAmount} ${transaction.recipientInfo.assetCode.uppercase() ?: "USD"}",
                 status = transaction.paymentStatus,
                 statusColor =  Helpers.determinePaymentStatusColor(transaction.paymentStatus),
                 type = when (transaction.transactionType) {

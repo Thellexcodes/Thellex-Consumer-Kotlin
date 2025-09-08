@@ -222,6 +222,15 @@ fun RampTransactionDetailScreen(
                                                             color = White
                                                         )
 
+//                                                        if (label == "Rate") {
+//                                                            Text(
+//                                                                text = "${FiatTickers.getByCodeOrCountry("ngn")?.symbol}$value",
+//                                                                fontSize = 12.sp,
+//                                                                fontFamily = KumbhSansFontFamily,
+//                                                                fontWeight = FontWeight.Bold,
+//                                                                color = White
+//                                                            )
+//                                                        } else
                                                         if (label == "Network") {
                                                             Row(verticalAlignment = Alignment.CenterVertically) {
                                                                 Image(
@@ -410,13 +419,13 @@ fun RampTransactionDetailScreen(
                                                color = White
                                            )
                                            Spacer(Modifier.height(4.dp))
-                                           Text(
-                                               "2 jul, 3:07pm".uppercase(),
-                                               fontSize = 10.sp,
-                                               fontFamily = KumbhSansFontFamily,
-                                               fontWeight = FontWeight.Light,
-                                               color = White
-                                           )
+//                                           Text(
+//                                               "2 jul, 3:07pm".uppercase(),
+//                                               fontSize = 10.sp,
+//                                               fontFamily = KumbhSansFontFamily,
+//                                               fontWeight = FontWeight.Light,
+//                                               color = White
+//                                           )
                                        }
 
                                        Spacer(modifier = Modifier.height(16.dp))
@@ -448,6 +457,7 @@ fun RampTransactionDetailScreen(
                                                    transaction.netCryptoAmount,
                                                    transaction.recipientInfo.assetCode.uppercase()
                                                ),
+//                                               "Rate" to  "${transaction.rate}",
                                                "Amount to Receive (NGN)" to "${
                                                    FiatTickers.getByCodeOrCountry(
                                                        "ngn"
@@ -474,6 +484,16 @@ fun RampTransactionDetailScreen(
                                                        fontWeight = FontWeight.Medium,
                                                        color = White
                                                    )
+
+//                                                   if (label == "Rate") {
+//                                                       Text(
+//                                                           text = "${FiatTickers.getByCodeOrCountry("ngn")?.symbol} $value",
+//                                                           fontSize = 12.sp,
+//                                                           fontFamily = KumbhSansFontFamily,
+//                                                           fontWeight = FontWeight.Bold,
+//                                                           color = White
+//                                                       )
+//                                                   } else
 
                                                    if (label == "Network") {
                                                        Row(verticalAlignment = Alignment.CenterVertically) {
