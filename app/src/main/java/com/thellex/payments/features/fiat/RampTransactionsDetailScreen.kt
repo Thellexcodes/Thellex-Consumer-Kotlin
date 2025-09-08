@@ -157,13 +157,13 @@ fun RampTransactionDetailScreen(
                                                     color = White
                                                 )
                                                 Spacer(Modifier.height(4.dp))
-                                                Text(
-                                                    "2 jul, 3:07pm".uppercase(),
-                                                    fontSize = 10.sp,
-                                                    fontFamily = KumbhSansFontFamily,
-                                                    fontWeight = FontWeight.Light,
-                                                    color = White
-                                                )
+//                                                Text(
+//                                                    "2 jul, 3:07pm".uppercase(),
+//                                                    fontSize = 10.sp,
+//                                                    fontFamily = KumbhSansFontFamily,
+//                                                    fontWeight = FontWeight.Light,
+//                                                    color = White
+//                                                )
                                             }
 
                                             Spacer(modifier = Modifier.height(16.dp))

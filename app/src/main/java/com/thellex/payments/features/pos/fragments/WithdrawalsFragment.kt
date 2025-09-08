@@ -1,6 +1,5 @@
 package com.thellex.payments.features.pos.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,7 +10,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.thellex.payments.R
 import com.thellex.payments.core.decorators.ItemSpacingDecoration
-import com.thellex.payments.core.routes.ComposeRoutes
 import com.thellex.payments.core.utils.ComposeHostActivity
 import com.thellex.payments.data.model.TransactionTypeEnum
 import com.thellex.payments.databinding.FragmentWithdrawalsBinding
@@ -44,13 +42,11 @@ class WithdrawalsFragment : Fragment() {
                 TransactionTypeEnum.CRYPTO_TO_FIAT_WITHDRAWAL,
                 TransactionTypeEnum.FIAT_TO_CRYPTO_WITHDRAWAL -> {
                     transaction.rampID?.let { rampId ->
-                        val intent = ComposeHostActivity.newIntent(requireContext(), ComposeRoutes.RampTransactionDetail.route)
-                        intent.putExtra("ramp_id", rampId)
+                        val intent = ComposeHostActivity.newRampTransactionDetailIntent(requireContext(), rampId)
                         startActivity(intent)
                     } ?: Log.d("WithdrawalsFragment", "No rampID for ${transaction.transactionType}")
                 }
                 TransactionTypeEnum.CRYPTO_WITHDRAWAL -> {
-                    Log.d("WithdrawalsFragment", "Crypto withdrawal clicked: ${transaction.transactionType}")
                     // Handle CRYPTO_WITHDRAWAL (e.g., show a different activity or dialog)
                 }
                 else -> {

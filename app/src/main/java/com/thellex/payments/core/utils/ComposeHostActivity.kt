@@ -3,6 +3,7 @@ package com.thellex.payments.core.utils
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,31 +20,50 @@ import com.thellex.payments.features.fiat.RampTransactionDetailScreen
 import com.thellex.payments.features.fiat.RampTransactionsScreen
 import com.thellex.payments.v2.features.payment_links.PaymentLinksScreen
 
-
 class ComposeHostActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val startDestination = intent.getStringExtra(EXTRA_START_DESTINATION) ?: ComposeRoutes.PaymentLinks.route
+        // Log the incoming Intent
+        val startDestination = intent.getStringExtra(EXTRA_START_DESTINATION)
+            ?: ComposeRoutes.PaymentLinks.route
+
+        // Extract rampId if present in startDestination
+        val initialRampId: String = startDestination
+            .takeIf { it.startsWith(ComposeRoutes.RampTransactionDetail.route) }
+            ?.substringAfter("${ComposeRoutes.RampTransactionDetail.route}/") ?: ""
 
         setContent {
-            Surface( modifier = Modifier.fillMaxSize()) {
+            Surface(modifier = Modifier.fillMaxSize()) {
                 val navController = rememberNavController()
+                Log.d("ComposeHostActivity", "NavController created")
+
                 NavHost(navController = navController, startDestination = startDestination) {
+
+                    // Payment Links screen
                     composable(ComposeRoutes.PaymentLinks.route) {
+                        Log.d("ComposeHostActivity", "Displaying PaymentLinksScreen")
                         PaymentLinksScreen(navController)
                     }
+
+                    // Ramp Transactions screen
                     composable(ComposeRoutes.RampTransactions.route) {
                         RampTransactionsScreen(navController)
                     }
+
+                    // Ramp Transaction Detail screen with rampId as argument
                     composable(
-                        "${ComposeRoutes.RampTransactionDetail.route}/{rampId}",
-                        arguments = listOf(navArgument("rampId") { type = androidx.navigation.NavType.StringType })
+                        route = "${ComposeRoutes.RampTransactionDetail.route}/{rampId}",
+                        arguments = listOf(navArgument("rampId") {
+                            type = androidx.navigation.NavType.StringType
+                            defaultValue = initialRampId
+                        })
                     ) { backStackEntry ->
+                        val rampId = backStackEntry.arguments?.getString("rampId")
                         RampTransactionDetailScreen(
                             navController = navController,
-                            rampId = backStackEntry.arguments?.getString("rampId")
+                            rampId = rampId
                         )
                     }
                 }
@@ -55,9 +75,16 @@ class ComposeHostActivity : ComponentActivity() {
         private const val EXTRA_START_DESTINATION = "startDestination"
 
         fun newIntent(context: Context, startDestination: String = ComposeRoutes.PaymentLinks.route): Intent {
+            Log.d("ComposeHostActivity", "Creating new Intent for startDestination: $startDestination")
             return Intent(context, ComposeHostActivity::class.java).apply {
                 putExtra(EXTRA_START_DESTINATION, startDestination)
             }
+        }
+
+        fun newRampTransactionDetailIntent(context: Context, rampId: String): Intent {
+            val routeWithParam = "${ComposeRoutes.RampTransactionDetail.route}/$rampId"
+            Log.d("ComposeHostActivity", "Creating RampTransactionDetail Intent with route: $routeWithParam")
+            return newIntent(context, routeWithParam)
         }
     }
 }

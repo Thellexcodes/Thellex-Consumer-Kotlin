@@ -30,8 +30,8 @@ import com.thellex.payments.core.decorators.KumbhSansFontFamily
 @Composable
 fun CustomTopAppBar(
     title: String,
-    onBackClick: (() -> Unit)? = null, // keep callback
-    navController: NavController? = null, // optional navController fallback
+    onBackClick: (() -> Unit)? = null,
+    navController: NavController? = null,
     backgroundColor: Color = Color(0xFF1A1A2E),
     titleColor: Color = Color.White,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
@@ -62,14 +62,14 @@ fun CustomTopAppBar(
             if (onBackClick != null || navController != null) {
                 IconButton(
                     onClick = {
-                        // Call the provided callback first
+                        // 1. Call the provided callback first
                         onBackClick?.invoke()
 
-                        // Try to pop Compose nav stack
+                        // 2. Try to pop the Compose navController stack
                         val popped = navController?.popBackStack() ?: false
 
-                        // If no Compose back stack and no callback handled it, finish activity
-                        if (!popped && onBackClick == null) {
+                        // 3. If nothing popped, finish the activity
+                        if (!popped) {
                             activity?.finish()
                         }
                     }

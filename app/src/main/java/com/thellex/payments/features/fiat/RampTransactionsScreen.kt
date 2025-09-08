@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -310,7 +311,7 @@ fun RampTransactionsScreen(
     val authResult by userViewModel.authResult.observeAsState()
 
 //    val authResult by userViewModel.authResult.observeAsState()
-    var selectedTabIndex by remember { mutableStateOf(0) }
+    var selectedTabIndex by rememberSaveable { mutableStateOf(0) }
     val tabs = listOf("REQUEST", "WITHDRAW")
 
 //    Log.d("TEST", "data is ${authResult?.fiatCryptoRampTransactions}")
@@ -321,7 +322,7 @@ fun RampTransactionsScreen(
                 iconRes = Helpers.getIconResIdForToken(transaction.recipientInfo.assetCode),
                 description = transaction.transactionMessage ?: "Unknown transaction",
                 timestamp = Helpers.convertToLocalTime(transaction.createdAt),
-                amount = "${transaction.mainAssetAmount ?: transaction.netFiatAmount} ${transaction.recipientInfo.assetCode.uppercase() ?: "USD"}",
+                amount = "${transaction.netCryptoAmount ?: transaction.netFiatAmount} ${transaction.recipientInfo.assetCode.uppercase() ?: "USD"}",
                 status = transaction.paymentStatus,
                 statusColor =  Helpers.determinePaymentStatusColor(transaction.paymentStatus),
                 type = when (transaction.transactionType) {
