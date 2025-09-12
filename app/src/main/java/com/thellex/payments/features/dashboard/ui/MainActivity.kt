@@ -22,6 +22,7 @@ import com.thellex.payments.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.payments.data.enums.UserErrorEnum
+import com.thellex.payments.data.repository.AppVersionRepository
 import com.thellex.payments.databinding.ActivityMainBinding
 import com.thellex.payments.network.services.ApiClient
 import com.thellex.payments.features.pos.ui.POSHomeActivity
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var userModel: UserViewModel
     private var hasShownErrorToast = false
+    private lateinit var repository: AppVersionRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,12 +50,15 @@ class MainActivity : AppCompatActivity() {
         disableDecorFitsSystemWindows()
         setTransparentStatusBarWithWhiteIcons()
         binding.main.applyAdvancedSystemBarInsets()
+        repository = AppVersionRepository(this)
 
         userModel = ViewModelProvider(
             this,
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
 
+        checkAppVersionOnStart()
+        observeVersionState()
 
         FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
         CrashLogger.init(this)
@@ -66,6 +71,48 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         checkAuthStatus()
+    }
+
+    private fun checkAppVersionOnStart() {
+        lifecycleScope.launch {
+            repository.checkAppVersion()
+        }
+    }
+
+    private fun observeVersionState() {
+//        lifecycleScope.launch {
+//            repository.versionState.collect { state ->
+//                when (state) {
+//                    is AppVersionState.ForceUpdate -> {
+//                        showForceUpdateDialog(
+//                            context = this@MainActivity,
+//                            latestVersion = state.latestVersion,
+//                            downloadUrl = state.downloadUrl,
+//                            updateType = state.updateType
+//                        )
+//                    }
+//                    is AppVersionState.OptionalUpdate -> {
+//                        showOptionalUpdateDialog(
+//                            context = this@MainActivity,
+//                            latestVersion = state.latestVersion,
+//                            downloadUrl = state.downloadUrl,
+//                            updateType = state.updateType
+//                        )
+//                    }
+//                    is AppVersionState.Error -> {
+//                        // Show toast for errors
+//                        android.widget.Toast.makeText(
+//                            this@MainActivity,
+//                            state.message,
+//                            android.widget.Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                    AppVersionState.Idle, AppVersionState.UpToDate -> {
+//                        // No action needed
+//                    }
+//                }
+//            }
+//        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

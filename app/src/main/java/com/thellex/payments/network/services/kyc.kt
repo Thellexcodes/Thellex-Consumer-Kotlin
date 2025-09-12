@@ -12,12 +12,12 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface KycService {
-    @POST(Constants.KYC_ENDPOINT)
+    @POST(Constants.Endpoints.KYC)
     suspend fun verifyBasic(@Body request: BasicKycFormModelDto): Response<ApiResponse<KycResponseDto>>
 
-    @POST(Constants.KYC_VERIFY_SELFIE_AND_DOCUMENT)
+    @POST(Constants.Endpoints.KYC_VERIFY_SELFIE_AND_DOC)
     suspend fun verifySelfieWithPhotoId(@Body request: VerifySelfieWithPhotoIdDto): Response<ApiResponse<KycResponseDto>>
 
-    @POST(Constants.KYC_VERIFY_BVN)
+    @POST(Constants.Endpoints.KYC_VERIFY_BVN)
     suspend fun  submitBvnAndPhone(@Body request: SubmitBvnDto): Response<ApiResponse<KycValidateBvnResponse>>
 }

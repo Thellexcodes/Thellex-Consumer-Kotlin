@@ -484,7 +484,6 @@ fun RampTransactionDetailScreen(
                                                        fontWeight = FontWeight.Medium,
                                                        color = White
                                                    )
-
 //                                                   if (label == "Rate") {
 //                                                       Text(
 //                                                           text = "${FiatTickers.getByCodeOrCountry("ngn")?.symbol} $value",
@@ -494,7 +493,6 @@ fun RampTransactionDetailScreen(
 //                                                           color = White
 //                                                       )
 //                                                   } else
-
                                                    if (label == "Network") {
                                                        Row(verticalAlignment = Alignment.CenterVertically) {
                                                            Image(

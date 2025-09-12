@@ -11,13 +11,13 @@ import com.thellex.payments.data.model.PaginatedTransactionsHistoryResponse
 import retrofit2.http.GET
 
 interface UserService {
-    @GET(Constants.GET_ALL_USER_RAMP_TRANSACTIONS)
+    @GET(Constants.Endpoints.USER_RAMP_TRANSACTIONS)
     suspend fun fetchRampTransactions(): ApiResponse<PaginatedRampTransactionsHistoryResponse>
 
-    @GET(Constants.GET_ALL_USER_TRANSACTION_HISTORY)
+    @GET(Constants.Endpoints.USER_TRANSACTIONS)
     suspend fun fetchTransactionHistory():ApiResponse<PaginatedTransactionsHistoryResponse>
 
-    @GET(Constants.GET_ALL_USER_NOTIFICATIONS)
+    @GET(Constants.Endpoints.USER_NOTIFICATIONS)
     suspend fun fetchNotifications(): ApiResponse<PaginatedNotificationResponse>
 }
 

@@ -17,16 +17,16 @@ import retrofit2.Response
 import java.lang.reflect.Type
 
 interface AuthService {
-    @POST(Constants.LOGIN_ENDPOINT)
+    @POST(Constants.Endpoints.LOGIN)
     suspend fun loginUser(@Body request: LoginRequestDto): Response<ApiResponse<AccessResponse>>
 
-    @POST(Constants.VERIFY_CODE_ENDPOINT)
+    @POST(Constants.Endpoints.VERIFY_CODE)
     suspend fun verifyCode(@Body request: VerifyUserDto): Response<ApiResponse<UserEntity>>
 
-    @POST(Constants.AUTH_LOGIN_ENDPOINT)
+    @POST(Constants.Endpoints.AUTH_LOGIN)
     suspend fun checkAuthStatus(): Response<ApiResponse<UserEntity>>
 
-    @POST(Constants.SAVE_DEVICE_INFO_ENDPOINT)
+    @POST(Constants.Endpoints.SAVE_DEVICE_INFO)
     suspend fun updateFcmToken(@Body request: DeviceRequestDto): Response<ApiResponse<Unit>>
 }
 

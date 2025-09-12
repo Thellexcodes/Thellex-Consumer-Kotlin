@@ -12,16 +12,16 @@ import retrofit2.http.PUT
 import retrofit2.http.Query
 
 interface AdminService {
-    @GET(Constants.ADMIN_GET_ALL_RAMP_TRANSACTIONS_ENDPOINT)
+    @GET(Constants.Endpoints.ADMIN_RAMP_TRANSACTIONS)
     suspend fun fetchAllRampTransactions(
         @Query("page") page: Int = 1,
         @Query("limit") limit: Int = 10
     ): ApiResponse<AdminRampTransactionsResponse>
 
-    @GET(Constants.ADMIN_GET_ALL_REVENUES_ENDPOINT)
+    @GET(Constants.Endpoints.ADMIN_REVENUES)
     suspend fun fetchRevenues(): ApiResponse<RevenueResponseDto>
 
-    @PUT(Constants.ADMIN_APPROVE_RAMP_TRANSACTION_ENDPOINT)
+    @PUT(Constants.Endpoints.ADMIN_APPROVE_RAMP)
     suspend fun  approveTransaction(@Body requestDto: ApproveRampRequest): ApiResponse<Unit>
 }
 

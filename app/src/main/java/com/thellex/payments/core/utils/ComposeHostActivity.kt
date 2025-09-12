@@ -7,17 +7,16 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.thellex.payments.core.decorators.PinkRed
 import com.thellex.payments.core.routes.ComposeRoutes
 import com.thellex.payments.features.fiat.RampTransactionDetailScreen
 import com.thellex.payments.features.fiat.RampTransactionsScreen
+import com.thellex.payments.screens.WebViewScreen
 import com.thellex.payments.v2.features.payment_links.PaymentLinksScreen
 
 class ComposeHostActivity : ComponentActivity() {
@@ -66,6 +65,19 @@ class ComposeHostActivity : ComponentActivity() {
                             rampId = rampId
                         )
                     }
+
+                    // WebView
+                    composable(
+                        route = "${ComposeRoutes.WebView.route}/{url}",
+                        arguments = listOf(navArgument("url") {
+                            type = androidx.navigation.NavType.StringType
+                        })
+                    ) { backStackEntry ->
+                        val url = backStackEntry.arguments?.getString("url")
+                        if (url != null) {
+                            WebViewScreen(url = url)
+                        }
+                    }
                 }
             }
         }
@@ -74,7 +86,10 @@ class ComposeHostActivity : ComponentActivity() {
     companion object {
         private const val EXTRA_START_DESTINATION = "startDestination"
 
-        fun newIntent(context: Context, startDestination: String = ComposeRoutes.PaymentLinks.route): Intent {
+        fun newIntent(
+            context: Context,
+            startDestination: String = ComposeRoutes.PaymentLinks.route
+        ): Intent {
             Log.d("ComposeHostActivity", "Creating new Intent for startDestination: $startDestination")
             return Intent(context, ComposeHostActivity::class.java).apply {
                 putExtra(EXTRA_START_DESTINATION, startDestination)
@@ -84,6 +99,13 @@ class ComposeHostActivity : ComponentActivity() {
         fun newRampTransactionDetailIntent(context: Context, rampId: String): Intent {
             val routeWithParam = "${ComposeRoutes.RampTransactionDetail.route}/$rampId"
             Log.d("ComposeHostActivity", "Creating RampTransactionDetail Intent with route: $routeWithParam")
+            return newIntent(context, routeWithParam)
+        }
+
+        // ✅ New intent builder for WebView
+        fun newWebViewIntent(context: Context, url: String): Intent {
+            val routeWithParam = "${ComposeRoutes.WebView.route}/$url"
+            Log.d("ComposeHostActivity", "Creating WebView Intent with route: $routeWithParam")
             return newIntent(context, routeWithParam)
         }
     }

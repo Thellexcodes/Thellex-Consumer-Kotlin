@@ -30,12 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import com.thellex.payments.core.decorators.BrightSkyBlue
-import com.thellex.payments.core.decorators.DarkBlue
 import com.thellex.payments.core.decorators.GoldenYellow
 import com.thellex.payments.core.decorators.KumbhSansFontFamily
 import com.thellex.payments.core.decorators.Midnight
 import com.thellex.payments.core.decorators.OutfitFontFamily
-import com.thellex.payments.core.decorators.SteelBlueGrey
 import com.thellex.payments.core.decorators.White
 import com.thellex.payments.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.payments.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons

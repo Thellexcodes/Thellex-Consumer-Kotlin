@@ -45,60 +45,154 @@ object DeviceUtils {
 object Constants {
     private const val TAG = "Constants"
     private const val API_PREFIX = "api"
-    private const val API_VERSION = "v1.0.1"
-    private const val VERSIONED_BASE = "$API_PREFIX/$API_VERSION"
 
-    const val LOGIN_ENDPOINT = "$VERSIONED_BASE/user/access"
-    const val VERIFY_CODE_ENDPOINT = "$VERSIONED_BASE/user/verify"
-    const val AUTH_LOGIN_ENDPOINT = "$VERSIONED_BASE/user/authenticate"
-    const val SAVE_DEVICE_INFO_ENDPOINT = "$VERSIONED_BASE/devices/save-info"
+    // ---- Versions ----
+    object Versions {
+        data class VersionInfo(
+            val version: String,
+            val minSupported: String,
+            val latest: String
+        )
 
-    // Payment Endpoints
-    const val WITHDRAW_CRYPTO_PAYMENT_ENDPOINT = "$VERSIONED_BASE/payments/withdraw-crypto"
+        val versionMap = mapOf(
+            "V1_0_1" to VersionInfo(
+                version = "v1.0.1",
+                minSupported = "v1.0.0",
+                latest = "v1.0.2"
+            ),
+            "V1_0_2" to VersionInfo(
+                version = "v1.0.2",
+                minSupported = "v1.0.1",
+                latest = "v1.1.0"
+            ),
+            "V2_0_0" to VersionInfo(
+                version = "v2.0.0",
+                minSupported = "v2.0.0",
+                latest = "v2.0.1"
+            )
+        )
 
-    // Wallet Manager Endpoints
-    const val WALLET_MANAGER_BALANCE_ENDPOINT = "$VERSIONED_BASE/wallet-manager/balance"
-
-    // KYC and KYB
-    const val KYC_ENDPOINT = "$VERSIONED_BASE/kyc/basic-nin-bvn"
-    const val KYC_VERIFY_SELFIE_AND_DOCUMENT = "$VERSIONED_BASE/kyc/basic-document-verify-selfie"
-    const val KYC_VERIFY_BVN = "$VERSIONED_BASE/kyc/verify-bvn"
-
-    // Notification Endpoints
-    const val NOTIFICATION_CONSUME_ENDPOINT = "$VERSIONED_BASE/notifications/{id}/consume"
-
-    // Trades
-    const val WALLET_MANAGER_RATES_ENDPOINT = "$VERSIONED_BASE/payments/rates?fiatCode=ngn"
-    const val FIAT_TO_CRYPTO_ONRAMP_ENDPOINT = "$VERSIONED_BASE/payments/fiat-to-crypto/onramp"
-    const val CRYPTO_TO_FIAT_OFFRAMP_ENDPOINT = "$VERSIONED_BASE/payments/crypto-to-fiat/offramp"
-
-    // Banking
-    const val ADD_BANK_ACCOUNT_ENDPOINT = "$VERSIONED_BASE/settings/bank-account/add"
-
-    // Crash endpoint
-    const val CRASH_REPORT_ENDPOINT = "$VERSIONED_BASE/crash-report"
-    const val ERROR_REPORT_ENDPOINT = "$VERSIONED_BASE/error-report"
-
-    // Admin
-    const val ADMIN_GET_ALL_REVENUES_ENDPOINT = "$VERSIONED_BASE/admin/revenues"
-    const val ADMIN_GET_ALL_RAMP_TRANSACTIONS_ENDPOINT = "$VERSIONED_BASE/admin/ramp_transactions"
-    const val ADMIN_APPROVE_RAMP_TRANSACTION_ENDPOINT = "$VERSIONED_BASE/admin/approve_ramp_transactions"
-
-    // User
-    const val GET_ALL_USER_TRANSACTION_HISTORY = "$VERSIONED_BASE/user/transactions"
-    const val GET_ALL_USER_RAMP_TRANSACTIONS = "$VERSIONED_BASE/user/ramp_transactions"
-    const val GET_ALL_USER_NOTIFICATIONS = "$VERSIONED_BASE/user/notifications"
-
-    val BASE_URL: String
-        get() {
-            val isEmulator = DeviceUtils.isEmulator()
-            val url = if (isEmulator) {
-                "https://goat-touched-mite.ngrok-free.app/" // For Android Emulator
-            } else {
-                "https://thellex-sandbox-backend.onrender.com/" // Physical device
-//                "https://goat-touched-mite.ngrok-free.app/" // For Android Emulator
-            }
-            return url
+        fun getVersionInfo(versionKey: String): VersionInfo {
+            return versionMap[versionKey]
+                ?: throw IllegalArgumentException("Invalid version: $versionKey")
         }
-}
+    }
 
+    // ---- Base URL Builder ----
+    private fun buildBaseUrl(version: String): String {
+        require(version.isNotBlank()) { "Version cannot be blank" }
+        return "$API_PREFIX/$version"
+    }
+
+    // ---- Endpoints ----
+    object Endpoints {
+        private fun versionedEndpoint(path: String, versionKey: String): String {
+            val versionInfo = Versions.getVersionInfo(versionKey)
+            return "${buildBaseUrl(versionInfo.version)}/$path"
+        }
+
+        // User
+        const val LOGIN = "api/v1.0.1/user/access"
+        const val VERIFY_CODE = "api/v1.0.1/user/verify"
+        const val AUTH_LOGIN = "api/v1.0.1/user/authenticate"
+        const val SAVE_DEVICE_INFO = "api/v1.0.1/devices/save-info"
+
+        // Payments
+        const val WITHDRAW_CRYPTO = "api/v1.0.1/payments/withdraw-crypto"
+
+        // Wallet Manager
+        const val WALLET_BALANCE = "api/v1.0.1/wallet-manager/balance"
+
+        // KYC and KYB
+        const val KYC = "api/v1.0.1/kyc/basic-nin-bvn"
+        const val KYC_VERIFY_SELFIE_AND_DOC = "api/v1.0.1/kyc/basic-document-verify-selfie"
+        const val KYC_VERIFY_BVN = "api/v1.0.1/kyc/verify-bvn"
+
+        // Notifications
+        fun notificationConsume(id: String): String {
+            require(id.isNotBlank()) { "Notification ID cannot be blank" }
+            return "api/v1.0.1/notifications/$id/consume"
+        }
+
+        // Trades
+        const val RATES = "api/v1.0.1/payments/rates?fiatCode=ngn"
+        const val FIAT_TO_CRYPTO_ONRAMP = "api/v1.0.1/payments/fiat-to-crypto/onramp"
+        const val CRYPTO_TO_FIAT_OFFRAMP = "api/v1.0.1/payments/crypto-to-fiat/offramp"
+
+        // Banking
+        const val ADD_BANK_ACCOUNT = "api/v1.0.1/settings/bank-account/add"
+
+        // Crash Reports
+        const val CRASH_REPORT = "api/v1.0.1/crash-report"
+        const val ERROR_REPORT = "api/v1.0.1/error-report"
+
+        // Admin
+        const val ADMIN_REVENUES = "api/v1.0.1/admin/revenues"
+        const val ADMIN_RAMP_TRANSACTIONS = "api/v1.0.1/admin/ramp_transactions"
+        const val ADMIN_APPROVE_RAMP = "api/v1.0.1/admin/approve_ramp_transactions"
+
+        // User
+        const val USER_TRANSACTIONS = "api/v1.0.1/user/transactions"
+        const val USER_RAMP_TRANSACTIONS = "api/v1.0.1/user/ramp_transactions"
+        const val USER_NOTIFICATIONS = "api/v1.0.1/user/notifications"
+
+        // App (not versioned)
+        const val CHECK_APP_VERSION = "$API_PREFIX/app/check-version"
+
+        // Version mapping (for reference or dynamic use)
+        private val endpointVersions = mapOf(
+            "user/access" to "V1_0_1",
+            "user/verify" to "V1_0_1",
+            "user/authenticate" to "V1_0_1",
+            "devices/save-info" to "V1_0_1",
+            "payments/withdraw-crypto" to "V1_0_1",
+            "wallet-manager/balance" to "V1_0_1",
+            "kyc/basic-nin-bvn" to "V1_0_1",
+            "kyc/basic-document-verify-selfie" to "V1_0_1",
+            "kyc/verify-bvn" to "V1_0_1",
+            notificationConsume("") to "V1_0_1",
+            "payments/rates?fiatCode=ngn" to "V1_0_1",
+            "payments/fiat-to-crypto/onramp" to "V1_0_1",
+            "payments/crypto-to-fiat/offramp" to "V1_0_1",
+            "settings/bank-account/add" to "V1_0_1",
+            "crash-report" to "V1_0_1",
+            "error-report" to "V1_0_1",
+            "admin/revenues" to "V1_0_1",
+            "admin/ramp_transactions" to "V1_0_1",
+            "admin/approve_ramp_transactions" to "V1_0_1",
+            "user/transactions" to "V1_0_1",
+            "user/ramp_transactions" to "V1_0_1",
+            "user/notifications" to "V1_0_1"
+        )
+
+        fun getFullEndpoint(endpoint: String): String {
+            return when {
+                endpoint == CHECK_APP_VERSION -> CHECK_APP_VERSION
+                endpoint.startsWith("notifications/") && endpoint.endsWith("/consume") -> {
+                    versionedEndpoint(endpoint, endpointVersions[notificationConsume("")]!!)
+                }
+                endpointVersions.containsKey(endpoint) -> {
+                    versionedEndpoint(endpoint, endpointVersions[endpoint]!!)
+                }
+                else -> throw IllegalArgumentException("Unknown endpoint: $endpoint")
+            }
+        }
+    }
+
+    val BASE_URL: String by lazy {
+        val isEmulator = DeviceUtils.isEmulator()
+        if (isEmulator) {
+            "https://goat-touched-mite.ngrok-free.app/"
+        } else {
+            "https://thellex-sandbox-backend.onrender.com/"
+        }
+    }
+
+    fun getCompleteUrl(endpoint: String): String {
+        return "$BASE_URL$endpoint" // Endpoints are already versioned
+    }
+
+    fun isVersionSupported(version: String): Boolean {
+        return Versions.versionMap.values.any { it.minSupported <= version && version <= it.latest }
+    }
+}

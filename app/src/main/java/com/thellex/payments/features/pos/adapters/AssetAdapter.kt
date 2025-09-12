@@ -1,14 +1,12 @@
 package com.thellex.payments.features.pos.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.Helpers
+import com.thellex.payments.core.utils.Helpers.setSubmitting
 import com.thellex.payments.databinding.ItemAssetBinding
 import com.thellex.payments.settings.LocalValue
 import java.util.Locale
@@ -17,7 +15,7 @@ class AssetAdapter(
     private var assets: MutableList<Asset>,
     private var isBalanceVisible: Boolean,
     private val onItemClick: (Asset) -> Unit,
-    private val onActivateWalletClick: (Asset) -> Unit
+    private val onActivateWalletClick: (Asset, (Boolean) -> Unit) -> Unit
 ) : RecyclerView.Adapter<AssetAdapter.AssetViewHolder>() {
 
     inner class AssetViewHolder(val binding: ItemAssetBinding) : RecyclerView.ViewHolder(binding.root)
@@ -68,7 +66,12 @@ class AssetAdapter(
 
                 root.setOnClickListener(null)
                 btnActivateWallet.setOnClickListener {
-                    onActivateWalletClick(asset)
+//                    btnActivateWallet.setSubmitting(true)
+                    onActivateWalletClick(asset) { success ->
+                        if (success) {
+//                            btnActivateWallet.setSubmitting(false)
+                        }
+                    }
                 }
             }
         }

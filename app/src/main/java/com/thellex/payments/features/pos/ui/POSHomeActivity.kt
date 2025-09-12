@@ -241,7 +241,7 @@ class POSHomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadWalletData() {
+    private fun loadWalletData(action: String? = "") {
         lifecycleScope.launch {
             // Get the token safely in a coroutine
             val token = userViewModel.token.asFlow().first { !it.isNullOrBlank() }
@@ -249,7 +249,8 @@ class POSHomeActivity : AppCompatActivity() {
             // Load wallet data
             walletManagerViewModel.loadWallet(
                 tokenProvider = { token },
-                loadNow = false
+                loadNow = false,
+                action
             )
         }
     }

@@ -1,10 +1,12 @@
 package com.thellex.payments.features.auth.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -14,6 +16,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import com.thellex.payments.R
 import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.core.utils.ComposeHostActivity
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.data.model.ApiResponse
@@ -57,6 +60,18 @@ class LoginActivity : AppCompatActivity() {
             this,
             UserViewModelFactory(applicationContext)
         )[UserViewModel::class.java]
+
+        val tvTermsOfUse = findViewById<TextView>(R.id.tvTermsOfUse)
+        tvTermsOfUse.setOnClickListener {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://sam.thelle.io"))
+            startActivity(browserIntent)
+        }
+
+
+//        tvTermsOfUse.setOnClickListener {
+//            val intent = ComposeHostActivity.newWebViewIntent(this@LoginActivity, "https://sam.thelle.io")
+//            startActivity(intent)
+//        }
 
         applyEmailCharacterFilter(binding.emailInput)
         setupTabSwitching()

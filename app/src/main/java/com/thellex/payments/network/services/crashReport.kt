@@ -7,6 +7,6 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface CrashReportService {
-    @POST(Constants.CRASH_REPORT_ENDPOINT)
+    @POST(Constants.Endpoints.CRASH_REPORT)
     suspend fun sendCrashReport(@Body request: CrashReportDto): Response<Unit>
 }

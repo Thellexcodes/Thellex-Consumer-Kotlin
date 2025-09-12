@@ -34,7 +34,8 @@ class WalletRepository private constructor(private  val context: Context) {
     suspend fun loadWalletData(
         preferences: WalletManagerPreferences,
         tokenProvider: suspend () -> String?,
-        loadNow: Boolean? = false
+        loadNow: Boolean? = false,
+        action: String? = ""
     ) {
         currentPreferences = preferences
         currentTokenProvider = tokenProvider
@@ -67,7 +68,7 @@ class WalletRepository private constructor(private  val context: Context) {
 
         try {
             val api = ApiClient.getAuthenticatedWalletManagerApi(token)
-            val response = api.fetchBalance()
+            val response = api.fetchBalance(action)
 
             val result = response.result
             if (result != null) {
@@ -97,7 +98,6 @@ class WalletRepository private constructor(private  val context: Context) {
             }
 
             override fun onFinish() {
-//                Log.d(TAG, "Cache expired.")
                 isLoaded = false
 
                 val prefs = currentPreferences

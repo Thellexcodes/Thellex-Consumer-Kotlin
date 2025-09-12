@@ -21,3 +21,36 @@ data class ApproveRampRequest(
     @SerializedName("txId") val txId: String,
     @SerializedName("sequenceId") val sequenceId: String
 )
+
+data class AppVersionDto(
+    val latestVersion: String,
+    val minSupportedVersion: String,
+    val forceUpdate: Boolean,
+    val updateType: String, // e.g., "major", "minor", "patch"
+    val downloadUrl: String? = null
+)
+
+data class AppVersionCache(
+    val lastCheckTimestamp: Long,
+    val latestVersion: String,
+    val minSupportedVersion: String,
+    val forceUpdate: Boolean,
+    val updateType: String,
+    val downloadUrl: String?
+)
+
+sealed class AppVersionState {
+    object Idle : AppVersionState()
+    object UpToDate : AppVersionState()
+    data class ForceUpdate(
+        val latestVersion: String,
+        val downloadUrl: String?,
+        val updateType: String
+    ) : AppVersionState()
+    data class OptionalUpdate(
+        val latestVersion: String,
+        val downloadUrl: String?,
+        val updateType: String
+    ) : AppVersionState()
+    data class Error(val message: String) : AppVersionState()
+}

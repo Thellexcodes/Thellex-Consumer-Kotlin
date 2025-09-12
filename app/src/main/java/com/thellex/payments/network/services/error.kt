@@ -18,6 +18,6 @@ data class BackendErrorRequestDto(
 )
 
 interface ErrorService {
-    @POST(Constants.ERROR_REPORT_ENDPOINT)
+    @POST(Constants.Endpoints.ERROR_REPORT)
     suspend fun reportError(@Body request: BackendErrorRequestDto): Response<ApiResponse<AccessResponse>>
 }

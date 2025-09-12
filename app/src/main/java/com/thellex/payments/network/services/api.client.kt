@@ -130,5 +130,7 @@ object ApiClient {
 
     fun getAuthenticatedUserApi(token: String): UserService =
         getRetrofitWithToken(token).create(UserService::class.java)
+
+    fun getAppApi(token: String): AppService = getRetrofitWithToken(token).create(AppService::class.java)
 }
 

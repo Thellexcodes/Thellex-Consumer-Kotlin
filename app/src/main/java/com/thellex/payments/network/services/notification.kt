@@ -8,6 +8,6 @@ import retrofit2.http.PATCH
 import retrofit2.http.Path
 
 interface NotificationService {
-    @PATCH(Constants.NOTIFICATION_CONSUME_ENDPOINT)
+    @PATCH("api/v1.0.1/notifications/{id}/consume")
     suspend fun consume(@Path("id") id: String): Response<ApiResponse<INotificationConsumeDto>>
 }

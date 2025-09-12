@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.thellex.payments.R
 import com.thellex.payments.core.decorators.ItemSpacingDecoration
 import com.thellex.payments.core.utils.ActivityTracker
+import com.thellex.payments.core.utils.Constants
 import com.thellex.payments.core.utils.CustomToast
 import com.thellex.payments.core.utils.ErrorHandler
 import com.thellex.payments.core.utils.Helpers
@@ -170,6 +171,7 @@ class NotificationsActivity : AppCompatActivity() {
 
             val api = ApiClient.getAuthenticatedNotificationApi(token)
             val response = api.consume(txnID)
+            Constants.getCompleteUrl("")
 
             if (response.isSuccessful) {
                 val body = response.body()?.result

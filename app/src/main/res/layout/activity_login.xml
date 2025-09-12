@@ -38,6 +38,7 @@
             <TextView
                     android:text="Terms of Use."
                     android:textColor="@color/white"
+                    android:id="@+id/tvTermsOfUse"
                     android:layout_width="wrap_content"
                     android:textSize="@dimen/sp_14"
                     android:fontFamily="@font/kumbhsans_semibold"

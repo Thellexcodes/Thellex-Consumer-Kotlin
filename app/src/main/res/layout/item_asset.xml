@@ -57,13 +57,13 @@
                 app:layout_constraintTop_toTopOf="@id/llIconWithSymbol"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnActivateWallet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_border_midnight"
                 android:fontFamily="@font/kumbhsans_bold"
-                android:text="ACTIVE WALLET"
+                android:text="ACTIVATE WALLET"
                 android:paddingHorizontal="20dp"
                 android:paddingVertical="10dp"
                 android:clickable="true"

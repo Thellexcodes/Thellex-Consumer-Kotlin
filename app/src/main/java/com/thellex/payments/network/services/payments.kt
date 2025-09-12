@@ -16,18 +16,18 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface PaymentRequestService {
-    @POST(Constants.WITHDRAW_CRYPTO_PAYMENT_ENDPOINT)
+    @POST(Constants.Endpoints.WITHDRAW_CRYPTO)
     suspend fun withdrawCrypto(@Body request: CreateRequestPaymentDto): Response<ApiResponse<ITransactionHistoryDto>>
 
-    @GET(Constants.WALLET_MANAGER_RATES_ENDPOINT)
+    @GET(Constants.Endpoints.RATES)
     suspend fun getRates(): ApiResponse<IRatesResponseDto>
 
-    @POST(Constants.FIAT_TO_CRYPTO_ONRAMP_ENDPOINT)
+    @POST(Constants.Endpoints.FIAT_TO_CRYPTO_ONRAMP)
     suspend fun fiatToCryptoOnRamp(@Body request: FiatToCryptoOnRampRequestDto): Response<ApiResponse<IFiatCryptoRampTransactionsDto>>
 
-    @POST(Constants.CRYPTO_TO_FIAT_OFFRAMP_ENDPOINT)
+    @POST(Constants.Endpoints.CRYPTO_TO_FIAT_OFFRAMP)
     suspend fun cryptoToFiatOffRamp(@Body request: CryptoToFiatOffRampRequestDto): Response<ApiResponse<IFiatCryptoRampTransactionsDto>>
 
-    @POST(Constants.ADD_BANK_ACCOUNT_ENDPOINT)
+    @POST(Constants.Endpoints.ADD_BANK_ACCOUNT)
     suspend fun addBankAccount(@Body request: CreateBankAccountDto): Response<ApiResponse<IBankAccountDto>>
 }

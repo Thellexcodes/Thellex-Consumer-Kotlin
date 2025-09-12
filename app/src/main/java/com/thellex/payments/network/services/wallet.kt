@@ -9,11 +9,12 @@ import retrofit2.http.GET
 import com.google.gson.JsonDeserializer
 import com.thellex.payments.data.model.PaymentStatusEnum
 import com.thellex.payments.data.model.TransactionTypeEnum
+import retrofit2.http.Query
 import java.lang.reflect.Type
 
 interface WalletManagerService {
-    @GET(Constants.WALLET_MANAGER_BALANCE_ENDPOINT)
-    suspend fun fetchBalance(): ApiResponse<WalletBalanceDto>
+    @GET(Constants.Endpoints.WALLET_BALANCE)
+    suspend fun fetchBalance(@Query("action") action: String?): ApiResponse<WalletBalanceDto>
 }
 
 class SupportedBlockchainDeserializer : JsonDeserializer<SupportedBlockchainEnum> {
