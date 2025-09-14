@@ -291,7 +291,8 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
                     currentTier = result.currentTier,
                     nextTier = result.nextTier,
                     outstandingKyc = result.outstandingKyc,
-                    remainingTiers = result.remainingTiers
+                    remainingTiers = result.remainingTiers,
+                    banks = result.banks
                 )
                 _authResult.postValue(updatedUser)
                 repository.saveAuthResult(updatedUser)

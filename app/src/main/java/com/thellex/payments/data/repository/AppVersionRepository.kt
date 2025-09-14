@@ -34,7 +34,7 @@ class AppVersionRepository(private val context: Context)
 
         // Make API call
         try {
-            val response = ApiClient.getAppApi("").checkAppVersion(
+            val response = ApiClient.getAppApi(context, "").checkAppVersion(
                 platform = "android",
                 currentVersion = currentVersion
             )

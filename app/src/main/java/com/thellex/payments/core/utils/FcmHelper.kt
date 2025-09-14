@@ -19,7 +19,7 @@ object FcmHelper {
 
         try {
             Log.d(TAG, "Sending FCM token to backend: $fcmToken")
-            val api: AuthService = ApiClient.getAuthenticatedApi(userAuthToken)
+            val api: AuthService = ApiClient.getAuthenticatedApi(context, userAuthToken)
             val response = api.updateFcmToken(
                 DeviceRequestDto(
                     fcmToken = fcmToken,

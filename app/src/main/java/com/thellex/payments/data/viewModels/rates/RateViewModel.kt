@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.thellex.payments.features.auth.viewModel.UserRepository
 import com.thellex.payments.features.wallet.model.IRatesResponseDto
@@ -63,7 +64,7 @@ class RateViewModel(application: Application) : AndroidViewModel(application) {
                         continue
                     }
 
-                    val response = ApiClient.getAuthenticatedPaymentApi(authToken).getRates()
+                    val response = ApiClient.getAuthenticatedPaymentApi(application, authToken).getRates()
                     val result = response.result
 
                     if (result?.rates.isNullOrEmpty()) {

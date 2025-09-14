@@ -51,7 +51,7 @@ object CrashLogger {
             )
 
             try {
-                val response = ApiClient.getPublicCrashReportApi().sendCrashReport(dto)
+                val response = ApiClient.getPublicCrashReportApi(context).sendCrashReport(dto)
                 if (response.isSuccessful) file.delete()
             } catch (e: Exception) {
                 // Keep log for next retry
