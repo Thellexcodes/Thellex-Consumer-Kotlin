@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/general_gradient_background"
-        tools:context=".features.kyc.ui.idverification.IDVerificationAttestation">
+        tools:context=".features.kyc.ui.idverification.IDVerificationAttestationActivity">
 
         <!-- Top App Bar -->
         <include

@@ -100,6 +100,8 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                 selectedToken?.let { updateTokenSpinner(it) }
             }
         }
+
+        rateModel.startPolling()
     }
 
     @SuppressLint("SetTextI18n")

@@ -39,7 +39,7 @@
             android:name=".features.admin.IncomingRampTransactionsActivity"
             android:exported="false" />
         <activity
-            android:name=".features.kyc.ui.idverification.IDVerificationAttestation"
+            android:name=".features.kyc.ui.idverification.IDVerificationAttestationActivity"
             android:exported="false" />
         <activity
                 android:name=".core.utils.ComposeHostActivity"

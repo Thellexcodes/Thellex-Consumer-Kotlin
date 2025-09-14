@@ -92,7 +92,7 @@ class FaceVerificationActivity : AppCompatActivity() {
                     photoIdImageBase64 = photoIdImageBase64,
                     selfieImageBase64 = selfieImageBase64
                 )
-                val intent = Intent(this, IDVerificationAttestation::class.java).apply {
+                val intent = Intent(this, IDVerificationAttestationActivity::class.java).apply {
                     putExtra("kyc_image_data", kycImageData)
                 }
                 startActivity(intent)
