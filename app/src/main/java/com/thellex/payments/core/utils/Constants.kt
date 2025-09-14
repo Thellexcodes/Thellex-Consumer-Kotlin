@@ -21,9 +21,9 @@ object DeviceUtils {
                 Build.HARDWARE.contains("vbox86", ignoreCase = true) ||
                 SystemProperties.get("ro.kernel.qemu") == "1" ||
                 SystemProperties.get("ro.product.device") == "emulator")
-        Log.d(TAG, "isEmulator: $isEmulator (FINGERPRINT=${Build.FINGERPRINT}, MODEL=${Build.MODEL}, " +
-                "MANUFACTURER=${Build.MANUFACTURER}, BRAND=${Build.BRAND}, DEVICE=${Build.DEVICE}, " +
-                "PRODUCT=${Build.PRODUCT}, HARDWARE=${Build.HARDWARE}, qemu=${SystemProperties.get("ro.kernel.qemu")})")
+//        Log.d(TAG, "isEmulator: $isEmulator (FINGERPRINT=${Build.FINGERPRINT}, MODEL=${Build.MODEL}, " +
+//                "MANUFACTURER=${Build.MANUFACTURER}, BRAND=${Build.BRAND}, DEVICE=${Build.DEVICE}, " +
+//                "PRODUCT=${Build.PRODUCT}, HARDWARE=${Build.HARDWARE}, qemu=${SystemProperties.get("ro.kernel.qemu")})")
         return isEmulator
     }
 
