@@ -178,7 +178,7 @@ class IDVerificationAttestationActivity : AppCompatActivity() {
 
                 Log.d(TAG, "Starting KYC verification")
 
-                val api = ApiClient.getAuthenticatedKycApi(token)
+                val api = ApiClient.getAuthenticatedKycApi(this@IDVerificationAttestationActivity, token)
 //                val response = api.verifySelfieWithPhotoId(
 //                    VerifySelfieWithPhotoIdDto(
 //                        selfieImageBase64 = selfieBase64,

@@ -153,7 +153,7 @@ class LoginActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val response = ApiClient.getPublicApi().loginUser(userRequestData)
+                val response = ApiClient.getPublicApi(this@LoginActivity).loginUser(userRequestData)
                 if (response.isSuccessful) {
                     val result = response.body()?.result
                     if (result != null) {
@@ -186,7 +186,7 @@ class LoginActivity : AppCompatActivity() {
                 ErrorHandler.handle(this@LoginActivity, "Error", userError)
                 Log.d(TAG, "Error in LoginActivity: ${e.message}, code: ${userError.name}")
 
-                ApiClient.getPublicErrorReportApi().reportError(
+                ApiClient.getPublicErrorReportApi(this@LoginActivity).reportError(
                         BackendErrorRequestDto(
                             screen = TAG,
                             errorType = "EXCEPTION",

@@ -165,7 +165,7 @@ class BasicKycAttestationActivity : AppCompatActivity() {
                         Log.d(TAG, "KYC request: idType=${requestDto.idType}, bvn=${requestDto.bvn}, nin=${requestDto.nin}")
 
                         // Make API call
-                        val api = ApiClient.getAuthenticatedKycApi(token)
+                        val api = ApiClient.getAuthenticatedKycApi(this@BasicKycAttestationActivity, token)
                         val response = api.verifyBasic(requestDto)
 
                         // Handle response

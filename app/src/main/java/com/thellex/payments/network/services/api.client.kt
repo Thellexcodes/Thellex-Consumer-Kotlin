@@ -32,12 +32,34 @@ object ApiClient {
     private const val TAG = "ApiClient"
 
     // --- OkHttpClient factory ---
+    @OptIn(ExperimentalTime::class)
     private fun buildClient(context: Context, token: String = "", enableLogging: Boolean = true): OkHttpClient {
         val dispatcher = Dispatcher().apply {
             maxRequests = 64
             maxRequestsPerHost = 16
         }
 
+//        val builder = OkHttpClient.Builder()
+//            .connectTimeout(30, TimeUnit.SECONDS)
+//            .readTimeout(30, TimeUnit.SECONDS)
+//            .writeTimeout(30, TimeUnit.SECONDS)
+//            .retryOnConnectionFailure(true)
+//            .dispatcher(dispatcher)
+//            .addInterceptor { chain ->
+//                val original = chain.request()
+//                val requestBuilder = original.newBuilder()
+//
+//                if (token.isNotBlank()) {
+//                    requestBuilder.addHeader("Authorization", "Bearer $token")
+//                }
+//
+//                try {
+//                    chain.proceed(requestBuilder.build())
+//                } catch (e: Exception) {
+//                    Log.e(TAG, "Network request failed: ${e.localizedMessage}", e)
+//                    throw e
+//                }
+//            }
         val builder = OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
@@ -46,11 +68,29 @@ object ApiClient {
             .dispatcher(dispatcher)
             .addInterceptor { chain ->
                 val original = chain.request()
-                val requestBuilder = original.newBuilder()
+                val requestBody = original.body
+                val payload = requestBody?.let { body ->
+                    val buffer = okio.Buffer()
+                    body.writeTo(buffer)
+                    buffer.readUtf8()
+                } ?: "{}"
 
-                if (token.isNotBlank()) {
-                    requestBuilder.addHeader("Authorization", "Bearer $token")
-                }
+                val timestamp = Clock.System.now().toString()
+//                val fingerprint = AuthUtils.getCertificateFingerprint(context)
+//                    ?: throw IOException("Certificate fingerprint unavailable")
+                val signature = AuthUtils.generateRequestSignature(context, payload, timestamp)
+                    ?: throw IOException("Request signature generation failed")
+
+                val requestBuilder = original.newBuilder()
+                    .header("x-signature", signature)
+                    .header("x-timestamp", timestamp)
+                    .header("x-certificate-fingerprint", "")
+                    .header("x-client-type", "mobile")
+                    .apply {
+                        if (token.isNotBlank()) {
+                            addHeader("Authorization", "Bearer $token")
+                        }
+                    }
 
                 try {
                     chain.proceed(requestBuilder.build())

@@ -184,8 +184,7 @@ object Constants {
         if (isEmulator) {
             "https://goat-touched-mite.ngrok-free.app/"
         } else {
-            "https://goat-touched-mite.ngrok-free.app/"
-//            "https://thellex-sandbox-backend.onrender.com/"
+            "https://thellex-sandbox-backend.onrender.com/"
         }
     }
 

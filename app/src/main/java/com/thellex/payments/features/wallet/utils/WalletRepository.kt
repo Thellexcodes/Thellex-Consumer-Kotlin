@@ -67,7 +67,7 @@ class WalletRepository private constructor(private  val context: Context) {
         }
 
         try {
-            val api = ApiClient.getAuthenticatedWalletManagerApi(token)
+            val api = ApiClient.getAuthenticatedWalletManagerApi(context, token)
             val response = api.fetchBalance(action)
 
             val result = response.result

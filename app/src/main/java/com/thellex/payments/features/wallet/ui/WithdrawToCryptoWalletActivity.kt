@@ -305,7 +305,7 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
             setLoadingState(true)
 
             try {
-                val response = ApiClient.getAuthenticatedPaymentApi(cachedToken.toString())
+                val response = ApiClient.getAuthenticatedPaymentApi(this@WithdrawToCryptoWalletActivity, cachedToken.toString())
                     .withdrawCrypto(requestDto)
 
                 val result = response.body()?.result

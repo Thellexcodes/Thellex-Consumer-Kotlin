@@ -168,7 +168,7 @@ class OffRampSummaryActivity : AppCompatActivity() {
 
                 val requestData = buildOffRampRequest() ?: return@launch
 
-                val api = ApiClient.getAuthenticatedPaymentApi(token)
+                val api = ApiClient.getAuthenticatedPaymentApi(this@OffRampSummaryActivity, token)
                 val response = api.cryptoToFiatOffRamp(requestData)
 
                 val result = response.body()?.result

@@ -139,7 +139,7 @@ class AddAccountBottomSheetFragment : BottomSheetDialogFragment() {
                         bankCode = selectedBank!!.code
                     )
 
-                    val response = ApiClient.getAuthenticatedPaymentApi(authToken)
+                    val response = ApiClient.getAuthenticatedPaymentApi(requireContext(), authToken)
                         .addBankAccount(payload)
 
                     if (!response.isSuccessful) {

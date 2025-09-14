@@ -184,7 +184,7 @@ class AuthVerificationActivity : AppCompatActivity() {
 
                 val fcmToken = FirebaseMessaging.getInstance().token.await()
                 FcmHelper.sendFcmTokenToBackend(this@AuthVerificationActivity, userAuthToken = token!!, fcmToken = fcmToken)
-                val api = ApiClient.getAuthenticatedApi(token!!)
+                val api = ApiClient.getAuthenticatedApi(this@AuthVerificationActivity, token!!)
                 val response = api.verifyCode(verifyUserRequestData)
 
                 response.body()?.result?.let { result ->

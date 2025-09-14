@@ -181,7 +181,7 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
                         destinationAddress = selectedToken.address
                     )
 
-                    val response = ApiClient.getAuthenticatedPaymentApi(authToken!!).fiatToCryptoOnRamp(onRampRequest)
+                    val response = ApiClient.getAuthenticatedPaymentApi(this@FiatToCryptoOnRampActivity, authToken!!).fiatToCryptoOnRamp(onRampRequest)
                     val result = response.body()?.result
 
                     if(result != null){

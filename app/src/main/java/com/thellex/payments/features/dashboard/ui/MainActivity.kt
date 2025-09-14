@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             try {
-                val api = ApiClient.getAuthenticatedApi(token)
+                val api = ApiClient.getAuthenticatedApi(this@MainActivity, token)
                 val response = api.checkAuthStatus()
 
                 if (response.isSuccessful) {

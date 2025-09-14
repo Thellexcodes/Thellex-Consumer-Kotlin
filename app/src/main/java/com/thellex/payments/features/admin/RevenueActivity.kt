@@ -152,7 +152,7 @@ class RevenueActivity : ComponentActivity() {
                     ?: throw IllegalStateException("No auth token available")
 
                 val response = withContext(Dispatchers.IO) {
-                    ApiClient.getAuthenticatedAdminApi(authToken).fetchRevenues()
+                    ApiClient.getAuthenticatedAdminApi(this@RevenueActivity, authToken).fetchRevenues()
                 }
 
                 val result = response.result

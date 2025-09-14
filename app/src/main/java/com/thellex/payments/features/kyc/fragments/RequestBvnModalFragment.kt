@@ -218,7 +218,7 @@ class RequestBvnModalFragment : BottomSheetDialogFragment() {
                 }
 
                 Log.d(TAG, "Submitting DTO: $dto")
-                val api = ApiClient.getAuthenticatedKycApi(token)
+                val api = ApiClient.getAuthenticatedKycApi(requireContext(), token)
                 val response = api.submitBvnAndPhone(dto)
 
                 withContext(Dispatchers.Main) {

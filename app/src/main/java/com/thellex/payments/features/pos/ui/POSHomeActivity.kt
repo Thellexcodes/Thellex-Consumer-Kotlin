@@ -180,8 +180,8 @@ class POSHomeActivity : AppCompatActivity() {
                     }
 
                 // Initialize APIs
-                val adminApi = ApiClient.getAuthenticatedAdminApi(token)
-                val userApi = ApiClient.getAuthenticatedUserApi(token)
+                val adminApi = ApiClient.getAuthenticatedAdminApi(this@POSHomeActivity, token)
+                val userApi = ApiClient.getAuthenticatedUserApi(this@POSHomeActivity, token)
 
                 // Get current user and admin data
                 val currentUser = userViewModel.authResult.asFlow().filterNotNull().first()

@@ -169,7 +169,7 @@ class NotificationsActivity : AppCompatActivity() {
                 userViewModel.token.asFlow().first { !it.isNullOrBlank() }
             } ?: return ConsumeResult.AuthError
 
-            val api = ApiClient.getAuthenticatedNotificationApi(token)
+            val api = ApiClient.getAuthenticatedNotificationApi(this@NotificationsActivity, token)
             val response = api.consume(txnID)
             Constants.getCompleteUrl("")
 

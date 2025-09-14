@@ -304,7 +304,7 @@ class IncomingRampTransactionsActivity : ComponentActivity() {
                         lifecycleScope.launch {
                             try {
                                 val token = userViewModel.token.asFlow().first { !it.isNullOrBlank() } ?: return@launch
-                                val adminApi = ApiClient.getAuthenticatedAdminApi(token)
+                                val adminApi = ApiClient.getAuthenticatedAdminApi(this@IncomingRampTransactionsActivity, token)
                                 Log.d("IncomingRampTransactionsScreen", "result is $result")
                                 val response = adminApi.approveTransaction(ApproveRampRequest(
                                     approved = result.approved,
@@ -324,7 +324,7 @@ class IncomingRampTransactionsActivity : ComponentActivity() {
                     onRefresh = {
                         lifecycleScope.launch {
                             val token = userViewModel.token.asFlow().first { !it.isNullOrBlank() } ?: return@launch
-                            val adminApi = ApiClient.getAuthenticatedAdminApi(token)
+                            val adminApi = ApiClient.getAuthenticatedAdminApi(this@IncomingRampTransactionsActivity, token)
                             val refreshedData = adminApi.fetchAllRampTransactions()
                             UserPreferences.saveAdminResult(applicationContext, AdminData(rampTransactions = refreshedData.result))
                         }
