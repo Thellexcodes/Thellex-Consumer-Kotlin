@@ -1,0 +1,133 @@
+package com.thellex.pay.features.fiat
+
+import android.content.Intent
+import android.os.Build
+import android.os.Bundle
+import android.view.View
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.thellex.pay.R
+import com.thellex.pay.core.utils.ActivityTracker
+import com.thellex.pay.core.utils.Helpers
+import com.thellex.pay.core.utils.Helpers.applyAdvancedSystemBarInsets
+import com.thellex.pay.core.utils.Helpers.disableDecorFitsSystemWindows
+import com.thellex.pay.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
+import com.thellex.pay.data.model.IBankAccountDto
+import com.thellex.pay.data.model.IBankInfoRequestDto
+import com.thellex.pay.databinding.ActivityPaymentMethodBinding
+import com.thellex.pay.features.auth.viewModel.UserViewModel
+import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
+import com.thellex.pay.features.fiat.adapters.PaymentMethodAdapter
+import com.thellex.pay.features.fiat.fragments.AddAccountBottomSheetFragment
+import com.thellex.pay.features.fiat.model.CryptoToFiatViewModel
+import com.thellex.pay.features.wallet.utils.WalletManagerModelFactory
+import com.thellex.pay.features.wallet.utils.WalletManagerViewModel
+
+class PaymentMethodActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityPaymentMethodBinding
+    private lateinit var adapter: PaymentMethodAdapter
+    private lateinit var topBar: Helpers.TopAppBarController
+    private lateinit var userViewModel: UserViewModel
+    private lateinit var walletManagerViewModel: WalletManagerViewModel
+    private lateinit var cryptoToFiatViewModel: CryptoToFiatViewModel
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        binding = ActivityPaymentMethodBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        ActivityTracker.add(this)
+        disableDecorFitsSystemWindows()
+        setTransparentStatusBarWithWhiteIcons()
+        binding.main.applyAdvancedSystemBarInsets()
+
+        topBar = Helpers.setupTopAppBar(
+            activity = this,
+            rootView = findViewById(R.id.included_top_app_bar),
+            title = "SELECT PAYMENT METHOD"
+        )
+
+        adapter = PaymentMethodAdapter { selectedMethod ->
+            val bankInfo = IBankInfoRequestDto(
+                accountHolder = selectedMethod.accountName,
+                accountNumber = selectedMethod.accountNumber,
+                bankName = selectedMethod.bankName,
+            )
+            cryptoToFiatViewModel.bankInfo.value = bankInfo
+            startActivity(Intent(this, OffRampSummaryActivity::class.java))
+        }
+
+        binding.paymentMethodsRecycler.apply {
+            layoutManager = LinearLayoutManager(this@PaymentMethodActivity)
+            adapter = this@PaymentMethodActivity.adapter
+        }
+
+        binding.addNewAccountButton.setOnClickListener { showAddAccountBottomSheet() }
+
+        setupViewModel()
+        observeUser()
+    }
+
+    private fun setupViewModel() {
+        userViewModel = ViewModelProvider(
+            this,
+            UserViewModelFactory(applicationContext)
+        )[UserViewModel::class.java]
+
+        walletManagerViewModel = ViewModelProvider(
+            this,
+            WalletManagerModelFactory(applicationContext)
+        )[WalletManagerViewModel::class.java]
+
+//         Scope to CryptoToFiatOffRampActivity to share ViewModel
+        cryptoToFiatViewModel = ViewModelProvider(
+            owner = findActivity(CryptoToFiatOffRampActivity::class.java)
+                ?: run {
+                    startActivity(Intent(this, CryptoToFiatOffRampActivity::class.java))
+                    finish()
+                    return@setupViewModel
+                },
+            factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+        )[CryptoToFiatViewModel::class.java]
+    }
+
+    private fun findActivity(activityClass: Class<out AppCompatActivity>): AppCompatActivity? {
+        return ActivityTracker.getActivities().find { it::class.java == activityClass } as? AppCompatActivity
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun observeUser() {
+        userViewModel.authResult.observe(this) { userDto ->
+            if (userDto?.bankAccounts.isNullOrEmpty()) {
+                showAddAccountBottomSheet()
+            }
+            updatePaymentMethods(userDto?.bankAccounts)
+        }
+    }
+
+    private fun updatePaymentMethods(list: List<IBankAccountDto>?) {
+        with(binding) {
+            if (list.isNullOrEmpty()) {
+                paymentMethodsRecycler.visibility = View.GONE
+                emptyStateContainer.visibility = View.VISIBLE
+            } else {
+                paymentMethodsRecycler.visibility = View.VISIBLE
+                emptyStateContainer.visibility = View.GONE
+                adapter.submitList(list)
+            }
+        }
+    }
+
+    private fun showAddAccountBottomSheet() {
+        AddAccountBottomSheetFragment().show(supportFragmentManager, "AddAccountBottomSheet")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ActivityTracker.remove(this)
+    }
+}

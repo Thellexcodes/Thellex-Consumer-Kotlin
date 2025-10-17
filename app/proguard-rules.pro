@@ -11,9 +11,9 @@
 -renamesourcefileattribute SourceFile
 
 # Keep classes in com.thellex.payments package
--keep class com.thellex.payments.core.utils.AuthUtils { *; }
--keep class com.thellex.payments.network.** { *; }
--keep class com.thellex.payments.models.** { *; }
+-keep class com.thellex.pay.core.utils.AuthUtils { *; }
+-keep class com.thellex.pay.network.** { *; }
+-keep class com.thellex.pay.models.** { *; }
 
 # Retrofit
 -keep class retrofit2.** { *; }
@@ -62,8 +62,8 @@
 -dontwarn com.google.firebase.**
 
 # Keep data classes and their members
--keep class com.thellex.payments.models.* { *; }
--keepclassmembers class com.thellex.payments.models.* {
+-keep class com.thellex.pay.models.* { *; }
+-keepclassmembers class com.thellex.pay.models.* {
     <fields>;
     <methods>;
 }
@@ -74,7 +74,7 @@
 }
 
 # Keep ViewBinding generated classes
--keep class com.thellex.payments.databinding.** { *; }
+-keep class com.thellex.pay.databinding.** { *; }
 
 # Prevent warnings for Java reflection
 -dontwarn java.lang.invoke.**

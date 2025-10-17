@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.thellex.payments"
+    namespace = "com.thellex.pay"
     compileSdk = 35
 
     signingConfigs {
@@ -23,11 +23,11 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.thellex.payments"
+        applicationId = "com.thellex.pay"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0.1"
+        versionName = "1.0.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

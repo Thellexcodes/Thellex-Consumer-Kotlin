@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.thellex.payments" />
-                  <option name="mobileSdkAppId" value="1:30201908784:android:22698ffd78fbefc757a7f5" />
-                  <option name="projectId" value="thellex-87466" />
-                  <option name="projectNumber" value="30201908784" />
+                  <option name="appId" value="com.thellex.pay" />
+                  <option name="mobileSdkAppId" value="1:428120473367:android:77809b0f5c717e85f74152" />
+                  <option name="projectId" value="thellex-pay" />
+                  <option name="projectNumber" value="428120473367" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

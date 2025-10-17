@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "30201908784",
-    "project_id": "thellex-87466",
-    "storage_bucket": "thellex-87466.firebasestorage.app"
+    "project_number": "428120473367",
+    "project_id": "thellex-pay",
+    "storage_bucket": "thellex-pay.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:30201908784:android:22698ffd78fbefc757a7f5",
+        "mobilesdk_app_id": "1:428120473367:android:77809b0f5c717e85f74152",
         "android_client_info": {
-          "package_name": "com.thellex.payments"
+          "package_name": "com.thellex.pay"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBIpW1sReSvyxU-YNr_LiGl3Y2QMRKIFrQ"
+          "current_key": "AIzaSyBbeZ2nXoaVklziBzFJGez3L18JiklsFwU"
         }
       ],
       "services": {

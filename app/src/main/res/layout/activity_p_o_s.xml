@@ -102,7 +102,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.thellex.payments.core.decorators.AttentionGrabberView
+        <com.thellex.pay.core.decorators.AttentionGrabberView
                 android:id="@+id/attention_grabber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

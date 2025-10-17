@@ -17,7 +17,7 @@
             android:gravity="center_horizontal"
             android:orientation="vertical"
             app:layout_constraintTop_toTopOf="parent">
-        <com.thellex.payments.core.utils.CheckmarkView
+        <com.thellex.pay.core.utils.CheckmarkView
                 android:id="@+id/checkmark_view"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
