@@ -3,20 +3,22 @@ package com.thellex.pay.features.pos.ui
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import com.thellex.pay.features.auth.viewModel.UserViewModel
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
@@ -35,10 +37,18 @@ import com.thellex.pay.data.model.AdminRampTransactionsResponse
 import com.thellex.pay.data.model.ApiResponse
 import com.thellex.pay.data.model.ITransactionHistoryDto
 import com.thellex.pay.data.model.TransactionTypeEnum
+import com.thellex.pay.features.auth.repository.SecurityRepository
 import com.thellex.pay.databinding.ActivityPOSBinding
+import com.thellex.pay.features.auth.repository.BiometricRepository
 import com.thellex.pay.features.auth.ui.AuthVerificationActivity
 import com.thellex.pay.features.kyc.ui.basic.KycSuccessActivity
 import com.thellex.pay.features.auth.ui.LoginActivity
+import com.thellex.pay.features.auth.ui.SecurityModal
+import com.thellex.pay.features.auth.viewModel.RegisterPasskeyViewModel
+import com.thellex.pay.features.auth.viewModel.RegisterPasskeyViewModelFactory
+import com.thellex.pay.features.auth.viewModel.SecurityViewModel
+import com.thellex.pay.features.auth.viewModel.SecurityViewModelFactory
+import com.thellex.pay.features.auth.viewModel.UserViewModel
 import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
 import com.thellex.pay.features.dashboard.ui.MainActivity
 import com.thellex.pay.features.fiat.CryptoToFiatOffRampActivity
@@ -68,6 +78,8 @@ class POSHomeActivity : AppCompatActivity() {
     lateinit var binding: ActivityPOSBinding
     private lateinit var userViewModel: UserViewModel
     private lateinit var walletManagerViewModel: WalletManagerViewModel
+    private lateinit var securityViewModel: SecurityViewModel
+    private lateinit var registerPasskeyViewModel: RegisterPasskeyViewModel
     private var isBalanceVisible = true
     private var currentBalance = "0.00"
     private val emptyStateMediator = MediatorLiveData<Pair<Int, List<ITransactionHistoryDto>?>>()
@@ -91,6 +103,17 @@ class POSHomeActivity : AppCompatActivity() {
             WalletManagerModelFactory(applicationContext)
         )[WalletManagerViewModel::class.java]
 
+        val securityRepository = SecurityRepository(applicationContext)
+        val securityFactory = SecurityViewModelFactory(securityRepository)
+        securityViewModel = ViewModelProvider(this, securityFactory)[SecurityViewModel::class.java]
+
+        val bioRepository = BiometricRepository(this)
+        val bioFactory = RegisterPasskeyViewModelFactory(this, bioRepository)
+        registerPasskeyViewModel = ViewModelProvider(
+            this,
+            bioFactory
+        )[RegisterPasskeyViewModel::class.java]
+
         setupClickListeners()
         setupWalletBalanceObserver()
         loadAppData()
@@ -105,6 +128,15 @@ class POSHomeActivity : AppCompatActivity() {
             Log.e(TAG, "Error inflating layout: ${e.message}", e)
             throw e
         }
+
+        lifecycleScope.launch {
+            val currentUser = userViewModel.authResult.asFlow().filterNotNull().first()
+            val securityStatus = currentUser.security
+            Log.d(TAG, "this is $securityStatus")
+            if (securityStatus == null || !securityStatus.hasPin) {
+                showSecurityModal()
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -113,7 +145,6 @@ class POSHomeActivity : AppCompatActivity() {
         userViewModel.refreshNotificationsStatus()
         updateAttentionGrabber()
     }
-
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun setupViewPager() {
@@ -384,50 +415,50 @@ class POSHomeActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun updateAttentionGrabber() {
-        val notificationsEnabled = userViewModel.notificationsEnabled.value ?: false
-        Log.d(TAG, "notificationsEnabled: $notificationsEnabled, Dismissed: ${userViewModel.isNotificationsDismissed()}")
-
-        if (!notificationsEnabled && !userViewModel.isNotificationsDismissed()) {
-            val permission = Manifest.permission.POST_NOTIFICATIONS
-            binding.attentionGrabber.setAttentionGrabber(
-                message = "Enable notifications to stay updated!",
-                actionText = "Enable",
-                iconResId = R.drawable.icon_notification_gray,
-                onActionClick = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
-                            Log.d(TAG, "Notifications already granted")
-                            userViewModel.setNotificationsEnabled(true)
-                            userViewModel.setNotificationsDismissed(true)
-                            userViewModel.refreshNotificationsStatus()
-                            binding.attentionGrabber.hide()
-                        } else {
-                            Log.d(TAG, "Requesting notification permission")
-                            ActivityCompat.requestPermissions(
-                                this@POSHomeActivity,
-                                arrayOf(permission),
-                                REQUEST_CODE_NOTIFICATIONS
-                            )
-                        }
-                    } else {
-                        Log.d(TAG, "Notifications enabled by default (< Android 13)")
-                        userViewModel.setNotificationsEnabled(true)
-                        userViewModel.setNotificationsDismissed(true)
-                        userViewModel.refreshNotificationsStatus()
-                        binding.attentionGrabber.hide()
-                    }
-                },
-                onCloseClick = {
-                    Log.d(TAG, "Notification prompt closed without enabling")
-                    userViewModel.setNotificationsDismissed(false)
-                    userViewModel.refreshNotificationsStatus()
-                    binding.attentionGrabber.hide()
-                }
-            )
-        } else {
-            Log.d(TAG, "Notifications already enabled or dismissed, hiding attention grabber")
-            binding.attentionGrabber.hide()
-        }
+//        val notificationsEnabled = userViewModel.notificationsEnabled.value ?: false
+//        Log.d(TAG, "notificationsEnabled: $notificationsEnabled, Dismissed: ${userViewModel.isNotificationsDismissed()}")
+//
+//        if (!notificationsEnabled && !userViewModel.isNotificationsDismissed()) {
+//            val permission = Manifest.permission.POST_NOTIFICATIONS
+//            binding.attentionGrabber.setAttentionGrabber(
+//                message = "Enable notifications to stay updated!",
+//                actionText = "Enable",
+//                iconResId = R.drawable.icon_notification_gray,
+//                onActionClick = {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//                        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+//                            Log.d(TAG, "Notifications already granted")
+//                            userViewModel.setNotificationsEnabled(true)
+//                            userViewModel.setNotificationsDismissed(true)
+//                            userViewModel.refreshNotificationsStatus()
+//                            binding.attentionGrabber.hide()
+//                        } else {
+//                            Log.d(TAG, "Requesting notification permission")
+//                            ActivityCompat.requestPermissions(
+//                                this@POSHomeActivity,
+//                                arrayOf(permission),
+//                                REQUEST_CODE_NOTIFICATIONS
+//                            )
+//                        }
+//                    } else {
+//                        Log.d(TAG, "Notifications enabled by default (< Android 13)")
+//                        userViewModel.setNotificationsEnabled(true)
+//                        userViewModel.setNotificationsDismissed(true)
+//                        userViewModel.refreshNotificationsStatus()
+//                        binding.attentionGrabber.hide()
+//                    }
+//                },
+//                onCloseClick = {
+//                    Log.d(TAG, "Notification prompt closed without enabling")
+//                    userViewModel.setNotificationsDismissed(false)
+//                    userViewModel.refreshNotificationsStatus()
+//                    binding.attentionGrabber.hide()
+//                }
+//            )
+//        } else {
+//            Log.d(TAG, "Notifications already enabled or dismissed, hiding attention grabber")
+//            binding.attentionGrabber.hide()
+//        }
     }
 
     override fun onRequestPermissionsResult(
@@ -462,6 +493,25 @@ class POSHomeActivity : AppCompatActivity() {
         ActivityTracker.finishActivity(TransactionSuccessActivity::class.java)
         ActivityTracker.finishActivity(KycSuccessActivity::class.java)
 //        ActivityTracker.finishActivity(FiatRampTransactionsActivity::class.java)
+    }
+
+    private fun showSecurityModal() {
+        val composeView = ComposeView(this).apply {
+            setContent {
+                SecurityModal(
+                    securityViewModel = securityViewModel,
+                    registerPasskeyViewModel = registerPasskeyViewModel,
+                    userViewModel = userViewModel,
+                    onSetupCompleted = {
+                        (parent as? ViewGroup)?.removeView(this)
+                    },
+                    onDismiss = {
+                        (parent as? ViewGroup)?.removeView(this)
+                    }
+                )
+            }
+        }
+        binding.root.addView(composeView)
     }
 
     companion object {

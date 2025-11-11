@@ -124,6 +124,12 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview") // BOM version
     implementation("androidx.navigation:navigation-compose:2.7.0")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.30.1")
+    implementation("com.google.android.gms:play-services-fido:21.2.0")
+
+
+    implementation ("androidx.credentials:credentials:1.1.0-alpha05")
+//    implementation("androidx.credentials:credentials:1.2.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.0")
 
     // Debug tools
     debugImplementation("androidx.compose.ui:ui-tooling")
@@ -134,4 +140,5 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
 }

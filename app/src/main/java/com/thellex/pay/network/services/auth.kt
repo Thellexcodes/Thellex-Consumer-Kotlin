@@ -7,14 +7,20 @@ import com.thellex.pay.data.model.ApiResponse
 import com.thellex.pay.core.utils.Constants
 import com.thellex.pay.data.enums.TierEnum
 import com.thellex.pay.data.model.AccessResponse
+import com.thellex.pay.data.model.ChallengeResponse
 import com.thellex.pay.data.model.DeviceRequestDto
 import com.thellex.pay.data.model.LoginRequestDto
+import com.thellex.pay.data.model.PinRequest
 import com.thellex.pay.data.model.UserEntity
+import com.thellex.pay.data.model.VerifyAuthenticationRequest
+import com.thellex.pay.data.model.VerifyRegistrationRequest
 import com.thellex.pay.data.model.VerifyUserDto
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.GET
 import retrofit2.Response
+import retrofit2.http.PUT
+import retrofit2.http.Query
 import java.lang.reflect.Type
 
 interface AuthService {
@@ -29,7 +35,26 @@ interface AuthService {
 
     @GET(Constants.Endpoints.SAVE_DEVICE_INFO)
     suspend fun updateFcmToken(@Body request: DeviceRequestDto): Response<ApiResponse<Unit>>
+
+    @PUT(Constants.Endpoints.SET_PIN)
+    suspend fun updateSecurityPin(@Body request: PinRequest): ApiResponse<Boolean>
+
+    @GET(Constants.Endpoints.VERIFY_PIN)
+    suspend fun verifySecurityPin(@Query("pin") pin: String): ApiResponse<Boolean>
+
+    @GET(Constants.Endpoints.REGISTER_OPTIONS)
+    suspend fun createChallenge(): ApiResponse<ChallengeResponse>
+
+    @POST(Constants.Endpoints.VERIFY_CHALLENGE_REGISTRATION)
+    suspend fun verifyRegistration(@Body request: VerifyRegistrationRequest): Response<ApiResponse<Unit>>
+
+    @GET(Constants.Endpoints.GET_AUTH_OPTIONS)
+    suspend fun getAuthOptions(): Response<ApiResponse<Unit>>
+
+    @POST(Constants.Endpoints.VERIFY_AUTH)
+    suspend fun verifyAuth(@Body request: VerifyAuthenticationRequest): Response<ApiResponse<Unit>>
 }
+
 
 class TierEnumDeserializer : JsonDeserializer<TierEnum> {
     override fun deserialize(

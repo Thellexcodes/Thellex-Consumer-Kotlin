@@ -2,6 +2,11 @@ package com.thellex.pay.core.utils
 
 import android.os.Build
 import android.util.Log
+import com.thellex.pay.data.model.ChallengeResponse
+import com.thellex.pay.data.model.VerifyAuthenticationRequest
+import com.thellex.pay.data.model.VerifyRegistrationRequest
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 object DeviceUtils {
     private const val TAG = "DeviceUtils"
@@ -91,11 +96,23 @@ object Constants {
             return "${buildBaseUrl(versionInfo.version)}/$path"
         }
 
-        // User
+        // --- User Authentication (v1.0.1) ---
         const val LOGIN = "api/v1.0.1/user/access"
         const val VERIFY_CODE = "api/v1.0.1/user/verify"
         const val AUTH_LOGIN = "api/v1.0.1/user/authenticate"
+
+        // --- Device Info (v1.0.1) ---
         const val SAVE_DEVICE_INFO = "api/v1.0.1/devices/save-info"
+
+        // --- Security (v2.0.0) ---
+        const val SET_PIN = "api/v2.0.0/auth/set-pin"
+        const val VERIFY_PIN = "api/v2.0.0/auth/verify-pin"
+
+        // --- WebAuthn / Passkeys (v2.0.0) ---
+        const val REGISTER_OPTIONS = "api/v2.0.0/auth/register-options"
+        const val VERIFY_CHALLENGE_REGISTRATION = "api/v2.0.0/auth/verify-registration"
+        const val GET_AUTH_OPTIONS = "api/v2.0.0/auth/auth-options"
+        const val VERIFY_AUTH = "api/v2.0.0/auth/authenticate"
 
         // Payments
         const val WITHDRAW_CRYPTO = "api/v1.0.1/payments/withdraw-crypto"
@@ -184,8 +201,8 @@ object Constants {
         if (isEmulator) {
             "https://goat-touched-mite.ngrok-free.app/"
         } else {
-            "https://thellex-sandbox-backend.onrender.com/"
-//            "https://goat-touched-mite.ngrok-free.app/"
+//            "https://thellex-sandbox-backend.onrender.com/"
+            "https://goat-touched-mite.ngrok-free.app/"
         }
     }
 

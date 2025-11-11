@@ -31,7 +31,7 @@ import com.thellex.pay.data.model.PaymentStatusEnum
 import com.thellex.pay.data.model.TransactionTypeEnum
 import com.thellex.pay.data.model.UserPreferences
 import com.thellex.pay.data.model.WalletWebhookEventEnum
-import com.thellex.pay.features.auth.viewModel.UserRepository
+import com.thellex.pay.features.auth.repository.UserRepository
 import com.thellex.pay.features.dashboard.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

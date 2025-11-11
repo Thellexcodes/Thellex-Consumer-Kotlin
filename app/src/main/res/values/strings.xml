@@ -68,4 +68,9 @@
     <string name="email">Email</string>
     <string name="revenue">REVENUE</string>
     <string name="fee_values">Fee Values</string>
+    <string name="asset_statements">
+      [{
+        "include": "https://goat-touched-mite.ngrok-free.app/.well-known/assetlinks.json"
+      }]
+    </string>
 </resources>

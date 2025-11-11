@@ -24,7 +24,7 @@ import com.thellex.pay.databinding.FragmentBasicKycReviewBinding
 import com.thellex.pay.features.auth.viewModel.BasicKycFormModelData
 import com.thellex.pay.features.auth.viewModel.BasicKycFormViewModel
 import com.thellex.pay.features.auth.viewModel.BasicKycFormViewModelFactory
-import com.thellex.pay.features.auth.viewModel.UserRepository
+import com.thellex.pay.features.auth.repository.UserRepository
 import com.thellex.pay.features.auth.viewModel.UserViewModel
 import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
 import com.thellex.pay.network.services.ApiClient

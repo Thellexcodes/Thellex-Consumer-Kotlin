@@ -11,6 +11,8 @@ import androidx.lifecycle.viewModelScope
 import com.thellex.pay.core.utils.ActivityTracker
 import com.thellex.pay.core.utils.EventBus
 import com.thellex.pay.data.model.*
+import com.thellex.pay.features.auth.repository.UserRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -134,6 +136,18 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
             }
         }
         updateFilteredTransactions(updatedUser)
+    }
+
+    fun updateHasPin(hasPin: Boolean) {
+        viewModelScope.launch {
+            try {
+                repository.setHasPin(hasPin)
+                Log.d(TAG, "Saved token: $token")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to save token: ${e.message}", e)
+                _error.postValue("Failed to save token")
+            }
+        }
     }
 
     fun saveToken(token: String?) {
@@ -390,7 +404,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         isValid
     }
 
-    fun isNotificationsDismissed(): Boolean = viewModelScope.run {
+    fun isNotificationsDismissed(): Flow<Boolean> = viewModelScope.run {
         repository.isNotificationsDismissed()
     }
 
@@ -412,7 +426,7 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
     fun refreshNotificationsStatus() {
         viewModelScope.launch {
             val areEnabled = repository.areNotificationsEnabled() ?: false
-            _notificationsEnabled.postValue(areEnabled)
+            _notificationsEnabled.postValue(areEnabled as Boolean?)
             Log.d(TAG, "Notifications status refreshed: $areEnabled")
         }
     }

@@ -7,7 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
-import com.thellex.pay.features.auth.viewModel.UserRepository
+import com.thellex.pay.features.auth.repository.UserRepository
 import com.thellex.pay.features.wallet.model.IRatesResponseDto
 import com.thellex.pay.network.services.ApiClient
 import kotlinx.coroutines.Job

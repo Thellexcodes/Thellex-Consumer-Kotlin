@@ -48,5 +48,76 @@ data class UserEntity(
     @SerializedName("outstandingKyc") val outstandingKyc: List<String>? = emptyList(),
     @SerializedName("transactionSettings") val transactionSettings: ITransactionSettingsDto? = null,
     @SerializedName("banks") val banks: List<NGBankDto>? = emptyList(),
-    @SerializedName("role") val role: RoleEnum? = null
+    @SerializedName("role") val role: RoleEnum? = null,
+    val security: Security? = null
+)
+
+@Serializable
+data class Security(
+    val hasPin: Boolean,
+    val isBiometricEnabled: Boolean
+)
+
+@Serializable
+data class ChallengeResponse(
+    val challenge: String,
+    val userId: String,
+    val rp: RelyingParty,
+    val user: UserInfo?,
+    val pubKeyCredParams: List<CredentialParams>,
+    val timeout: Long?,
+    val attestation: String?,
+    val excludeCredentials: List<ExcludeCredential>?,
+    val authenticatorSelection: AuthenticatorSelection?,
+    val extensions: Extensions?,
+    val mode: String?
+)
+
+@Serializable
+data class UserInfo(
+    val id: String,
+    val name: String?,
+    val displayName: String?
+)
+
+@Serializable
+data class ExcludeCredential(
+    val id: String,
+    val type: String
+)
+
+@Serializable
+data class AuthenticatorSelection(
+    val residentKey: String?,
+    val userVerification: String?,
+    val requireResidentKey: Boolean?,
+    val authenticatorAttachment: String?
+)
+
+
+@Serializable
+data class Extensions(
+    val credProps: Boolean?
+)
+
+@Serializable
+data class RelyingParty(
+    val name: String,
+    val id: String
+)
+
+@Serializable
+data class CredentialParams(
+    val type: String,
+    val alg: Int
+)
+
+data class VerifyRegistrationRequest(
+    val challenge: String,
+    val attestationResponse: Any
+)
+
+data class VerifyAuthenticationRequest(
+    val challenge: String,
+    val attestationResponse: Any
 )

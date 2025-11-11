@@ -37,7 +37,7 @@ import com.thellex.pay.core.decorators.OutfitFontFamily
 import com.thellex.pay.core.decorators.White
 import com.thellex.pay.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.pay.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
-import com.thellex.pay.features.auth.viewModel.UserRepository
+import com.thellex.pay.features.auth.repository.UserRepository
 import com.thellex.pay.network.services.ApiClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first

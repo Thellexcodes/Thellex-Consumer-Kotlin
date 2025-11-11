@@ -36,7 +36,7 @@ import com.thellex.pay.data.model.reasonList
 import com.thellex.pay.data.viewModels.rates.RateViewModel
 import com.thellex.pay.databinding.ActivityFiatToCryptoOnRampBinding
 import com.thellex.pay.databinding.DialogReasonSelectionBinding
-import com.thellex.pay.features.auth.viewModel.UserRepository
+import com.thellex.pay.features.auth.repository.UserRepository
 import com.thellex.pay.features.auth.viewModel.UserViewModel
 import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
 import com.thellex.pay.features.fiat.adapters.ReasonSelectionAdapter
