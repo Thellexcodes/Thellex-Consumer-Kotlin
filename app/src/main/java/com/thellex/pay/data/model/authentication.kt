@@ -51,3 +51,7 @@ data class UserEntity(
     @SerializedName("role") val role: RoleEnum? = null,
     val  security: UserSecurityEntity
 )
+
+data class SetPinRequest(
+    val pin: String
+)

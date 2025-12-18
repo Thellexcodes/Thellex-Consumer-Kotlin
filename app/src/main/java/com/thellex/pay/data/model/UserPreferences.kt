@@ -145,7 +145,6 @@ object UserPreferences {
             .edit()
             .putBoolean(KEY_HAS_ENABLED_NOTIFICATIONS, enabled)
             .apply()
-        Log.d(TAG, "has_enabled_notifications set to: $enabled")
     }
 
     fun addTransactionHistory(context: Context, transaction: ITransactionHistoryDto) {

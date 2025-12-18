@@ -417,6 +417,31 @@ class UserViewModel(application: Context) : AndroidViewModel(application as Appl
         }
     }
 
+    fun updateSecurityPinDetails(hasPin: Boolean) {
+        viewModelScope.launch {
+            try {
+                val user = _authResult.value ?: run {
+                    _error.postValue("Cannot update user pin")
+                    return@launch
+                }
+                val updatedSecurity = user.security.copy(
+                    hasPin = hasPin
+                ) ?: UserSecurityEntity(
+                    hasPin = false
+                )
+
+                val updatedUser = user.copy(
+                    security = updatedSecurity
+                )
+                _authResult.postValue(updatedUser)
+                repository.saveAuthResult(updatedUser)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed update pin: ${e.message}", e)
+                _error.postValue("Failed to update pin")
+            }
+        }
+    }
+
     fun setSelectedTab(tabIndex: Int) {
         _selectedTab.value = tabIndex
     }

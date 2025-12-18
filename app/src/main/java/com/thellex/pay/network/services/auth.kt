@@ -9,12 +9,15 @@ import com.thellex.pay.data.enums.TierEnum
 import com.thellex.pay.data.model.AccessResponse
 import com.thellex.pay.data.model.DeviceRequestDto
 import com.thellex.pay.data.model.LoginRequestDto
+import com.thellex.pay.data.model.SetPinRequest
 import com.thellex.pay.data.model.UserEntity
 import com.thellex.pay.data.model.VerifyUserDto
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.GET
 import retrofit2.Response
+import retrofit2.http.PUT
+import retrofit2.http.Query
 import java.lang.reflect.Type
 
 interface AuthService {
@@ -29,6 +32,15 @@ interface AuthService {
 
     @GET(Constants.Endpoints.SAVE_DEVICE_INFO)
     suspend fun updateFcmToken(@Body request: DeviceRequestDto): Response<ApiResponse<Unit>>
+
+    // New endpoints
+    @PUT(Constants.Endpoints.SET_PIN)
+    suspend fun setSecurityPin(@Body request: SetPinRequest): Response<ApiResponse<Boolean>>
+
+    @GET(Constants.Endpoints.VERIFY_PIN)
+    suspend fun verifySecurityPin(
+        @Query("pin") pin: String
+    ): Response<ApiResponse<Boolean>>
 }
 
 class TierEnumDeserializer : JsonDeserializer<TierEnum> {

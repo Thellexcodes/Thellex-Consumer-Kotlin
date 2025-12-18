@@ -1,5 +1,6 @@
 package com.thellex.pay.features.dashboard.ui
 
+import android.app.Activity
 import android.app.Dialog
 import com.thellex.pay.features.auth.viewModel.UserViewModel
 import android.content.Intent
@@ -7,11 +8,13 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.map
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.thellex.pay.R
 import com.thellex.pay.core.routes.ComposeRoutes
@@ -178,18 +181,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val pinScreenLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val dashboardIntent = Intent(this@MainActivity, POSHomeActivity::class.java)
+            startActivity(dashboardIntent)
+            finish()
+        }
+    }
+
     private suspend fun navigateToDashboard() = withContext(Dispatchers.Main) {
-//        val intent = ComposeHostActivity.newIntent(this@MainActivity, ComposeRoutes.SecuritySettings.route)
-//        startActivity(intent)
-//        startActivity(Intent(this@MainActivity, POSHomeActivity::class.java))
-//        finish()
+        val authResult = userModel.authResult.value
+
+        if (authResult == null) {
+            navigateToLogin()
+            return@withContext
+        }
+
+        val intent = ComposeHostActivity.newIntent(
+            this@MainActivity,
+            ComposeRoutes.SecuritySettings.route
+        )
+
+        pinScreenLauncher.launch(intent)
     }
 
     private suspend fun navigateToLogin() = withContext(Dispatchers.Main) {
-//        val intent = ComposeHostActivity.newIntent(this@MainActivity, ComposeRoutes.SecuritySettings.route)
-//        startActivity(intent)
-//        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-//        finish()
+        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+        finish()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

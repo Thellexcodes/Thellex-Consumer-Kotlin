@@ -96,6 +96,8 @@ object Constants {
         const val VERIFY_CODE = "api/v2.0.0/user/verify"
         const val AUTH_LOGIN = "api/v1.0.1/user/authenticate"
         const val SAVE_DEVICE_INFO = "api/v1.0.1/devices/save-info"
+        const val SET_PIN = "api/v2.0.0/auth/set-pin"
+        const val VERIFY_PIN = "api/v2.0.0/auth/verify-pin"
 
         // Payments
         const val WITHDRAW_CRYPTO = "api/v1.0.1/payments/withdraw-crypto"
