@@ -26,6 +26,12 @@
           </targets>
         </DialogSelection>
       </SelectionState>
+      <SelectionState runConfigName="SecuritySettingsScreen">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="ComposeHostActivity">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

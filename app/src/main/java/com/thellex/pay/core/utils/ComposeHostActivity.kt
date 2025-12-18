@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.thellex.pay.core.routes.ComposeRoutes
+import com.thellex.pay.features.auth.ui.SecuritySettingsScreen
 import com.thellex.pay.features.fiat.RampTransactionDetailScreen
 import com.thellex.pay.features.fiat.RampTransactionsScreen
 import com.thellex.pay.screens.WebViewScreen

@@ -40,4 +40,3 @@ val StablePool = Color(0xFF2AA3B0)
 
 val FocusColor = Color(0xFF24B1C7)
 val Intentional = Color(0xFF3F3D56)
-val KeypadButtonBg = Color(0xFF2B2B3F)

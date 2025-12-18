@@ -14,7 +14,9 @@ import androidx.lifecycle.lifecycleScope
 import com.google.firebase.messaging.FirebaseMessaging
 import com.otpview.OTPListener
 import com.thellex.pay.R
+import com.thellex.pay.core.routes.ComposeRoutes
 import com.thellex.pay.core.utils.ActivityTracker
+import com.thellex.pay.core.utils.ComposeHostActivity
 import com.thellex.pay.core.utils.CustomToast
 import com.thellex.pay.core.utils.ErrorHandler
 import com.thellex.pay.core.utils.FcmHelper
@@ -188,8 +190,12 @@ class AuthVerificationActivity : AppCompatActivity() {
                 response.body()?.result?.let { result ->
                     withContext(Dispatchers.Main) {
                         userModel.saveAuthResult(result)
-                        navigateToQuickActions()
-
+                        Log.d(TAG, "this is security settings ${result.security}")
+                        if (result?.security?.hasPin == true) {
+                            navigateToQuickActions()
+                        } else {
+                            navigateToPinSettingsScreen()
+                        }
                     }
                 } ?: run {
                     val errorBody = response.errorBody()?.string().orEmpty()
@@ -212,10 +218,14 @@ class AuthVerificationActivity : AppCompatActivity() {
         }
     }
 
+    private fun navigateToPinSettingsScreen() {
+        val intent = ComposeHostActivity.newIntent(this, ComposeRoutes.SecuritySettings.route)
+        startActivity(intent)
+    }
+
     private fun navigateToQuickActions() {
         val sharedPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val hasEnabledNotifications = sharedPrefs.getBoolean("has_enabled_notifications", false)
-
         if (!hasEnabledNotifications) {
             startActivity(Intent(this, NotificationPermissionActivity::class.java))
         } else {
@@ -225,6 +235,6 @@ class AuthVerificationActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val TAG = "TAGY"
+        private const val TAG = "AuthVerificationActivity"
     }
 }

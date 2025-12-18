@@ -93,7 +93,7 @@ object Constants {
 
         // User
         const val LOGIN = "api/v1.0.1/user/access"
-        const val VERIFY_CODE = "api/v1.0.1/user/verify"
+        const val VERIFY_CODE = "api/v2.0.0/user/verify"
         const val AUTH_LOGIN = "api/v1.0.1/user/authenticate"
         const val SAVE_DEVICE_INFO = "api/v1.0.1/devices/save-info"
 
@@ -185,7 +185,6 @@ object Constants {
             "https://goat-touched-mite.ngrok-free.app/"
         } else {
             "https://thellex-sandbox-backend.onrender.com/"
-//            "https://goat-touched-mite.ngrok-free.app/"
         }
     }
 

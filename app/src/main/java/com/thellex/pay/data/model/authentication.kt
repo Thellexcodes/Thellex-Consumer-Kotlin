@@ -48,5 +48,6 @@ data class UserEntity(
     @SerializedName("outstandingKyc") val outstandingKyc: List<String>? = emptyList(),
     @SerializedName("transactionSettings") val transactionSettings: ITransactionSettingsDto? = null,
     @SerializedName("banks") val banks: List<NGBankDto>? = emptyList(),
-    @SerializedName("role") val role: RoleEnum? = null
+    @SerializedName("role") val role: RoleEnum? = null,
+    val  security: UserSecurityEntity
 )

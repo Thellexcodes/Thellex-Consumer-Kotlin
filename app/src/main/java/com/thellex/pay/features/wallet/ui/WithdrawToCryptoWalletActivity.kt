@@ -316,7 +316,6 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
                         "Withdrawal submitted"
                     )
 
-                    Log.i(TAG, "Withdrawal successful: $result")
 
                     val intent = Intent(
                         this@WithdrawToCryptoWalletActivity,

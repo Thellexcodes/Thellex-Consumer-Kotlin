@@ -14,8 +14,10 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.thellex.pay.R
+import com.thellex.pay.core.routes.ComposeRoutes
 import com.thellex.pay.core.utils.ActivityTracker
 import com.thellex.pay.core.utils.AppUpdateHelper
+import com.thellex.pay.core.utils.ComposeHostActivity
 import com.thellex.pay.core.utils.CrashLogger
 import com.thellex.pay.core.utils.ErrorHandler
 import com.thellex.pay.core.utils.Helpers
@@ -177,13 +179,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun navigateToDashboard() = withContext(Dispatchers.Main) {
-        startActivity(Intent(this@MainActivity, POSHomeActivity::class.java))
-        finish()
+//        val intent = ComposeHostActivity.newIntent(this@MainActivity, ComposeRoutes.SecuritySettings.route)
+//        startActivity(intent)
+//        startActivity(Intent(this@MainActivity, POSHomeActivity::class.java))
+//        finish()
     }
 
     private suspend fun navigateToLogin() = withContext(Dispatchers.Main) {
-        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-        finish()
+//        val intent = ComposeHostActivity.newIntent(this@MainActivity, ComposeRoutes.SecuritySettings.route)
+//        startActivity(intent)
+//        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+//        finish()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

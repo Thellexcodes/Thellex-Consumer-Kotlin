@@ -36,27 +36,6 @@ object ApiClient {
             maxRequestsPerHost = 16
         }
 
-//        val builder = OkHttpClient.Builder()
-//            .connectTimeout(30, TimeUnit.SECONDS)
-//            .readTimeout(30, TimeUnit.SECONDS)
-//            .writeTimeout(30, TimeUnit.SECONDS)
-//            .retryOnConnectionFailure(true)
-//            .dispatcher(dispatcher)
-//            .addInterceptor { chain ->
-//                val original = chain.request()
-//                val requestBuilder = original.newBuilder()
-//
-//                if (token.isNotBlank()) {
-//                    requestBuilder.addHeader("Authorization", "Bearer $token")
-//                }
-//
-//                try {
-//                    chain.proceed(requestBuilder.build())
-//                } catch (e: Exception) {
-//                    Log.e(TAG, "Network request failed: ${e.localizedMessage}", e)
-//                    throw e
-//                }
-//            }
         val builder = OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)

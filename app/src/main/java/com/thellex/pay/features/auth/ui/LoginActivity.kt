@@ -2,10 +2,14 @@ package com.thellex.pay.features.auth.ui
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
+import android.view.inputmethod.EditorInfo
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -41,6 +45,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var userModel: UserViewModel
     private var isSubmitting = false
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -84,7 +89,15 @@ class LoginActivity : AppCompatActivity() {
 //        }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setupInputValidation() {
+        binding.emailInput.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        binding.emailInput.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI or EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING
+        binding.emailInput.setRawInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
+        binding.emailInput.setOnCreateContextMenuListener { menu, v, menuInfo ->
+            menu?.clear()
+        }
+
         binding.emailInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val email = s.toString().trim()
