@@ -16,14 +16,9 @@ class WalletManagerViewModel(application: Context): AndroidViewModel(application
 
     val walletBalance: LiveData<WalletBalanceDto?> = repository.walletBalance
 
-    fun loadWallet(tokenProvider: suspend () -> String?, loadNow: Boolean? = false, action: String?) {
+    fun loadWallet(tokenProvider: suspend () -> String?) {
         viewModelScope.launch {
-            repository.loadWalletData(
-                preferences,
-                tokenProvider,
-                loadNow,
-                action
-            )
+            repository.loadWalletData(preferences,tokenProvider)
         }
     }
 

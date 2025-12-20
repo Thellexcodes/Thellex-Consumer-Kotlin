@@ -103,7 +103,7 @@ object Constants {
         const val WITHDRAW_CRYPTO = "api/v1.0.1/payments/withdraw-crypto"
 
         // Wallet Manager
-        const val WALLET_BALANCE = "api/v1.0.1/wallet-manager/balance"
+        const val WALLET_BALANCE = "api/v2.0.0/wallet-manager/balance"
 
         // KYC and KYB
         const val KYC = "api/v1.0.1/kyc/basic-nin-bvn"

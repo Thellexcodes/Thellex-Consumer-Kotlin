@@ -25,7 +25,9 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.thellex.pay.R
+import com.thellex.pay.core.routes.ComposeRoutes
 import com.thellex.pay.core.utils.ActivityTracker
+import com.thellex.pay.core.utils.ComposeHostActivity
 import com.thellex.pay.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.pay.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.pay.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
@@ -55,7 +57,6 @@ import com.thellex.pay.features.profile.ProfileActivity
 import com.thellex.pay.features.wallet.ui.TransactionSuccessActivity
 import com.thellex.pay.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.pay.features.wallet.utils.WalletManagerViewModel
-import com.thellex.pay.features.wallet.ui.WalletAssetsActivity
 import com.thellex.pay.features.wallet.ui.WithdrawToCryptoWalletActivity
 import com.thellex.pay.network.services.ApiClient
 import kotlinx.coroutines.Deferred
@@ -95,6 +96,7 @@ class POSHomeActivity : AppCompatActivity() {
         setupWalletBalanceObserver()
         loadAppData()
         loadWalletData()
+
         observeUserUid()
         observeNotification()
         closeAllOtherActivities()
@@ -105,6 +107,8 @@ class POSHomeActivity : AppCompatActivity() {
             Log.e(TAG, "Error inflating layout: ${e.message}", e)
             throw e
         }
+
+
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -241,16 +245,39 @@ class POSHomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadWalletData(action: String? = "") {
-        lifecycleScope.launch {
-            // Get the token safely in a coroutine
-            val token = userViewModel.token.asFlow().first { !it.isNullOrBlank() }
+    private var walletObserverAttached = false
 
-            // Load wallet data
+    private fun loadWalletData(action: String? = "") {
+
+        // Attach observer ONCE
+        if (!walletObserverAttached) {
+            walletObserverAttached = true
+
+            walletManagerViewModel.walletBalance.observe(this) { balance ->
+                val isLoaded = balance != null
+                binding.posViewAssetsButton.isEnabled = isLoaded
+                binding.posViewAssetsButton.alpha = if (isLoaded) 1f else 0.5f
+            }
+        }
+
+        // If already cached → enable immediately and EXIT
+        if (walletManagerViewModel.walletBalance.value != null) {
+            binding.posViewAssetsButton.isEnabled = true
+            binding.posViewAssetsButton.alpha = 1f
+            return
+        }
+
+        // Otherwise disable and fetch
+        binding.posViewAssetsButton.isEnabled = false
+        binding.posViewAssetsButton.alpha = 0.5f
+
+        lifecycleScope.launch {
+            val token = userViewModel.token
+                .asFlow()
+                .first { !it.isNullOrBlank() }
+
             walletManagerViewModel.loadWallet(
-                tokenProvider = { token },
-                loadNow = false,
-                action
+                tokenProvider = { token }
             )
         }
     }
@@ -311,7 +338,14 @@ class POSHomeActivity : AppCompatActivity() {
         }
 
         binding.posViewAssetsButton.setOnClickListener {
-            startActivity(Intent(this, WalletAssetsActivity::class.java))
+            val balance = walletManagerViewModel.walletBalance.value
+                ?: return@setOnClickListener
+
+            val intent = ComposeHostActivity.newIntent(
+                this@POSHomeActivity,
+                ComposeRoutes.Wallet.route
+            )
+            startActivity(intent)
         }
 
         binding.activityPosBellContainer.setOnClickListener{

@@ -160,8 +160,8 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
                 return@let
             }
             // Reselect token if it matches wallet data
-            walletManagerViewModel.walletBalance.value?.wallets?.values?.find { it.address == address }
-                ?.let { updateTokenSpinner(it) }
+//            walletManagerViewModel.walletBalance.value?.wallets?.values?.find { it.address == address }
+//                ?.let { updateTokenSpinner(it) }
         }
     }
 
@@ -264,12 +264,12 @@ class CryptoToFiatOffRampActivity : AppCompatActivity() {
         val walletBalance = walletManagerViewModel.walletBalance.value
         val defaultToken = walletBalance?.wallets?.get("usdc") ?: walletBalance?.wallets?.values?.firstOrNull()
 
-        defaultToken?.let {
-            updateTokenSpinner(it)
-        } ?: run {
-            updateRatePriceText()
-            updateWalletInfo()
-        }
+//        defaultToken?.let {
+//            updateTokenSpinner(it)
+//        } ?: run {
+//            updateRatePriceText()
+//            updateWalletInfo()
+//        }
     }
 
     private fun calculateFiatFromCrypto(cryptoAmount: Double, feeDivisor: Double): Triple<Double, Double, Double> {

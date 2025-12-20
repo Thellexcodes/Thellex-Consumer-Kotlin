@@ -18,6 +18,9 @@ import com.thellex.pay.core.routes.ComposeRoutes
 import com.thellex.pay.features.auth.ui.SecuritySettingsScreen
 import com.thellex.pay.features.fiat.RampTransactionDetailScreen
 import com.thellex.pay.features.fiat.RampTransactionsScreen
+import com.thellex.pay.features.wallet.ui.AssetDetailScreen
+import com.thellex.pay.features.wallet.ui.AssetDetailScreenRoute
+import com.thellex.pay.features.wallet.ui.WalletScreenRoute
 import com.thellex.pay.screens.WebViewScreen
 import com.thellex.pay.v2.features.payment_links.PaymentLinksScreen
 
@@ -57,6 +60,10 @@ class ComposeHostActivity : ComponentActivity() {
                         })
                     }
 
+                    composable(ComposeRoutes.Wallet.route) {
+                        WalletScreenRoute(navController)
+                    }
+
                     composable(
                         route = "${ComposeRoutes.RampTransactionDetail.route}/{rampId}",
                         arguments = listOf(navArgument("rampId") {
@@ -80,6 +87,21 @@ class ComposeHostActivity : ComponentActivity() {
                         val url = backStackEntry.arguments?.getString("url")
                         if (url != null) {
                             WebViewScreen(url = url)
+                        }
+                    }
+
+                    composable(
+                        route = "${ComposeRoutes.AssetDetail.route}/{assetCode}",
+                        arguments = listOf(navArgument("assetCode") {
+                            type = androidx.navigation.NavType.StringType
+                        })
+                    ) { backStackEntry ->
+                        val assetCode = backStackEntry.arguments?.getString("assetCode")
+                        if (assetCode != null) {
+                            AssetDetailScreenRoute(
+                                navController = navController,
+                                assetCode = assetCode
+                            )
                         }
                     }
                 }

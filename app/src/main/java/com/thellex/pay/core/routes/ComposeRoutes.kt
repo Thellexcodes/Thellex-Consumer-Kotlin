@@ -4,7 +4,9 @@ object ComposeRoutes {
     val PaymentLinks = Route("payment_links")
     val RampTransactions = Route("ramp_transactions")
     val RampTransactionDetail = Route("ramp_transaction_detail")
-    val SecuritySettings= Route("security_settings")
+    val AssetDetail = Route("asset_detail")
+    val SecuritySettings = Route("security_settings")
+    val Wallet = Route("wallet")
     val WebView = Route("webview")
 
     data class Route(val route: String)

@@ -292,12 +292,12 @@ class FiatToCryptoOnRampActivity : AppCompatActivity() {
         val walletBalance = walletManagerViewModel.walletBalance.value
         val defaultToken = walletBalance?.wallets?.get("usdc") ?: walletBalance?.wallets?.values?.firstOrNull()
 
-        defaultToken?.let {
-            updateTokenSpinner(it)
-        } ?: run {
-                updateDefaultPriceText()
-                updateWalletInfo() // Set default UI for balanceOverview
-        }
+//        defaultToken?.let {
+//            updateTokenSpinner(it)
+//        } ?: run {
+//                updateDefaultPriceText()
+//                updateWalletInfo() // Set default UI for balanceOverview
+//        }
     }
 
     private fun updateWalletInfo() {

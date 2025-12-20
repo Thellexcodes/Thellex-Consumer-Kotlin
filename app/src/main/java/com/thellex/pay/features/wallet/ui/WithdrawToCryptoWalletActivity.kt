@@ -139,23 +139,23 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
     }
 
     private fun observeAndSetWalletBalance() {
-        walletManagerViewModel.walletBalance.observe(this) { balance ->
-            val walletMap = balance?.wallets ?: return@observe
-
-            val defaultWallet = walletMap.values.firstOrNull { it.assetCode == defaultToken }
-                ?: walletMap.values.firstOrNull()
-
-            if (selectedToken == null && defaultWallet != null) {
-                selectedToken = defaultWallet
-                defaultToken = defaultWallet.assetCode
-                selectedNetwork = defaultWallet.network
-                updateUIWithWallet(defaultWallet)
-            } else {
-                selectedToken?.let {
-                    updateUIWithWallet(it)
-                }
-            }
-        }
+//        walletManagerViewModel.walletBalance.observe(this) { balance ->
+//            val walletMap = balance?.wallets ?: return@observe
+//
+//            val defaultWallet = walletMap.values.firstOrNull { it.assetCode == defaultToken }
+//                ?: walletMap.values.firstOrNull()
+//
+//            if (selectedToken == null && defaultWallet != null) {
+//                selectedToken = defaultWallet
+//                defaultToken = defaultWallet.assetCode
+//                selectedNetwork = defaultWallet.network
+//                updateUIWithWallet(defaultWallet)
+//            } else {
+//                selectedToken?.let {
+//                    updateUIWithWallet(it)
+//                }
+//            }
+//        }
     }
 
     private fun updateUIWithWallet(wallet: WalletDto) {
@@ -206,14 +206,14 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
     }
 
     private fun showNetworkSelection() {
-        val wallets = walletManagerViewModel.walletBalance.value ?: return
-        NetworkSelectionTopSheet.show(supportFragmentManager, wallets.wallets) { selectedWallet ->
-            selectedToken = selectedWallet
-            selectedNetwork = selectedWallet.network
-            defaultToken = selectedWallet.assetCode
-            updateUIWithWallet(selectedWallet)
-//            showTokenSelectionForNetwork(selectedWallet.network)
-        }
+//        val wallets = walletManagerViewModel.walletBalance.value ?: return
+//        NetworkSelectionTopSheet.show(supportFragmentManager, wallets.wallets) { selectedWallet ->
+//            selectedToken = selectedWallet
+//            selectedNetwork = selectedWallet.network
+//            defaultToken = selectedWallet.assetCode
+//            updateUIWithWallet(selectedWallet)
+////            showTokenSelectionForNetwork(selectedWallet.network)
+//        }
     }
 
     private fun showTokenSelectionForNetwork() {
@@ -279,97 +279,97 @@ class WithdrawToCryptoWalletActivity : AppCompatActivity() {
             return
         }
 
-        val selected = selectedToken ?: walletManagerViewModel.walletBalance.value?.wallets?.values
-            ?.firstOrNull { it.assetCode == defaultToken }
+//        val selected = selectedToken ?: walletManagerViewModel.walletBalance.value?.wallets?.values
+//            ?.firstOrNull { it.assetCode == defaultToken }
+//
+//        if (selected == null) {
+//            CustomToast.show(this, "Warning", "No token selected")
+//            return
+//        }
+//
+//        val requestDto = CreateRequestPaymentDto(
+//            paymentType = PaymentType.WITHDRAW_CRYPTO,
+//            assetCode = selected.assetCode,
+//            amount = amountStr,
+//            network = selected.network,
+//            sourceAddress = selected.address,
+//            fundUid = walletAddress,
+//        )
 
-        if (selected == null) {
-            CustomToast.show(this, "Warning", "No token selected")
-            return
-        }
-
-        val requestDto = CreateRequestPaymentDto(
-            paymentType = PaymentType.WITHDRAW_CRYPTO,
-            assetCode = selected.assetCode,
-            amount = amountStr,
-            network = selected.network,
-            sourceAddress = selected.address,
-            fundUid = walletAddress,
-        )
-
-        setLoadingState(true)
-
-        lifecycleScope.launch {
-            setLoadingState(true)
-
-            try {
-                val response = ApiClient.getAuthenticatedPaymentApi(this@WithdrawToCryptoWalletActivity, cachedToken.toString())
-                    .withdrawCrypto(requestDto)
-
-                val result = response.body()?.result
-
-                if (response.isSuccessful && result != null) {
-                    userModel.addTransaction(result)
-
-                    CustomToast.show(
-                        this@WithdrawToCryptoWalletActivity,
-                        "Success",
-                        "Withdrawal submitted"
-                    )
-
-
-                    val intent = Intent(
-                        this@WithdrawToCryptoWalletActivity,
-                        TransactionSuccessActivity::class.java
-                    ).apply {
-                        putExtra("destinationAddress", result.destinationAddress)
-                        putExtra("recipientAmount", "${result.amount} ${result.assetCode.uppercase()}")
-                    }
-
-                    startActivity(intent)
-                } else {
-                    val errorMsg = response.errorBody()?.string() ?: "Something went wrong"
-                    Log.e(TAG, "Withdrawal failed: $errorMsg")
-                    ErrorHandler.handle(this@WithdrawToCryptoWalletActivity, "Failed", PaymentErrorEnum.fromCode(errorMsg))
-                }
-            } catch (e: Exception) {
-                val errorMessage = Helpers.getErrorMessageFromException(e)
-                val userError = PaymentErrorEnum.fromCode(errorMessage)
-
-                ErrorHandler.handle(this@WithdrawToCryptoWalletActivity, "Error", userError)
-                Log.e(TAG, "Network error during withdrawal: $errorMessage", e)
-            } finally {
-                setLoadingState(false)
-            }
-        }
-
-    }
-
-    private fun setLoadingState(isLoading: Boolean) {
-        // Keep layout enabled so children are visible
-        binding.withdrawBtn.isEnabled = true
-
-        // Disable clicks & focus when loading
-        binding.withdrawBtn.isClickable = !isLoading
-        binding.withdrawBtn.isFocusable = !isLoading
-
-        // Disable input fields
-        binding.withdrawAmountEditText.isEnabled = !isLoading
-        binding.withdrawCryptoWalletEdittextWalletAddress.isEnabled = !isLoading
-
-        // Show or hide spinner
-        binding.withdrawProgress.visibility = if (isLoading) View.VISIBLE else View.GONE
-
-        // Update button text and text color
-        binding.withdrawBtnText.text = if (isLoading) "PROCESSING" else getString(R.string.withdraw)
-        binding.withdrawBtnText.setTextColor(
-            if (isLoading) ContextCompat.getColor(this, R.color.white)
-            else ContextCompat.getColor(this, R.color.darkBlue)
-        )
-
-        // Change background drawable based on state
-        binding.withdrawBtn.setBackgroundResource(
-            if (isLoading) R.drawable.button_riple_darkblue else R.drawable.button_ripple_golden_yellow
-        )
+//        setLoadingState(true)
+//
+//        lifecycleScope.launch {
+//            setLoadingState(true)
+//
+//            try {
+//                val response = ApiClient.getAuthenticatedPaymentApi(this@WithdrawToCryptoWalletActivity, cachedToken.toString())
+//                    .withdrawCrypto(requestDto)
+//
+//                val result = response.body()?.result
+//
+//                if (response.isSuccessful && result != null) {
+//                    userModel.addTransaction(result)
+//
+//                    CustomToast.show(
+//                        this@WithdrawToCryptoWalletActivity,
+//                        "Success",
+//                        "Withdrawal submitted"
+//                    )
+//
+//
+//                    val intent = Intent(
+//                        this@WithdrawToCryptoWalletActivity,
+//                        TransactionSuccessActivity::class.java
+//                    ).apply {
+//                        putExtra("destinationAddress", result.destinationAddress)
+//                        putExtra("recipientAmount", "${result.amount} ${result.assetCode.uppercase()}")
+//                    }
+//
+//                    startActivity(intent)
+//                } else {
+//                    val errorMsg = response.errorBody()?.string() ?: "Something went wrong"
+//                    Log.e(TAG, "Withdrawal failed: $errorMsg")
+//                    ErrorHandler.handle(this@WithdrawToCryptoWalletActivity, "Failed", PaymentErrorEnum.fromCode(errorMsg))
+//                }
+//            } catch (e: Exception) {
+//                val errorMessage = Helpers.getErrorMessageFromException(e)
+//                val userError = PaymentErrorEnum.fromCode(errorMessage)
+//
+//                ErrorHandler.handle(this@WithdrawToCryptoWalletActivity, "Error", userError)
+//                Log.e(TAG, "Network error during withdrawal: $errorMessage", e)
+//            } finally {
+//                setLoadingState(false)
+//            }
+//        }
+//
+//    }
+//
+//    private fun setLoadingState(isLoading: Boolean) {
+//        // Keep layout enabled so children are visible
+//        binding.withdrawBtn.isEnabled = true
+//
+//        // Disable clicks & focus when loading
+//        binding.withdrawBtn.isClickable = !isLoading
+//        binding.withdrawBtn.isFocusable = !isLoading
+//
+//        // Disable input fields
+//        binding.withdrawAmountEditText.isEnabled = !isLoading
+//        binding.withdrawCryptoWalletEdittextWalletAddress.isEnabled = !isLoading
+//
+//        // Show or hide spinner
+//        binding.withdrawProgress.visibility = if (isLoading) View.VISIBLE else View.GONE
+//
+//        // Update button text and text color
+//        binding.withdrawBtnText.text = if (isLoading) "PROCESSING" else getString(R.string.withdraw)
+//        binding.withdrawBtnText.setTextColor(
+//            if (isLoading) ContextCompat.getColor(this, R.color.white)
+//            else ContextCompat.getColor(this, R.color.darkBlue)
+//        )
+//
+//        // Change background drawable based on state
+//        binding.withdrawBtn.setBackgroundResource(
+//            if (isLoading) R.drawable.button_riple_darkblue else R.drawable.button_ripple_golden_yellow
+//        )
     }
 
     companion object {

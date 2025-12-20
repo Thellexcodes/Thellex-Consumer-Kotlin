@@ -77,22 +77,22 @@ class POSChooseCryptoActivity : AppCompatActivity() {
     }
 
     private fun observeWalletData() {
-        walletManagerViewModel.walletBalance.observe(this) { walletDto ->
-            val updatedCryptoList1 = walletDto?.wallets?.values
-                ?.filter { wallet ->
-                    wallet.address?.isNotEmpty() == true && Helpers.isValidEvmAddress(wallet.address ?: "")
-                }?.map { wallet ->
-                    TokenListDto(
-                        wallet.assetCode,
-                        Helpers.getIconResIdForToken(wallet.assetCode.toString()),
-                        chainName = wallet.network.name
-                    )
-                }
-
-                updatedCryptoList1?.let {
-                    cryptoAdapter.updateData(it)
-                }
-        }
+//        walletManagerViewModel.walletBalance.observe(this) { walletDto ->
+//            val updatedCryptoList1 = walletDto?.wallets?.values
+//                ?.filter { wallet ->
+//                    wallet.address?.isNotEmpty() == true && Helpers.isValidEvmAddress(wallet.address ?: "")
+//                }?.map { wallet ->
+//                    TokenListDto(
+//                        wallet.assetCode,
+//                        Helpers.getIconResIdForToken(wallet.assetCode.toString()),
+//                        chainName = wallet.network.name
+//                    )
+//                }
+//
+//                updatedCryptoList1?.let {
+//                    cryptoAdapter.updateData(it)
+//                }
+//        }
     }
 }
 

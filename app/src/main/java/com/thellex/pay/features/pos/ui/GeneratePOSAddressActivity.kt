@@ -77,44 +77,44 @@ class GeneratePOSAddressActivity : AppCompatActivity() {
 
 
         // Observe wallet data and update UI
-        walletManagerViewModel.walletBalance.observe(this) { walletDto ->
-            val wallet = walletDto?.wallets?.get(assetCode)
-            val rawNetworkName = wallet?.network?.name?.lowercase(Locale.getDefault())
-
-            val displayNetworkName = Helpers.formatNetworkName(rawNetworkName)
-            binding.networkLabel.text = displayNetworkName.uppercase()
-
-            supportedBlockchains = rawNetworkName?.let {
-                try {
-                    val chain = SupportedBlockchainEnum.valueOf(it)
-                    listOf(BlockchainItem(chain, Helpers.getIconResIdForBlockchain(rawNetworkName)))
-                } catch (e: IllegalArgumentException) {
-                    emptyList()
-                }
-            } ?: emptyList()
-
-            walletAddress = wallet?.address ?: "No address found"
-            binding.walletAddressText.text = walletAddress
-
-            // Generate and display QR code
-            val qrBitmap = QrCodeGenerator.generateCustomQRCode(
-                context = this,
-                data = walletAddress ?: "no-address",
-                widthDp = 323, // Match @dimen/dp_323
-                heightDp = 323,
-                logoResId = Helpers.getIconResIdForToken(assetCode),
-            )
-            binding.qrCodeImage.setImageBitmap(qrBitmap)
-        }
+//        walletManagerViewModel.walletBalance.observe(this) { walletDto ->
+//            val wallet = walletDto?.wallets?.get(assetCode)
+//            val rawNetworkName = wallet?.network?.name?.lowercase(Locale.getDefault())
+//
+//            val displayNetworkName = Helpers.formatNetworkName(rawNetworkName)
+//            binding.networkLabel.text = displayNetworkName.uppercase()
+//
+//            supportedBlockchains = rawNetworkName?.let {
+//                try {
+//                    val chain = SupportedBlockchainEnum.valueOf(it)
+//                    listOf(BlockchainItem(chain, Helpers.getIconResIdForBlockchain(rawNetworkName)))
+//                } catch (e: IllegalArgumentException) {
+//                    emptyList()
+//                }
+//            } ?: emptyList()
+//
+//            walletAddress = wallet?.address ?: "No address found"
+//            binding.walletAddressText.text = walletAddress
+//
+//            // Generate and display QR code
+//            val qrBitmap = QrCodeGenerator.generateCustomQRCode(
+//                context = this,
+//                data = walletAddress ?: "no-address",
+//                widthDp = 323, // Match @dimen/dp_323
+//                heightDp = 323,
+//                logoResId = Helpers.getIconResIdForToken(assetCode),
+//            )
+//            binding.qrCodeImage.setImageBitmap(qrBitmap)
+//        }
 
         // Copy address action
-        binding.copyAddressActionLayout.setOnClickListener {
-            walletAddress?.takeIf { it != "No address found" }?.let { address ->
-                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                clipboard.setPrimaryClip(ClipData.newPlainText("Wallet Address", address))
-                Toast.makeText(this, "Address copied to clipboard", Toast.LENGTH_SHORT).show()
-            } ?: Toast.makeText(this, "Address not available yet", Toast.LENGTH_SHORT).show()
-        }
+//        binding.copyAddressActionLayout.setOnClickListener {
+//            walletAddress?.takeIf { it != "No address found" }?.let { address ->
+//                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+//                clipboard.setPrimaryClip(ClipData.newPlainText("Wallet Address", address))
+//                Toast.makeText(this, "Address copied to clipboard", Toast.LENGTH_SHORT).show()
+//            } ?: Toast.makeText(this, "Address not available yet", Toast.LENGTH_SHORT).show()
+//        }
     }
 }
 

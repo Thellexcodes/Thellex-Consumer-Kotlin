@@ -8,8 +8,33 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class WalletBalanceDto(
-    @SerializedName("totalInUsd") val totalInUsd: Double,
-    @SerializedName("wallets") val wallets: Map<String, WalletDto>
+    val totalInUsd: Double,
+    val assetTotals: Map<String, AssetTotalDto>,
+    val wallets: Map<String, GroupedWalletDto>
+)
+
+@Serializable
+data class AssetTotalDto(
+    val total: Double,
+    val valueInLocal: Double,
+    val valueInUsd: Double,
+    val logo: String
+)
+
+@Serializable
+data class GroupedWalletDto(
+    val network: String,
+    val address: String,
+    val assets: List<GroupedWalletAssetDto>
+)
+
+@Serializable
+data class GroupedWalletAssetDto(
+    val assetCode: String,
+    val balance: Double,
+    val valueInLocal: Double,
+    val valueInUsd: Double,
+    val transactionHistory: List<String>
 )
 
 @Serializable

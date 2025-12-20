@@ -14,7 +14,7 @@ import java.lang.reflect.Type
 
 interface WalletManagerService {
     @GET(Constants.Endpoints.WALLET_BALANCE)
-    suspend fun fetchBalance(@Query("action") action: String?): ApiResponse<WalletBalanceDto>
+    suspend fun fetchBalance(): ApiResponse<WalletBalanceDto>
 }
 
 class SupportedBlockchainDeserializer : JsonDeserializer<SupportedBlockchainEnum> {

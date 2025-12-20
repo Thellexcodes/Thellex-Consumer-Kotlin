@@ -94,6 +94,7 @@ dependencies {
     // OTP & Image Picker
     implementation(libs.otp.view)
     implementation(libs.imagepicker)
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     // Firebase
     implementation(platform(libs.firebase.bom))
