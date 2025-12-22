@@ -19,7 +19,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -33,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,18 +62,204 @@ import com.thellex.pay.core.decorators.Midnight
 import com.thellex.pay.core.decorators.OutfitFontFamily
 import com.thellex.pay.core.decorators.SteelBlueGrey
 import com.thellex.pay.core.decorators.White
+import com.thellex.pay.core.utils.Helpers.isValidAmount
+import com.thellex.pay.data.model.ChainInfo
+import com.thellex.pay.data.model.TokenInfo
+import com.thellex.pay.shared.AppFullWidthModal
+import com.thellex.pay.shared.DropdownField
 import com.thellex.pay.shared.IconDisplayer
+import com.thellex.pay.shared.InfoCard
+import com.thellex.pay.shared.InfoCardType
+import com.thellex.pay.shared.MaxButton
+import com.thellex.pay.shared.NetworkSelectionContent
 import com.thellex.pay.shared.PrimaryButton
+import com.thellex.pay.shared.SendInputField
+
+val supportedTokens = listOf(
+    TokenInfo(
+        id = "USDT",
+        symbol = "USDT",
+        iconRes = R.drawable.icon_usdt
+    ),
+    TokenInfo(
+        id = "USDC",
+        symbol = "USDC",
+        iconRes = R.drawable.icon_usdc
+    ),
+    TokenInfo(
+        id = "USD",
+        symbol = "USD",
+        iconRes = R.drawable.icon_usd
+    )
+)
+
+val supportedChains = listOf(
+    ChainInfo(
+        id = "BEP20",
+        displayName = "BNB Smart Chain (BEP 20)",
+        fee = "0.00 USDT",
+        minimumWithdrawal = "10 USDT",
+        arrivalTime = "≈ 1 min"
+    ),
+    ChainInfo(
+        id = "TRC20",
+        displayName = "Tron (TRC 20)",
+        fee = "1.00 USDT",
+        minimumWithdrawal = "10 USDT",
+        arrivalTime = "≈ 2 mins"
+    ),
+    ChainInfo(
+        id = "ERC20",
+        displayName = "Ethereum (ERC 20)",
+        fee = "5.00 USDT",
+        minimumWithdrawal = "20 USDT",
+        arrivalTime = "≈ 5 mins"
+    ),
+    ChainInfo(
+        id = "POLYGON",
+        displayName = "Polygon PoS",
+        fee = "0.10 USDT",
+        minimumWithdrawal = "5 USDT",
+        arrivalTime = "≈ 1 min"
+    )
+)
+
+
+@Composable
+fun ChainItem(
+    chain: ChainInfo,
+    onClick: (ChainInfo) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                color = DarkBlue,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .clickable { onClick(chain) }
+            .padding(16.dp)
+    ) {
+        Text(
+            text = chain.displayName,
+            color = Color.White,
+            fontFamily = KumbhSansFontFamily,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            text = "Fee ${chain.fee}",
+            color = SteelBlueGrey,
+            fontFamily = KumbhSansFontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 10.sp,
+        )
+
+        Text(
+            text = "Minimum Withdrawal ${chain.minimumWithdrawal}",
+            color = SteelBlueGrey,
+            fontSize = 10.sp,
+            fontFamily = KumbhSansFontFamily,
+            fontWeight = FontWeight.Normal,
+        )
+
+        Text(
+            text = "Arrival Time ${chain.arrivalTime}",
+            color = SteelBlueGrey,
+            fontSize = 10.sp,
+            fontFamily = KumbhSansFontFamily,
+            fontWeight = FontWeight.Normal,
+        )
+    }
+}
+
+@Composable
+fun TokenItem(
+    token: TokenInfo,
+    selected: Boolean,
+    onClick: (TokenInfo) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = DarkBlue,
+                shape = RoundedCornerShape(14.dp)
+            )
+            .clickable { onClick(token) }
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Asset Icon
+        Image(
+            painter = painterResource(token.iconRes),
+            contentDescription = token.symbol,
+            modifier = Modifier.height(32.dp).width(32.dp)
+        )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        // Token Symbol
+        Text(
+            text = token.symbol,
+            color = Color.White,
+            modifier = Modifier.weight(1f)
+        )
+
+        // Selected Icon
+        if (selected) {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = "Selected",
+                tint = Color(0xFF4CAF50)
+            )
+        }
+    }
+}
+
+@Composable
+fun TokenSelectionContent(
+    tokens: List<TokenInfo>,
+    selectedTokenId: String?,
+    onTokenSelected: (TokenInfo) -> Unit
+) {
+    Column {
+        tokens.forEach { token ->
+            TokenItem(
+                token = token,
+                selected = token.id == selectedTokenId,
+                onClick = { selected ->
+                    onTokenSelected(selected)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+    }
+}
+
 
 @SuppressLint("ContextCastToActivity")
 @Composable
 fun CryptoWithdrawalScreen(
     navController: NavHostController,
 ) {
+    var showNetworkModal by remember { mutableStateOf(false) }
+    var walletAddress by remember { mutableStateOf("") }
+    var amount by remember { mutableStateOf("") }
+    val selectedNetwork = remember { mutableStateOf("Select Network") }
+    var selectedTokenId by rememberSaveable { mutableStateOf<String?>(null) }
+    var showTokenModal by remember { mutableStateOf(false) }
+
     AppGradientBackground {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
         ) { paddingValues ->
+            // Main content
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -78,7 +268,7 @@ fun CryptoWithdrawalScreen(
             ) {
                 val activity = LocalContext.current as? Activity
 
-                IconButton(onClick = {activity?.finish()}) {
+                IconButton(onClick = { activity?.finish() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
@@ -111,22 +301,27 @@ fun CryptoWithdrawalScreen(
                 }
 
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(16.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
                 ) {
                     SendInputField(
-                        modifier = Modifier,
-                        value = "",
-                        onValueChange = { },
+                        modifier = Modifier.fillMaxWidth(),
+                        value = walletAddress,
+                        onValueChange = { walletAddress = it },
                         placeholder = "Enter Wallet Address",
                         trailingIcon = { }
                     )
+
                     Spacer(modifier = Modifier.height(19.dp))
-                    DarkDropdownSelect(
+
+                    DropdownField(
                         placeholder = "Select Network",
-                        selected = null,
-                        onSelect = {}
+                        selected = selectedNetwork.value.ifBlank { null },
+                        onClick = { showNetworkModal = true }
                     )
-                    Spacer(modifier = Modifier.height(19.dp))
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Box(
                         modifier = Modifier
@@ -151,8 +346,12 @@ fun CryptoWithdrawalScreen(
                             ) {
                                 SendInputField(
                                     modifier = Modifier.weight(1f),
-                                    value = "",
-                                    onValueChange = { },
+                                    value = amount,
+                                    onValueChange = { input ->
+                                        if (input.isValidAmount()) {
+                                            amount = input
+                                        }
+                                    },
                                     placeholder = "Enter Amount",
                                     trailingIcon = {}
                                 )
@@ -165,9 +364,10 @@ fun CryptoWithdrawalScreen(
                                         .clip(RoundedCornerShape(8.dp))
                                         .background(DarkBlue)
                                         .padding(horizontal = 5.dp),
-                                        contentAlignment = Alignment.Center
+                                    contentAlignment = Alignment.Center
                                 ){
                                     Row(
+                                        modifier = Modifier.clickable { showTokenModal = true },
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                                     ) {
@@ -225,157 +425,59 @@ fun CryptoWithdrawalScreen(
                             }
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
+                    Spacer(modifier = Modifier.height(15.dp))
                     PrimaryButton(
-                        modifier = Modifier,
+                        modifier = Modifier.fillMaxWidth(),
                         text = "CONFIRM",
-                        onClick = {},
+                        onClick = {  },
                         enabled = true
                     )
                 }
             }
+
+            // Modal is placed here - at the top level after Scaffold
+            AppFullWidthModal(
+                show = showNetworkModal,
+                onDismiss = { showNetworkModal = false },
+                title = "Select Network"
+            ) {
+                Column {
+                    InfoCard(text = "Ensure that the network matches the address and the deposit platform or assets may be lost.", type = InfoCardType.WARNING)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    NetworkSelectionContent(
+                        chains = supportedChains,
+                        onChainSelected = { chain -> }
+                    )
+                }
+            }
+
+            AppFullWidthModal(
+                show = showTokenModal,
+                onDismiss = { showTokenModal = false },
+                title = "Select Asset"
+            ) {
+                TokenSelectionContent(
+                    tokens = supportedTokens,
+                    selectedTokenId = selectedTokenId,
+                    onTokenSelected = { token -> selectedTokenId = token.id }
+                )
+            }
+
         }
     }
 }
 
 @Composable
-fun CryptoWithdrawalScreenRoute(
-    navController: NavHostController,
-) {
-    CryptoWithdrawalScreen(navController)
+fun CryptoWithdrawalScreenRoute(navController: NavHostController){
+    CryptoWithdrawalScreen(
+        navController = rememberNavController()
+    )
 }
-
 
 @Preview(showBackground = true)
 @Composable
 fun CryptoWithdrawalScreenPreview() {
     CryptoWithdrawalScreen(
-        navController = rememberNavController(),
+        navController = rememberNavController()
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SendInputField(
-    modifier: Modifier,
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String = "",
-    trailingIcon: @Composable (() -> Unit)? = null,
-    readOnly: Boolean = false
-) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(DarkBlue.copy(alpha = 0.2f)),
-            singleLine = true,
-            readOnly = readOnly,
-            textStyle = TextStyle(
-                color = Color.White,
-                fontSize = 16.sp
-            ),
-            placeholder = {
-                Text(
-                    text = placeholder,
-                    color = SteelBlueGrey,
-                    fontSize = 12.sp,
-                    fontFamily = KumbhSansFontFamily,
-                    fontWeight = FontWeight.Normal
-                )
-            },
-            trailingIcon = trailingIcon,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent,
-                disabledBorderColor = Color.Transparent,
-                errorBorderColor = Color.Transparent,
-                cursorColor = Color.White
-            )
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DarkDropdownSelect(
-    placeholder: String,
-    selected: String?,
-    onSelect: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    showLeadingIcon: Boolean = false,
-    leadingIcon: @Composable (() -> Unit)? = null
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(45.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(DarkBlue.copy(alpha = 0.2f))
-            .clickable(enabled = enabled) { }
-            .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-
-                if (showLeadingIcon && leadingIcon != null) {
-                    leadingIcon()
-                }
-
-                Text(
-                    text = selected ?: placeholder,
-                    color = if (selected == null) SteelBlueGrey else Color.White,
-                    fontSize = 12.sp,
-                    fontFamily = KumbhSansFontFamily,
-                    fontWeight = FontWeight.Normal
-                )
-            }
-
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowDown,
-                contentDescription = null,
-                tint = Color.White.copy(alpha = 0.7f)
-            )
-        }
-    }
-}
-
-
-@Composable
-fun MaxButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .height(32.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(BrightSkyBlue)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "MAX",
-            color = Color.White,
-            fontSize = 7.5.sp,
-            fontWeight = FontWeight.Normal
-        )
-    }
 }

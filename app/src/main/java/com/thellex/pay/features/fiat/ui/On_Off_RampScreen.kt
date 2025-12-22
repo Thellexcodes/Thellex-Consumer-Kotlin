@@ -52,16 +52,16 @@ import com.thellex.pay.core.decorators.White
 import com.thellex.pay.data.enums.OnOffRampAction
 import com.thellex.pay.features.wallet.model.AssetTotalDto
 import com.thellex.pay.features.wallet.model.WalletBalanceDto
-import com.thellex.pay.features.wallet.ui.DarkDropdownSelect
-import com.thellex.pay.features.wallet.ui.MaxButton
-import com.thellex.pay.features.wallet.ui.SendInputField
 import com.thellex.pay.features.wallet.ui.WalletScreen
 import com.thellex.pay.shared.Accordion
 import com.thellex.pay.shared.CenteredTopBar
+import com.thellex.pay.shared.DropdownField
 import com.thellex.pay.shared.IconDisplayer
 import com.thellex.pay.shared.InfoCard
 import com.thellex.pay.shared.InfoCardType
+import com.thellex.pay.shared.MaxButton
 import com.thellex.pay.shared.PrimaryButton
+import com.thellex.pay.shared.SendInputField
 
 @Composable
 fun PendingTransactionsRow(
@@ -155,7 +155,7 @@ fun On_Off_RampScreen(
 
                     Spacer(modifier = Modifier.weight(0.3f))
 
-                    DarkDropdownSelect(
+                    DropdownField(
                         placeholder = "Select Network",
                         selected = "Ethereum",
                         showLeadingIcon = true,
@@ -167,8 +167,9 @@ fun On_Off_RampScreen(
                                 modifier = Modifier.width(18.dp).height(18.dp)
                             )
                         },
-                        onSelect = {},
-                        modifier = Modifier.weight(0.4f)
+                        modifier = Modifier.weight(0.4f),
+                        onClick = {},
+                        enabled = true
                     )
                 }
 
@@ -359,12 +360,13 @@ fun On_Off_RampScreen(
                             fontSize = 10.sp
                         )
 
-                        DarkDropdownSelect(
+                        DropdownField(
                             placeholder = "Select Reason",
                             selected = "",
                             showLeadingIcon = false,
-                            onSelect = {},
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {},
+                            enabled = true,
                         )
                     }
 

@@ -656,6 +656,11 @@ object Helpers {
                 "${FiatTickers.getByCodeOrCountry("usd")?.symbol}${usdFee.truncateToTwoDecimals()}"
 
     fun formatRampAmount(amount: Double, currency: String): String = "${amount.truncateToTwoDecimals()} $currency"
+
+    fun String.isValidAmount(): Boolean {
+        // Allows numbers and a single decimal point
+        return this.matches(Regex("^\\d*(\\.\\d*)?$"))
+    }
 }
 
 //fun String.capitalizeFirst(): String {
