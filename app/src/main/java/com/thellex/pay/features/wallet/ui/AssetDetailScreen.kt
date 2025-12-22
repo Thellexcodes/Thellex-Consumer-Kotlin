@@ -105,12 +105,15 @@ fun AssetDetailScreen(
     val onBackClick = { navController?.popBackStack() }
     val onDepositClick = { //navController.navigate("deposit_screen")
          }
-    val onSendClick = { //navController.navigate("send_screen")
-         }
-    val onConvertClick = { //navController.navigate("convert_screen")
-         }
-    val onSeeAllClick = { //navController.navigate("transaction_history")
-         }
+    val onSendClick = {
+        //navController.navigate("send_screen")
+    }
+    val onConvertClick = {
+        //navController.navigate("convert_screen")
+    }
+    val onSeeAllClick = {
+        //navController.navigate("transaction_history")
+    }
 
 
     AppGradientBackground {
@@ -212,7 +215,7 @@ fun AssetDetailScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+//                Spacer(modifier = Modifier.height(16.dp))
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(16.dp),

@@ -20,7 +20,7 @@ class TransactionSuccessActivity : AppCompatActivity() {
         binding = ActivityTransactionSuccessBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ActivityTracker.add(this)
-        ActivityTracker.finishActivity(WithdrawToCryptoWalletActivity::class.java)
+//        ActivityTracker.finishActivity(WithdrawToCryptoWalletActivity::class.java)
 
         initView()
         handleIntent()
@@ -56,7 +56,7 @@ class TransactionSuccessActivity : AppCompatActivity() {
     private fun setupListeners() {
         binding.buttonDone.setOnClickListener {
             startActivity(Intent(this, POSHomeActivity::class.java))
-            ActivityTracker.finishActivity(WithdrawToCryptoWalletActivity::class.java)
+//            ActivityTracker.finishActivity(WithdrawToCryptoWalletActivity::class.java)
             finish()
         }
     }

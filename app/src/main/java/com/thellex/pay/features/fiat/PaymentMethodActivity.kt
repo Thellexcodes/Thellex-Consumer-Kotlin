@@ -58,7 +58,7 @@ class PaymentMethodActivity : AppCompatActivity() {
                 bankName = selectedMethod.bankName,
             )
             cryptoToFiatViewModel.bankInfo.value = bankInfo
-            startActivity(Intent(this, OffRampSummaryActivity::class.java))
+//            startActivity(Intent(this, OffRampSummaryActivity::class.java))
         }
 
         binding.paymentMethodsRecycler.apply {
@@ -84,15 +84,15 @@ class PaymentMethodActivity : AppCompatActivity() {
         )[WalletManagerViewModel::class.java]
 
 //         Scope to CryptoToFiatOffRampActivity to share ViewModel
-        cryptoToFiatViewModel = ViewModelProvider(
-            owner = findActivity(CryptoToFiatOffRampActivity::class.java)
-                ?: run {
-                    startActivity(Intent(this, CryptoToFiatOffRampActivity::class.java))
-                    finish()
-                    return@setupViewModel
-                },
-            factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-        )[CryptoToFiatViewModel::class.java]
+//        cryptoToFiatViewModel = ViewModelProvider(
+//            owner = findActivity(CryptoToFiatOffRampActivity::class.java)
+//                ?: run {
+//                    startActivity(Intent(this, CryptoToFiatOffRampActivity::class.java))
+//                    finish()
+//                    return@setupViewModel
+//                },
+//            factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+//        )[CryptoToFiatViewModel::class.java]
     }
 
     private fun findActivity(activityClass: Class<out AppCompatActivity>): AppCompatActivity? {

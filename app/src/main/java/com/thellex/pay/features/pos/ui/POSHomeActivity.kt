@@ -43,9 +43,7 @@ import com.thellex.pay.features.kyc.ui.basic.KycSuccessActivity
 import com.thellex.pay.features.auth.ui.LoginActivity
 import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
 import com.thellex.pay.features.dashboard.ui.MainActivity
-import com.thellex.pay.features.fiat.CryptoToFiatOffRampActivity
 import com.thellex.pay.features.fiat.OnRampFiatSummaryActivity
-import com.thellex.pay.features.fiat.FiatToCryptoOnRampActivity
 import com.thellex.pay.features.fiat.FiatWithdrawActivity
 import com.thellex.pay.features.kyc.ui.StartKycActivity
 import com.thellex.pay.features.notifications.ui.NotificationsActivity
@@ -57,7 +55,6 @@ import com.thellex.pay.features.profile.ProfileActivity
 import com.thellex.pay.features.wallet.ui.TransactionSuccessActivity
 import com.thellex.pay.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.pay.features.wallet.utils.WalletManagerViewModel
-import com.thellex.pay.features.wallet.ui.WithdrawToCryptoWalletActivity
 import com.thellex.pay.network.services.ApiClient
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -343,7 +340,7 @@ class POSHomeActivity : AppCompatActivity() {
 
             val intent = ComposeHostActivity.newIntent(
                 this@POSHomeActivity,
-                ComposeRoutes.Wallet.route
+                ComposeRoutes.WalletHome.route
             )
             startActivity(intent)
         }
@@ -365,7 +362,7 @@ class POSHomeActivity : AppCompatActivity() {
                 startActivity(Intent(this@POSHomeActivity, POSChooseCryptoActivity::class.java))
             }
             override fun onCryptoToFiatOnRampClick() {
-                startActivity(Intent(this@POSHomeActivity, FiatToCryptoOnRampActivity::class.java))
+//                startActivity(Intent(this@POSHomeActivity, FiatToCryptoOnRampActivity::class.java))
             }
 
             override fun onFiatDepositClick() {
@@ -386,7 +383,7 @@ class POSHomeActivity : AppCompatActivity() {
 
         modal.setListener(object : WithdrawalOptionsModalFragment.WithdrawalOptionsListener {
             override fun onCryptoToFiatOffRamp() {
-                startActivity(Intent(this@POSHomeActivity, CryptoToFiatOffRampActivity::class.java))
+//                startActivity(Intent(this@POSHomeActivity, CryptoToFiatOffRampActivity::class.java))
             }
 
             override fun onWithdrawToBank() {
@@ -394,7 +391,12 @@ class POSHomeActivity : AppCompatActivity() {
             }
 
             override fun onChainWithdraw() {
-                startActivity(Intent(this@POSHomeActivity, WithdrawToCryptoWalletActivity::class.java))
+                val intent = ComposeHostActivity.newIntent(
+                    this@POSHomeActivity,
+                    ComposeRoutes.CryptoWithdrawal.route
+                )
+                startActivity(intent)
+//                startActivity(Intent(this@POSHomeActivity, WithdrawToCryptoWalletActivity::class.java))
             }
 
             override fun onStartKyc() {

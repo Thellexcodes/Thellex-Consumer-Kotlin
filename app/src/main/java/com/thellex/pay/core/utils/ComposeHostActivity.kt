@@ -15,11 +15,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.thellex.pay.core.routes.ComposeRoutes
+import com.thellex.pay.data.enums.OnOffRampAction
 import com.thellex.pay.features.auth.ui.SecuritySettingsScreen
 import com.thellex.pay.features.fiat.RampTransactionDetailScreen
 import com.thellex.pay.features.fiat.RampTransactionsScreen
+import com.thellex.pay.features.fiat.ui.On_Off_RampScreen
 import com.thellex.pay.features.wallet.ui.AssetDetailScreen
 import com.thellex.pay.features.wallet.ui.AssetDetailScreenRoute
+import com.thellex.pay.features.wallet.ui.CryptoWithdrawalReviewRoute
+import com.thellex.pay.features.wallet.ui.CryptoWithdrawalScreenRoute
 import com.thellex.pay.features.wallet.ui.WalletScreenRoute
 import com.thellex.pay.screens.WebViewScreen
 import com.thellex.pay.v2.features.payment_links.PaymentLinksScreen
@@ -60,8 +64,16 @@ class ComposeHostActivity : ComponentActivity() {
                         })
                     }
 
-                    composable(ComposeRoutes.Wallet.route) {
+                    composable(ComposeRoutes.WalletHome.route) {
                         WalletScreenRoute(navController)
+                    }
+
+                    composable(ComposeRoutes.CryptoWithdrawal.route) {
+                        CryptoWithdrawalScreenRoute(navController)
+                    }
+
+                    composable(ComposeRoutes.CryptoWithdrawalReview.route) {
+                        CryptoWithdrawalReviewRoute(navController)
                     }
 
                     composable(
@@ -103,6 +115,21 @@ class ComposeHostActivity : ComponentActivity() {
                                 assetCode = assetCode
                             )
                         }
+                    }
+
+                    composable(
+                        route = "${ComposeRoutes.OnOffRamp.route}/{action}",
+                        arguments = listOf(navArgument("action") {
+                            type = androidx.navigation.NavType.StringType
+                            defaultValue = initialRampId
+                        })
+                    ) { backStackEntry ->
+                        val actionParam = backStackEntry.arguments?.getString("action")
+                        val action = OnOffRampAction.fromRoute(actionParam)
+                        On_Off_RampScreen(
+                            navController = navController,
+                            action = action
+                        )
                     }
                 }
             }

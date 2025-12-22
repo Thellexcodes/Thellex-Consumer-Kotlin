@@ -52,6 +52,8 @@ import com.thellex.pay.features.wallet.model.AssetTotalDto
 import com.thellex.pay.features.wallet.model.WalletBalanceDto
 import com.thellex.pay.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.pay.features.wallet.utils.WalletManagerViewModel
+import com.thellex.pay.shared.BackIconButton
+import com.thellex.pay.shared.CenteredTopBar
 import com.thellex.pay.shared.IconDisplayer
 
 data class CryptoOption(
@@ -99,27 +101,14 @@ fun WalletScreen(
             ) {
                 val activity = LocalContext.current as? Activity
 
-                IconButton(onClick = {activity?.finish()}) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
+                CenteredTopBar(
+                    title = "",
+                    onBackClick = { activity?.finish() }
+                )
 
                 Column(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ){
-                    Text(
-                        text = "MERCHANT WITHDRAWAL",
-                        color = White,
-                        fontSize = 14.sp,
-                        fontFamily = KumbhSansFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                    )
 
                     Spacer(modifier = Modifier.height(28.dp))
 
@@ -281,17 +270,15 @@ fun WalletScreenRoute(
 @Preview(showBackground = true)
 @Composable
 fun WalletScreenPreview() {
-    AppGradientBackground {
-        WalletScreen(
-            navController = rememberNavController(),
-            walletState = WalletBalanceDto(
-                totalInUsd = 4.79,
-                assetTotals = mapOf(
-                    "usdc" to AssetTotalDto(1.35, 0.0, 1.35, "https://example.com/usdc.png"),
-                    "xlm" to AssetTotalDto(1.0, 0.0, 1.0, "https://example.com/xlm.png")
-                ),
-                wallets = emptyMap()
-            )
+    WalletScreen(
+        navController = rememberNavController(),
+        walletState = WalletBalanceDto(
+            totalInUsd = 4.79,
+            assetTotals = mapOf(
+                "usdc" to AssetTotalDto(1.35, 0.0, 1.35, "https://example.com/usdc.png"),
+                "xlm" to AssetTotalDto(1.0, 0.0, 1.0, "https://example.com/xlm.png")
+            ),
+            wallets = emptyMap()
         )
-    }
+    )
 }

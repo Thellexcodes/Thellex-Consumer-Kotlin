@@ -25,7 +25,6 @@ import com.thellex.pay.databinding.BottomSheetAddAccountBinding
 import com.thellex.pay.databinding.TopAppBarBinding
 import com.thellex.pay.features.auth.viewModel.UserViewModel
 import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
-import com.thellex.pay.features.fiat.CryptoToFiatOffRampActivity
 import com.thellex.pay.features.fiat.adapters.NGBankDto
 import com.thellex.pay.network.services.ApiClient
 import kotlinx.coroutines.delay
@@ -163,10 +162,10 @@ class AddAccountBottomSheetFragment : BottomSheetDialogFragment() {
 
                         delay(5000)
 
-                        val intent = Intent(requireContext(), CryptoToFiatOffRampActivity::class.java)
-                        startActivity(intent)
-                        requireActivity().finish()
-                        dismiss()
+//                        val intent = Intent(requireContext(), CryptoToFiatOffRampActivity::class.java)
+//                        startActivity(intent)
+//                        requireActivity().finish()
+//                        dismiss()
                     }
 
                 } catch (e: Exception) {
