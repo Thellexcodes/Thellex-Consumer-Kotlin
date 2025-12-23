@@ -17,7 +17,6 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import com.thellex.pay.R
 import com.thellex.pay.core.utils.ActivityTracker
-import com.thellex.pay.core.utils.AppUpdateHelper
 import com.thellex.pay.core.utils.CustomToast
 import com.thellex.pay.core.utils.ErrorHandler
 import com.thellex.pay.core.utils.Helpers
@@ -29,7 +28,6 @@ import com.thellex.pay.data.enums.UserErrorEnum
 import com.thellex.pay.databinding.ActivityLoginBinding
 import com.thellex.pay.network.services.ApiClient
 import com.thellex.pay.data.model.LoginRequestDto
-import com.thellex.pay.data.repository.AppVersionRepository
 import com.thellex.pay.features.auth.viewModel.UserViewModel
 import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
 import com.thellex.pay.features.profile.ProfileActivity

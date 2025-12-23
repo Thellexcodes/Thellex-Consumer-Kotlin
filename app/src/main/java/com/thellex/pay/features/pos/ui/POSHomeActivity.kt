@@ -37,6 +37,7 @@ import com.thellex.pay.data.model.AdminRampTransactionsResponse
 import com.thellex.pay.data.model.ApiResponse
 import com.thellex.pay.data.model.ITransactionHistoryDto
 import com.thellex.pay.data.model.TransactionTypeEnum
+import com.thellex.pay.data.repository.BaseSettingsRepository
 import com.thellex.pay.databinding.ActivityPOSBinding
 import com.thellex.pay.features.auth.ui.AuthVerificationActivity
 import com.thellex.pay.features.kyc.ui.basic.KycSuccessActivity
@@ -69,6 +70,8 @@ class POSHomeActivity : AppCompatActivity() {
     private var isBalanceVisible = true
     private var currentBalance = "0.00"
     private val emptyStateMediator = MediatorLiveData<Pair<Int, List<ITransactionHistoryDto>?>>()
+    private lateinit var baseSettingsRepo: BaseSettingsRepository
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +92,8 @@ class POSHomeActivity : AppCompatActivity() {
             WalletManagerModelFactory(applicationContext)
         )[WalletManagerViewModel::class.java]
 
+        baseSettingsRepo = BaseSettingsRepository(this)
+
         setupClickListeners()
         setupWalletBalanceObserver()
         loadAppData()
@@ -104,8 +109,6 @@ class POSHomeActivity : AppCompatActivity() {
             Log.e(TAG, "Error inflating layout: ${e.message}", e)
             throw e
         }
-
-
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -183,6 +186,7 @@ class POSHomeActivity : AppCompatActivity() {
                 // Initialize APIs
                 val adminApi = ApiClient.getAuthenticatedAdminApi(this@POSHomeActivity, token)
                 val userApi = ApiClient.getAuthenticatedUserApi(this@POSHomeActivity, token)
+                val settingsApi = ApiClient.getAppApi(this@POSHomeActivity, token)
 
                 // Get current user and admin data
                 val currentUser = userViewModel.authResult.asFlow().filterNotNull().first()
@@ -196,6 +200,7 @@ class POSHomeActivity : AppCompatActivity() {
                 val userRampDeferred = async { userApi.fetchRampTransactions() }
                 val userTxnHistoryDeferred = async { userApi.fetchTransactionHistory() }
                 val userNotificationsDeferred = async { userApi.fetchNotifications() }
+                val appSettings = async { settingsApi.getAppSettings() }
 
                 // Collect admin data
                 val updatedAdminData = try {
@@ -225,12 +230,15 @@ class POSHomeActivity : AppCompatActivity() {
                     Log.e(TAG, "Error fetching notifications", e)
                     emptyList()
                 }
+
+                lifecycleScope.launch {
+                    val chains = baseSettingsRepo.getBaseSettings(token)
+                    Log.d("ChainList", "Base settings response: $chains")
+                }
+
                 var mergedUser = currentUser
-
                 mergedUser = mergedUser.copy(fiatCryptoRampTransactions = userRampTransactions)
-
                 mergedUser = mergedUser.copy(transactionHistory = userTxnHistory)
-
                 mergedUser = mergedUser.copy(notifications = userNotifications)
 
                // Save results to ViewModel

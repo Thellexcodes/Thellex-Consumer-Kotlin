@@ -593,6 +593,9 @@ object Helpers {
             SupportedBlockchainEnum.stellar -> "Stellar"
             SupportedBlockchainEnum.base -> "Base"
             SupportedBlockchainEnum.lisk -> "Lisk"
+            SupportedBlockchainEnum.starknet -> "Starknet"
+            SupportedBlockchainEnum.tron -> "Tron"
+            SupportedBlockchainEnum.ethereum -> "Ethereum"
         }
     }
 

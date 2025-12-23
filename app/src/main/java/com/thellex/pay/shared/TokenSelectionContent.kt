@@ -18,7 +18,7 @@ fun TokenSelectionContent(
         tokens.forEach { token ->
             TokenItem(
                 token = token,
-                selected = token.id == selectedTokenId,
+                selected = token.name == selectedTokenId,
                 onClick = onTokenSelected
             )
             Spacer(modifier = Modifier.height(12.dp))

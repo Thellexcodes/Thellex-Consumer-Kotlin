@@ -10,10 +10,12 @@ import com.thellex.pay.core.utils.deserializers.NotificationKindEnumDeserializer
 import com.thellex.pay.data.enums.RoleEnum
 import com.thellex.pay.data.enums.RoleTypeDeserializer
 import com.thellex.pay.data.enums.TierEnum
+import com.thellex.pay.data.gson.TokenEnumDeserializer
 import com.thellex.pay.data.model.NotificationKindEnum
 import com.thellex.pay.data.model.PaymentStatusEnum
 import com.thellex.pay.data.model.TransactionTypeEnum
 import com.thellex.pay.settings.SupportedBlockchainEnum
+import com.thellex.pay.settings.TokenEnum
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -106,6 +108,7 @@ object ApiClient {
             val enumGson = GsonBuilder()
                 .registerTypeAdapter(NotificationKindEnum::class.java, NotificationKindEnumDeserializer())
                 .registerTypeAdapter(TierEnum::class.java, TierEnumDeserializer())
+                .registerTypeAdapter(TokenEnum::class.java, TokenEnumDeserializer())
                 .registerTypeAdapter(SupportedBlockchainEnum::class.java, SupportedBlockchainDeserializer())
                 .registerTypeAdapter(PaymentStatusEnum::class.java, PaymentStatusDeserializer())
                 .registerTypeAdapter(TransactionTypeEnum::class.java, TransactionTypeDeserializer())

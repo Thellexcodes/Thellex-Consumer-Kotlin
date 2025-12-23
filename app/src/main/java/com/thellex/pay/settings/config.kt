@@ -2,7 +2,7 @@ package com.thellex.pay.settings
 
 // --- Blockchain Only ---
 enum class SupportedBlockchainEnum {
-    lisk, base, stellar, bep20, matic;
+    lisk, base, stellar, bep20, matic, starknet, tron, ethereum;
 
     companion object {
         fun fromValue(value: String): SupportedBlockchainEnum? {
@@ -11,13 +11,18 @@ enum class SupportedBlockchainEnum {
     }
 }
 
-enum class TokensEnum {
-    usdc, usdt, xlm, btc
+enum class TokenEnum {
+    usdt, usdc, btc, eth, strk;
+
+    companion object {
+        fun fromValue(value: String): TokenEnum? {
+            return entries.find { it.name.equals(value, ignoreCase = true) }
+        }
+    }
 }
 
 enum class FiatEnum(val code: String) {
-    ngn("ngn"),
-    ghc("ghc");
+    ngn("ngn"), ghc("ghc");
 
     companion object {
         fun fromCode(code: String): FiatEnum? {

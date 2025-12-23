@@ -1,6 +1,7 @@
 package com.thellex.pay.data.model
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -26,7 +27,7 @@ data class AppVersionResponseDto(
     val latestVersion: String,
     val minSupportedVersion: String,
     val forceUpdate: Boolean,
-    val updateType: String, // e.g., "major", "minor", "patch"
+    val updateType: String,
     val downloadUrl: String? = null,
     val releaseNotes: String
 )

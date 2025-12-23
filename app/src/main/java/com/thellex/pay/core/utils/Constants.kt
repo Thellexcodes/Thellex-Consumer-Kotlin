@@ -140,6 +140,7 @@ object Constants {
 
         // App (not versioned)
         const val CHECK_APP_VERSION = "$API_PREFIX/v1.0.1/app/check-version"
+        const val GET_APP_SETTINGS = "$API_PREFIX/v2.0.0/settings/supported-network-setting"
 
         // Version mapping (for reference or dynamic use)
         private val endpointVersions = mapOf(

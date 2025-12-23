@@ -3,7 +3,7 @@ package com.thellex.pay.features.wallet.model
 import com.google.gson.annotations.SerializedName
 import com.thellex.pay.data.model.ITransactionHistoryDto
 import com.thellex.pay.settings.SupportedBlockchainEnum
-import com.thellex.pay.settings.TokensEnum
+import com.thellex.pay.settings.TokenEnum
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -43,7 +43,7 @@ data class WalletDto(
     @SerializedName("valueInLocal") val valueInLocal: Double,
     @SerializedName("network") val network: SupportedBlockchainEnum,
     @SerializedName("address") val address: String,
-    @SerializedName("assetCode") val assetCode: TokensEnum,
+    @SerializedName("assetCode") val assetCode: TokenEnum,
     @SerializedName("transactionHistory") val transactionHistory: List<ITransactionHistoryDto>
 )
 

@@ -4,12 +4,12 @@ import com.google.gson.annotations.SerializedName
 import com.thellex.pay.settings.FiatEnum
 import com.thellex.pay.settings.PaymentType
 import com.thellex.pay.settings.SupportedBlockchainEnum
-import com.thellex.pay.settings.TokensEnum
+import com.thellex.pay.settings.TokenEnum
 import kotlinx.serialization.Serializable
 
 data class CreateRequestPaymentDto(
     @SerializedName("paymentType") val paymentType: PaymentType,
-    @SerializedName("assetCode") val assetCode: TokensEnum,
+    @SerializedName("assetCode") val assetCode: TokenEnum,
     @SerializedName("assetIssuer") val assetIssuer: String? = null,
     @SerializedName("amount") val amount: String? = null,
     @SerializedName("network") val network: SupportedBlockchainEnum,
@@ -148,7 +148,7 @@ data class FiatToCryptoOnRampRequestDto(
 )
 
 data class CryptoToFiatOffRampRequestDto(
-    @SerializedName("assetCode") val assetCode: TokensEnum,
+    @SerializedName("assetCode") val assetCode: TokenEnum,
     @SerializedName("network") val network: SupportedBlockchainEnum,
     @SerializedName("userAmount") val userAmount: Double,
     @SerializedName("fiatCode") val fiatCode: FiatEnum,
