@@ -100,7 +100,7 @@ object Constants {
         const val VERIFY_PIN = "api/v2.0.0/auth/verify-pin"
 
         // Payments
-        const val WITHDRAW_CRYPTO = "api/v1.0.1/payments/withdraw-crypto"
+        const val WITHDRAW_CRYPTO = "api/v2.0.0/payments/withdraw-crypto"
 
         // Wallet Manager
         const val WALLET_BALANCE = "api/v2.0.0/wallet-manager/balance"
@@ -140,7 +140,7 @@ object Constants {
 
         // App (not versioned)
         const val CHECK_APP_VERSION = "$API_PREFIX/v1.0.1/app/check-version"
-        const val GET_APP_SETTINGS = "$API_PREFIX/v2.0.0/settings/supported-network-setting"
+        const val GET_BASE_APP_SETTINGS = "$API_PREFIX/v2.0.0/settings/base"
 
         // Version mapping (for reference or dynamic use)
         private val endpointVersions = mapOf(
@@ -192,7 +192,7 @@ object Constants {
     }
 
     fun getCompleteUrl(endpoint: String): String {
-        return "$BASE_URL$endpoint" // Endpoints are already versioned
+        return "$BASE_URL$endpoint"
     }
 
     fun isVersionSupported(version: String): Boolean {

@@ -1,5 +1,8 @@
 package com.thellex.pay.features.wallet.ui
 
+import android.app.Application
+import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -15,15 +18,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalGraphicsContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.thellex.pay.core.decorators.AppGradientBackground
@@ -33,52 +43,71 @@ import com.thellex.pay.core.decorators.KumbhSansFontFamily
 import com.thellex.pay.core.decorators.Midnight
 import com.thellex.pay.core.decorators.SteelBlueGrey
 import com.thellex.pay.core.decorators.White
+import com.thellex.pay.core.utils.Helpers.truncateMiddle
+import com.thellex.pay.data.model.CreateRequestPaymentDto
+import com.thellex.pay.features.auth.viewModel.UserRepository
+import com.thellex.pay.features.auth.viewModel.UserViewModel
+import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
+import com.thellex.pay.network.services.ApiClient
+import com.thellex.pay.settings.PaymentType
+import com.thellex.pay.settings.SupportedBlockchainEnum
+import com.thellex.pay.settings.TokenEnum
 import com.thellex.pay.shared.BackIconButton
 import com.thellex.pay.shared.CenteredTopBar
 import com.thellex.pay.shared.InfoCard
 import com.thellex.pay.shared.InfoCardType
 import com.thellex.pay.shared.PrimaryButton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 
-data class SummaryItem(
-    val label: String,
-    val value: String
-)
-
-val transactionSummaryItems = listOf(
-    SummaryItem("Recipient", "0xA1B2...9F3E"),
-    SummaryItem("Network", "Ethereum"),
-    SummaryItem("Amount", "120 USDT"),
-    SummaryItem("Network Fee", "0.003 ETH")
+@Serializable
+data class CryptoTransactionSummary(
+    val amount: String,
+    @Serializable val assetCode: TokenEnum,
+    val valueInUsd: Double? = null,
+    val valueInLocal: Double? = null,
+    val sourceAddress: String,
+    val fundUid: String,
+    @Serializable val network: SupportedBlockchainEnum,
+    val networkName: String,
+    val networkFee: Double
 )
 
 @Composable
 fun TransactionSummaryList(
-    items: List<SummaryItem>,
+    transaction: CryptoTransactionSummary,
     modifier: Modifier = Modifier
 ) {
+    val items = listOf(
+        "Recipient" to transaction.fundUid.truncateMiddle(),
+        "Network" to "${transaction.network}".uppercase(),
+        "Network Fee" to "${transaction.networkFee} ${transaction.assetCode.name.uppercase()}"
+    )
+
     Column(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(DarkBlue)
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(31.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items.forEach { item ->
+        items.forEach { (label, value) ->
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = item.label,
+                    text = label,
                     color = White,
                     fontSize = 12.sp,
                     fontFamily = KumbhSansFontFamily,
                     fontWeight = FontWeight.Normal
                 )
-
                 Text(
-                    text = item.value,
+                    text = value.toString(),
                     color = White,
                     fontSize = 12.sp,
                     fontFamily = KumbhSansFontFamily,
@@ -90,7 +119,17 @@ fun TransactionSummaryList(
 }
 
 @Composable
-fun CryptoWithdrawalReview(navController: NavController) {
+fun CryptoWithdrawalReview(
+    navController: NavController,
+    transaction: CryptoTransactionSummary? = null,
+    authToken: String? = ""
+) {
+    if (transaction == null || authToken == null) return
+
+    val application = LocalContext.current.applicationContext as Application
+
+    val coroutineScope = rememberCoroutineScope()
+
     AppGradientBackground {
         Scaffold(
             modifier = Modifier.fillMaxSize()
@@ -103,7 +142,6 @@ fun CryptoWithdrawalReview(navController: NavController) {
                     .padding(paddingValues)
             ) {
 
-                // ───── TOP CONTENT ─────
                 CenteredTopBar(
                     title = "Confirm Order",
                     onBackClick = { navController.popBackStack() }
@@ -117,16 +155,10 @@ fun CryptoWithdrawalReview(navController: NavController) {
                 ) {
 
                     // Amount section
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Box(
                             modifier = Modifier
-                                .border(
-                                    width = 1.dp,
-                                    color = GoldenYellow,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
+                                .border(1.dp, GoldenYellow, RoundedCornerShape(8.dp))
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
                             Text(text = "AMOUNT", color = White)
@@ -135,7 +167,7 @@ fun CryptoWithdrawalReview(navController: NavController) {
                         Spacer(modifier = Modifier.height(13.dp))
 
                         Text(
-                            text = "1 USD",
+                            text = "${transaction.amount} ${transaction.assetCode}".uppercase(),
                             color = White,
                             fontSize = 32.sp,
                             fontFamily = KumbhSansFontFamily,
@@ -145,7 +177,7 @@ fun CryptoWithdrawalReview(navController: NavController) {
                         Spacer(modifier = Modifier.height(9.dp))
 
                         Text(
-                            text = "$0.33",
+                            text = "USD ${transaction.valueInUsd ?: 0.0}",
                             color = SteelBlueGrey,
                             fontSize = 16.sp,
                             fontFamily = KumbhSansFontFamily
@@ -155,7 +187,7 @@ fun CryptoWithdrawalReview(navController: NavController) {
                     Spacer(modifier = Modifier.height(24.dp))
 
                     TransactionSummaryList(
-                        items = transactionSummaryItems,
+                        transaction = transaction,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
@@ -177,7 +209,50 @@ fun CryptoWithdrawalReview(navController: NavController) {
                 // ───── BOTTOM BUTTON ─────
                 PrimaryButton(
                     text = "CONFIRM",
-                    onClick = {},
+                    onClick = {
+                        coroutineScope.launch {
+                            try {
+                                withContext(Dispatchers.IO) {
+                                    Log.d("CryptoWithdrawal", "Payload: ${transaction.network}")
+
+                                    val sourceAddress = transaction.sourceAddress
+                                        ?: throw IllegalStateException("sourceAddress is null")
+
+                                    val fundUid = transaction.fundUid
+                                        ?: throw IllegalStateException("fundUid is null")
+
+                                    val payload = CreateRequestPaymentDto(
+                                        paymentType = PaymentType.WITHDRAW_CRYPTO,
+                                        assetCode = transaction.assetCode,
+                                        amount = transaction.amount,
+                                        network = transaction.network,
+                                        sourceAddress = sourceAddress,
+                                        fundUid = fundUid
+                                    )
+
+                                    val response = ApiClient
+                                        .getAuthenticatedPaymentApi(application, authToken)
+                                        .withdrawCrypto(payload)
+
+                                    if (!response.isSuccessful) {
+                                        throw IllegalStateException(
+                                            "Withdrawal failed ${response.code()} ${response.errorBody()?.string()}"
+                                        )
+                                    }
+
+                                    val intent = Intent(application, TransactionSuccessActivity::class.java).apply {
+                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                                                Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    }
+
+                                    application.startActivity(intent)
+                                }
+
+                            } catch (e: Exception) {
+                                Log.e("CryptoWithdrawal", "Withdrawal failed", e)
+                            }
+                        }
+                    },
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth()
@@ -187,16 +262,37 @@ fun CryptoWithdrawalReview(navController: NavController) {
     }
 }
 
-
 @Composable
-fun CryptoWithdrawalReviewRoute(navController: NavController) {
-    CryptoWithdrawalReview(navController)
+fun CryptoWithdrawalReviewRoute(
+    navController: NavController,
+    transaction: CryptoTransactionSummary? = null
+) {
+
+    val application = LocalContext.current.applicationContext as Application
+    val factory = UserViewModelFactory(application)
+    val userViewModel: UserViewModel = viewModel(factory = factory)
+    val authToken by userViewModel.token.observeAsState()
+
+    CryptoWithdrawalReview(navController, transaction, authToken)
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CryptoWithdrawalReviewPreview(){
+fun CryptoWithdrawalReviewPreview() {
+    val dummyTransaction = CryptoTransactionSummary(
+        amount = "1 USDT",
+        assetCode = TokenEnum.usdt,
+        valueInUsd = 1.0,
+        valueInLocal = 500.0,
+        sourceAddress = "0xA1B2...9F3E",
+        fundUid = "0xA1B2...9F3E",
+        networkName = "Ethereum",
+        networkFee = 0.003,
+        network = SupportedBlockchainEnum.ethereum,
+    )
+
     CryptoWithdrawalReview(
-        navController = rememberNavController()
+        navController = rememberNavController(),
+        transaction = dummyTransaction
     )
 }

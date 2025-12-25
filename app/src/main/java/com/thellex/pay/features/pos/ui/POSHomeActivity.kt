@@ -200,7 +200,6 @@ class POSHomeActivity : AppCompatActivity() {
                 val userRampDeferred = async { userApi.fetchRampTransactions() }
                 val userTxnHistoryDeferred = async { userApi.fetchTransactionHistory() }
                 val userNotificationsDeferred = async { userApi.fetchNotifications() }
-                val appSettings = async { settingsApi.getAppSettings() }
 
                 // Collect admin data
                 val updatedAdminData = try {
@@ -367,7 +366,11 @@ class POSHomeActivity : AppCompatActivity() {
 
         modal.setListener(object : RequestOptionsModalFragment.ReceiveOptionsListener {
             override fun onChainDepositClick() {
-                startActivity(Intent(this@POSHomeActivity, POSChooseCryptoActivity::class.java))
+                val intent = ComposeHostActivity.newIntent(
+                    this@POSHomeActivity,
+                    ComposeRoutes.CryptoDepositTokensSelection.route
+                )
+                startActivity(intent)
             }
             override fun onCryptoToFiatOnRampClick() {
 //                startActivity(Intent(this@POSHomeActivity, FiatToCryptoOnRampActivity::class.java))

@@ -75,3 +75,11 @@ data class TokenListDto(
     override fun toString(): String = assetCode.name
 }
 
+
+@Serializable()
+data class ICryptoWithdrawalResponseDto(
+    val hash: String,
+    @Serializable val status: PaymentStatusEnum,
+    val amount: String,
+    val assetCode: TokenEnum,
+)

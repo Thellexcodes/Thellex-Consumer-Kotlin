@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.thellex.pay.data.model.ChainInfo
+import com.thellex.pay.data.model.ChainInfoDto
 
 @Composable
 fun NetworkSelectionContent(
-    chains: List<ChainInfo>,
-    onChainSelected: (ChainInfo) -> Unit
+    chains: List<ChainInfoDto>,
+    onChainSelected: (ChainInfoDto) -> Unit
 ) {
     Column {
         chains.forEach { chain ->

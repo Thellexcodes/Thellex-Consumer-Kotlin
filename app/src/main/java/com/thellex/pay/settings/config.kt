@@ -2,7 +2,7 @@ package com.thellex.pay.settings
 
 // --- Blockchain Only ---
 enum class SupportedBlockchainEnum {
-    lisk, base, stellar, bep20, matic, starknet, tron, ethereum;
+    lisk, base, stellar, bep20, matic, starknet, tron, ethereum, celo;
 
     companion object {
         fun fromValue(value: String): SupportedBlockchainEnum? {

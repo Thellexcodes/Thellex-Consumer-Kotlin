@@ -16,6 +16,9 @@ object ComposeRoutes {
     val CryptoWithdrawal = Route("crypto_withdrawal")
     val CryptoWithdrawalReview = Route("crypto_withdrawal_review")
 
+    val CryptoDeposit = Route("crypto_deposit")
+    val CryptoDepositTokensSelection = Route("crypto_deposit_tokens_selection")
+
     val SecuritySettings = Route("security_settings")
 
     val WebView = Route("webview")

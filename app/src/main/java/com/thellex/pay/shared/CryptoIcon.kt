@@ -17,12 +17,13 @@ fun IconDisplayer(
     ticker: String,
     iconUrl: String?,
     modifier: Modifier = Modifier,
-    fallbackRes: Int = R.drawable.ngn_green,
+    fallbackRes: Int? = null,
 ) {
-    val model: Any = when {
+    val model: Any? = when {
         ticker.equals("ngn", ignoreCase = true) -> R.drawable.ngn_green
         !iconUrl.isNullOrBlank() -> iconUrl
-        else -> fallbackRes
+        fallbackRes != null -> fallbackRes
+        else -> null
     }
 
     AsyncImage(
@@ -33,8 +34,9 @@ fun IconDisplayer(
             .height(25.dp)
             .clip(CircleShape),
         contentScale = ContentScale.Crop,
-        placeholder = painterResource(fallbackRes),
-        error = painterResource(fallbackRes),
+        placeholder = fallbackRes?.let { painterResource(it) },
+        error = fallbackRes?.let { painterResource(it) },
     )
 }
+
 

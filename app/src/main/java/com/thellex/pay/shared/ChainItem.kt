@@ -15,12 +15,12 @@ import androidx.compose.ui.unit.sp
 import com.thellex.pay.core.decorators.DarkBlue
 import com.thellex.pay.core.decorators.KumbhSansFontFamily
 import com.thellex.pay.core.decorators.SteelBlueGrey
-import com.thellex.pay.data.model.ChainInfo
+import com.thellex.pay.data.model.ChainInfoDto
 
 @Composable
 fun ChainItem(
-    chain: ChainInfo,
-    onClick: (ChainInfo) -> Unit,
+    chain: ChainInfoDto,
+    onClick: (ChainInfoDto) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(

@@ -3,6 +3,7 @@ package com.thellex.pay.core.utils
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -10,6 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,13 +22,16 @@ import com.thellex.pay.features.auth.ui.SecuritySettingsScreen
 import com.thellex.pay.features.fiat.RampTransactionDetailScreen
 import com.thellex.pay.features.fiat.RampTransactionsScreen
 import com.thellex.pay.features.fiat.ui.On_Off_RampScreen
-import com.thellex.pay.features.wallet.ui.AssetDetailScreen
 import com.thellex.pay.features.wallet.ui.AssetDetailScreenRoute
+import com.thellex.pay.features.wallet.ui.CryptoDepositScreenRoute
+import com.thellex.pay.features.wallet.ui.CryptoDepositTokensSelectionRoute
+import com.thellex.pay.features.wallet.ui.CryptoTransactionSummary
 import com.thellex.pay.features.wallet.ui.CryptoWithdrawalReviewRoute
 import com.thellex.pay.features.wallet.ui.CryptoWithdrawalScreenRoute
 import com.thellex.pay.features.wallet.ui.WalletScreenRoute
 import com.thellex.pay.screens.WebViewScreen
 import com.thellex.pay.v2.features.payment_links.PaymentLinksScreen
+import kotlinx.serialization.json.Json
 
 class ComposeHostActivity : ComponentActivity() {
 
@@ -72,8 +77,37 @@ class ComposeHostActivity : ComponentActivity() {
                         CryptoWithdrawalScreenRoute(navController)
                     }
 
-                    composable(ComposeRoutes.CryptoWithdrawalReview.route) {
-                        CryptoWithdrawalReviewRoute(navController)
+                    composable(ComposeRoutes.CryptoDepositTokensSelection.route) {
+                        CryptoDepositTokensSelectionRoute(navController)
+                    }
+
+                    composable(
+                        route = "${ComposeRoutes.CryptoDeposit.route}?ticker={ticker}",
+                        arguments = listOf(
+                            navArgument("ticker") {
+                                type = NavType.StringType
+                                nullable = true
+                            }
+                        )
+                    ) { backStackEntry ->
+                        val ticker = backStackEntry.arguments?.getString("ticker")
+                        CryptoDepositScreenRoute(
+                            navController = navController,
+                            ticker = "$ticker"
+                        )
+                    }
+
+                    composable(
+                        route = ComposeRoutes.CryptoWithdrawalReview.route + "?transaction={transaction}",
+                        arguments = listOf(navArgument("transaction") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val json = backStackEntry.arguments?.getString("transaction")
+                        val decodedJson = Uri.decode(json ?: "")
+                        val transaction = if (decodedJson.isNotEmpty()) {
+                            Json.decodeFromString<CryptoTransactionSummary>(decodedJson)
+                        } else null
+
+                        CryptoWithdrawalReviewRoute(navController = navController, transaction = transaction)
                     }
 
                     composable(

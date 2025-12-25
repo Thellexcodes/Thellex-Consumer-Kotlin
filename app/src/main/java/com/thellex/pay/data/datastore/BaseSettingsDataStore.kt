@@ -8,7 +8,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.thellex.pay.data.model.ChainInfo
+import com.thellex.pay.data.model.BaseSettingsCache
+import com.thellex.pay.data.model.ChainInfoDto
+import com.thellex.pay.data.model.DepositTokenDto
 import com.thellex.pay.data.model.TokenInfo
 import com.thellex.pay.settings.SupportedBlockchainEnum
 import com.thellex.pay.settings.TokenEnum
@@ -17,18 +19,51 @@ import kotlinx.coroutines.flow.map
 
 private const val TAG_BASE_SETTINGS_DS = "BaseSettingsDataStore"
 
-private val Context.baseSettingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "base_settings")
+private val Context.baseSettingsDataStore: DataStore<Preferences> by preferencesDataStore(
+    name = "base_settings"
+)
 
 private object Keys {
     val LAST_FETCH_TIMESTAMP = longPreferencesKey("last_fetch_timestamp")
-    val CHAINS_JSON = stringPreferencesKey("base_settings_json")
+    val CHAINS_JSON = stringPreferencesKey("supported_chains_json")
+    val TOKENS_JSON = stringPreferencesKey("supported_tokens_json")
 }
 
-suspend fun Context.saveSupportedChains(
-    chains: List<ChainInfo>,
+/* ─────────────────────────────────────────────
+   SAVE BASE SETTINGS
+   ───────────────────────────────────────────── */
+
+suspend fun Context.saveBaseSettings(
+    chains: List<ChainInfoDto>,
+    tokens: List<DepositTokenDto>,
     timestamp: Long = System.currentTimeMillis()
 ) {
     baseSettingsDataStore.edit { prefs ->
+
+        /* ───── Serialize chains ───── */
+//        val serializedChains = chains
+//            .filter { it.id != null }
+//            .joinToString("|") { chain ->
+//
+//                val tokensSerialized = chain.supportedTokens.joinToString(",") { token ->
+//                    listOf(
+//                        token.symbol.name,
+//                        token.name,
+//                        token.decimals.toString(),
+//                        token.iconDisplay
+//                    ).joinToString("~")
+//                }
+//
+//                listOf(
+//                    chain.id.name,
+//                    chain.displayName,
+//                    chain.fee.toString(),
+//                    chain.minimumWithdrawal.toString(),
+//                    chain.arrivalTime,
+//                    chain.iconUrl,
+//                    tokensSerialized
+//                ).joinToString(";")
+//            }
 
         val serializedChains = chains
             .filter { it.id != null }
@@ -40,7 +75,7 @@ suspend fun Context.saveSupportedChains(
                         token.name,
                         token.decimals.toString(),
                         token.iconDisplay
-                    ).joinToString(":")
+                    ).joinToString("~")
                 }
 
                 listOf(
@@ -49,73 +84,114 @@ suspend fun Context.saveSupportedChains(
                     chain.fee.toString(),
                     chain.minimumWithdrawal.toString(),
                     chain.arrivalTime,
+                    chain.iconUrl,
                     tokensSerialized
                 ).joinToString(";")
             }
 
+        /* ───── Serialize deposit tokens ───── */
+        val serializedDepositTokens = tokens.joinToString("|") { token ->
+            listOf(
+                token.name,
+                token.ticker,
+                token.iconUrl
+            ).joinToString("~")
+        }
+
         prefs[Keys.LAST_FETCH_TIMESTAMP] = timestamp
         prefs[Keys.CHAINS_JSON] = serializedChains
+        prefs[Keys.TOKENS_JSON] = serializedDepositTokens
     }
 
     Log.d(
         TAG_BASE_SETTINGS_DS,
-        "SUPPORTED CHAINS SAVED | count=${chains.size} | timestamp=$timestamp"
+        "BASE SETTINGS SAVED | chains=${chains.size} | tokens=${tokens.size} | timestamp=$timestamp"
     )
 }
 
-suspend fun Context.getSupportedChainsCache(): Pair<Long, List<ChainInfo>>? {
-    return baseSettingsDataStore.data.map { prefs ->
-        val timestamp = prefs[Keys.LAST_FETCH_TIMESTAMP]
-        val raw = prefs[Keys.CHAINS_JSON]
+/* ─────────────────────────────────────────────
+   READ BASE SETTINGS CACHE
+   ───────────────────────────────────────────── */
 
-        if (timestamp == null || raw.isNullOrBlank()) {
+suspend fun Context.getBaseSettingsCache(): BaseSettingsCache? {
+    return baseSettingsDataStore.data.map { prefs ->
+
+        val timestamp = prefs[Keys.LAST_FETCH_TIMESTAMP]
+        val chainsRaw = prefs[Keys.CHAINS_JSON]
+        val tokensRaw = prefs[Keys.TOKENS_JSON]
+
+        if (
+            timestamp == null ||
+            chainsRaw.isNullOrBlank() ||
+            tokensRaw.isNullOrBlank()
+        ) {
             Log.d(
                 TAG_BASE_SETTINGS_DS,
-                "CACHE MISS | timestamp=$timestamp | raw=${raw != null}"
+                "CACHE MISS | timestamp=$timestamp | chains=${!chainsRaw.isNullOrBlank()} | tokens=${!tokensRaw.isNullOrBlank()}"
             )
             return@map null
         }
 
-        val chains = raw.split("|").mapNotNull { item ->
+        /* ───── Deserialize chains ───── */
+        val chains = chainsRaw.split("|").mapNotNull { item ->
             val parts = item.split(";")
             if (parts.size != 6) return@mapNotNull null
 
-            val tokens = parts[5]
+            val supportedTokens = parts[5]
                 .takeIf { it.isNotBlank() }
                 ?.split(",")
                 ?.mapNotNull { tokenRaw ->
-                    val tokenParts = tokenRaw.split(":")
-
-                    if (tokenParts.size < 3) return@mapNotNull null
+                    val tokenParts = tokenRaw.split("~")
+                    if (tokenParts.size != 4) return@mapNotNull null
 
                     runCatching {
                         TokenInfo(
                             symbol = TokenEnum.valueOf(tokenParts[0]),
                             name = tokenParts[1],
                             decimals = tokenParts[2].toInt(),
-                            iconDisplay = tokenParts.getOrNull(3).orEmpty()
+                            iconDisplay = tokenParts[3]
                         )
                     }.getOrNull()
                 }
                 ?: emptyList()
 
             runCatching {
-                ChainInfo(
+                ChainInfoDto(
                     id = SupportedBlockchainEnum.valueOf(parts[0]),
                     displayName = parts[1],
                     fee = parts[2].toDouble(),
                     minimumWithdrawal = parts[3].toInt(),
                     arrivalTime = parts[4],
-                    supportedTokens = tokens
+                    supportedTokens = supportedTokens,
+                    iconUrl = parts[5]
+                )
+            }.getOrNull()
+        }
+        Log.d("TokenRaw", "this is tokenRaw $tokensRaw")
+
+        /* ───── Deserialize deposit tokens ───── */
+        val depositTokens = tokensRaw.split("|").mapNotNull { raw ->
+            val parts = raw.split("~")
+            if (parts.size != 3) return@mapNotNull null
+
+            runCatching {
+                DepositTokenDto(
+                    name = parts[0],
+                    ticker = parts[1],
+                    iconUrl = parts[2]
                 )
             }.getOrNull()
         }
 
         Log.d(
             TAG_BASE_SETTINGS_DS,
-            "CACHE HIT | count=${chains.size} | timestamp=$timestamp"
+            "CACHE HIT | chains=${chains.size} | depositTokens=${depositTokens.size} | timestamp=$timestamp"
         )
 
-        timestamp to chains
+        BaseSettingsCache(
+            timestamp = timestamp,
+            chains = chains,
+            depositTokens = depositTokens
+        )
     }.first()
 }

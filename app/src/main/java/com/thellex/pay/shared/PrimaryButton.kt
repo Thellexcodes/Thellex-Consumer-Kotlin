@@ -1,5 +1,6 @@
 package com.thellex.pay.shared
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,7 +26,7 @@ import com.thellex.pay.core.decorators.KumbhSansFontFamily
 fun PrimaryButton(
     text: String = "CONFIRM",
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
     Box(

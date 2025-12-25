@@ -36,3 +36,17 @@ data class IStoreSettingsEntityDto(
     @SerializedName("themeColor") val themeColor: String,
     @SerializedName("language") val language: String
 )
+
+@Serializable
+data class BaseSettingsCache(
+    val timestamp: Long,
+    val chains: List<ChainInfoDto>,
+    val depositTokens: List<DepositTokenDto>
+)
+
+@Serializable
+data class BaseSettingsResponse(
+    val supportedChains: List<ChainInfoDto>,
+    val supportedTokens: List<DepositTokenDto>
+)
+
