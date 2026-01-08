@@ -32,7 +32,7 @@ fun CenteredTopBar(
 
 
         Text(
-            text = title,
+            text = title.uppercase(),
             color = White,
             fontSize = 12.sp,
             fontFamily = KumbhSansFontFamily,

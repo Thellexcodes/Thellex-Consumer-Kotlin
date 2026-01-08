@@ -41,29 +41,6 @@ suspend fun Context.saveBaseSettings(
     baseSettingsDataStore.edit { prefs ->
 
         /* ───── Serialize chains ───── */
-//        val serializedChains = chains
-//            .filter { it.id != null }
-//            .joinToString("|") { chain ->
-//
-//                val tokensSerialized = chain.supportedTokens.joinToString(",") { token ->
-//                    listOf(
-//                        token.symbol.name,
-//                        token.name,
-//                        token.decimals.toString(),
-//                        token.iconDisplay
-//                    ).joinToString("~")
-//                }
-//
-//                listOf(
-//                    chain.id.name,
-//                    chain.displayName,
-//                    chain.fee.toString(),
-//                    chain.minimumWithdrawal.toString(),
-//                    chain.arrivalTime,
-//                    chain.iconUrl,
-//                    tokensSerialized
-//                ).joinToString(";")
-//            }
 
         val serializedChains = chains
             .filter { it.id != null }
@@ -135,9 +112,11 @@ suspend fun Context.getBaseSettingsCache(): BaseSettingsCache? {
         /* ───── Deserialize chains ───── */
         val chains = chainsRaw.split("|").mapNotNull { item ->
             val parts = item.split(";")
-            if (parts.size != 6) return@mapNotNull null
 
-            val supportedTokens = parts[5]
+            // ✅ MUST be 7 now
+            if (parts.size != 7) return@mapNotNull null
+
+            val supportedTokens = parts[6]
                 .takeIf { it.isNotBlank() }
                 ?.split(",")
                 ?.mapNotNull { tokenRaw ->
@@ -162,12 +141,11 @@ suspend fun Context.getBaseSettingsCache(): BaseSettingsCache? {
                     fee = parts[2].toDouble(),
                     minimumWithdrawal = parts[3].toInt(),
                     arrivalTime = parts[4],
-                    supportedTokens = supportedTokens,
-                    iconUrl = parts[5]
+                    iconUrl = parts[5],
+                    supportedTokens = supportedTokens
                 )
             }.getOrNull()
         }
-        Log.d("TokenRaw", "this is tokenRaw $tokensRaw")
 
         /* ───── Deserialize deposit tokens ───── */
         val depositTokens = tokensRaw.split("|").mapNotNull { raw ->

@@ -3,6 +3,7 @@ package com.thellex.pay.features.wallet.ui
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,11 +26,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalGraphicsContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +49,7 @@ import com.thellex.pay.core.decorators.DarkBlue
 import com.thellex.pay.core.decorators.KumbhSansFontFamily
 import com.thellex.pay.core.decorators.Midnight
 import com.thellex.pay.core.decorators.OutfitFontFamily
+import com.thellex.pay.core.decorators.SteelBlueGrey
 import com.thellex.pay.core.decorators.White
 import com.thellex.pay.core.routes.ComposeRoutes
 import com.thellex.pay.features.auth.viewModel.UserViewModel
@@ -65,7 +71,7 @@ data class CryptoOption(
     val iconUrl: String
 )
 
-private fun WalletBalanceDto.toCryptoOptions(): List<CryptoOption> {
+fun WalletBalanceDto.toCryptoOptions(): List<CryptoOption> {
     return assetTotals.map { (symbol, asset) ->
         CryptoOption(
             name = symbol.uppercase(),
@@ -84,38 +90,38 @@ fun WalletScreen(
     navController: NavHostController,
     walletState: WalletBalanceDto? = null
 ) {
+    // Convert walletState to CryptoOption reactively
+    val cryptos by remember(walletState) {
+        mutableStateOf(walletState?.toCryptoOptions() ?: emptyList())
+    }
 
-    val cryptos = remember(walletState) {
-        walletState?.toCryptoOptions() ?: emptyList()
+    // Compute total USD balance safely
+    val totalUsdBalance by remember(cryptos) {
+        mutableDoubleStateOf(
+            cryptos.sumOf { crypto ->
+                crypto.usdValue.split(" ").firstOrNull()?.toDoubleOrNull() ?: 0.0
+            }
+        )
     }
 
     AppGradientBackground {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-        ) { paddingValues ->
+        Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Midnight)
                     .padding(paddingValues)
             ) {
-                val activity = LocalContext.current as? Activity
-
                 CenteredTopBar(
                     title = "",
-                    onBackClick = { activity?.finish() }
+                    onBackClick = { navController.popBackStack() }
                 )
 
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                ){
-
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Spacer(modifier = Modifier.height(28.dp))
 
                     Column {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = "TOTAL BALANCE",
                                 color = White,
@@ -133,11 +139,14 @@ fun WalletScreen(
                                 modifier = Modifier.width(14.dp)
                             )
                         }
+
                         Spacer(modifier = Modifier.height(3.dp))
+
                         Row(verticalAlignment = Alignment.CenterVertically) {
+                            // Display formatted total balance
                             Text(
-                                text = "${walletState?.totalInUsd} USD".uppercase(),
-                                color = Color.White,
+                                text = "$totalUsdBalance USD".uppercase(),
+                                color = SteelBlueGrey,
                                 fontSize = 24.sp,
                                 fontFamily = OutfitFontFamily,
                                 fontWeight = FontWeight.Light,
@@ -160,13 +169,6 @@ fun WalletScreen(
                                     fontWeight = FontWeight.Light,
                                     fontSize = 14.sp
                                 )
-                                Text(
-                                    text = "SEE ALL",
-                                    color = Color.White,
-                                    fontFamily = OutfitFontFamily,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 10.sp
-                                )
                             }
 
                             Spacer(modifier = Modifier.height(16.dp))
@@ -176,8 +178,7 @@ fun WalletScreen(
                             CryptoCard(
                                 crypto = crypto,
                                 onClick = {
-                                    println("clicking")
-                                    navController?.navigate(
+                                    navController.navigate(
                                         "${ComposeRoutes.AssetDetail.route}/${crypto.ticker.lowercase()}"
                                     )
                                 }

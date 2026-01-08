@@ -72,7 +72,6 @@ class POSHomeActivity : AppCompatActivity() {
     private val emptyStateMediator = MediatorLiveData<Pair<Int, List<ITransactionHistoryDto>?>>()
     private lateinit var baseSettingsRepo: BaseSettingsRepository
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPOSBinding.inflate(layoutInflater)
@@ -168,7 +167,6 @@ class POSHomeActivity : AppCompatActivity() {
             }
             val isEmpty = filteredTransactions.isEmpty()
             binding.titleRecentTransactions.visibility = if (isEmpty) View.GONE else View.VISIBLE
-//            binding.buttonViewAll.visibility = if (isEmpty) View.GONE else View.VISIBLE
             binding.emptyTransactionsView.visibility = if (isEmpty) View.VISIBLE else View.GONE
         }
     }
@@ -214,25 +212,21 @@ class POSHomeActivity : AppCompatActivity() {
                 val userRampTransactions = try {
                     userRampDeferred.await().result?.data ?: emptyList()
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error fetching user ramp transactions", e)
                     emptyList()
                 }
                 val userTxnHistory = try {
                     userTxnHistoryDeferred.await().result?.data ?: emptyList()
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error fetching transaction history", e)
                     emptyList()
                 }
                 val userNotifications = try {
                     userNotificationsDeferred.await().result?.data ?: emptyList()
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error fetching notifications", e)
                     emptyList()
                 }
 
                 lifecycleScope.launch {
-                    val chains = baseSettingsRepo.getBaseSettings(token)
-                    Log.d("ChainList", "Base settings response: $chains")
+                   baseSettingsRepo.getBaseSettings(token)
                 }
 
                 var mergedUser = currentUser
@@ -264,7 +258,6 @@ class POSHomeActivity : AppCompatActivity() {
             }
         }
 
-        // If already cached → enable immediately and EXIT
         if (walletManagerViewModel.walletBalance.value != null) {
             binding.posViewAssetsButton.isEnabled = true
             binding.posViewAssetsButton.alpha = 1f
@@ -512,7 +505,7 @@ class POSHomeActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val TAG = "Dashboard"
+        private const val TAG = "Dashboard"
         private const val REQUEST_CODE_NOTIFICATIONS = 1001
     }
 }

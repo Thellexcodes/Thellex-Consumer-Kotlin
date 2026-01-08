@@ -18,6 +18,7 @@ object ComposeRoutes {
 
     val CryptoDeposit = Route("crypto_deposit")
     val CryptoDepositTokensSelection = Route("crypto_deposit_tokens_selection")
+    val CryptoTransactionDetail = Route("crypto_transaction_detail")
 
     val SecuritySettings = Route("security_settings")
 

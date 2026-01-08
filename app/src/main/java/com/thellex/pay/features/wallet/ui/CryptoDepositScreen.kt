@@ -47,6 +47,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -74,6 +75,7 @@ import com.thellex.pay.features.wallet.model.WalletBalanceDto
 import com.thellex.pay.features.wallet.model.WalletDto
 import com.thellex.pay.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.pay.features.wallet.utils.WalletManagerViewModel
+import com.thellex.pay.shared.AddressCopyButton
 import com.thellex.pay.shared.AppFullWidthModal
 import com.thellex.pay.shared.CenteredTopBar
 import com.thellex.pay.shared.IconDisplayer
@@ -91,7 +93,6 @@ fun CryptoDepositScreenRoute(
     val walletFactory = WalletManagerModelFactory(application)
     val walletViewModel: WalletManagerViewModel = viewModel(factory = walletFactory)
     val walletState = walletViewModel.walletBalance.value!!
-    Log.d("WalletState", "$walletState")
 
     CryptoDepositScreen(
         navController = navController,
@@ -103,328 +104,12 @@ fun CryptoDepositScreenRoute(
 @Composable
 fun CryptoDepositScreenPreview() {
     // Simulate a realistic wallet state for preview
-
 //
 //    CryptoDepositScreen(
 //        navController = rememberNavController(),
 //        walletState = previewWalletState
 //    )
 }
-//
-//@SuppressLint("ContextCastToActivity")
-//@Composable
-//fun CryptoDepositScreen(
-//    navController: NavController,
-//    walletState: WalletBalanceDto? = null
-//) {
-//    val isPreview = LocalInspectionMode.current
-//    val application = LocalContext.current.applicationContext as Application
-//    var tokenIconUrl by remember { mutableStateOf<String?>(null) }
-//    var selectedToken by remember { mutableStateOf<TokenInfo?>(null) }
-//    var showTokenModal by remember { mutableStateOf(false) }
-//    var selectedChain by remember { mutableStateOf<ChainInfoDto?>(null) }
-//    var showNetworkModal by remember { mutableStateOf(false) }
-//    var selectedTokenId by rememberSaveable { mutableStateOf<String?>(null) }
-//    var chainAssets by remember { mutableStateOf<List<GroupedWalletAssetDto>>(emptyList()) }
-//    var supportedChains by remember { mutableStateOf<List<ChainInfoDto>>(emptyList()) }
-//
-//    /* ───── Ticker from navigation ───── */
-//    val ticker = if (isPreview) {
-//        "BTC"
-//    } else {
-//        navController.currentBackStackEntry
-//            ?.arguments
-//            ?.getString("ticker")
-//            ?.uppercase()
-//            ?: "BTC"
-//    }
-//
-//    /* ───── Wallet state ───── */
-//    val walletAddress: String
-//    val networkName: String
-//
-//    if (isPreview || walletState == null) {
-//        walletAddress = "0x80fDHUhsueiojwi8380jfhjwheu8389efjkkdfjiok"
-//        networkName = "BNB CHAIN"
-//    } else {
-//        val matchedWallet = walletState.wallets.values.firstOrNull { wallet ->
-//            wallet.assets.any { it.assetCode.equals(ticker, ignoreCase = true) }
-//        }
-//
-//        walletAddress = matchedWallet?.address.orEmpty()
-//        networkName = matchedWallet?.network?.uppercase().orEmpty()
-//    }
-//
-//    LaunchedEffect(ticker) {
-//        if (!isPreview) {
-//            val cache = application.getBaseSettingsCache() ?: return@LaunchedEffect
-//            tokenIconUrl = cache.depositTokens
-//                .firstOrNull { it.ticker.equals(ticker, ignoreCase = true) }
-//                ?.iconUrl
-//        }
-//    }
-//
-//    LaunchedEffect(walletState, selectedChain, selectedToken) {
-//
-//        if (walletState == null || selectedChain == null) {
-//            chainAssets = emptyList()
-//            return@LaunchedEffect
-//        }
-//
-//        val networkKey = selectedChain!!.id.name.lowercase()
-//
-//        // 1. Get all wallets for the selected network
-//        val walletsForNetwork = walletState.wallets.values
-//            .filter { it.network.equals(networkKey, ignoreCase = true) }
-//
-//        if (walletsForNetwork.isEmpty()) {
-//            chainAssets = emptyList()
-//            return@LaunchedEffect
-//        }
-//
-//        // 2. If token is selected, find wallet that supports that token
-//        val matchingWallet = selectedToken?.let { token ->
-//            walletsForNetwork.firstOrNull { wallet ->
-//                wallet.assets.any { asset ->
-//                    asset.assetCode.equals(token.symbol.name, ignoreCase = true)
-//                }
-//            }
-//        }
-//
-//        // 3. Fallback: first wallet for the network (ony if no token yet)
-//        val selectedWallet = matchingWallet ?: walletsForNetwork.first()
-//        // 5. Load assets for that specific wallet
-//        chainAssets = selectedWallet.assets.orEmpty()
-//    }
-//
-//    LaunchedEffect(selectedChain) {
-//        selectedChain?.supportedTokens?.firstOrNull()?.let { token ->
-//            selectedToken = token
-//            selectedTokenId = token.symbol.name
-//        }
-//    }
-//
-//    LaunchedEffect(Unit) {
-//        val cache = application.getBaseSettingsCache() ?: return@LaunchedEffect
-//        val chains = cache?.chains.orEmpty()
-//
-//        supportedChains = chains
-//
-//        if (chains.isNotEmpty()) {
-//            val chain = chains.first()
-//            selectedChain = chain
-//
-//            val token = chain.supportedTokens.firstOrNull()
-//            if (token != null) {
-//                selectedToken = token
-//                selectedTokenId = token.symbol.name
-//            }
-//        }
-//    }
-//
-//    Log.d("SSS", "supported chains $selectedChain")
-//
-//    /* ───── QR Code bitmap ───── */
-//    val qrBitmap = remember(walletAddress) {
-//        if (walletAddress.isBlank()) null
-//        else generateQrCode(walletAddress)
-//    }
-//
-//    AppGradientBackground {
-//        Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .background(Midnight)
-//                    .padding(paddingValues)
-//                    .padding(horizontal = 20.dp)
-//            ) {
-//                CenteredTopBar(
-//                    title = "",
-//                    onBackClick = { navController.popBackStack() }
-//                )
-//
-//                Spacer(Modifier.height(24.dp))
-//
-//                /* ───── Token + Chain Row ───── */
-//                Row(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Row(verticalAlignment = Alignment.CenterVertically) {
-//                        IconDisplayer(
-//                            ticker = ticker.uppercase(),
-//                            iconUrl = tokenIconUrl,
-//                        )
-//
-//                        Spacer(Modifier.width(8.dp))
-//
-//                        Text(
-//                            text = ticker,
-//                            color = White
-//                        )
-//                    }
-//
-//                    Spacer(Modifier.weight(1f))
-//
-//                    Box(
-//                        modifier = Modifier
-//                            .height(44.dp)
-//                            .clip(RoundedCornerShape(8.dp))
-//                            .background(DarkBlue)
-//                            .padding(horizontal = 8.dp),
-//                        contentAlignment = Alignment.Center
-//                    ) {
-//                        Row(
-//                            modifier = Modifier.clickable { showTokenModal = true },
-//                            verticalAlignment = Alignment.CenterVertically,
-//                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-//                        ) {
-//                            IconDisplayer(
-//                                ticker = " use the network symboal",
-//                                iconUrl = " user the network iconUrl",
-//                            )
-//
-//                            Text(
-//                                text = "",
-//                                color = White,
-//                                fontSize = 10.sp,
-//                                fontFamily = KumbhSansFontFamily,
-//                                fontWeight = FontWeight.Light
-//                            )
-//
-//                            Icon(
-//                                imageVector = Icons.Default.KeyboardArrowDown,
-//                                contentDescription = "Select Network",
-//                                tint = Color.White,
-//                                modifier = Modifier.height(16.dp)
-//                            )
-//                        }
-//                    }
-//                }
-//
-//                Spacer(Modifier.height(20.dp))
-//
-//                Text(
-//                    text = "Scan code to continue process",
-//                    color = White.copy(alpha = 0.7f),
-//                    fontSize = 14.sp
-//                )
-//
-//                Spacer(Modifier.height(24.dp))
-//
-//                /* ───── QR Container ───── */
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .aspectRatio(1f)
-//                        .clip(RoundedCornerShape(24.dp))
-//                        .background(Color(0xFF1E2138)),
-//                    contentAlignment = Alignment.Center
-//                ) {
-//
-//                    /* ───── QR Code ───── */
-//                    Box(
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                            .clip(RoundedCornerShape(20.dp))
-//                            .padding(18.dp)
-//                            .background(Color.Transparent),
-//                        contentAlignment = Alignment.Center
-//                    ) {
-//                        qrBitmap?.let {
-//                            Image(
-//                                bitmap = it.asImageBitmap(),
-//                                contentDescription = "Wallet QR",
-//                                modifier = Modifier.fillMaxSize()
-//                            )
-//                        }
-//                    }
-//
-//                    /* ───── Token Icon Overlay ───── */
-//                    Box(
-//                        modifier = Modifier
-//                            .width(56.dp)
-//                            .height(56.dp)
-//                            .clip(CircleShape)
-//                            .background(Color(0xFF1E2138)),
-//                        contentAlignment = Alignment.Center
-//                    ) {
-//                        IconDisplayer(
-//                            ticker = ticker,
-//                            iconUrl = tokenIconUrl,
-//                            modifier = Modifier.width(32.dp).height(32.dp),
-//                            fallbackRes = R.drawable.icon_avatar
-//                        )
-//                    }
-//                }
-//
-//                Spacer(Modifier.height(28.dp))
-//
-//                /* ───── Wallet Address ───── */
-//                Column {
-//                    Text(
-//                        text = "WALLET ADDRESS",
-//                        color = White.copy(alpha = 0.4f),
-//                        fontSize = 12.sp,
-//                        fontWeight = FontWeight.Medium
-//                    )
-//
-//                    Spacer(Modifier.height(6.dp))
-//
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .clip(RoundedCornerShape(14.dp))
-//                            .background(Color(0xFF1E2138))
-//                            .padding(horizontal = 16.dp, vertical = 14.dp)
-//                            .clickable { /* Copy to clipboard logic */ },
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Text(
-//                            text = walletAddress,
-//                            color = Color.White,
-//                            fontSize = 13.sp,
-//                            modifier = Modifier.weight(1f),
-//                            maxLines = 1,
-//                            overflow = TextOverflow.Ellipsis
-//                        )
-//
-//                        Spacer(Modifier.width(12.dp))
-//
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.icon_copy),
-//                            contentDescription = "Copy address",
-//                            tint = Color.White,
-//                            modifier = Modifier.width(18.dp).height(18.dp)
-//                        )
-//                    }
-//                }
-//            }
-//
-//            AppFullWidthModal(
-//                show = showNetworkModal,
-//                onDismiss = { showNetworkModal = false },
-//                title = "Select Network"
-//            ) {
-//                Column {
-//                    InfoCard(
-//                        text = "Ensure that the network matches the address and the deposit platform or assets may be lost.",
-//                        type = InfoCardType.WARNING
-//                    )
-//                    Spacer(modifier = Modifier.height(20.dp))
-//                    NetworkSelectionContent(
-//                        chains = supportedChains,
-//                        onChainSelected = { chain ->
-//                            selectedChain = chain
-//                            showNetworkModal = false
-//                        }
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
 
 @SuppressLint("ContextCastToActivity")
 @Composable
@@ -445,6 +130,16 @@ fun CryptoDepositScreen(
     var selectedTokenId by rememberSaveable { mutableStateOf<String?>(null) }
     var chainAssets by remember { mutableStateOf<List<GroupedWalletAssetDto>>(emptyList()) }
 
+    // Initialize walletAddress safely
+    val initialWalletAddress = remember(walletState) {
+        if (isPreview || walletState == null) {
+            "0x80fDHUhsueiojwi8380jfhjwheu8389efjkkdfjiok"
+        } else {
+            walletState.wallets.values.firstOrNull()?.address.orEmpty()
+        }
+    }
+    var walletAddress by remember { mutableStateOf(initialWalletAddress) }
+
     /* ───── Ticker from navigation ───── */
     val ticker = if (isPreview) {
         "BTC"
@@ -456,74 +151,72 @@ fun CryptoDepositScreen(
             ?: "BTC"
     }
 
-    /* ───── Wallet state ───── */
-    val walletAddress: String
-    val networkName: String
-
-    if (isPreview || walletState == null) {
-        walletAddress = "0x80fDHUhsueiojwi8380jfhjwheu8389efjkkdfjiok"
-        networkName = "BNB CHAIN"
-    } else {
-        val matchedWallet = walletState.wallets.values.firstOrNull { wallet ->
-            wallet.assets.any { it.assetCode.equals(ticker, ignoreCase = true) }
-        }
-
-        walletAddress = matchedWallet?.address.orEmpty()
-        networkName = matchedWallet?.network?.uppercase().orEmpty()
-    }
-
-    /* ───── Load base settings ───── */
-    LaunchedEffect(Unit) {
-        if (isPreview) return@LaunchedEffect
-
-        val cache = application.getBaseSettingsCache() ?: return@LaunchedEffect
-        supportedChains = cache.chains
-
-        selectedChain = cache.chains.firstOrNull()
-
-        selectedChain?.supportedTokens?.firstOrNull()?.let { token ->
-            selectedToken = token
-            selectedTokenId = token.symbol.name
-        }
-    }
-
-    /* ───── Load token icon ───── */
+    /* ───── Load token + icon from cache ───── */
     LaunchedEffect(ticker) {
         if (isPreview) return@LaunchedEffect
 
         val cache = application.getBaseSettingsCache() ?: return@LaunchedEffect
+
         tokenIconUrl = cache.depositTokens
             .firstOrNull { it.ticker.equals(ticker, ignoreCase = true) }
             ?.iconUrl
+
+        selectedToken = cache.chains
+            .flatMap { it.supportedTokens }
+            .firstOrNull { it.symbol.name.equals(ticker, ignoreCase = true) }
+
+        selectedTokenId = selectedToken?.symbol?.name
     }
 
-    /* ───── Resolve wallet assets for selected chain/token ───── */
+    /* ───── Filter chains by selected token ───── */
+    LaunchedEffect(selectedToken) {
+        if (isPreview) return@LaunchedEffect
+
+        val cache = application.getBaseSettingsCache() ?: return@LaunchedEffect
+
+        val validChains = selectedToken?.let { token ->
+            cache.chains.filter { chain ->
+                chain.supportedTokens.any { it.symbol == token.symbol }
+            }
+        }.orEmpty()
+
+        supportedChains = validChains
+
+        if (selectedChain == null || selectedChain !in validChains) {
+            selectedChain = validChains.firstOrNull()
+        }
+    }
+
+    /* ───── Resolve wallet assets and wallet address for selected chain/token ───── */
     LaunchedEffect(walletState, selectedChain, selectedToken) {
-        if (walletState == null || selectedChain == null) {
+        if (walletState == null || selectedChain == null || selectedToken == null) {
             chainAssets = emptyList()
+            walletAddress = ""
             return@LaunchedEffect
         }
 
         val networkKey = selectedChain!!.id.name.lowercase()
 
+        // Filter wallets for this network
         val walletsForNetwork = walletState.wallets.values
             .filter { it.network.equals(networkKey, ignoreCase = true) }
 
         if (walletsForNetwork.isEmpty()) {
             chainAssets = emptyList()
+            walletAddress = ""
             return@LaunchedEffect
         }
 
-        val matchingWallet = selectedToken?.let { token ->
-            walletsForNetwork.firstOrNull { wallet ->
-                wallet.assets.any {
-                    it.assetCode.equals(token.symbol.name, ignoreCase = true)
-                }
-            }
+        // Find wallet that has the selected token
+        val matchingWallet = walletsForNetwork.firstOrNull { wallet ->
+            wallet.assets.any { it.assetCode.equals(selectedToken!!.symbol.name, ignoreCase = true) }
         }
 
-        val selectedWallet = matchingWallet ?: walletsForNetwork.first()
-        chainAssets = selectedWallet.assets.orEmpty()
+        // Ensure one wallet per chain; fallback to first wallet if none has the token
+        val selectedWallet = matchingWallet ?: walletsForNetwork.firstOrNull()
+
+        walletAddress = selectedWallet?.address.orEmpty()
+        chainAssets = selectedWallet?.assets.orEmpty()
     }
 
     /* ───── QR Code bitmap ───── */
@@ -610,8 +303,10 @@ fun CryptoDepositScreen(
 
                 Text(
                     text = "Scan code to continue process",
-                    color = White.copy(alpha = 0.7f),
-                    fontSize = 14.sp
+                    color = White,
+                    fontSize = 14.sp,
+                    fontFamily = KumbhSansFontFamily,
+                    fontWeight = FontWeight.Normal
                 )
 
                 Spacer(Modifier.height(24.dp))
@@ -654,7 +349,9 @@ fun CryptoDepositScreen(
                         IconDisplayer(
                             ticker = ticker,
                             iconUrl = tokenIconUrl,
-                            modifier = Modifier.height(32.dp).width(32.dp),
+                            modifier = Modifier
+                                .height(32.dp)
+                                .width(32.dp),
                             fallbackRes = R.drawable.icon_avatar
                         )
                     }
@@ -673,32 +370,11 @@ fun CryptoDepositScreen(
 
                     Spacer(Modifier.height(6.dp))
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(Color(0xFF1E2138))
-                            .padding(horizontal = 16.dp, vertical = 14.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = walletAddress,
-                            color = Color.White,
-                            fontSize = 13.sp,
-                            modifier = Modifier.weight(1f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Spacer(Modifier.width(12.dp))
-
-                        Icon(
-                            painter = painterResource(id = R.drawable.icon_copy),
-                            contentDescription = "Copy address",
-                            tint = Color.White,
-                            modifier = Modifier.width(18.dp).height(18.dp)
-                        )
-                    }
+                    AddressCopyButton(
+                        address = walletAddress,
+                        iconTint = White,
+                        modifier = Modifier.width(18.dp).height(18.dp),
+                    )
                 }
             }
 
@@ -727,7 +403,6 @@ fun CryptoDepositScreen(
         }
     }
 }
-
 
 fun generateQrCode(text: String, size: Int = 512): Bitmap {
     val hints = mapOf(

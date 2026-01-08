@@ -492,7 +492,8 @@ fun CryptoWithdrawalScreen(
                                     network = selectedChain!!.id,
                                     networkFee = selectedChain!!.fee,
                                     assetCode = selectedToken!!.symbol,
-                                    networkName = selectedChain!!.displayName
+                                    networkName = selectedChain!!.displayName,
+                                    reason = "BILL"
                                 )
 
                                 val transactionJson = Json.encodeToString(transactionSummary)

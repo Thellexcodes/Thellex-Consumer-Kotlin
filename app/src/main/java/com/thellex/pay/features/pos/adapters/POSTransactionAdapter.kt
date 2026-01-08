@@ -47,13 +47,13 @@ class POSTransactionAdapter(
         }
 
         fun bind(item: PosTransaction) {
-            Log.d(TAG, "Binding PosTransaction: id=${item.id}, type=${item.transactionType}, status=${item.paymentStatus}")
-            binding.txnIcon.setImageResource(item.iconResId ?: R.drawable.icon_txn)
+//            binding.txnIcon.setImageResource(item.iconResId ?: R.drawable.icon_txn)
             binding.txnDescription.text = item.description.uppercase(Locale.getDefault()) ?: "Unknown"
             binding.timeText.text = item.time ?: "N/A"
             binding.amount.text = item.amountWithSymbol ?: "0.00"
             binding.status.text = item.paymentStatus.toString().uppercase(Locale.getDefault()) ?: "UNKNOWN"
             binding.statusIcon.setImageResource(item.statusIconResId)
+
 
             val colorRes = Helpers.getPaymentStatusColor(item.paymentStatus ?: PaymentStatusEnum.Unknown)
             binding.status.setTextColor(ContextCompat.getColor(binding.root.context, colorRes))
@@ -81,12 +81,10 @@ class POSTransactionAdapter(
             try {
                 val displayAmount = calculateDisplayAmount(transaction)
                 PosTransaction(
-                    iconResId = getIconResIdForToken(transaction.assetCode),
-                    statusIconResId = getStatusIconResId(transaction.transactionType.toString()),
                     description = when (transaction.transactionType) {
                             TransactionTypeEnum.CRYPTO_DEPOSIT,
                             TransactionTypeEnum.CRYPTO_WITHDRAWAL ->
-                                transaction.assetCode?.uppercase(Locale.getDefault()) ?: "Unknown"
+                                transaction.assetCode.name?.uppercase(Locale.getDefault()) ?: "Unknown"
                             else ->
                                 transaction.transactionMessage?.takeIf { it.isNotEmpty() } ?: "Unknown"
                     },
@@ -96,14 +94,21 @@ class POSTransactionAdapter(
                     id = transaction.id,
                     transactionType = transaction.transactionType,
                     rampID = transaction.rampID,
-                    amount = displayAmount.toString()
+                    amount = displayAmount.toString(),
+                    assetCode = transaction.assetCode,
+                    paymentNetwork = transaction.paymentNetwork,
+                    fundUid = transaction.destinationAddress,
+                    sourceAddress = transaction.sourceAddress,
+                    reason = transaction.reason ?: "",
+                    valueInLocal = transaction.valueInLocal,
+                    valueInUsd = transaction.valueInUsd,
+                    assetIconUrl = ""
                 )
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to map transaction ${transaction.id}: ${e.message}", e)
                 null
             }
         }
-        Log.d(TAG, "Submitting ${posTransactions.size} PosTransactions")
         submitList(posTransactions)
     }
 

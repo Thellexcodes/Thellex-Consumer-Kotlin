@@ -2,6 +2,9 @@ package com.thellex.pay.features.wallet.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Application
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +29,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,7 +45,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.thellex.pay.R
 import com.thellex.pay.core.decorators.AppGradientBackground
 import com.thellex.pay.core.decorators.DarkBlue
@@ -45,7 +55,12 @@ import com.thellex.pay.core.decorators.KumbhSansFontFamily
 import com.thellex.pay.core.decorators.Midnight
 import com.thellex.pay.core.decorators.OutfitFontFamily
 import com.thellex.pay.core.decorators.White
+import com.thellex.pay.core.routes.ComposeRoutes
+import com.thellex.pay.data.datastore.getBaseSettingsCache
 import com.thellex.pay.features.admin.TransactionItem
+import com.thellex.pay.features.wallet.model.WalletBalanceDto
+import com.thellex.pay.features.wallet.utils.WalletManagerModelFactory
+import com.thellex.pay.features.wallet.utils.WalletManagerViewModel
 import com.thellex.pay.shared.IconDisplayer
 
 @Composable
@@ -95,31 +110,55 @@ fun ActionButton(
     }
 }
 
-
 @SuppressLint("ContextCastToActivity")
 @Composable
 fun AssetDetailScreen(
     navController: NavHostController? = null,
-    assetCode: String
+    assetCode: String,
+    walletState: WalletBalanceDto? = null
 ){
     val onBackClick = { navController?.popBackStack() }
-    val onDepositClick = { //navController.navigate("deposit_screen")
-         }
-    val onSendClick = {
-        //navController.navigate("send_screen")
-    }
-    val onConvertClick = {
-        //navController.navigate("convert_screen")
-    }
-    val onSeeAllClick = {
-        //navController.navigate("transaction_history")
+    val application = LocalContext.current.applicationContext as Application
+    var tokenIconUrl by remember { mutableStateOf<String?>(null) }
+
+    val onDepositClick = {
+        navController?.navigate(
+            "${ComposeRoutes.AssetDetail.route}/${assetCode.lowercase()}"
+        )
     }
 
+    BackHandler {
+        onBackClick()
+    }
+
+    val onSendClick = { }
+    val onConvertClick = { }
+    val onSeeAllClick = { }
+
+    // Filter wallet state for the asset
+    val cryptos = remember(walletState, assetCode) {
+        walletState?.toCryptoOptions()
+            ?.filter { it.ticker.equals(assetCode, ignoreCase = true) }
+            ?: emptyList()
+    }
+
+    val totalUsdBalance = remember(cryptos) {
+        cryptos.sumOf { crypto ->
+            crypto.usdValue.split(" ").firstOrNull()?.toDoubleOrNull() ?: 0.0
+        }
+    }
+
+    LaunchedEffect(walletState, assetCode) {
+        val cache = application.getBaseSettingsCache() ?: return@LaunchedEffect
+
+        tokenIconUrl = cache.depositTokens
+            .firstOrNull { it.ticker.equals(assetCode, ignoreCase = true) }
+            ?.iconUrl
+            ?: ""
+    }
 
     AppGradientBackground {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-        ) { paddingValues ->
+        Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -128,7 +167,7 @@ fun AssetDetailScreen(
             ) {
                 val activity = LocalContext.current as? Activity
 
-                IconButton(onClick = {activity?.finish()}) {
+                IconButton(onClick = { onBackClick() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
@@ -138,22 +177,22 @@ fun AssetDetailScreen(
 
                 Spacer(modifier = Modifier.height(19.dp))
 
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconDisplayer(
+                            ticker = "",
+                            iconUrl = tokenIconUrl,
+                            modifier = Modifier.width(16.dp).height(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "TOTAL BALANCE",
+                            text = "$assetCode BALANCE".uppercase(),
                             color = White,
                             fontSize = 10.sp,
                             fontFamily = KumbhSansFontFamily,
                             fontWeight = FontWeight.Bold
                         )
-
                         Spacer(modifier = Modifier.width(8.dp))
-
                         IconDisplayer(
                             ticker = "",
                             iconUrl = "",
@@ -161,10 +200,12 @@ fun AssetDetailScreen(
                             modifier = Modifier.width(26.dp)
                         )
                     }
+
                     Spacer(modifier = Modifier.height(3.dp))
+
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = " USD".uppercase(),
+                            text = "${"%.2f".format(totalUsdBalance)} USD".uppercase(),
                             color = Color.White,
                             fontSize = 24.sp,
                             fontFamily = OutfitFontFamily,
@@ -181,18 +222,18 @@ fun AssetDetailScreen(
                     ActionButton(
                         icon = Icons.Default.Add,
                         label = "Deposit",
-                        onClick = onDepositClick
+                        onClick = { onDepositClick() }
                     )
                     ActionButton(
                         icon = Icons.Default.Send,
                         label = "Send",
                         onClick = onSendClick
                     )
-                    ActionButton(
-                        icon = Icons.Default.Refresh,
-                        label = "Convert",
-                        onClick = onConvertClick
-                    )
+//                    ActionButton(
+//                        icon = Icons.Default.Refresh,
+//                        label = "Convert",
+//                        onClick = onConvertClick
+//                    )
                 }
 
                 Row(
@@ -200,50 +241,27 @@ fun AssetDetailScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Your Assets",
+                        text = "Transaction History",
                         color = Color.White,
                         fontFamily = OutfitFontFamily,
                         fontWeight = FontWeight.Light,
                         fontSize = 14.sp
                     )
-                    Text(
-                        text = "SEE ALL",
-                        color = Color.White,
-                        fontFamily = OutfitFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 10.sp
-                    )
                 }
-
-//                Spacer(modifier = Modifier.height(16.dp))
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    item {
-                        TransactionItem(
-                            title = "Deducted from Card Balance",
-                            amount = "₦20,000",
-                            time = "Today, 11:28 PM",
-                            assetCode
-                        )
-                    }
-                    item {
-                        TransactionItem(
-                            title = "Deducted from Card Balance",
-                            amount = "₦20,000",
-                            time = "Today, 11:28 PM",
-                            assetCode
-                        )
-                    }
-                    item {
-                        TransactionItem(
-                            title = "Deducted from Card Balance",
-                            amount = "₦20,000",
-                            time = "Today, 11:28 PM",
-                            assetCode
-                        )
+                    cryptos.forEach { crypto ->
+                        item {
+                            TransactionItem(
+                                title = "Deducted from Card Balance",
+                                amount = crypto.amount,
+                                time = "Today, 11:28 PM",
+                                assetCode = crypto.ticker
+                            )
+                        }
                     }
                 }
             }
@@ -257,14 +275,22 @@ fun AssetDetailScreenRoute(
     navController: NavHostController,
     assetCode: String
 ) {
-    AssetDetailScreen(navController, assetCode = assetCode)
+    val application = LocalContext.current.applicationContext as Application
+    val walletFactory = WalletManagerModelFactory(application)
+    val walletViewModel: WalletManagerViewModel = viewModel(factory = walletFactory)
+    val walletState = walletViewModel.walletBalance.value!!
+
+    AssetDetailScreen(navController, assetCode = assetCode, walletState)
 }
 
 
 @Preview(showBackground = true)
 @Composable
 fun AssetDetailScreenPreview() {
-    AssetDetailScreen(assetCode = "USD")
+    AssetDetailScreen(
+        assetCode = "USD",
+        navController = rememberNavController(),
+    )
 }
 
 // Reusable Transaction Item

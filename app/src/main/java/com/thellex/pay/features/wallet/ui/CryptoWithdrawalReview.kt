@@ -37,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.thellex.pay.core.decorators.AppGradientBackground
+import com.thellex.pay.core.decorators.BrightSkyBlue
 import com.thellex.pay.core.decorators.DarkBlue
 import com.thellex.pay.core.decorators.GoldenYellow
 import com.thellex.pay.core.decorators.KumbhSansFontFamily
@@ -72,18 +73,21 @@ data class CryptoTransactionSummary(
     val fundUid: String,
     @Serializable val network: SupportedBlockchainEnum,
     val networkName: String,
-    val networkFee: Double
+    val networkFee: Double,
+    val reason: String
 )
 
 @Composable
 fun TransactionSummaryList(
+    showTitle: Boolean? = false,
     transaction: CryptoTransactionSummary,
     modifier: Modifier = Modifier
 ) {
-    val items = listOf(
+   val items = listOf(
         "Recipient" to transaction.fundUid.truncateMiddle(),
         "Network" to "${transaction.network}".uppercase(),
-        "Network Fee" to "${transaction.networkFee} ${transaction.assetCode.name.uppercase()}"
+        "Network Fee" to "${transaction.networkFee} ${transaction.assetCode.name.uppercase()}",
+        "Reason" to transaction.reason.uppercase()
     )
 
     Column(
@@ -94,25 +98,84 @@ fun TransactionSummaryList(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+
+        if(showTitle!!) {
+            Text(
+                text = "transaction details".uppercase(),
+                fontFamily = KumbhSansFontFamily,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                color = White
+            )
+        }
+
         items.forEach { (label, value) ->
             Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.5.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = label,
-                    color = White,
+                    color = SteelBlueGrey,
                     fontSize = 12.sp,
                     fontFamily = KumbhSansFontFamily,
                     fontWeight = FontWeight.Normal
                 )
-                Text(
-                    text = value.toString(),
-                    color = White,
-                    fontSize = 12.sp,
-                    fontFamily = KumbhSansFontFamily,
-                    fontWeight = FontWeight.Normal
-                )
+
+                if (label == "Reason") {
+                    if (label == "Reason") {
+
+                        val reasonText = value
+                            .toString()
+                            .takeIf { it.isNotBlank() }
+                            ?.uppercase()
+                            ?: "REASON / BILLS"
+
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = BrightSkyBlue,
+                                    shape = RoundedCornerShape(6.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = reasonText,
+                                color = White,
+                                fontSize = 10.sp,
+                                fontFamily = KumbhSansFontFamily,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+//                    Box(
+//                        modifier = Modifier
+//                            .background(
+//                                color = BrightSkyBlue,
+//                                shape = RoundedCornerShape(6.dp)
+//                            )
+//                            .padding(horizontal = 8.dp, vertical = 4.dp)
+//                    ) {
+//                        Text(
+//                            text = value.toString(),
+//                            color = White,
+//                            fontSize = 10.sp,
+//                            fontFamily = KumbhSansFontFamily,
+//                            fontWeight = FontWeight.Bold
+//                        )
+//                    }
+                } else {
+                    Text(
+                        text = value.toString(),
+                        color = SteelBlueGrey,
+                        fontSize = 12.sp,
+                        fontFamily = KumbhSansFontFamily,
+                        fontWeight = FontWeight.Normal
+                    )
+                }
             }
         }
     }
@@ -289,6 +352,7 @@ fun CryptoWithdrawalReviewPreview() {
         networkName = "Ethereum",
         networkFee = 0.003,
         network = SupportedBlockchainEnum.ethereum,
+        reason = "BILLS"
     )
 
     CryptoWithdrawalReview(

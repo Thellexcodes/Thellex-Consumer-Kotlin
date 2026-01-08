@@ -17,7 +17,7 @@ class SingleAssetTransactionAdapter(
 ) : RecyclerView.Adapter<SingleAssetTransactionAdapter.TransactionViewHolder>() {
 
     private val filteredTransactions = transactions.filter {
-        it.assetCode.equals(currencyFilter, ignoreCase = true)
+        it.assetCode.name.equals(currencyFilter, ignoreCase = true)
     }
 
     inner class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
