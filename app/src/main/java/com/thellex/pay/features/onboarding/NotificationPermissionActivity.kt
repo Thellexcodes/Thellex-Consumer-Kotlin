@@ -11,7 +11,6 @@ import com.thellex.pay.core.utils.Helpers.applyAdvancedSystemBarInsets
 import com.thellex.pay.core.utils.Helpers.disableDecorFitsSystemWindows
 import com.thellex.pay.core.utils.Helpers.setTransparentStatusBarWithWhiteIcons
 import com.thellex.pay.databinding.ActivityNotificationPermissionBinding
-import com.thellex.pay.features.pos.ui.POSHomeActivity
 
 class NotificationPermissionActivity : AppCompatActivity() {
 
@@ -70,7 +69,7 @@ class NotificationPermissionActivity : AppCompatActivity() {
     }
 
     private fun goToNextScreen() {
-        startActivity(Intent(this, POSHomeActivity::class.java))
+//        startActivity(Intent(this, POSHomeActivity::class.java))
         finish()
     }
 }

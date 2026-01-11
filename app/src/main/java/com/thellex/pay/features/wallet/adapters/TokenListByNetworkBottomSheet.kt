@@ -13,7 +13,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.thellex.pay.databinding.FragmentTokenSelectionBinding
 import com.thellex.pay.features.fiat.adapters.TokenAdapter
-import com.thellex.pay.features.wallet.model.WalletBalanceDto
+import com.thellex.pay.features.wallet.model.WalletState
 import com.thellex.pay.features.wallet.model.WalletDto
 import com.thellex.pay.settings.SupportedBlockchainEnum
 import kotlinx.coroutines.Job
@@ -36,7 +36,7 @@ class TokenListByNetworkBottomSheet : BottomSheetDialogFragment() {
         private const val ARG_WALLETS_JSON = "wallet_balance_json"
         private const val ARG_SELECTED_NETWORK = "selected_network"
 
-        fun newInstance(walletBalance: WalletBalanceDto, selectedNetwork: SupportedBlockchainEnum): TokenListByNetworkBottomSheet {
+        fun newInstance(walletBalance: WalletState, selectedNetwork: SupportedBlockchainEnum): TokenListByNetworkBottomSheet {
             val fragment = TokenListByNetworkBottomSheet()
             val json = Gson().toJson(walletBalance.wallets)
             fragment.arguments = Bundle().apply {

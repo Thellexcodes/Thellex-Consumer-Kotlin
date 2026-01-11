@@ -29,7 +29,6 @@ import com.thellex.pay.data.model.VerifyUserDto
 import com.thellex.pay.databinding.ActivityAuthVerificationBinding
 import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
 import com.thellex.pay.features.onboarding.NotificationPermissionActivity
-import com.thellex.pay.features.pos.ui.POSHomeActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -229,7 +228,7 @@ class AuthVerificationActivity : AppCompatActivity() {
         if (!hasEnabledNotifications) {
             startActivity(Intent(this, NotificationPermissionActivity::class.java))
         } else {
-            startActivity(Intent(this, POSHomeActivity::class.java))
+//            startActivity(Intent(this, POSHomeActivity::class.java))
         }
         finish()
     }

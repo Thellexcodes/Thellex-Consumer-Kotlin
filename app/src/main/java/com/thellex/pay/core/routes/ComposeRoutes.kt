@@ -1,8 +1,11 @@
 package com.thellex.pay.core.routes
 
 object ComposeRoutes {
+    val Dashboard = Route("Dashboard")
 
     val WalletHome = Route("wallet_home")
+
+    val Notifications = Route("notification")
 
     val AssetDetail = Route("asset_detail")
 

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
@@ -43,22 +42,16 @@ import com.thellex.pay.core.decorators.BrightSkyBlue
 import com.thellex.pay.core.decorators.DarkBlue
 import com.thellex.pay.core.decorators.DeepNavy
 import com.thellex.pay.core.decorators.GoldenYellow
-import com.thellex.pay.core.decorators.Gray
 import com.thellex.pay.core.decorators.KumbhSansFontFamily
 import com.thellex.pay.core.decorators.Midnight
 import com.thellex.pay.core.decorators.OutfitFontFamily
 import com.thellex.pay.core.decorators.SteelBlueGrey
 import com.thellex.pay.core.decorators.White
 import com.thellex.pay.data.enums.OnOffRampAction
-import com.thellex.pay.features.wallet.model.AssetTotalDto
-import com.thellex.pay.features.wallet.model.WalletBalanceDto
-import com.thellex.pay.features.wallet.ui.WalletScreen
 import com.thellex.pay.shared.Accordion
 import com.thellex.pay.shared.CenteredTopBar
 import com.thellex.pay.shared.DropdownField
 import com.thellex.pay.shared.IconDisplayer
-import com.thellex.pay.shared.InfoCard
-import com.thellex.pay.shared.InfoCardType
 import com.thellex.pay.shared.MaxButton
 import com.thellex.pay.shared.PrimaryButton
 import com.thellex.pay.shared.SendInputField
@@ -479,7 +472,6 @@ fun On_Off_RampScreen(
         }
     }
 }
-
 
 @Composable
 fun On_Off_RampScreenRoute(

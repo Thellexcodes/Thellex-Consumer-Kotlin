@@ -1,20 +1,22 @@
 package com.thellex.pay.core.utils
 
+import DashboardRoute
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,31 +26,28 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.thellex.pay.core.decorators.PinkRed
-import com.thellex.pay.core.decorators.color
 import com.thellex.pay.core.routes.ComposeRoutes
 import com.thellex.pay.data.enums.OnOffRampAction
 import com.thellex.pay.features.auth.ui.SecuritySettingsScreen
 import com.thellex.pay.features.fiat.RampTransactionDetailScreen
 import com.thellex.pay.features.fiat.RampTransactionsScreen
-import com.thellex.pay.features.fiat.ui.On_Off_RampScreen
+import com.thellex.pay.features.fiat.ui.On_Off_RampScreenRoute
+import com.thellex.pay.features.notifications.ui.NotificationsScreenRoute
 import com.thellex.pay.features.wallet.ui.AssetDetailScreenRoute
 import com.thellex.pay.features.wallet.ui.CryptoDepositScreenRoute
 import com.thellex.pay.features.wallet.ui.CryptoDepositTokensSelectionRoute
-import com.thellex.pay.features.wallet.ui.CryptoTransactionDetail
 import com.thellex.pay.features.wallet.ui.CryptoTransactionDetailRoute
 import com.thellex.pay.features.wallet.ui.CryptoTransactionSummary
 import com.thellex.pay.features.wallet.ui.CryptoWithdrawalReviewRoute
 import com.thellex.pay.features.wallet.ui.CryptoWithdrawalScreenRoute
 import com.thellex.pay.features.wallet.ui.WalletScreenRoute
 import com.thellex.pay.screens.WebViewScreen
-import com.thellex.pay.settings.SupportedBlockchainEnum
-import com.thellex.pay.settings.TokenEnum
 import com.thellex.pay.v2.features.payment_links.PaymentLinksScreen
 import kotlinx.serialization.json.Json
 
 class ComposeHostActivity : ComponentActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -63,8 +62,16 @@ class ComposeHostActivity : ComponentActivity() {
                 navController = navController,
                 startDestination = ComposeRoutes.PaymentLinks.route
             ) {
+                composable(ComposeRoutes.Dashboard.route){
+                    DashboardRoute(navController)
+                }
+
                 composable(ComposeRoutes.PaymentLinks.route) {
                     PaymentLinksScreen(navController)
+                }
+
+                composable(ComposeRoutes.Notifications.route) {
+                    NotificationsScreenRoute(navController)
                 }
 
                 composable(ComposeRoutes.RampTransactions.route) {
@@ -147,11 +154,17 @@ class ComposeHostActivity : ComponentActivity() {
 
                 composable(
                     route = "${ComposeRoutes.OnOffRamp.route}/{action}",
-                    arguments = listOf(navArgument("action") { type = NavType.StringType })
+                    arguments = listOf(
+                        navArgument("action") { type = NavType.StringType }
+                    )
                 ) { backStackEntry ->
                     val actionParam = backStackEntry.arguments?.getString("action")
                     val action = OnOffRampAction.fromRoute(actionParam)
-                    On_Off_RampScreen(navController = navController, action = action)
+
+                    On_Off_RampScreenRoute(
+                        navController = navController,
+                        action = action
+                    )
                 }
 
                 composable(
@@ -182,14 +195,19 @@ class ComposeHostActivity : ComponentActivity() {
                     CryptoTransactionDetailRoute(navController = navController, transaction = transaction)
                 }
             }
+            val hasNavigated = rememberSaveable { mutableStateOf(false) }
 
-            // After NavHost is ready, navigate to the intended route if provided
             intendedRoute?.let { route ->
                 LaunchedEffect(route) {
-                    Log.d("EEE", "Navigating to intended route: $route")
-                    navController.navigate(route) {
-                        popUpTo(ComposeRoutes.PaymentLinks.route) { inclusive = true }
-                        launchSingleTop = true
+                    if (!hasNavigated.value) {
+                        hasNavigated.value = true
+
+                        Log.d("EEE", "Navigating to intended route: $route")
+
+                        navController.navigate(route) {
+                            popUpTo(ComposeRoutes.PaymentLinks.route) { inclusive = true }
+                            launchSingleTop = true
+                        }
                     }
                 }
             }

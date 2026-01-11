@@ -1,9 +1,7 @@
 package com.thellex.pay.features.wallet.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Application
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,12 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,9 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalGraphicsContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,13 +44,10 @@ import com.thellex.pay.core.decorators.OutfitFontFamily
 import com.thellex.pay.core.decorators.SteelBlueGrey
 import com.thellex.pay.core.decorators.White
 import com.thellex.pay.core.routes.ComposeRoutes
-import com.thellex.pay.features.auth.viewModel.UserViewModel
-import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
 import com.thellex.pay.features.wallet.model.AssetTotalDto
-import com.thellex.pay.features.wallet.model.WalletBalanceDto
+import com.thellex.pay.features.wallet.model.WalletState
 import com.thellex.pay.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.pay.features.wallet.utils.WalletManagerViewModel
-import com.thellex.pay.shared.BackIconButton
 import com.thellex.pay.shared.CenteredTopBar
 import com.thellex.pay.shared.IconDisplayer
 
@@ -71,7 +60,7 @@ data class CryptoOption(
     val iconUrl: String
 )
 
-fun WalletBalanceDto.toCryptoOptions(): List<CryptoOption> {
+fun WalletState.toCryptoOptions(): List<CryptoOption> {
     return assetTotals.map { (symbol, asset) ->
         CryptoOption(
             name = symbol.uppercase(),
@@ -88,7 +77,7 @@ fun WalletBalanceDto.toCryptoOptions(): List<CryptoOption> {
 @Composable
 fun WalletScreen(
     navController: NavHostController,
-    walletState: WalletBalanceDto? = null
+    walletState: WalletState? = null
 ) {
     // Convert walletState to CryptoOption reactively
     val cryptos by remember(walletState) {
@@ -273,7 +262,7 @@ fun WalletScreenRoute(
 fun WalletScreenPreview() {
     WalletScreen(
         navController = rememberNavController(),
-        walletState = WalletBalanceDto(
+        walletState = WalletState(
             totalInUsd = 4.79,
             assetTotals = mapOf(
                 "usdc" to AssetTotalDto(1.35, 0.0, 1.35, "https://example.com/usdc.png"),

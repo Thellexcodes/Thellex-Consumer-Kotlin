@@ -24,7 +24,6 @@ import com.thellex.pay.data.model.IFiatCryptoRampTransactionsDto
 import com.thellex.pay.databinding.ActivityFiatDepositBinding
 import com.thellex.pay.features.auth.viewModel.UserViewModel
 import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
-import com.thellex.pay.features.pos.ui.POSHomeActivity
 import com.thellex.pay.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.pay.features.wallet.utils.WalletManagerViewModel
 import com.thellex.pay.settings.FiatTickers
@@ -57,7 +56,7 @@ class OnRampFiatSummaryActivity : AppCompatActivity() {
         } ?: finishWithError("Failed to load transaction details")
 
         binding.onrampGoToDashboardBtn.setOnClickListener{ finish()
-            startActivity(Intent(this@OnRampFiatSummaryActivity, POSHomeActivity::class.java))
+//            startActivity(Intent(this@OnRampFiatSummaryActivity, POSHomeActivity::class.java))
             finish()
         }
     }

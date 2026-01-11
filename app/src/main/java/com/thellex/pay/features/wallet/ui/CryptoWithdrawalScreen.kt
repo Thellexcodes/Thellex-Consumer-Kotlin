@@ -66,8 +66,10 @@ import com.thellex.pay.core.utils.isValidWalletAddress
 import com.thellex.pay.data.datastore.getBaseSettingsCache
 import com.thellex.pay.data.model.ChainInfoDto
 import com.thellex.pay.data.model.TokenInfo
+import com.thellex.pay.features.wallet.model.AssetTotalDto
 import com.thellex.pay.features.wallet.model.GroupedWalletAssetDto
-import com.thellex.pay.features.wallet.model.WalletBalanceDto
+import com.thellex.pay.features.wallet.model.WalletDto
+import com.thellex.pay.features.wallet.model.WalletState
 import com.thellex.pay.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.pay.features.wallet.utils.WalletManagerViewModel
 import com.thellex.pay.settings.SupportedBlockchainEnum
@@ -82,13 +84,14 @@ import com.thellex.pay.shared.NetworkSelectionContent
 import com.thellex.pay.shared.PrimaryButton
 import com.thellex.pay.shared.SendInputField
 import com.thellex.pay.shared.TokenSelectionContent
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 @SuppressLint("ContextCastToActivity")
 @Composable
 fun CryptoWithdrawalScreen(
     navController: NavHostController,
-    walletState: WalletBalanceDto? = null
+    walletState: WalletState? = null
 ) {
 
     var showNetworkModal by remember { mutableStateOf(false) }
@@ -279,9 +282,7 @@ fun CryptoWithdrawalScreen(
                     .padding(paddingValues)
             ) {
 
-                val activity = LocalContext.current as? Activity
-
-                IconButton(onClick = { activity?.finish() }) {
+                IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
@@ -584,11 +585,42 @@ fun CryptoWithdrawalScreenRoute(navController: NavHostController) {
     CryptoWithdrawalScreen(navController = navController, walletState)
 }
 
-/**
- * Preview
- */
 @Preview(showBackground = true)
 @Composable
 fun CryptoWithdrawalScreenPreview() {
-    CryptoWithdrawalScreen(navController = rememberNavController())
+    // --- Mock tokens ---
+    val previewTokens = listOf(
+        TokenInfo(
+            symbol = TokenEnum.usdt,
+            name = "Tether USD",
+            decimals = 6,
+            iconDisplay = ""
+        ),
+        TokenInfo(
+            symbol = TokenEnum.usdc,
+            name = "USD Coin",
+            decimals = 6,
+            iconDisplay = ""
+        )
+    )
+
+    // --- Mock chains ---
+    val previewChains = listOf(
+        ChainInfoDto(
+            id = SupportedBlockchainEnum.bep20,
+            displayName = "BNB Smart Chain (BEP 20)",
+            fee = 2.0,
+            minimumWithdrawal = 10,
+            arrivalTime = "≈ 1 min",
+            supportedTokens = previewTokens,
+            iconUrl = ""
+        )
+    )
+
+    // --- Render the screen without walletState ---
+    CryptoWithdrawalScreen(
+        navController = rememberNavController(),
+        walletState = null
+    )
+
 }

@@ -6,7 +6,7 @@ import android.os.CountDownTimer
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.thellex.pay.features.wallet.model.WalletBalanceDto
+import com.thellex.pay.features.wallet.model.WalletState
 import com.thellex.pay.features.wallet.prefrences.WalletManagerPreferences
 import com.thellex.pay.network.services.ApiClient
 import kotlinx.coroutines.CoroutineScope
@@ -17,8 +17,8 @@ import kotlinx.coroutines.withContext
 
 class WalletRepository private constructor(private  val context: Context) {
 
-    private val _walletBalance = MutableLiveData<WalletBalanceDto?>()
-    val walletBalance: LiveData<WalletBalanceDto?> = _walletBalance
+    private val _walletBalance = MutableLiveData<WalletState?>()
+    val walletBalance: LiveData<WalletState?> = _walletBalance
 
     // Scoped Coroutine for internal launches
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

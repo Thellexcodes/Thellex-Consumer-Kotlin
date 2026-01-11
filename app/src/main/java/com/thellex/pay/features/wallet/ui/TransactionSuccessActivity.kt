@@ -9,7 +9,6 @@ import androidx.core.view.WindowInsetsCompat
 import com.thellex.pay.core.utils.ActivityTracker
 import com.thellex.pay.core.utils.Helpers.truncateMiddle
 import com.thellex.pay.databinding.ActivityTransactionSuccessBinding
-import com.thellex.pay.features.pos.ui.POSHomeActivity
 
 class TransactionSuccessActivity : AppCompatActivity() {
 
@@ -54,7 +53,7 @@ class TransactionSuccessActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.buttonDone.setOnClickListener {
-            startActivity(Intent(this, POSHomeActivity::class.java))
+//            startActivity(Intent(this, POSHomeActivity::class.java))
             finish()
         }
     }

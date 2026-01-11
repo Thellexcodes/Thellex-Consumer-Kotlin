@@ -7,7 +7,7 @@ import com.thellex.pay.settings.TokenEnum
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class WalletBalanceDto(
+data class WalletState(
     val totalInUsd: Double,
     val assetTotals: Map<String, AssetTotalDto>,
     val wallets: Map<String, GroupedWalletDto>

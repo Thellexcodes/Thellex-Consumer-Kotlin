@@ -1,7 +1,6 @@
 package com.thellex.pay.features.wallet.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Application
 import android.graphics.Bitmap
 import android.util.Log
@@ -18,21 +17,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,11 +40,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,16 +57,15 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.thellex.pay.R
 import com.thellex.pay.core.decorators.AppGradientBackground
 import com.thellex.pay.core.decorators.DarkBlue
+import com.thellex.pay.core.decorators.GoldenYellow
 import com.thellex.pay.core.decorators.KumbhSansFontFamily
 import com.thellex.pay.core.decorators.Midnight
-import com.thellex.pay.core.decorators.Transparent
 import com.thellex.pay.core.decorators.White
 import com.thellex.pay.data.datastore.getBaseSettingsCache
 import com.thellex.pay.data.model.ChainInfoDto
 import com.thellex.pay.data.model.TokenInfo
 import com.thellex.pay.features.wallet.model.GroupedWalletAssetDto
-import com.thellex.pay.features.wallet.model.WalletBalanceDto
-import com.thellex.pay.features.wallet.model.WalletDto
+import com.thellex.pay.features.wallet.model.WalletState
 import com.thellex.pay.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.pay.features.wallet.utils.WalletManagerViewModel
 import com.thellex.pay.shared.AddressCopyButton
@@ -82,40 +75,28 @@ import com.thellex.pay.shared.IconDisplayer
 import com.thellex.pay.shared.InfoCard
 import com.thellex.pay.shared.InfoCardType
 import com.thellex.pay.shared.NetworkSelectionContent
-import com.thellex.pay.shared.TokenSelectionContent
 
 @Composable
 fun CryptoDepositScreenRoute(
     navController: NavController,
-    ticker: String
+    ticker: String? = "USDC"
 ) {
     val application = LocalContext.current.applicationContext as Application
     val walletFactory = WalletManagerModelFactory(application)
-    val walletViewModel: WalletManagerViewModel = viewModel(factory = walletFactory)
-    val walletState = walletViewModel.walletBalance.value!!
+    val walletModel: WalletManagerViewModel = viewModel(factory = walletFactory)
+    val walletState by walletModel.walletBalance.observeAsState()
 
     CryptoDepositScreen(
         navController = navController,
-        walletState = walletState
+        walletState = walletState,
     )
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF000814)
-@Composable
-fun CryptoDepositScreenPreview() {
-    // Simulate a realistic wallet state for preview
-//
-//    CryptoDepositScreen(
-//        navController = rememberNavController(),
-//        walletState = previewWalletState
-//    )
 }
 
 @SuppressLint("ContextCastToActivity")
 @Composable
 fun CryptoDepositScreen(
     navController: NavController,
-    walletState: WalletBalanceDto? = null
+    walletState: WalletState? = null,
 ) {
     val isPreview = LocalInspectionMode.current
     val application = LocalContext.current.applicationContext as Application
@@ -130,6 +111,7 @@ fun CryptoDepositScreen(
     var selectedTokenId by rememberSaveable { mutableStateOf<String?>(null) }
     var chainAssets by remember { mutableStateOf<List<GroupedWalletAssetDto>>(emptyList()) }
 
+
     // Initialize walletAddress safely
     val initialWalletAddress = remember(walletState) {
         if (isPreview || walletState == null) {
@@ -139,16 +121,17 @@ fun CryptoDepositScreen(
         }
     }
     var walletAddress by remember { mutableStateOf(initialWalletAddress) }
+    Log.d("Base", "wallet address is ${walletAddress}")
 
     /* ───── Ticker from navigation ───── */
     val ticker = if (isPreview) {
-        "BTC"
+        "USDC"
     } else {
         navController.currentBackStackEntry
             ?.arguments
             ?.getString("ticker")
             ?.uppercase()
-            ?: "BTC"
+            ?: "USDC"
     }
 
     /* ───── Load token + icon from cache ───── */
@@ -359,8 +342,9 @@ fun CryptoDepositScreen(
 
                 Spacer(Modifier.height(28.dp))
 
-                /* ───── Wallet Address ───── */
-                Column {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(
                         text = "WALLET ADDRESS",
                         color = White.copy(alpha = 0.4f),
@@ -368,12 +352,13 @@ fun CryptoDepositScreen(
                         fontWeight = FontWeight.Medium
                     )
 
-                    Spacer(Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     AddressCopyButton(
                         address = walletAddress,
-                        iconTint = White,
-                        modifier = Modifier.width(18.dp).height(18.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        onCopied = { },
+                        iconTint = GoldenYellow
                     )
                 }
             }
@@ -432,4 +417,13 @@ fun generateQrCode(text: String, size: Int = 512): Bitmap {
     }
 
     return bitmap
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000814)
+@Composable
+fun CryptoDepositScreenPreview() {
+    CryptoDepositScreen(
+        navController = rememberNavController(),
+        walletState = null,
+    )
 }

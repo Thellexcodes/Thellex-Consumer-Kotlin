@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import com.thellex.pay.core.decorators.DarkBlue
 import com.thellex.pay.core.decorators.GoldenYellow
 import com.thellex.pay.core.decorators.KumbhSansFontFamily
+import com.thellex.pay.core.decorators.Midnight
 
 @Composable
 fun PrimaryButton(
@@ -35,7 +36,7 @@ fun PrimaryButton(
             .height(45.dp)
             .clip(RoundedCornerShape(7.dp))
             .background(
-                color = if (enabled) GoldenYellow else DarkBlue,
+                color = if (enabled) GoldenYellow else Midnight,
                 shape = RoundedCornerShape(7.dp)
             )
             .clickable(enabled = enabled, onClick = onClick),
@@ -43,7 +44,7 @@ fun PrimaryButton(
     ) {
         Text(
             text = text.uppercase(),
-            color = Color.Black,
+            color = DarkBlue,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = KumbhSansFontFamily

@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 data class Transaction(
     @SerializedName("id") val id: String,
-    @SerializedName("type") val type: TransactionType,
+    @SerializedName("type") val type: TransactionTypeEnum,
     @SerializedName("description") val description: String,
     @SerializedName("amount") val amount: String,
     @SerializedName("timestamp") val timestamp: String,
@@ -40,30 +40,26 @@ data class ITransactionHistoryDto(
     val valueInUsd: Double
 )
 
- enum class TransactionType {
-    @SerializedName("DEPOSIT") DEPOSIT,
-    @SerializedName("WITHDRAW") WITHDRAW,
-}
 
-@Serializable
-data class PosTransaction(
-    @SerializedName("id") val id: String?,
-    @SerializedName("assetIconUrl") val assetIconUrl: String,
-    @SerializedName("description") val description: String,
-    @SerializedName("time") val time: String,
-    @SerializedName("amountWithSymbol") val amountWithSymbol: String,
-    @SerializedName("paymentStatus") val paymentStatus:  PaymentStatusEnum,
-    @SerializedName("transactionType") val transactionType: TransactionTypeEnum,
-    @SerializedName("transactionType") val rampID: String? = null,
-    @SerializedName("amount") val amount: String,
-    val assetCode: TokenEnum,
-    val paymentNetwork: SupportedBlockchainEnum,
-    val fundUid: String,
-    val sourceAddress: String,
-    val reason: String,
-    val valueInLocal: Double,
-    val valueInUsd: Double
-)
+//@Serializable
+//data class PosTransaction(
+//    @SerializedName("id") val id: String?,
+//    @SerializedName("assetIconUrl") val assetIconUrl: String,
+//    @SerializedName("description") val description: String,
+//    @SerializedName("time") val time: String,
+//    @SerializedName("amountWithSymbol") val amountWithSymbol: String,
+//    @SerializedName("paymentStatus") val paymentStatus:  PaymentStatusEnum,
+//    @SerializedName("transactionType") val transactionType: TransactionTypeEnum,
+//    @SerializedName("transactionType") val rampID: String? = null,
+//    @SerializedName("amount") val amount: String,
+//    val assetCode: TokenEnum,
+//    val paymentNetwork: SupportedBlockchainEnum,
+//    val fundUid: String,
+//    val sourceAddress: String,
+//    val reason: String,
+//    val valueInLocal: Double,
+//    val valueInUsd: Double
+//)
 
 data class BlockchainItem(
     @SerializedName("chain") val chain: SupportedBlockchainEnum,

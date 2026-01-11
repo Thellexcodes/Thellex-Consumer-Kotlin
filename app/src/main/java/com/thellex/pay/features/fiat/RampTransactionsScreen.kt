@@ -2,7 +2,9 @@ package com.thellex.pay.features.fiat
 
 import CustomTopAppBar
 import android.app.Application
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -288,6 +290,7 @@ fun RampTransactionItem(transaction: RampTransaction, onClick: (String) -> Unit)
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RampTransactionsScreen(
     navigation: NavHostController,
@@ -306,7 +309,7 @@ fun RampTransactionsScreen(
                 rampId = transaction.id,
                 iconRes = Helpers.getIconResIdForToken(transaction.recipientInfo.assetCode),
                 description = transaction.transactionMessage ?: "Unknown transaction",
-                timestamp = Helpers.convertToLocalTime(transaction.createdAt),
+                timestamp = Helpers.formatTransactionTimeHumanReadable(transaction.createdAt),
                 amount = "${transaction.netCryptoAmount ?: transaction.mainAssetAmount} ${transaction.recipientInfo.assetCode.uppercase() ?: "USD"}",
                 status = transaction.paymentStatus,
                 statusColor =  Helpers.determinePaymentStatusColor(transaction.paymentStatus),

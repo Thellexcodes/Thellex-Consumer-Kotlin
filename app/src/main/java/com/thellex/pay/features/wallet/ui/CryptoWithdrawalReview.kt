@@ -74,7 +74,7 @@ data class CryptoTransactionSummary(
     @Serializable val network: SupportedBlockchainEnum,
     val networkName: String,
     val networkFee: Double,
-    val reason: String
+    val reason: String? = ""
 )
 
 @Composable
@@ -87,7 +87,7 @@ fun TransactionSummaryList(
         "Recipient" to transaction.fundUid.truncateMiddle(),
         "Network" to "${transaction.network}".uppercase(),
         "Network Fee" to "${transaction.networkFee} ${transaction.assetCode.name.uppercase()}",
-        "Reason" to transaction.reason.uppercase()
+        "Reason" to transaction.reason?.uppercase()
     )
 
     Column(

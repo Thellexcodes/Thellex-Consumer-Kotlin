@@ -1,8 +1,8 @@
 package com.thellex.pay.core.utils
 
 import com.thellex.pay.features.wallet.model.GroupedWalletAssetDto
-import com.thellex.pay.features.wallet.model.WalletBalanceDto
+import com.thellex.pay.features.wallet.model.WalletState
 
-fun WalletBalanceDto.assetsForChain(chainKey: String): List<GroupedWalletAssetDto> {
+fun WalletState.assetsForChain(chainKey: String): List<GroupedWalletAssetDto> {
     return wallets[chainKey]?.assets.orEmpty()
 }

@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import com.thellex.pay.features.wallet.model.WalletBalanceDto
+import com.thellex.pay.features.wallet.model.WalletState
 import com.thellex.pay.features.wallet.prefrences.WalletManagerPreferences
 import kotlinx.coroutines.launch
 
@@ -14,7 +14,7 @@ class WalletManagerViewModel(application: Context): AndroidViewModel(application
     private val repository = WalletRepository.getInstance(application)
     private val preferences = WalletManagerPreferences(application)
 
-    val walletBalance: LiveData<WalletBalanceDto?> = repository.walletBalance
+    val walletBalance: LiveData<WalletState?> = repository.walletBalance
 
     fun loadWallet(tokenProvider: suspend () -> String?) {
         viewModelScope.launch {

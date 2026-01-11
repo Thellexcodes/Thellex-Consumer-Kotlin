@@ -24,6 +24,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -50,6 +51,8 @@ import retrofit2.HttpException
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -643,16 +646,35 @@ object Helpers {
     fun Double.truncateToTwoDecimals(): Double {
         return (this * 100).toInt() / 100.0
     }
+//
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun formatTransactionTimeHumanReadable(isoUtc: String): String {
+        return try {
+            val zoneId = ZoneId.systemDefault()
+            val instant = Instant.parse(isoUtc)
+            val dateTime = instant.atZone(zoneId)
 
-    // Helper function to convert UTC to local time (+03)
-    fun convertToLocalTime(utcTime: String): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-        sdf.timeZone = TimeZone.getTimeZone("UTC")
-        val date = sdf.parse(utcTime) ?: Date()
+            val today = LocalDate.now(zoneId)
+            val transactionDate = dateTime.toLocalDate()
 
-        val localSdf = SimpleDateFormat("EEEE, MMMM dd, yyyy, hh:mm a", Locale.getDefault())
-        localSdf.timeZone = TimeZone.getTimeZone("GMT+03:00") // Adjust to +03
-        return localSdf.format(date)
+            val timeFormatter = DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault())
+            val dateFormatter = DateTimeFormatter.ofPattern("MMM d", Locale.getDefault())
+
+            val timePart = dateTime.format(timeFormatter)
+
+            when {
+                transactionDate.isEqual(today) ->
+                    "Today, $timePart"
+
+                transactionDate.isEqual(today.minusDays(1)) ->
+                    "Yesterday, $timePart"
+
+                else ->
+                    "${dateTime.format(dateFormatter)}, $timePart"
+            }
+        } catch (e: Exception) {
+            isoUtc // fallback, never break UI
+        }
     }
 
     fun formatFees(localFee: Double, usdFee: Double): String =
@@ -666,9 +688,3 @@ object Helpers {
         return this.matches(Regex("^\\d*(\\.\\d*)?$"))
     }
 }
-
-//fun String.capitalizeFirst(): String {
-//    if (this.isEmpty()) return this
-//    return this.substring(0, 1).uppercase() + this.substring(1).lowercase()
-//}
-

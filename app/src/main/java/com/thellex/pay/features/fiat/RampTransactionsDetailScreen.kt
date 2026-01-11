@@ -39,7 +39,7 @@ import com.thellex.pay.core.decorators.OutfitFontFamily
 import com.thellex.pay.core.decorators.SteelBlueGrey
 import com.thellex.pay.core.decorators.White
 import com.thellex.pay.core.utils.Helpers
-import com.thellex.pay.core.utils.Helpers.convertToLocalTime
+import com.thellex.pay.core.utils.Helpers.formatTransactionTimeHumanReadable
 import com.thellex.pay.core.utils.Helpers.truncateToTwoDecimals
 import com.thellex.pay.core.utils.PaddedWrapper
 import com.thellex.pay.data.model.PaymentStatusEnum
@@ -81,7 +81,7 @@ fun RampTransactionDetailScreen(
             description = it.transactionMessage ?: "No description",
             paymentStatusEnum = it.paymentStatus,
             statusColor = SteelBlueGrey,
-            timestamp = convertToLocalTime(it.createdAt),
+            timestamp = formatTransactionTimeHumanReadable(it.createdAt),
             assetCode = it.recipientInfo.assetCode,
             transactionType = it.transactionType,
             mainFiatAmount = it.mainFiatAmount,

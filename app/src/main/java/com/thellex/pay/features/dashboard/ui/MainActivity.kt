@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.map
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.thellex.pay.R
 import com.thellex.pay.core.routes.ComposeRoutes
@@ -32,7 +31,6 @@ import com.thellex.pay.data.model.AppVersionState
 import com.thellex.pay.data.repository.AppVersionRepository
 import com.thellex.pay.databinding.ActivityMainBinding
 import com.thellex.pay.network.services.ApiClient
-import com.thellex.pay.features.pos.ui.POSHomeActivity
 import com.thellex.pay.features.auth.ui.LoginActivity
 import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
 import kotlinx.coroutines.CoroutineScope
@@ -113,7 +111,6 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun checkAuthStatus() {
-        // Block navigation if a force update is pending
         if (isForceUpdatePending) return
 
         lifecycleScope.launch {
@@ -183,8 +180,11 @@ class MainActivity : AppCompatActivity() {
 
     private val pinScreenLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val dashboardIntent = Intent(this@MainActivity, POSHomeActivity::class.java)
-            startActivity(dashboardIntent)
+            val intent = ComposeHostActivity.newIntent(
+                this@MainActivity,
+                ComposeRoutes.Dashboard.route
+            )
+            startActivity(intent)
             finish()
         }
     }
@@ -233,6 +233,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val TAG = "MainActivity"
+        private const val TAG = "MainActivity"
     }
 }

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.Gson
 import com.thellex.pay.databinding.FragmentTokenSelectionBinding
-import com.thellex.pay.features.wallet.model.WalletBalanceDto
+import com.thellex.pay.features.wallet.model.WalletState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
@@ -32,9 +32,9 @@ class TokenSelectionBottomSheet : BottomSheetDialogFragment() {
         const val RESULT_KEY = "token_selection_result"
         const val TOKEN_KEY = "selected_token"
 
-        fun newInstance(walletBalance: WalletBalanceDto): TokenSelectionBottomSheet {
+        fun newInstance(walletState: WalletState): TokenSelectionBottomSheet {
             val fragment = TokenSelectionBottomSheet()
-            val json = Gson().toJson(walletBalance.wallets)
+            val json = Gson().toJson(walletState.wallets)
             fragment.arguments = Bundle().apply {
                 putString("wallet_balance_json", json)
             }

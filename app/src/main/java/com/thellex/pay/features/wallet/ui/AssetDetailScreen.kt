@@ -58,7 +58,7 @@ import com.thellex.pay.core.decorators.White
 import com.thellex.pay.core.routes.ComposeRoutes
 import com.thellex.pay.data.datastore.getBaseSettingsCache
 import com.thellex.pay.features.admin.TransactionItem
-import com.thellex.pay.features.wallet.model.WalletBalanceDto
+import com.thellex.pay.features.wallet.model.WalletState
 import com.thellex.pay.features.wallet.utils.WalletManagerModelFactory
 import com.thellex.pay.features.wallet.utils.WalletManagerViewModel
 import com.thellex.pay.shared.IconDisplayer
@@ -115,7 +115,7 @@ fun ActionButton(
 fun AssetDetailScreen(
     navController: NavHostController? = null,
     assetCode: String,
-    walletState: WalletBalanceDto? = null
+    walletState: WalletState? = null
 ){
     val onBackClick = { navController?.popBackStack() }
     val application = LocalContext.current.applicationContext as Application
@@ -123,7 +123,7 @@ fun AssetDetailScreen(
 
     val onDepositClick = {
         navController?.navigate(
-            "${ComposeRoutes.AssetDetail.route}/${assetCode.lowercase()}"
+            "${ComposeRoutes.CryptoDeposit.route}?ticker=${assetCode.lowercase()}"
         )
     }
 

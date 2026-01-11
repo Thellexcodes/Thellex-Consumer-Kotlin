@@ -18,7 +18,6 @@ import com.thellex.pay.features.auth.viewModel.UserViewModel
 import com.thellex.pay.features.auth.viewModel.UserViewModelFactory
 import com.thellex.pay.features.kyc.ui.idverification.FaceVerificationActivity
 import com.thellex.pay.features.kyc.ui.StartKycActivity
-import com.thellex.pay.features.pos.ui.POSHomeActivity
 
 class KycSuccessActivity : AppCompatActivity() {
 
@@ -85,7 +84,7 @@ class KycSuccessActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.proceedToDashboardButton.setOnClickListener {
-            startActivity(Intent(this, POSHomeActivity::class.java))
+//            startActivity(Intent(this, POSHomeActivity::class.java))
         }
 
         binding.upgradeLimitsButton.setOnClickListener {
