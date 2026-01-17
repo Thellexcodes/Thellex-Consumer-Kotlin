@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -91,7 +92,8 @@ import kotlinx.serialization.json.Json
 @Composable
 fun CryptoWithdrawalScreen(
     navController: NavHostController,
-    walletState: WalletState? = null
+    walletState: WalletState? = null,
+    assetCode: TokenEnum? = null
 ) {
 
     var showNetworkModal by remember { mutableStateOf(false) }
@@ -189,11 +191,21 @@ fun CryptoWithdrawalScreen(
         }
     }
 
-    LaunchedEffect(selectedChain) {
-        selectedChain?.supportedTokens?.firstOrNull()?.let { token ->
-            selectedToken = token
-            selectedTokenId = token.symbol.name
+    LaunchedEffect(selectedChain, assetCode) {
+        val tokens = selectedChain?.supportedTokens.orEmpty()
+        if (tokens.isEmpty()) return@LaunchedEffect
+
+        val matchedToken = assetCode?.let { code ->
+            tokens.firstOrNull {
+                it.symbol.name.equals(code.name, ignoreCase = true)
+            }
         }
+
+        // 2. Use matched token or fallback
+        val tokenToSelect = matchedToken ?: tokens.first()
+
+        selectedToken = tokenToSelect
+        selectedTokenId = tokenToSelect.symbol.name
     }
 
     LaunchedEffect(amount, selectedChain) {
@@ -335,13 +347,21 @@ fun CryptoWithdrawalScreen(
                             isWalletValid = isValidWalletAddress(fundUid, selectedChain?.id)
                         },
                         placeholder = "Enter Wallet Address",
-                        trailingIcon = {}
+//                        trailingIcon = {}
                     )
 
                     Spacer(modifier = Modifier.height(19.dp))
 
                     DropdownField(
                         placeholder = "Select Network",
+                        leadingIcon = {
+                            IconDisplayer(
+                                ticker = "",
+                                iconUrl = "",
+                                fallbackRes = R.drawable.icon_avatar,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        },
                         selected = selectedChain?.displayName,
                         onClick = { showNetworkModal = true }
                     )
@@ -576,13 +596,13 @@ fun CryptoWithdrawalScreen(
  * Route wrapper
  */
 @Composable
-fun CryptoWithdrawalScreenRoute(navController: NavHostController) {
+fun CryptoWithdrawalScreenRoute(navController: NavHostController, assetCode: TokenEnum?) {
     val application = LocalContext.current.applicationContext as Application
     val walletFactory = WalletManagerModelFactory(application)
     val walletViewModel: WalletManagerViewModel = viewModel(factory = walletFactory)
     val walletState = walletViewModel.walletBalance.value!!
 
-    CryptoWithdrawalScreen(navController = navController, walletState)
+    CryptoWithdrawalScreen(navController = navController, walletState, assetCode)
 }
 
 @Preview(showBackground = true)

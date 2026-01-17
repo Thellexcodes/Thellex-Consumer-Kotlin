@@ -62,6 +62,7 @@ import com.thellex.pay.core.decorators.DarkBlue
 import com.thellex.pay.core.decorators.GoldenYellow
 import com.thellex.pay.core.decorators.KumbhSansFontFamily
 import com.thellex.pay.core.decorators.Midnight
+import com.thellex.pay.core.decorators.OutfitFontFamily
 import com.thellex.pay.core.decorators.PinkRed
 import com.thellex.pay.core.decorators.SteelBlueGrey
 import com.thellex.pay.core.decorators.Transparent
@@ -88,16 +89,15 @@ import com.thellex.pay.settings.SupportedBlockchainEnum
 import com.thellex.pay.settings.TokenEnum
 import com.thellex.pay.shared.AppFullWidthModal
 import com.thellex.pay.shared.AssetChip
+import com.thellex.pay.shared.IconDisplayer
 import com.thellex.pay.shared.IconTextButton
 import com.thellex.pay.shared.NoTransactionsPlaceholder
 import com.thellex.pay.shared.NotificationIconWithBadge
-import com.thellex.pay.shared.NotificationIconWithBadgePreview
 import com.thellex.pay.shared.TotalBalanceSection
 import com.thellex.pay.shared.TransactionItem
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import retrofit2.http.Body
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -199,7 +199,6 @@ fun TopBar(
     }
 }
 
-
 @Composable
 fun BalanceSection(walletState: WalletState?) {
     Row(
@@ -245,54 +244,131 @@ fun ActionButtons(navController: NavController) {
     if (showWithdrawModal) {
         AppFullWidthModal(
             onDismiss = { showWithdrawModal = false },
-            title = "Withdraw Options",
-            show = showWithdrawModal
+            title = "Select Transaction Type",
+            show = showWithdrawModal,
+            contentColor = GoldenYellow
         ) {
-            Column(
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .background(
+                        color = DarkBlue,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clip(RoundedCornerShape(8.dp))
+                    .padding(17.dp)
+                    .clickable {
+                        showRequestModal = false
+                        //TODO: navigate to account deposit screen
+                    }
             ) {
-                Button(
-                    onClick = {
-                        showWithdrawModal = false
-                        navController.navigate(
-                            "${ComposeRoutes.OnOffRamp.route}/${OnOffRampAction.CRYPTO_TO_FIAT_OFF_RAMP.name}"
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = DarkBlue)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
-                        text = "Withdraw to Bank",
-                        color = Color.White,
+                        "Nigerian Naira (NGN)",
+                        color = White,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
+                        fontFamily = KumbhSansFontFamily,
+                        fontWeight = FontWeight.Normal
+                    )
+                    Text(
+                        "Transact in local currency directly from your NGN wallet",
+                        color = SteelBlueGrey,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = KumbhSansFontFamily,
                     )
                 }
 
-                Button(
-                    onClick = {
-                        showWithdrawModal = false
-                        navController?.navigate(ComposeRoutes.CryptoWithdrawal.route)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = DarkBlue)
+                IconDisplayer(
+                    ticker = "NGN",
+                    modifier = Modifier.size(26.dp),
+                    fallbackRes = R.drawable.ngn_green,
+                    tint = GoldenYellow
+                )
+            }
+            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .background(
+                        color = DarkBlue,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clip(RoundedCornerShape(8.dp))
+                    .padding(17.dp)
+                    .clickable {
+                        showRequestModal = false
+                        navController.navigate(ComposeRoutes.WalletHome.route)
+                    }
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
-                        text = "Withdraw to Another Wallet",
-                        color = Color.White,
+                        "On-Chain Withdraw",
+                        color = White,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
+                        fontFamily = KumbhSansFontFamily,
+                        fontWeight = FontWeight.Normal
+                    )
+                    Text(
+                        "Transfer crypto assets from Thellex to your external wallets.",
+                        color = SteelBlueGrey,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = KumbhSansFontFamily,
                     )
                 }
+
+                IconDisplayer(
+                    ticker = "NGN",
+                    modifier = Modifier.size(26.dp),
+                    fallbackRes = R.drawable.ngn_green,
+                )
+            }
+            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .background(
+                        color = DarkBlue,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clip(RoundedCornerShape(8.dp))
+                    .padding(17.dp)
+                    .clickable {
+                        showRequestModal = false
+                        navController.navigate("${ComposeRoutes.OnOffRamp.route}/${OnOffRampAction.CRYPTO_TO_FIAT_OFF_RAMP}")
+                    }
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Text(
+                        "Crypto-to-Fiat",
+                        color = White,
+                        fontSize = 14.sp,
+                        fontFamily = KumbhSansFontFamily,
+                        fontWeight = FontWeight.Normal
+                    )
+                    Text(
+                        text = "Cash out your crypto to local currency instantly.",
+                        color = SteelBlueGrey,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = KumbhSansFontFamily,
+                    )
+                }
+
+                IconDisplayer(
+                    ticker = "NGN",
+                    iconUrl = "https://cryptologos.cc/logos/thumbs/bitcoin.png?v=040",
+                    modifier = Modifier.size(26.dp),
+                    fallbackRes = R.drawable.ngn_green,
+//                    tint = GoldenYellow
+                )
             }
         }
     }
@@ -301,92 +377,256 @@ fun ActionButtons(navController: NavController) {
     if (showRequestModal) {
         AppFullWidthModal(
             onDismiss = { showRequestModal = false },
-            title = "Deposit Options",
-            show = showRequestModal
+            title = "Select Transaction Type",
+            show = showRequestModal,
+            contentColor = GoldenYellow
         ) {
-            Column(
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Button(
-                    onClick = {
-                        // Handle Request/Deposit from Bank
+                    .background(
+                        color = DarkBlue,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clip(RoundedCornerShape(8.dp))
+                    .padding(17.dp)
+                    .clickable {
                         showRequestModal = false
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = DarkBlue)
+                        //TODO: navigate to account deposit screen
+                    }
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
-                        text = "Deposit from Bank",
-                        color = Color.White,
+                        "Nigerian Naira (NGN)",
+                        color = White,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
+                        fontFamily = KumbhSansFontFamily,
+                        fontWeight = FontWeight.Normal
+                    )
+                    Text(
+                        "Transact in local currency directly from your NGN wallet",
+                        color = SteelBlueGrey,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = KumbhSansFontFamily,
                     )
                 }
 
-                Button(
-                    onClick = {
-                        // Handle Request/Deposit from Another Wallet
+                IconDisplayer(
+                    ticker = "NGN",
+                    modifier = Modifier.size(26.dp),
+                    fallbackRes = R.drawable.ngn_green,
+                    tint = GoldenYellow
+                )
+            }
+            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .background(
+                        color = DarkBlue,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clip(RoundedCornerShape(8.dp))
+                    .padding(17.dp)
+                    .clickable {
                         showRequestModal = false
-                        navController.navigate(ComposeRoutes.CryptoDeposit.route)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = DarkBlue)
+                        navController.navigate(ComposeRoutes.WalletHome.route)
+                    }
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
-                        text = "Deposit from Another Wallet",
-                        color = Color.White,
+                        "On-Chain Deposit",
+                        color = White,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
+                        fontFamily = KumbhSansFontFamily,
+                        fontWeight = FontWeight.Normal
+                    )
+                    Text(
+                        "Transfer crypto assets from your external wallets to Thellex.",
+                        color = SteelBlueGrey,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = KumbhSansFontFamily,
                     )
                 }
+
+                IconDisplayer(
+                    ticker = "NGN",
+                    modifier = Modifier.size(26.dp),
+                    fallbackRes = R.drawable.ngn_green,
+                )
             }
+            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .background(
+                        color = DarkBlue,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clip(RoundedCornerShape(8.dp))
+                    .padding(17.dp)
+                    .clickable {
+                        showRequestModal = false
+                        navController.navigate("${ComposeRoutes.OnOffRamp.route}/${OnOffRampAction.FIAT_TO_CRYPTO_ON_RAMP}")
+                    }
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Text(
+                        "Fiat-to-Crypto",
+                        color = White,
+                        fontSize = 14.sp,
+                        fontFamily = KumbhSansFontFamily,
+                        fontWeight = FontWeight.Normal
+                    )
+                    Text(
+                        "Convert traditional currency to crypto.",
+                        color = SteelBlueGrey,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = KumbhSansFontFamily,
+                    )
+                }
+
+                IconDisplayer(
+                    ticker = "NGN",
+                    iconUrl = "https://cryptologos.cc/logos/thumbs/bitcoin.png?v=040",
+                    modifier = Modifier.size(26.dp),
+                    fallbackRes = R.drawable.ngn_green,
+//                    tint = GoldenYellow
+                )
+            }
+
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp),
+//                verticalArrangement = Arrangement.spacedBy(12.dp)
+//            ) {
+//                Button(
+//                    onClick = {
+//                        showRequestModal = false
+//                    },
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(48.dp),
+//                    shape = RoundedCornerShape(12.dp),
+//                    colors = ButtonDefaults.buttonColors(containerColor = DarkBlue)
+//                ) {
+//                    Text(
+//                        text = "Buy Crypto",
+//                        color = Color.White,
+//                        fontSize = 12.sp,
+//                        fontWeight = FontWeight.Normal,
+//                        fontFamily = KumbhSansFontFamily
+//                    )
+//                }
+
+
+
+//                PrimaryButton(
+//                    onClick = { },
+//                    backgroundColor = DarkBlue
+//                ) {
+//                    Column {
+//                        Row(
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+//                        ) {
+//                            Text(
+//                                text = "On-Chain Deposit",
+//                                color = Color.White,
+//                                fontWeight = FontWeight.Bold,
+//                                fontSize = 14.sp,
+//                                fontFamily = KumbhSansFontFamily
+//                            )
+//                            IconDisplayer(
+//                                ticker = "NGN",
+//                                modifier = Modifier.size(11.dp),
+//                                fallbackRes = R.drawable.ngn_green,
+//                                iconUrl = ""
+//                            )
+//                        }
+//                        Text(
+//                            text = "Transfer crypto assets from your external wallets to Thellex.",
+//                            color = Color.White,
+//                            fontWeight = FontWeight.Bold,
+//                            fontSize = 14.sp,
+//                            fontFamily = KumbhSansFontFamily
+//                        )
+//                    }
+//                }
+
+
+
+//                PrimaryButton(
+//                    onClick = {
+//                        showRequestModal = false
+//                        navController.navigate(ComposeRoutes.CryptoDeposit.route)
+//                    },
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(48.dp),
+//                    shape = RoundedCornerShape(12.dp),
+//                    colors = ButtonDefaults.buttonColors(containerColor = DarkBlue)
+//                ) {
+//                    Row {
+//                        Text(
+//                            text = "OnChain Deposit",
+//                            color = Color.White,
+//                            fontSize = 14.sp,
+//                            fontWeight = FontWeight.Bold
+//                        )
+//                    }
+//
+//                    IconDisplayer()
+//                }
+            }
+        }
+
+    Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            IconTextButton(
+                text = "WITHDRAW",
+                icon = painterResource(id = R.drawable.icon_send_new),
+                backgroundColor = GoldenYellow,
+                iconRotation = 250f,
+                onClick = { showWithdrawModal = true },
+                modifier = Modifier.weight(1f),
+                textStyle = TextStyle(
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = KumbhSansFontFamily
+                )
+            )
+
+            IconTextButton(
+                text = "REQUEST",
+                icon = painterResource(id = R.drawable.icon_request),
+                backgroundColor = BrightSkyBlue,
+                onClick = { showRequestModal = true },
+                modifier = Modifier.weight(1f),
+                textStyle = TextStyle(
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = KumbhSansFontFamily
+                )
+            )
         }
     }
 
-    // --- Action Buttons Row ---
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        IconTextButton(
-            text = "WITHDRAW",
-            icon = painterResource(id = R.drawable.icon_send_new),
-            backgroundColor = GoldenYellow,
-            iconRotation = 250f,
-            onClick = { showWithdrawModal = true },
-            modifier = Modifier.weight(1f),
-            textStyle = TextStyle(
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                fontFamily = KumbhSansFontFamily
-            )
-        )
 
-        IconTextButton(
-            text = "REQUEST",
-            icon = painterResource(id = R.drawable.icon_request),
-            backgroundColor = BrightSkyBlue,
-            onClick = { showRequestModal = true },
-            modifier = Modifier.weight(1f),
-            textStyle = TextStyle(
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                fontFamily = KumbhSansFontFamily
-            )
-        )
-    }
-}
 
 @Composable
 private fun AssetStack(
@@ -611,13 +851,6 @@ fun BottomNavigationBar() {
             )
 
             BottomNavItem(
-                label = "Cash",
-                iconRes = R.drawable.icon_cash,
-                isSelected = false,
-                modifier = Modifier.weight(1f)
-            )
-
-            BottomNavItem(
                 label = "POS",
                 iconRes = R.drawable.icon_pos,
                 isSelected = false,
@@ -722,7 +955,6 @@ fun DashboardRoute(
                     val adminRampTransactions = adminRampDeferred?.await()?.result
                     currentAdminData.copy(rampTransactions = adminRampTransactions)
                 } catch (e: Exception) {
-                    Log.e("DashboardRoute", "Admin ramp fetch failed", e)
                     currentAdminData
                 }
 

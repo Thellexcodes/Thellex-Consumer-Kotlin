@@ -113,7 +113,7 @@ fun ActionButton(
 @SuppressLint("ContextCastToActivity")
 @Composable
 fun AssetDetailScreen(
-    navController: NavHostController? = null,
+    navController: NavHostController,
     assetCode: String,
     walletState: WalletState? = null
 ){
@@ -122,7 +122,7 @@ fun AssetDetailScreen(
     var tokenIconUrl by remember { mutableStateOf<String?>(null) }
 
     val onDepositClick = {
-        navController?.navigate(
+        navController.navigate(
             "${ComposeRoutes.CryptoDeposit.route}?ticker=${assetCode.lowercase()}"
         )
     }
@@ -131,11 +131,6 @@ fun AssetDetailScreen(
         onBackClick()
     }
 
-    val onSendClick = { }
-    val onConvertClick = { }
-    val onSeeAllClick = { }
-
-    // Filter wallet state for the asset
     val cryptos = remember(walletState, assetCode) {
         walletState?.toCryptoOptions()
             ?.filter { it.ticker.equals(assetCode, ignoreCase = true) }
@@ -227,13 +222,10 @@ fun AssetDetailScreen(
                     ActionButton(
                         icon = Icons.Default.Send,
                         label = "Send",
-                        onClick = onSendClick
+                        onClick = {
+                            navController.navigate("${ComposeRoutes.CryptoWithdrawal.route}/$assetCode")
+                        }
                     )
-//                    ActionButton(
-//                        icon = Icons.Default.Refresh,
-//                        label = "Convert",
-//                        onClick = onConvertClick
-//                    )
                 }
 
                 Row(

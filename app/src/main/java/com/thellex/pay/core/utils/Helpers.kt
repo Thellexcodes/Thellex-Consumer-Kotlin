@@ -334,6 +334,9 @@ object Helpers {
         }
     }
 
+    fun Float.format(decimals: Int = 2) = "%.${decimals}f".format(this)
+    fun String.toFloatOrNullSafe() = this.toFloatOrNull() ?: 0f
+
     fun getFriendlyLabel(kind: String): String {
         return when (kind) {
             "CRYPTO_DEPOSIT_SUCCESSFUL" -> "DEPOSIT"

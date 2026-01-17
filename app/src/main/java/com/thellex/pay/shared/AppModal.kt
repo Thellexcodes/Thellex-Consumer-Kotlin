@@ -41,11 +41,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.thellex.pay.core.decorators.DarkBlue
 import com.thellex.pay.core.decorators.GoldenYellow
 import com.thellex.pay.core.decorators.Midnight
+import com.thellex.pay.core.decorators.OutfitFontFamily
 import com.thellex.pay.core.decorators.Transparent
 import kotlinx.coroutines.launch
 
@@ -91,13 +93,16 @@ fun AppFullWidthModal(
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             // Title
-            Text(
-                text = title,
-                color = contentColor,
-                style = MaterialTheme.typography.titleLarge
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
+            title?.let {
+                Text(
+                    text = it,
+                    color = contentColor,
+                    fontSize = 18.sp,
+                    fontFamily = OutfitFontFamily,
+                    fontWeight = FontWeight.Light,
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
             // User-provided content
             content()

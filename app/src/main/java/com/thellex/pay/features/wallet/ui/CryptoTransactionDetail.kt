@@ -1,6 +1,5 @@
 package com.thellex.pay.features.wallet.ui
 
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalGraphicsContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,7 +30,6 @@ import com.thellex.pay.settings.SupportedBlockchainEnum
 import com.thellex.pay.settings.TokenEnum
 import com.thellex.pay.shared.CenteredTopBar
 import com.thellex.pay.shared.PrimaryButton
-import com.thellex.pay.shared.PrimaryConfirmButtonPreview
 
 @Composable
 fun CryptoTransactionDetail(

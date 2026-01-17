@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,7 @@ import com.thellex.pay.core.decorators.KumbhSansFontFamily
 import com.thellex.pay.core.decorators.Midnight
 import com.thellex.pay.core.decorators.OutfitFontFamily
 import com.thellex.pay.core.decorators.PinkRed
+import com.thellex.pay.core.decorators.SteelBlueGrey
 import com.thellex.pay.core.decorators.Transparent
 import com.thellex.pay.core.decorators.White
 import com.thellex.pay.core.utils.Helpers.formatTransactionTimeHumanReadable
@@ -84,9 +86,9 @@ data class NotificationItem(
 
 enum class NotificationFilter(val label: String) {
     ALL("All"),
-    TRANSACTIONS("Transactions"),
-    GENERAL_UPDATES("General Updates"),
-    MARK("Mark")
+//    TRANSACTIONS("Transactions"),
+//    GENERAL_UPDATES("General Updates"),
+//    MARK("Mark")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -111,13 +113,10 @@ fun NotificationScreen(
 
     var selectedFilter by remember { mutableStateOf(NotificationFilter.ALL) }
 
-//    val notifications: List<NotificationEntity> =
-//        authResult?.notifications ?: emptyList()
     val notificationItems: List<NotificationItem> =
         authResult?.notifications
             ?.map { it.toNotificationItem(baseSettings) }
             ?: emptyList()
-
 
     AppGradientBackground {
         Scaffold(
@@ -146,7 +145,8 @@ fun NotificationScreen(
                     items(notificationItems) { item ->
                         NotificationItemCard(
                             item = item,
-                            baseSettings = baseSettings
+                            baseSettings = baseSettings,
+                            onClick = {}
                         )
                     }
                 }
@@ -158,7 +158,8 @@ fun NotificationScreen(
 @Composable
 private fun NotificationItemCard(
     item: NotificationItem,
-    baseSettings: BaseSettingsCache? = null
+    baseSettings: BaseSettingsCache? = null,
+    onClick: (String) -> Unit? = {}
 ) {
     val icons = remember(baseSettings, item) {
         baseSettings?.findChainAndAssetIcons(
@@ -188,8 +189,16 @@ private fun NotificationItemCard(
         Spacer(modifier = Modifier.height(15.dp))
 
         Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = cardBackgroundColor),
+            modifier = Modifier.fillMaxWidth()
+                .clickable(
+                    enabled = !item.isConsumed
+                ) {
+                    onClick(item.id)
+                }
+            ,
+            colors = CardDefaults.cardColors(
+                containerColor = if (!item.isConsumed) DarkBlue else Transparent
+            ),
             border = BorderStroke(1.dp, Color(0xFF30363D)),
             shape = RoundedCornerShape(10.dp)
         ) {
@@ -216,7 +225,7 @@ private fun NotificationItemCard(
                     ) {
                         Text(
                             text = item.title.uppercase(),
-                            color = Color(0xFF58A6FF),
+                            color = SteelBlueGrey,
                             fontSize = 14.sp,
                             fontFamily = OutfitFontFamily,
                             fontWeight = FontWeight.Medium
@@ -224,7 +233,7 @@ private fun NotificationItemCard(
 
                         Text(
                             text = item.date,
-                            color = Color(0xFF58A6FF),
+                            color = SteelBlueGrey,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium
                         )
@@ -234,7 +243,7 @@ private fun NotificationItemCard(
 
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(SpanStyle(color = Color(0xFFD2A679))) {
+                            withStyle(SpanStyle(color = White.copy(0.8f))) {
                                 append(item.message)
                             }
                         },

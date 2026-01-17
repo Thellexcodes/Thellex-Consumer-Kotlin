@@ -42,6 +42,7 @@ import com.thellex.pay.features.wallet.ui.CryptoWithdrawalReviewRoute
 import com.thellex.pay.features.wallet.ui.CryptoWithdrawalScreenRoute
 import com.thellex.pay.features.wallet.ui.WalletScreenRoute
 import com.thellex.pay.screens.WebViewScreen
+import com.thellex.pay.settings.TokenEnum
 import com.thellex.pay.v2.features.payment_links.PaymentLinksScreen
 import kotlinx.serialization.json.Json
 
@@ -57,7 +58,6 @@ class ComposeHostActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
 
-            // Always start on a safe route with NO arguments
             NavHost(
                 navController = navController,
                 startDestination = ComposeRoutes.PaymentLinks.route
@@ -89,8 +89,23 @@ class ComposeHostActivity : ComponentActivity() {
                     WalletScreenRoute(navController)
                 }
 
-                composable(ComposeRoutes.CryptoWithdrawal.route) {
-                    CryptoWithdrawalScreenRoute(navController)
+                composable(
+                    route = "${ComposeRoutes.CryptoWithdrawal.route}/{assetCode}",
+                    arguments = listOf(
+                        navArgument("assetCode") {
+                            type = NavType.StringType
+                            nullable = true
+                        }
+                    )
+                ) { backStackEntry ->
+                    val assetCode = backStackEntry.arguments
+                        ?.getString("assetCode")
+                        ?.let(TokenEnum::fromValue)
+
+                    CryptoWithdrawalScreenRoute(
+                        navController = navController,
+                        assetCode = assetCode
+                    )
                 }
 
                 composable(ComposeRoutes.CryptoDepositTokensSelection.route) {
@@ -115,7 +130,6 @@ class ComposeHostActivity : ComponentActivity() {
                     arguments = listOf(navArgument("transaction") { type = NavType.StringType })
                 ) { backStackEntry ->
                     val json = backStackEntry.arguments?.getString("transaction")
-                    Log.d("Here", "this is data $json")
                     val decodedJson = Uri.decode(json ?: "")
                     val transaction = if (decodedJson.isNotEmpty()) {
                         Json.decodeFromString<CryptoTransactionSummary>(decodedJson)
@@ -201,9 +215,6 @@ class ComposeHostActivity : ComponentActivity() {
                 LaunchedEffect(route) {
                     if (!hasNavigated.value) {
                         hasNavigated.value = true
-
-                        Log.d("EEE", "Navigating to intended route: $route")
-
                         navController.navigate(route) {
                             popUpTo(ComposeRoutes.PaymentLinks.route) { inclusive = true }
                             launchSingleTop = true

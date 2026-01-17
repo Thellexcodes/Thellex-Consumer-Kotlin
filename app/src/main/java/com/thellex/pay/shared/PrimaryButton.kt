@@ -17,6 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import com.thellex.pay.core.decorators.DarkBlue
 import com.thellex.pay.core.decorators.GoldenYellow
@@ -25,22 +28,47 @@ import com.thellex.pay.core.decorators.Midnight
 
 @Composable
 fun PrimaryButton(
-    text: String = "CONFIRM",
     onClick: () -> Unit,
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    backgroundColor: Color = GoldenYellow,
+    disabledBackgroundColor: Color = Midnight,
+    content: @Composable RowScope.() -> Unit
 ) {
+    val bgColor = if (enabled) backgroundColor else disabledBackgroundColor
+
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(45.dp)
             .clip(RoundedCornerShape(7.dp))
-            .background(
-                color = if (enabled) GoldenYellow else Midnight,
-                shape = RoundedCornerShape(7.dp)
-            )
+            .background(bgColor)
             .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            content = content
+        )
+    }
+}
+
+@Composable
+fun PrimaryButton(
+    text: String = "CONFIRM",
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    backgroundColor: Color = GoldenYellow,
+    disabledBackgroundColor: Color = Midnight
+) {
+    PrimaryButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        backgroundColor = backgroundColor,
+        disabledBackgroundColor = disabledBackgroundColor
     ) {
         Text(
             text = text.uppercase(),
@@ -50,21 +78,6 @@ fun PrimaryButton(
             fontFamily = KumbhSansFontFamily
         )
     }
-}
-
-
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFF000000
-)
-@Composable
-fun PrimaryConfirmButtonPreview() {
-    PrimaryButton(
-        text = "CONFIRM",
-        onClick = {},
-        modifier = Modifier
-            .padding(16.dp)
-    )
 }
 
 @Preview(
